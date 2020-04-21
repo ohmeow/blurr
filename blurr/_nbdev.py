@@ -2,9 +2,11 @@
 
 __all__ = ["index", "modules", "custom_doc_links", "git_url"]
 
-index = {}
+index = {"str_to_class": "00_utils.ipynb",
+         "Singleton": "00_utils.ipynb",
+         "ModelHelper": "00_utils.ipynb"}
 
-modules = []
+modules = ["utils.py"]
 
 doc_url = "https://ohmeow.github.io/blurr/"
 
