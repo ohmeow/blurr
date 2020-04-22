@@ -4,7 +4,12 @@ __all__ = ["index", "modules", "custom_doc_links", "git_url"]
 
 index = {"str_to_class": "00_utils.ipynb",
          "Singleton": "00_utils.ipynb",
-         "ModelHelper": "00_utils.ipynb"}
+         "ModelHelper": "00_utils.ipynb",
+         "BLURR_MODEL_HELPER": "00_utils.ipynb",
+         "HF_ARCHITECTURES": "00_utils.ipynb",
+         "HF_TASKS_ALL": "00_utils.ipynb",
+         "HF_TASKS_AUTO": "00_utils.ipynb",
+         "HF_MODELS": "00_utils.ipynb"}
 
 modules = ["utils.py"]
 
