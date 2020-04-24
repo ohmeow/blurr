@@ -13,10 +13,13 @@ index = {"str_to_class": "00_utils.ipynb",
          "HF_BaseInput": "01_data.ipynb",
          "HF_Tokenizer": "01_data.ipynb",
          "HF_BatchTransform": "01_data.ipynb",
-         "HF_TextBlock": "01_data.ipynb"}
+         "HF_TextBlock": "01_data.ipynb",
+         "hf_splitter": "02_modeling.ipynb",
+         "HF_BaseModelWrapper": "02_modeling.ipynb"}
 
 modules = ["utils.py",
-           "data.py"]
+           "data.py",
+           "modeling.py"]
 
 doc_url = "https://ohmeow.github.io/blurr/"
 
