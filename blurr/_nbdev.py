@@ -9,9 +9,14 @@ index = {"str_to_class": "00_utils.ipynb",
          "HF_ARCHITECTURES": "00_utils.ipynb",
          "HF_TASKS_ALL": "00_utils.ipynb",
          "HF_TASKS_AUTO": "00_utils.ipynb",
-         "HF_MODELS": "00_utils.ipynb"}
+         "HF_MODELS": "00_utils.ipynb",
+         "HF_BaseInput": "01_data.ipynb",
+         "HF_Tokenizer": "01_data.ipynb",
+         "HF_BatchTransform": "01_data.ipynb",
+         "HF_TextBlock": "01_data.ipynb"}
 
-modules = ["utils.py"]
+modules = ["utils.py",
+           "data.py"]
 
 doc_url = "https://ohmeow.github.io/blurr/"
 
