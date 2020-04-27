@@ -2,6 +2,12 @@
 > Summary description here.
 
 
+```python
+%reload_ext autoreload
+%autoreload 2
+%matplotlib inline
+```
+
 This file will become your README and also the index of your documentation.
 
 ## Install
@@ -13,12 +19,32 @@ This file will become your README and also the index of your documentation.
 Fill me in please! Don't forget code examples:
 
 ```python
-1+1
+BLURR_MODEL_HELPER.get_architectures()
 ```
 
 
 
 
-    2
+    ['transfo_xl',
+     'albert',
+     'auto',
+     'bart',
+     'bert',
+     'bert_japanese',
+     'ctrl',
+     'camembert',
+     'utils',
+     'distilbert',
+     'electra',
+     'flaubert',
+     'gpt2',
+     'mmbt',
+     'openai',
+     'encoder_decoder',
+     'roberta',
+     't5',
+     'xlm',
+     'xlm_roberta',
+     'xlnet']
 
 
