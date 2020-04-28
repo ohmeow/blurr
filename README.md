@@ -2,12 +2,6 @@
 > An extensible integration of huggingface transformer models with fastai v2.
 
 
-```python
-%reload_ext autoreload
-%autoreload 2
-%matplotlib inline
-```
-
 ## Install
 
 `pip install blurr` ... *but* not yet, as its not in pypi (yet)

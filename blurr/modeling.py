@@ -22,7 +22,7 @@ def hf_splitter(m):
     return groups.map(params).filter(lambda el: len(el) > 0)
 
 # Cell
-class HF_BaseModelWrapper(torch.nn.Module):
+class HF_BaseModelWrapper(Module):
     def __init__(self, hf_model):
         super().__init__()
         self.hf_model = hf_model
