@@ -4,7 +4,9 @@
 
 ## Install
 
-The library will eventually be available on pypi, but for now ... creating an editable install is the way to go (especially as this is under very active development):
+You can now pip install blurr via `pip install ohmeow-blurr`
+
+Or, even better as this library is under *very* active development, create an editable install like this:
 ```
 git clone https://github.com/ohmeow/blurr.git
 cd blurr
