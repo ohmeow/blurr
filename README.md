@@ -4,9 +4,7 @@
 
 ## Install
 
-`pip install blurr` ... *but* not yet, as its not in pypi (yet)
-
-So for now, creating an editable install is the way to go (especially as this is under very active development):
+The library will eventually be available on pypi, but for now ... creating an editable install is the way to go (especially as this is under very active development):
 ```
 git clone https://github.com/ohmeow/blurr.git
 cd blurr
@@ -15,9 +13,11 @@ pip install -e ".[dev]"
 
 ## How to use
 
-The initial release includes everything you need for sequence classification and question answering tasks.  Support for token classification and summarization are incoming.
+The initial release includes everything you need for sequence classification and question answering tasks.  Support for token classification and summarization are incoming. Please check the documentation for more thorough examples of how to use this package.
 
-Please check the documentation for more thorough examples of how to use this package.
+The following two packages need to be installed for blurr to work:
+1. fastai2 (see http://dev.fast.ai/ for installation instructions)
+2. huggingface transformers (see https://huggingface.co/transformers/installation.html for details)
 
 ### Imports
 
@@ -94,7 +94,7 @@ dls.show_batch(hf_tokenizer=hf_tokenizer, max_n=2)
     </tr>
     <tr>
       <th>1</th>
-      <td>[CLS] i really wanted to love this show. i truly, honestly did. &lt; br / &gt; &lt; br / &gt; for the first time, gay viewers get their own version of the " the bachelor ". with the help of his obligatory " hag " andra, james, a good looking, well - to - do thirty - something has the chance of love with 15 suitors ( or " mates " as they are referred to in the show ). the only problem is half of them are straight and james doesn't know this. if james picks a gay one, they get a trip to new zealand, and if he picks a straight one, straight guy gets $ 25, 000. how can this not be fun?! take my hand, lets stroll : &lt; br / &gt; &lt; br / &gt; the most glaring problem with this show is the bachelor himself. james is your typical young and successful gay guy with a nice smile and body, the one you'd probably give two glances towards at your local bar before grazing for greener pastures. why they chose to cast james as the leading man is beyond me. god knows there's so many other hotter and vivacious homosexual men out there dying to be on tv. &lt; br / &gt; &lt; br / &gt; aside from his rather average physical appearance, james is about as interesting and exciting as a piece of chalk. even as such, he has this arrogant, smugly condescending aura about him. however, if james were standing up against a blank, white wall he'd meld right into in it. i honestly can't recall a single interesting or noteworthy thing james said during the course of the show. he is that boring and forgettable. in fact, one of the mates flat out advised him he wasn't feeling a connection. i thought that was the best part of the show. also, james speaks with an excruciatingly annoying lilt. sound feminine or sound masculine, but don't * * * * ing segue tones in the middle of sentences... so painful to sit through. i hated him so much all throughout the show i kept thinking, " please choose a straight guy and humiliate yourself and your unfortunate looking hag " &lt; br / &gt; &lt; br / &gt; then we have the suitors. a remarkably bland bunch of men who don't seem to care either way what is happening. equally vapid, they seem to be indistinguishable from one guy to the next except, [SEP]</td>
+      <td>[CLS] now that che ( 2008 ) has finished its relatively short australian cinema run ( extremely limited release : 1 screen in sydney, after 6wks ), i can guiltlessly join both hosts of " at the movies " in taking steven soderbergh to task. &lt; br / &gt; &lt; br / &gt; it's usually satisfying to watch a film director change his style / subject, but soderbergh's most recent stinker, the girlfriend experience ( 2009 ), was also missing a story, so narrative ( and editing? ) seem to suddenly be soderbergh's main challenge. strange, after 20 - odd years in the business. he was probably never much good at narrative, just hid it well inside " edgy " projects. &lt; br / &gt; &lt; br / &gt; none of this excuses him this present, almost diabolical failure. as david stratton warns, " two parts of che don't ( even ) make a whole ". &lt; br / &gt; &lt; br / &gt; epic biopic in name only, che ( 2008 ) barely qualifies as a feature film! it certainly has no legs, inasmuch as except for its uncharacteristic ultimate resolution forced upon it by history, soderbergh's 4. 5hrs - long dirge just goes nowhere. &lt; br / &gt; &lt; br / &gt; even margaret pomeranz, the more forgiving of australia's at the movies duo, noted about soderbergh's repetitious waste of ( hd digital storage ) : " you're in the woods... you're in the woods... you're in the woods... ". i too am surprised soderbergh didn't give us another 2. 5hrs of that somewhere between his existing two parts, because he still left out massive chunks of che's " revolutionary " life! &lt; br / &gt; &lt; br / &gt; for a biopic of an important but infamous historical figure, soderbergh unaccountably alienates, if not deliberately insults, his audiences by &lt; br / &gt; &lt; br / &gt; 1. never providing most of che's story ; &lt; br / &gt; &lt; br / &gt; 2. imposing unreasonable film lengths with mere dullard repetition ; &lt; br / &gt; &lt; br / &gt; 3. ignoring both true hindsight and a narrative of events ; &lt; br / &gt; &lt; br / &gt; 4. barely developing an idea, or a character ; [SEP]</td>
       <td>negative</td>
     </tr>
   </tbody>
@@ -104,6 +104,7 @@ dls.show_batch(hf_tokenizer=hf_tokenizer, max_n=2)
 ### ... and train
 
 ```python
+#slow
 model = HF_BaseModelWrapper(hf_model)
 
 learn = Learner(dls, 
@@ -116,7 +117,7 @@ learn = Learner(dls,
 learn.create_opt() 
 learn.freeze()
 
-learn.fit_one_cycle(1, lr_max=1e-3)
+learn.fit_one_cycle(3, lr_max=1e-3)
 ```
 
 
@@ -133,9 +134,23 @@ learn.fit_one_cycle(1, lr_max=1e-3)
   <tbody>
     <tr>
       <td>0</td>
-      <td>0.644101</td>
-      <td>0.652699</td>
-      <td>0.630000</td>
+      <td>0.726610</td>
+      <td>0.683295</td>
+      <td>0.540000</td>
+      <td>00:19</td>
+    </tr>
+    <tr>
+      <td>1</td>
+      <td>0.649297</td>
+      <td>0.622181</td>
+      <td>0.680000</td>
+      <td>00:19</td>
+    </tr>
+    <tr>
+      <td>2</td>
+      <td>0.626472</td>
+      <td>0.601723</td>
+      <td>0.705000</td>
       <td>00:19</td>
     </tr>
   </tbody>

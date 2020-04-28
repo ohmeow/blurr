@@ -35,14 +35,7 @@ description: "An extensible integration of huggingface transformer models with f
 </div>
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p><code>pip install blurr</code> ... <em>but</em> not yet, as its not in pypi (yet)</p>
-
-</div>
-</div>
-</div>
-<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<p>So for now, creating an editable install is the way to go (especially as this is under very active development):</p>
+<p>The library will eventually be available on pypi, but for now ... creating an editable install is the way to go (especially as this is under very active development):</p>
 
 <pre><code>git clone https://github.com/ohmeow/blurr.git
 cd blurr
@@ -59,8 +52,12 @@ pip install -e ".[dev]"</code></pre>
 </div>
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>The initial release includes everything you need for sequence classification and question answering tasks.  Support for token classification and summarization are incoming.</p>
-<p>Please check the documentation for more thorough examples of how to use this package.</p>
+<p>The initial release includes everything you need for sequence classification and question answering tasks.  Support for token classification and summarization are incoming. Please check the documentation for more thorough examples of how to use this package.</p>
+<p>The following two packages need to be installed for blurr to work:</p>
+<ol>
+<li>fastai2 (see <a href="http://dev.fast.ai/">http://dev.fast.ai/</a> for installation instructions)</li>
+<li>huggingface transformers (see <a href="https://huggingface.co/transformers/installation.html">https://huggingface.co/transformers/installation.html</a> for details)</li>
+</ol>
 
 </div>
 </div>
@@ -235,7 +232,7 @@ pip install -e ".[dev]"</code></pre>
     </tr>
     <tr>
       <th>1</th>
-      <td>[CLS] i really wanted to love this show. i truly, honestly did. &lt; br / &gt; &lt; br / &gt; for the first time, gay viewers get their own version of the " the bachelor ". with the help of his obligatory " hag " andra, james, a good looking, well - to - do thirty - something has the chance of love with 15 suitors ( or " mates " as they are referred to in the show ). the only problem is half of them are straight and james doesn't know this. if james picks a gay one, they get a trip to new zealand, and if he picks a straight one, straight guy gets $ 25, 000. how can this not be fun?! take my hand, lets stroll : &lt; br / &gt; &lt; br / &gt; the most glaring problem with this show is the bachelor himself. james is your typical young and successful gay guy with a nice smile and body, the one you'd probably give two glances towards at your local bar before grazing for greener pastures. why they chose to cast james as the leading man is beyond me. god knows there's so many other hotter and vivacious homosexual men out there dying to be on tv. &lt; br / &gt; &lt; br / &gt; aside from his rather average physical appearance, james is about as interesting and exciting as a piece of chalk. even as such, he has this arrogant, smugly condescending aura about him. however, if james were standing up against a blank, white wall he'd meld right into in it. i honestly can't recall a single interesting or noteworthy thing james said during the course of the show. he is that boring and forgettable. in fact, one of the mates flat out advised him he wasn't feeling a connection. i thought that was the best part of the show. also, james speaks with an excruciatingly annoying lilt. sound feminine or sound masculine, but don't * * * * ing segue tones in the middle of sentences... so painful to sit through. i hated him so much all throughout the show i kept thinking, " please choose a straight guy and humiliate yourself and your unfortunate looking hag " &lt; br / &gt; &lt; br / &gt; then we have the suitors. a remarkably bland bunch of men who don't seem to care either way what is happening. equally vapid, they seem to be indistinguishable from one guy to the next except, [SEP]</td>
+      <td>[CLS] now that che ( 2008 ) has finished its relatively short australian cinema run ( extremely limited release : 1 screen in sydney, after 6wks ), i can guiltlessly join both hosts of " at the movies " in taking steven soderbergh to task. &lt; br / &gt; &lt; br / &gt; it's usually satisfying to watch a film director change his style / subject, but soderbergh's most recent stinker, the girlfriend experience ( 2009 ), was also missing a story, so narrative ( and editing? ) seem to suddenly be soderbergh's main challenge. strange, after 20 - odd years in the business. he was probably never much good at narrative, just hid it well inside " edgy " projects. &lt; br / &gt; &lt; br / &gt; none of this excuses him this present, almost diabolical failure. as david stratton warns, " two parts of che don't ( even ) make a whole ". &lt; br / &gt; &lt; br / &gt; epic biopic in name only, che ( 2008 ) barely qualifies as a feature film! it certainly has no legs, inasmuch as except for its uncharacteristic ultimate resolution forced upon it by history, soderbergh's 4. 5hrs - long dirge just goes nowhere. &lt; br / &gt; &lt; br / &gt; even margaret pomeranz, the more forgiving of australia's at the movies duo, noted about soderbergh's repetitious waste of ( hd digital storage ) : " you're in the woods... you're in the woods... you're in the woods... ". i too am surprised soderbergh didn't give us another 2. 5hrs of that somewhere between his existing two parts, because he still left out massive chunks of che's " revolutionary " life! &lt; br / &gt; &lt; br / &gt; for a biopic of an important but infamous historical figure, soderbergh unaccountably alienates, if not deliberately insults, his audiences by &lt; br / &gt; &lt; br / &gt; 1. never providing most of che's story ; &lt; br / &gt; &lt; br / &gt; 2. imposing unreasonable film lengths with mere dullard repetition ; &lt; br / &gt; &lt; br / &gt; 3. ignoring both true hindsight and a narrative of events ; &lt; br / &gt; &lt; br / &gt; 4. barely developing an idea, or a character ; [SEP]</td>
       <td>negative</td>
     </tr>
   </tbody>
@@ -263,7 +260,8 @@ pip install -e ".[dev]"</code></pre>
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">model</span> <span class="o">=</span> <span class="n">HF_BaseModelWrapper</span><span class="p">(</span><span class="n">hf_model</span><span class="p">)</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1">#slow</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">HF_BaseModelWrapper</span><span class="p">(</span><span class="n">hf_model</span><span class="p">)</span>
 
 <span class="n">learn</span> <span class="o">=</span> <span class="n">Learner</span><span class="p">(</span><span class="n">dls</span><span class="p">,</span> 
                 <span class="n">model</span><span class="p">,</span>
@@ -275,7 +273,7 @@ pip install -e ".[dev]"</code></pre>
 <span class="n">learn</span><span class="o">.</span><span class="n">create_opt</span><span class="p">()</span> 
 <span class="n">learn</span><span class="o">.</span><span class="n">freeze</span><span class="p">()</span>
 
-<span class="n">learn</span><span class="o">.</span><span class="n">fit_one_cycle</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">lr_max</span><span class="o">=</span><span class="mf">1e-3</span><span class="p">)</span>
+<span class="n">learn</span><span class="o">.</span><span class="n">fit_one_cycle</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="n">lr_max</span><span class="o">=</span><span class="mf">1e-3</span><span class="p">)</span>
 </pre></div>
 
     </div>
@@ -302,9 +300,23 @@ pip install -e ".[dev]"</code></pre>
   <tbody>
     <tr>
       <td>0</td>
-      <td>0.644101</td>
-      <td>0.652699</td>
-      <td>0.630000</td>
+      <td>0.726610</td>
+      <td>0.683295</td>
+      <td>0.540000</td>
+      <td>00:19</td>
+    </tr>
+    <tr>
+      <td>1</td>
+      <td>0.649297</td>
+      <td>0.622181</td>
+      <td>0.680000</td>
+      <td>00:19</td>
+    </tr>
+    <tr>
+      <td>2</td>
+      <td>0.626472</td>
+      <td>0.601723</td>
+      <td>0.705000</td>
       <td>00:19</td>
     </tr>
   </tbody>
