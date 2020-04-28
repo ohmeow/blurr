@@ -25,7 +25,7 @@ lic = licenses[cfg['license']]
 min_python = cfg['min_python']
 
 setuptools.setup(
-    name = cfg['lib_name'],
+    name = 'ohmeow-blurr', #cfg['lib_name'],
     license = lic[0],
     classifiers = [
         'Development Status :: ' + statuses[int(cfg['status'])],
