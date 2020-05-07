@@ -4,6 +4,8 @@ __all__ = ['hf_splitter', 'HF_BaseModelCallback', 'HF_BaseModelWrapper', 'HF_Qst
            'HF_QstAndAnsModelWrapper', 'MultiTargetLoss']
 
 # Cell
+import ast
+
 from .utils import *
 from .data import *
 
@@ -69,10 +71,14 @@ class HF_BaseModelWrapper(Module):
 
 # Cell
 @typedispatch
-def show_results(x:HF_BaseInput, y, samples, outs, hf_tokenizer, ctxs=None, max_n=6, **kwargs):
+def show_results(x:HF_BaseInput, y, samples, outs, hf_tokenizer, skip_special_tokens=True,
+                 ctxs=None, max_n=6, **kwargs):
+
     if ctxs is None: ctxs = get_empty_df(min(len(samples), max_n))
 
-    samples = samples = L((TitledStr(hf_tokenizer.decode(inp)),*s[1:]) for inp, s in zip(x[0], samples))
+    samples = samples = L((TitledStr(hf_tokenizer.decode(inp, skip_special_tokens=skip_special_tokens).replace(hf_tokenizer.pad_token, '')),*s[1:])
+                          for inp, s in zip(x[0], samples))
+
     ctxs = show_batch[object](x, y, samples, max_n=max_n, ctxs=ctxs, **kwargs)
 
     n_preds_per_input = len(outs[0])
@@ -133,3 +139,75 @@ class MultiTargetLoss(Module):
     def decodes(self, outs):
         decodes = [ self.decode_funcs[i](o) for i, o in enumerate(outs) ]
         return decodes
+
+
+# Cell
+@typedispatch
+def show_results(x:HF_BaseInput, y:HF_TokenTensorCategory, samples, outs, hf_tokenizer, skip_special_tokens=True,
+                 ctxs=None, max_n=6, **kwargs):
+
+    if ctxs is None: ctxs = get_empty_df(min(len(samples), max_n))
+
+    samples = samples = L((TitledStr(hf_tokenizer.decode(inp, skip_special_tokens=skip_special_tokens).replace(hf_tokenizer.pad_token, '')), *s[1:])
+                          for inp, s in zip(x[0], samples))
+
+    ctxs = show_batch[object](x, y, samples, max_n=max_n, ctxs=ctxs, **kwargs)
+    for i,ctx in enumerate(ctxs):
+        preds = ast.literal_eval(outs[i][0])
+        ctx['target'] = [pred for idx, pred in enumerate(preds) if (y[i][idx] != -100)]
+
+    display_df(pd.DataFrame(ctxs))
+    return ctxs
+
+# Cell
+@patch
+def predict_tokens(self:Learner, inp, **kargs):
+    """Remove all the unnecessary predicted tokens after calling `Learner.predict`, so that you only
+    get the predicted labels, label ids, and probabilities for what you passed into it in addition to the input
+    """
+    pred_lbls, pred_lbl_ids, probs = self.predict(inp)
+
+    # grab the huggingface tokenizer from the learner's dls.tfms
+    learn_hf_tokenizer = self.dls.tfms[0].tokenizer.filter(lambda tok: isinstance(tok, HF_Tokenizer))[0]
+    hf_tokenizer = learn_hf_tokenizer.hf_tokenizer
+
+    # grab the HF_BatchTransform as well
+    learn_hf_batch_transform = learn.dls.before_batch.hf__batch_transform
+
+    # convert the `inp` to a list if necessary
+    txt_split = inp if isinstance(inp, list) else learn_hf_tokenizer.list_split_func(inp)
+
+    # calculate the number of subtokens per raw/input token so that we can determine what predictions to
+    # return
+    subtoks_per_raw_tok = [ (entity, len(hf_tokenizer.tokenize(str(entity)))) for entity in txt_split ]
+
+    # very similar to what HF_BatchTransform does with the exception that we are also grabbing
+    # the `special_tokens_mask` to help with getting rid or irelevant predicts for any special tokens
+    # (e.g., [CLS], [SEP], etc...)
+    txt_toks = [sub_toks for entity in txt_split for sub_toks in hf_tokenizer.tokenize(entity)]
+    txt_tok_ids = hf_tokenizer.convert_tokens_to_ids(txt_toks)
+
+    res = hf_tokenizer.prepare_for_model(txt_tok_ids, None,
+                                         max_length=learn_hf_batch_transform.max_seq_len,
+                                         pad_to_max_length=True,
+                                         truncation_strategy=None,
+                                         return_special_tokens_mask=True)
+
+    special_toks_msk = L(res['special_tokens_mask'])
+    actual_tok_idxs = special_toks_msk.argwhere(lambda el: el != 1)
+
+    # using the indexes to the actual tokens, get that info from the results returned above
+    pred_lbls_list = ast.literal_eval(pred_lbls)
+    actual_pred_lbls = L(pred_lbls_list)[actual_tok_idxs]
+    actual_pred_lbl_ids = pred_lbl_ids[actual_tok_idxs]
+    actual_probs = probs[actual_tok_idxs]
+
+    # now, because a raw token can be mapped to multiple subtokens, we need to build a list of indexes composed
+    # of the *first* subtoken used to represent each raw token (that is where the prediction is)
+    offset = 0
+    raw_trg_idxs = []
+    for idx, (raw_tok, sub_tok_count) in enumerate(subtoks_per_raw_tok):
+        raw_trg_idxs.append(idx+offset)
+        offset += sub_tok_count-1 if (sub_tok_count > 1) else 0
+
+    return txt_split, actual_pred_lbls[raw_trg_idxs], actual_pred_lbl_ids[raw_trg_idxs], actual_probs[raw_trg_idxs]

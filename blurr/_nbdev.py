@@ -26,6 +26,7 @@ index = {"str_to_class": "00_utils.ipynb",
          "HF_Tokenizer": "01_data.ipynb",
          "HF_BatchTransform": "01_data.ipynb",
          "HF_TextBlock": "01_data.ipynb",
+         "HF_TokenTensorCategory": "01_data.ipynb",
          "HF_TokenCategorize": "01_data.ipynb",
          "HF_TokenCategoryBlock": "01_data.ipynb",
          "hf_splitter": "02_modeling.ipynb",
@@ -33,7 +34,8 @@ index = {"str_to_class": "00_utils.ipynb",
          "HF_BaseModelWrapper": "02_modeling.ipynb",
          "HF_QstAndAnsModelCallback": "02_modeling.ipynb",
          "HF_QstAndAnsModelWrapper": "02_modeling.ipynb",
-         "MultiTargetLoss": "02_modeling.ipynb"}
+         "MultiTargetLoss": "02_modeling.ipynb",
+         "Learner.predict_tokens": "02_modeling.ipynb"}
 
 modules = ["utils.py",
            "data.py",
