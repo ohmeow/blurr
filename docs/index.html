@@ -29,6 +29,20 @@ description: "An extensible integration of huggingface transformer models with f
 
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Updates">Updates<a class="anchor-link" href="#Updates"> </a></h2><p><strong>05/06/2020</strong></p>
+<ul>
+<li>Initial support for Token classification (e.g., NER) models now included</li>
+<li>Extended fastai's <code>Learner</code> object with a <code>predict_tokens</code> method used specifically in token classification</li>
+<li><a href="/blurr/modeling#HF_BaseModelCallback"><code>HF_BaseModelCallback</code></a> can be used (or extended) instead of the model wrapper to ensure your inputs into the huggingface model is correct (recommended). See docs for examples (and thanks to fastai's Sylvain for the suggestion!)</li>
+<li><a href="/blurr/data#HF_Tokenizer"><code>HF_Tokenizer</code></a> can work with strings or a string representation of a list (the later helpful for token classification tasks)</li>
+<li><code>show_batch</code> and <code>show_results</code> methods have been updated to allow better control on how huggingface tokenized data is represented in those methods</li>
+</ul>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
 <h2 id="Install">Install<a class="anchor-link" href="#Install"> </a></h2>
 </div>
 </div>
@@ -228,13 +242,13 @@ pip install -e ".[dev]"</code></pre>
   <tbody>
     <tr>
       <th>0</th>
-      <td>[CLS] raising victor vargas : a review &lt; br / &gt; &lt; br / &gt; you know, raising victor vargas is like sticking your hands into a big, steaming bowl of oatmeal. it's warm and gooey, but you're not sure if it feels right. try as i might, no matter how warm and gooey raising victor vargas became i was always aware that something didn't quite feel right. victor vargas suffers from a certain overconfidence on the director's part. apparently, the director thought that the ethnic backdrop of a latino family on the lower east side, and an idyllic storyline would make the film critic proof. he was right, but it didn't fool me. raising victor vargas is the story about a seventeen - year old boy called, you guessed it, victor vargas ( victor rasuk ) who lives his teenage years chasing more skirt than the rolling stones could do in all the years they've toured. the movie starts off in ` ugly fat'donna's bedroom where victor is sure to seduce her, but a cry from outside disrupts his plans when his best - friend harold ( kevin rivera ) comes - a - looking for him. caught in the attempt by harold and his sister, victor vargas runs off for damage control. yet even with the embarrassing implication that he's been boffing the homeliest girl in the neighborhood, nothing dissuades young victor from going off on the hunt for more fresh meat. on a hot, new york city day they make way to the local public swimming pool where victor's eyes catch a glimpse of the lovely young nymph judy ( judy marte ), who's not just pretty, but a strong and independent too. the relationship that develops between victor and judy becomes the focus of the film. the story also focuses on victor's family that is comprised of his grandmother or abuelita ( altagracia guzman ), his brother nino ( also played by real life brother to victor, silvestre rasuk ) and his sister vicky ( krystal rodriguez ). the action follows victor between scenes with judy and scenes with his family. victor tries to cope with being an oversexed pimp - daddy, his feelings for judy and his grandmother's conservative catholic upbringing. &lt; br / &gt; &lt; br / &gt; the problems that arise from raising victor vargas are a few, but glaring errors. throughout the film you get to know certain characters like vicky, nino, grandma, judy and even [SEP]</td>
+      <td>raising victor vargas : a review &lt; br / &gt; &lt; br / &gt; you know, raising victor vargas is like sticking your hands into a big, steaming bowl of oatmeal. it's warm and gooey, but you're not sure if it feels right. try as i might, no matter how warm and gooey raising victor vargas became i was always aware that something didn't quite feel right. victor vargas suffers from a certain overconfidence on the director's part. apparently, the director thought that the ethnic backdrop of a latino family on the lower east side, and an idyllic storyline would make the film critic proof. he was right, but it didn't fool me. raising victor vargas is the story about a seventeen - year old boy called, you guessed it, victor vargas ( victor rasuk ) who lives his teenage years chasing more skirt than the rolling stones could do in all the years they've toured. the movie starts off in ` ugly fat'donna's bedroom where victor is sure to seduce her, but a cry from outside disrupts his plans when his best - friend harold ( kevin rivera ) comes - a - looking for him. caught in the attempt by harold and his sister, victor vargas runs off for damage control. yet even with the embarrassing implication that he's been boffing the homeliest girl in the neighborhood, nothing dissuades young victor from going off on the hunt for more fresh meat. on a hot, new york city day they make way to the local public swimming pool where victor's eyes catch a glimpse of the lovely young nymph judy ( judy marte ), who's not just pretty, but a strong and independent too. the relationship that develops between victor and judy becomes the focus of the film. the story also focuses on victor's family that is comprised of his grandmother or abuelita ( altagracia guzman ), his brother nino ( also played by real life brother to victor, silvestre rasuk ) and his sister vicky ( krystal rodriguez ). the action follows victor between scenes with judy and scenes with his family. victor tries to cope with being an oversexed pimp - daddy, his feelings for judy and his grandmother's conservative catholic upbringing. &lt; br / &gt; &lt; br / &gt; the problems that arise from raising victor vargas are a few, but glaring errors. throughout the film you get to know certain characters like vicky, nino, grandma, judy and even</td>
       <td>negative</td>
     </tr>
     <tr>
       <th>1</th>
-      <td>[CLS] many neglect that this isn't just a classic due to the fact that it's the first 3d game, or even the first shoot -'em - up. it's also one of the first stealth games, one of the only ( and definitely the first ) truly claustrophobic games, and just a pretty well - rounded gaming experience in general. with graphics that are terribly dated today, the game thrusts you into the role of b. j. ( don't even * think * i'm going to attempt spelling his last name! ), an american p. o. w. caught in an underground bunker. you fight and search your way through tunnels in order to achieve different objectives for the six episodes ( but, let's face it, most of them are just an excuse to hand you a weapon, surround you with nazis and send you out to waste one of the nazi leaders ). the graphics are, as i mentioned before, quite dated and very simple. the least detailed of basically any 3d game released by a professional team of creators. if you can get over that, however ( and some would suggest that this simplicity only adds to the effect the game has on you ), then you've got one heck of a good shooter / sneaking game. the game play consists of searching for keys, health and ammo, blasting enemies ( aforementioned nazis, and a " boss enemy " per chapter ) of varying difficulty ( which, of course, grows as you move further in the game ), unlocking doors and looking for secret rooms. there is a bonus count after each level is beaten... it goes by how fast you were ( basically, if you beat the'par time ', which is the time it took a tester to go through the same level ; this can be quite fun to try and beat, and with how difficult the levels are to find your way in, they are even challenging after many play - throughs ), how much nazi gold ( treasure ) you collected and how many bad guys you killed. basically, if you got 100 % of any of aforementioned, you get a bonus, helping you reach the coveted high score placings. the game ( mostly, but not always ) allows for two contrastingly different methods of playing... stealthily or gunning down anything and everything you see. you can either run or walk, and amongst your weapons is also a knife... running is heard instantly the moment you enter the same room as the guard, as [SEP]</td>
-      <td>positive</td>
+      <td>now that che ( 2008 ) has finished its relatively short australian cinema run ( extremely limited release : 1 screen in sydney, after 6wks ), i can guiltlessly join both hosts of " at the movies " in taking steven soderbergh to task. &lt; br / &gt; &lt; br / &gt; it's usually satisfying to watch a film director change his style / subject, but soderbergh's most recent stinker, the girlfriend experience ( 2009 ), was also missing a story, so narrative ( and editing? ) seem to suddenly be soderbergh's main challenge. strange, after 20 - odd years in the business. he was probably never much good at narrative, just hid it well inside " edgy " projects. &lt; br / &gt; &lt; br / &gt; none of this excuses him this present, almost diabolical failure. as david stratton warns, " two parts of che don't ( even ) make a whole ". &lt; br / &gt; &lt; br / &gt; epic biopic in name only, che ( 2008 ) barely qualifies as a feature film! it certainly has no legs, inasmuch as except for its uncharacteristic ultimate resolution forced upon it by history, soderbergh's 4. 5hrs - long dirge just goes nowhere. &lt; br / &gt; &lt; br / &gt; even margaret pomeranz, the more forgiving of australia's at the movies duo, noted about soderbergh's repetitious waste of ( hd digital storage ) : " you're in the woods... you're in the woods... you're in the woods... ". i too am surprised soderbergh didn't give us another 2. 5hrs of that somewhere between his existing two parts, because he still left out massive chunks of che's " revolutionary " life! &lt; br / &gt; &lt; br / &gt; for a biopic of an important but infamous historical figure, soderbergh unaccountably alienates, if not deliberately insults, his audiences by &lt; br / &gt; &lt; br / &gt; 1. never providing most of che's story ; &lt; br / &gt; &lt; br / &gt; 2. imposing unreasonable film lengths with mere dullard repetition ; &lt; br / &gt; &lt; br / &gt; 3. ignoring both true hindsight and a narrative of events ; &lt; br / &gt; &lt; br / &gt; 4. barely developing an idea, or a character ;</td>
+      <td>negative</td>
     </tr>
   </tbody>
 </table>
@@ -262,13 +276,14 @@ pip install -e ".[dev]"</code></pre>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="c1">#slow</span>
-<span class="n">model</span> <span class="o">=</span> <span class="n">HF_BaseModelWrapper</span><span class="p">(</span><span class="n">hf_model</span><span class="p">)</span>
+<span class="c1"># model = HF_BaseModelWrapper(hf_model) ... updated to use the callback approach</span>
 
 <span class="n">learn</span> <span class="o">=</span> <span class="n">Learner</span><span class="p">(</span><span class="n">dls</span><span class="p">,</span> 
-                <span class="n">model</span><span class="p">,</span>
+                <span class="n">hf_model</span><span class="p">,</span>
                 <span class="n">opt_func</span><span class="o">=</span><span class="n">partial</span><span class="p">(</span><span class="n">Adam</span><span class="p">,</span> <span class="n">decouple_wd</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
                 <span class="n">loss_func</span><span class="o">=</span><span class="n">CrossEntropyLossFlat</span><span class="p">(),</span>
                 <span class="n">metrics</span><span class="o">=</span><span class="p">[</span><span class="n">accuracy</span><span class="p">],</span>
+                <span class="n">cbs</span><span class="o">=</span><span class="p">[</span><span class="n">HF_BaseModelCallback</span><span class="p">],</span>
                 <span class="n">splitter</span><span class="o">=</span><span class="n">hf_splitter</span><span class="p">)</span>
 
 <span class="n">learn</span><span class="o">.</span><span class="n">create_opt</span><span class="p">()</span> 
@@ -301,23 +316,23 @@ pip install -e ".[dev]"</code></pre>
   <tbody>
     <tr>
       <td>0</td>
-      <td>0.701890</td>
-      <td>0.662111</td>
-      <td>0.540000</td>
+      <td>0.696703</td>
+      <td>0.683517</td>
+      <td>0.560000</td>
       <td>00:19</td>
     </tr>
     <tr>
       <td>1</td>
-      <td>0.639886</td>
-      <td>0.648174</td>
-      <td>0.590000</td>
+      <td>0.621468</td>
+      <td>0.613918</td>
+      <td>0.720000</td>
       <td>00:19</td>
     </tr>
     <tr>
       <td>2</td>
-      <td>0.583190</td>
-      <td>0.604533</td>
-      <td>0.715000</td>
+      <td>0.586707</td>
+      <td>0.611581</td>
+      <td>0.710000</td>
       <td>00:19</td>
     </tr>
   </tbody>
@@ -375,13 +390,13 @@ pip install -e ".[dev]"</code></pre>
   <tbody>
     <tr>
       <th>0</th>
-      <td>[CLS] how viewers react to this new " adaption " of shirley jackson's book, which was promoted as not being a remake of the original 1963 movie ( true enough ), will be based, i suspect, on the following : those who were big fans of either the book or original movie are not going to think much of this one... and those who have never been exposed to either, and who are big fans of hollywood's current trend towards " special effects " being the first and last word in how " good " a film is, are going to love it. &lt; br / &gt; &lt; br / &gt; things i did not like about this adaption : &lt; br / &gt; &lt; br / &gt; 1. it was not a true adaption of the book. from the articles i had read, this movie was supposed to cover other aspects in the book that the first one never got around to. and, that seemed reasonable, no film can cover a book word for word unless it is the length of the stand! ( and not even then ) but, there were things in this movie that were never by any means ever mentioned or even hinted at, in the movie. reminded me of the way they decided to kill off the black man in the original movie version of the shining. i didn't like that, either. what the movie's press release should have said is... " we got the basic, very basic, idea from shirley jackson's book, we kept the same names of the house and several ( though not all ) of the leading character's names, but then we decided to write our own story, and, what the heck, we watched the changeling and the shining and ghost first, and decided to throw in a bit of them, too. " &lt; br / &gt; &lt; br / &gt; 2. they completely lost the theme of a parapyschologist inviting carefully picked guest who had all had brushes with the paranormal in their pasts, to investigate a house that truly seemed to have been " born bad ". no, instead, this " doctor " got everyone to the house under the false pretense of studying their " insomnia " ( he really invited them there to scare them to death and then see how they reacted to their fear... like lab rats, who he mentioned never got told they are part of an experiment... nice guy ). this doctor, who did not have the same name, by the way, was as different from the [SEP]</td>
+      <td>how viewers react to this new " adaption " of shirley jackson's book, which was promoted as not being a remake of the original 1963 movie ( true enough ), will be based, i suspect, on the following : those who were big fans of either the book or original movie are not going to think much of this one... and those who have never been exposed to either, and who are big fans of hollywood's current trend towards " special effects " being the first and last word in how " good " a film is, are going to love it. &lt; br / &gt; &lt; br / &gt; things i did not like about this adaption : &lt; br / &gt; &lt; br / &gt; 1. it was not a true adaption of the book. from the articles i had read, this movie was supposed to cover other aspects in the book that the first one never got around to. and, that seemed reasonable, no film can cover a book word for word unless it is the length of the stand! ( and not even then ) but, there were things in this movie that were never by any means ever mentioned or even hinted at, in the movie. reminded me of the way they decided to kill off the black man in the original movie version of the shining. i didn't like that, either. what the movie's press release should have said is... " we got the basic, very basic, idea from shirley jackson's book, we kept the same names of the house and several ( though not all ) of the leading character's names, but then we decided to write our own story, and, what the heck, we watched the changeling and the shining and ghost first, and decided to throw in a bit of them, too. " &lt; br / &gt; &lt; br / &gt; 2. they completely lost the theme of a parapyschologist inviting carefully picked guest who had all had brushes with the paranormal in their pasts, to investigate a house that truly seemed to have been " born bad ". no, instead, this " doctor " got everyone to the house under the false pretense of studying their " insomnia " ( he really invited them there to scare them to death and then see how they reacted to their fear... like lab rats, who he mentioned never got told they are part of an experiment... nice guy ). this doctor, who did not have the same name, by the way, was as different from the</td>
       <td>negative</td>
       <td>negative</td>
     </tr>
     <tr>
       <th>1</th>
-      <td>[CLS] the trouble with the book, " memoirs of a geisha " is that it had japanese surfaces but underneath the surfaces it was all an american man's way of thinking. reading the book is like watching a magnificent ballet with great music, sets, and costumes yet performed by barnyard animals dressed in those costumesso far from japanese ways of thinking were the characters. &lt; br / &gt; &lt; br / &gt; the movie isn't about japan or real geisha. it is a story about a few american men's mistaken ideas about japan and geisha filtered through their own ignorance and misconceptions. so what is this movie if it isn't about japan or geisha? is it pure fantasy as so many people have said? yes, but then why make it into an american fantasy? &lt; br / &gt; &lt; br / &gt; there were so many missed opportunities. imagine a culture where there are no puritanical hang - ups, no connotations of sin about sex. sex is natural and normal. how is sex handled in this movie? right. like it was dirty. the closest thing to a sex scene in the movie has sayuri wrinkling up her nose and grimacing with distaste for five seconds as if the man trying to mount her had dropped a handful of cockroaches on her crotch. &lt; br / &gt; &lt; br / &gt; does anyone actually enjoy sex in this movie? nope. one character is said to be promiscuous but all we see is her pushing away her lover because it looks like she doesn't want to get caught doing something dirty. such typical american puritanism has no place in a movie about japanese geisha. &lt; br / &gt; &lt; br / &gt; did sayuri enjoy her first ravishing by some old codger after her cherry was auctioned off? nope. she lies there like a cold slab of meat on a chopping block. of course she isn't supposed to enjoy it. and that is what i mean about this movie. why couldn't they have given her something to enjoy? why does all the sex have to be sinful and wrong? &lt; br / &gt; &lt; br / &gt; behind mameha the chairman was sayuri's secret patron, and as such he was behind the auction of her virginity. he could have rigged the auction and won her himself. nobu didn't even bid. so why did the chairman let that old codger win her and, reeking of old - man stink, [SEP]</td>
+      <td>the trouble with the book, " memoirs of a geisha " is that it had japanese surfaces but underneath the surfaces it was all an american man's way of thinking. reading the book is like watching a magnificent ballet with great music, sets, and costumes yet performed by barnyard animals dressed in those costumesso far from japanese ways of thinking were the characters. &lt; br / &gt; &lt; br / &gt; the movie isn't about japan or real geisha. it is a story about a few american men's mistaken ideas about japan and geisha filtered through their own ignorance and misconceptions. so what is this movie if it isn't about japan or geisha? is it pure fantasy as so many people have said? yes, but then why make it into an american fantasy? &lt; br / &gt; &lt; br / &gt; there were so many missed opportunities. imagine a culture where there are no puritanical hang - ups, no connotations of sin about sex. sex is natural and normal. how is sex handled in this movie? right. like it was dirty. the closest thing to a sex scene in the movie has sayuri wrinkling up her nose and grimacing with distaste for five seconds as if the man trying to mount her had dropped a handful of cockroaches on her crotch. &lt; br / &gt; &lt; br / &gt; does anyone actually enjoy sex in this movie? nope. one character is said to be promiscuous but all we see is her pushing away her lover because it looks like she doesn't want to get caught doing something dirty. such typical american puritanism has no place in a movie about japanese geisha. &lt; br / &gt; &lt; br / &gt; did sayuri enjoy her first ravishing by some old codger after her cherry was auctioned off? nope. she lies there like a cold slab of meat on a chopping block. of course she isn't supposed to enjoy it. and that is what i mean about this movie. why couldn't they have given her something to enjoy? why does all the sex have to be sinful and wrong? &lt; br / &gt; &lt; br / &gt; behind mameha the chairman was sayuri's secret patron, and as such he was behind the auction of her virginity. he could have rigged the auction and won her himself. nobu didn't even bid. so why did the chairman let that old codger win her and, reeking of old - man stink,</td>
       <td>negative</td>
       <td>negative</td>
     </tr>
@@ -397,6 +412,22 @@ pip install -e ".[dev]"</code></pre>
 </div>
     {% endraw %}
 
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Props">Props<a class="anchor-link" href="#Props"> </a></h2><p>A word of gratitude to the following individuals, repos, and articles upon which much of this work is inspired from:</p>
+<ul>
+<li>The wonderful community that is the <a href="https://forums.fast.ai/">fastai forum</a> and especially the tireless work of both Jeremy and Sylvain in building this amazing framework and place to learn deep learning.</li>
+<li>All the great tokenizers, transformers, docs and examples over at <a href="https://huggingface.co/">huggingface</a></li>
+<li><a href="https://github.com/morganmcg1/fasthugs">FastHugs</a></li>
+<li><a href="https://towardsdatascience.com/fastai-with-transformers-bert-roberta-xlnet-xlm-distilbert-4f41ee18ecb2">Fastai with 🤗Transformers (BERT, RoBERTa, XLNet, XLM, DistilBERT)</a></li>
+<li><a href="https://medium.com/@abhikjha/fastai-integration-with-bert-a0a66b1cecbe">Fastai integration with BERT: Multi-label text classification identifying toxicity in texts</a></li>
+<li><a href="https://mlexplained.com/2019/05/13/a-tutorial-to-fine-tuning-bert-with-fast-ai/">A Tutorial to Fine-Tuning BERT with Fast AI</a></li>
+</ul>
+<p><strong>Note</strong>: Intially the framework supports sequence classification question-answering models (but don't worry, the others are coming ... and soon :) )</p>
+
+</div>
+</div>
+</div>
 </div>
  
 
