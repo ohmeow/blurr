@@ -102,7 +102,7 @@ class ModelHelper():
         query = ['model_task.notna()']
         if (arch): query.append(f'arch == "{arch}"')
 
-        return self._df.query(' & '.join(query)).model_task.unique().tolist()
+        return self._df.query(' & '.join(query), engine='python').model_task.unique().tolist()
 
     def get_models(self, arch=None, task=None):
         """The transformer models available for use (optional: by architecture | task)"""
