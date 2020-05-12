@@ -32,7 +32,7 @@ The following two packages need to be installed for blurr to work:
 
 ### Imports
 
-```python
+```
 from blurr.utils import *
 from blurr.data import *
 from blurr.modeling import *
@@ -44,7 +44,7 @@ from fastai2.text.all import *
 
 ### Get your data
 
-```python
+```
 path = untar_data(URLs.IMDB_SAMPLE)
 
 model_path = Path('models')
@@ -53,7 +53,7 @@ imdb_df = pd.read_csv(path/'texts.csv')
 
 ### Get your huggingface objects
 
-```python
+```
 task = HF_TASKS_AUTO.ForSequenceClassification
 
 pretrained_model_name = "bert-base-uncased"
@@ -66,7 +66,7 @@ hf_arch, hf_tokenizer, hf_config, hf_model = BLURR_MODEL_HELPER.get_auto_hf_obje
 
 ### Build your DataBlock and your DataLoaders
 
-```python
+```
 # single input
 blocks = (
     HF_TextBlock.from_df(text_cols_lists=[['text']], hf_arch=hf_arch, hf_tokenizer=hf_tokenizer),
@@ -84,7 +84,7 @@ dls = dblock.dataloaders(imdb_df, bs=4)
 
 
 
-```python
+```
 dls.show_batch(hf_tokenizer=hf_tokenizer, max_n=2)
 ```
 
@@ -114,7 +114,7 @@ dls.show_batch(hf_tokenizer=hf_tokenizer, max_n=2)
 
 ### ... and train
 
-```python
+```
 #slow
 # model = HF_BaseModelWrapper(hf_model) ... updated to use the callback approach
 
@@ -169,7 +169,7 @@ learn.fit_one_cycle(3, lr_max=1e-3)
 </table>
 
 
-```python
+```
 #slow
 learn.show_results(hf_tokenizer=hf_tokenizer, max_n=2)
 ```

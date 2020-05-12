@@ -111,33 +111,29 @@ class HF_QstAndAnsModelWrapper(HF_BaseModelWrapper):
 # Cell
 class MultiTargetLoss(Module):
     """Provides the ability to apply different loss functions to multi-modal targets/predictions"""
-    def __init__(self, funcs=[F.cross_entropy, F.cross_entropy],
-                 func_kwargs=[{}, {}],
-                 weights=[1, 1],
-                 activation_funcs=[partial(F.softmax, dim=-1), partial(F.softmax, dim=-1)],
-                 decode_funcs =[partial(torch.argmax, dim=-1), partial(torch.argmax, dim=-1)],
-                 reduction='mean'):
+    def __init__(self, loss_classes=[CrossEntropyLossFlat, CrossEntropyLossFlat], loss_classes_kwargs=[{}, {}],
+                 weights=[1, 1], reduction='mean'):
 
-        store_attr(self, 'funcs, func_kwargs, weights, activation_funcs, decode_funcs, reduction')
+        loss_funcs = [ cls(reduction=reduction, **kwargs)
+                      for cls, kwargs in zip(loss_classes, loss_classes_kwargs) ]
+
+        store_attr(self, 'loss_funcs, weights, reduction')
 
     def forward(self, outputs, *targets):
-        for i, func, func_kwargs, weights, output, target in zip(range(len(outputs)),
-                                                                 self.funcs, self.func_kwargs, self.weights,
-                                                                 outputs, targets):
-
-            if i == 0:
-                loss = weights * func(output, target, reduction=self.reduction, **func_kwargs)
-            else:
-                loss += weights * func(output, target, reduction=self.reduction, **func_kwargs)
+        loss = 0.
+        for i, loss_func, weights, output, target in zip(range(len(outputs)),
+                                                         self.loss_funcs, self.weights,
+                                                         outputs, targets):
+            loss += weights * loss_func(output, target)
 
         return loss
 
     def activation(self, outs):
-        acts = [ self.activation_funcs[i](o) for i, o in enumerate(outs) ]
+        acts = [ self.loss_funcs[i].activation(o) for i, o in enumerate(outs) ]
         return acts
 
     def decodes(self, outs):
-        decodes = [ self.decode_funcs[i](o) for i, o in enumerate(outs) ]
+        decodes = [ self.loss_funcs[i].decodes(o) for i, o in enumerate(outs) ]
         return decodes
 
 
