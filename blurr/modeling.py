@@ -114,10 +114,20 @@ class MultiTargetLoss(Module):
     def __init__(self, loss_classes=[CrossEntropyLossFlat, CrossEntropyLossFlat], loss_classes_kwargs=[{}, {}],
                  weights=[1, 1], reduction='mean'):
 
-        loss_funcs = [ cls(reduction=reduction, **kwargs)
-                      for cls, kwargs in zip(loss_classes, loss_classes_kwargs) ]
+        loss_funcs = [ cls(reduction=reduction, **kwargs) for cls, kwargs in zip(loss_classes, loss_classes_kwargs) ]
+        store_attr(self, 'loss_funcs, weights')
+        self._reduction = reduction
 
-        store_attr(self, 'loss_funcs, weights, reduction')
+    # custom loss function must have either a reduction attribute or a reduction argument (like all fastai and
+    # PyTorch loss functions) so that the framework can change this as needed (e.g., when doing lear.get_preds
+    # it will set = 'none'). see this forum topic for more info: https://bit.ly/3br2Syz
+    @property
+    def reduction(self): return self._reduction
+
+    @reduction.setter
+    def reduction(self, v):
+        self._reduction = v
+        for lf in self.loss_funcs: lf.reduction = v
 
     def forward(self, outputs, *targets):
         loss = 0.
