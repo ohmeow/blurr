@@ -187,7 +187,7 @@ The argument must be an iterable if specified.</p>
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h2 id="HF_BatchTransform" class="doc_header"><code>class</code> <code>HF_BatchTransform</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/data.py#L56" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>HF_BatchTransform</code>(<strong><code>hf_arch</code></strong>, <strong><code>hf_tokenizer</code></strong>, <strong><code>max_seq_len</code></strong>=<em><code>512</code></em>, <strong><code>truncation_strategy</code></strong>=<em><code>'longest_first'</code></em>, <strong><code>task</code></strong>=<em><code>None</code></em>) :: <code>Transform</code></p>
+<h2 id="HF_BatchTransform" class="doc_header"><code>class</code> <code>HF_BatchTransform</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/data.py#L58" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>HF_BatchTransform</code>(<strong><code>hf_arch</code></strong>, <strong><code>hf_tokenizer</code></strong>, <strong><code>max_seq_len</code></strong>=<em><code>512</code></em>, <strong><code>truncation_strategy</code></strong>=<em><code>'longest_first'</code></em>, <strong><code>task</code></strong>=<em><code>None</code></em>) :: <code>Transform</code></p>
 </blockquote>
 <p>Handles everything you need to assemble a mini-batch of inputs and targets</p>
 
@@ -219,7 +219,7 @@ The argument must be an iterable if specified.</p>
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h2 id="HF_TextBlock" class="doc_header"><code>class</code> <code>HF_TextBlock</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/data.py#L86" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>HF_TextBlock</code>(<strong><code>tok_tfms</code></strong>, <strong><code>hf_arch</code></strong>, <strong><code>hf_tokenizer</code></strong>, <strong><code>hf_batch_tfm</code></strong>=<em><code>None</code></em>, <strong><code>vocab</code></strong>=<em><code>None</code></em>, <strong><code>task</code></strong>=<em><code>None</code></em>, <strong><code>max_seq_len</code></strong>=<em><code>512</code></em>, <strong><code>min_freq</code></strong>=<em><code>3</code></em>, <strong><code>max_vocab</code></strong>=<em><code>60000</code></em>, <strong><code>special_toks</code></strong>=<em><code>None</code></em>) :: <code>TransformBlock</code></p>
+<h2 id="HF_TextBlock" class="doc_header"><code>class</code> <code>HF_TextBlock</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/data.py#L88" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>HF_TextBlock</code>(<strong><code>tok_tfms</code></strong>, <strong><code>hf_arch</code></strong>, <strong><code>hf_tokenizer</code></strong>, <strong><code>hf_batch_tfm</code></strong>=<em><code>None</code></em>, <strong><code>vocab</code></strong>=<em><code>None</code></em>, <strong><code>task</code></strong>=<em><code>None</code></em>, <strong><code>max_seq_len</code></strong>=<em><code>512</code></em>, <strong><code>min_freq</code></strong>=<em><code>3</code></em>, <strong><code>max_vocab</code></strong>=<em><code>60000</code></em>, <strong><code>special_toks</code></strong>=<em><code>None</code></em>) :: <code>TransformBlock</code></p>
 </blockquote>
 <p>A basic wrapper that links defaults transforms for the data block API</p>
 
@@ -244,7 +244,7 @@ The argument must be an iterable if specified.</p>
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h4 id="HF_TextBlock.from_df" class="doc_header"><code>HF_TextBlock.from_df</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/data.py#L100" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>HF_TextBlock.from_df</code>(<strong><code>text_cols_lists</code></strong>, <strong><code>hf_arch</code></strong>, <strong><code>hf_tokenizer</code></strong>, <strong><code>hf_batch_tfm</code></strong>=<em><code>None</code></em>, <strong><code>vocab</code></strong>=<em><code>None</code></em>, <strong><code>task</code></strong>=<em><code>None</code></em>, <strong><code>tok_func_mode</code></strong>=<em><code>'str'</code></em>, <strong><code>res_col_names</code></strong>=<em><code>None</code></em>, <strong><code>max_seq_len</code></strong>=<em><code>512</code></em>, <strong><code>tok_func</code></strong>=<em><code>'SpacyTokenizer'</code></em>, <strong><code>rules</code></strong>=<em><code>None</code></em>, <strong><code>sep</code></strong>=<em><code>' '</code></em>, <strong><code>n_workers</code></strong>=<em><code>16</code></em>, <strong><code>mark_fields</code></strong>=<em><code>None</code></em>, <strong><code>res_col_name</code></strong>=<em><code>'text'</code></em>, <strong>**<code>kwargs</code></strong>)</p>
+<h4 id="HF_TextBlock.from_df" class="doc_header"><code>HF_TextBlock.from_df</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/data.py#L102" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>HF_TextBlock.from_df</code>(<strong><code>text_cols_lists</code></strong>, <strong><code>hf_arch</code></strong>, <strong><code>hf_tokenizer</code></strong>, <strong><code>hf_batch_tfm</code></strong>=<em><code>None</code></em>, <strong><code>vocab</code></strong>=<em><code>None</code></em>, <strong><code>task</code></strong>=<em><code>None</code></em>, <strong><code>tok_func_mode</code></strong>=<em><code>'str'</code></em>, <strong><code>res_col_names</code></strong>=<em><code>None</code></em>, <strong><code>max_seq_len</code></strong>=<em><code>512</code></em>, <strong><code>tok_func</code></strong>=<em><code>'SpacyTokenizer'</code></em>, <strong><code>rules</code></strong>=<em><code>None</code></em>, <strong><code>sep</code></strong>=<em><code>' '</code></em>, <strong><code>n_workers</code></strong>=<em><code>16</code></em>, <strong><code>mark_fields</code></strong>=<em><code>None</code></em>, <strong><code>res_col_name</code></strong>=<em><code>'text'</code></em>, <strong>**<code>kwargs</code></strong>)</p>
 </blockquote>
 <p>Creates a HF_TextBlock via a pandas DataFrame</p>
 
@@ -611,8 +611,8 @@ The argument must be an iterable if specified.</p>
     </tr>
     <tr>
       <th>1</th>
-      <td>I watched Grendel the other night and am compelled to put together a Public Service Announcement.&lt;br /&gt;&lt;br /&gt;Grendel is another version of Beowulf, the thousand-year-old Anglo-Saxon epic poem. The SciFi channel has a growing catalog of inoffensive and uninteresting movies, and the previews promised an inauthentic low-budget mini-epic, but this one refused to let me switch channels. It was staggeringly, overwhelmingly, bad. I watched in fascination and horror at the train wreck you couldn't tear your eyes away from. I reached for a notepad and managed to capture part of what I was seeing. The following may contain spoilers or might just save your sanity. You've been warned.&lt;br /&gt;&lt;br /&gt;- Just to get it over with, Beowulf's warriors wore horned helmets. Trivial issue compared to what came after. It also appears that the helmets were in a bin and handed to whichever actor wandered by next. Fit, appearance and function were apparently irrelevant.&lt;br /&gt;&lt;br /&gt;- Marina Sirtis had obviously been blackmailed into doing the movie by the Ringling Brothers, Barnum and Bailey circus. She managed to avoid a red rubber nose, but the clowns had already done the rest of her makeup.&lt;br /&gt;&lt;br /&gt;- Ben Cross pretended not to be embarrassed as the king. His character, Hrothgar, must have become king of the Danes only minutes before the film opened and hadn't had a chance to get the crown resized to fit him yet.&lt;br /&gt;&lt;br /&gt;- To facilitate the actors' return to their day jobs waiting tables, none were required to change their hairstyles at all. The variety of hair included cornrows, sideburns, buzz cuts and a mullet and at least served to distract from the dialog. To prove it was a multi-national cast, all were encouraged to retain whatever accent they chose.&lt;br /&gt;&lt;br /&gt;- As is typical with this type of movie (at least since Mad Max), leather armor was a requirement. In this case it was odd-shaped, ill-fitting and brand-new.&lt;br /&gt;&lt;br /&gt;- The female love interest, Ingrid, played by Alexis Peters, followed a long-standing tradition of hotties who should be watched with the volume turned completely down.&lt;br /&gt;&lt;br /&gt;- The unintended focus of the movie was a repeating, compound crossbow with exploding bolts. It never needed</td>
-      <td>negative</td>
+      <td>THE SHOP AROUND THE CORNER is one of the sweetest and most feel-good romantic comedies ever made. There's just no getting around that, and it's hard to actually put one's feeling for this film into words. It's not one of those films that tries too hard, nor does it come up with the oddest possible scenarios to get the two protagonists together in the end. In fact, all its charm is innate, contained within the characters and the setting and the plot... which is highly believable to boot. It's easy to think that such a love story, as beautiful as any other ever told, *could* happen to you... a feeling you don't often get from other romantic comedies, however sweet and heart-warming they may be. &lt;br /&gt;&lt;br /&gt;Alfred Kralik (James Stewart) and Clara Novak (Margaret Sullavan) don't have the most auspicious of first meetings when she arrives in the shop (Matuschek &amp; Co.) he's been working in for the past nine years, asking for a job. They clash from the very beginning, mostly over a cigarette box that plays music when it's opened--he thinks it's a ludicrous idea; she makes one big sell of it and gets hired. Their bickering takes them through the next six months, even as they both (unconsciously, of course!) fall in love with each other when they share their souls and minds in letters passed through PO Box 237. This would be a pretty thin plotline to base an entire film on, except that THE SHOP AROUND THE CORNER is expertly fleshed-out with a brilliant supporting cast made up of entirely engaging characters, from the fatherly but lonely Hugo Matuschek (Frank Morgan) himself, who learns that his shop really is his home; Pirovitch (Felix Bressart), Kralik's sidekick and friend who always skitters out of the room when faced with the possibility of being asked for his honest opinion; smarmy pimp-du-jour Vadas (Joseph Schildkraut) who ultimately gets his comeuppance from a gloriously righteous Kralik; and ambitious errand boy Pepi Katona (William Tracy) who wants nothing more than to be promoted to the position of clerk for Matuschek &amp; Co. The unpretentious love story between 'Dear Friends' is played out in this little shop in</td>
+      <td>positive</td>
     </tr>
   </tbody>
 </table>
@@ -1049,15 +1049,15 @@ The argument must be an iterable if specified.</p>
   <tbody>
     <tr>
       <th>0</th>
-      <td>&lt;s&gt;What faith does Swayambhu belong to?&lt;/s&gt;&lt;/s&gt;Swayambhu is a Buddhist stupa atop a hillock at the northwestern part of the city. This is among the oldest religious sites in Nepal. Although the site is considered Buddhist, it is revered by both Buddhists and Hindus. The stupa consists of a dome at the base; above the dome, there is a cubic structure with the eyes of Buddha looking in all four directions.[clarification needed] There are pentagonal Toran above each of the four sides, with statues engraved on them. Behind and above the torana there are thirteen&lt;/s&gt;</td>
-      <td>15</td>
-      <td>23</td>
+      <td>&lt;s&gt; Which type of decoder must support bitrate switching on a per-frame basis?&lt;/s&gt;&lt;/s&gt; A more sophisticated MP3 encoder can produce variable bitrate audio. MPEG audio may use bitrate switching on a per-frame basis, but only layer III decoders must support it. VBR is used when the goal is to achieve a fixed level of quality. The final file size of a VBR encoding is less predictable than with constant bitrate. Average bitrate is VBR implemented as a compromise between the two: the bitrate is allowed to vary for more consistent quality, but is controlled to remain near an average&lt;/s&gt;</td>
+      <td>137</td>
+      <td>146</td>
     </tr>
     <tr>
       <th>1</th>
-      <td>&lt;s&gt;What did Muslim mathematicians add to Arabic numerals?&lt;/s&gt;&lt;/s&gt;In mathematics, the Persian mathematician Muhammad ibn Musa al-Khwarizmi gave his name to the concept of the algorithm, while the term algebra is derived from al-jabr, the beginning of the title of one of his publications. What is now known as Arabic numerals originally came from India, but Muslim mathematicians did make several refinements to the number system, such as the introduction of decimal point notation. Sabian mathematician Al-Battani (850-929) contributed to astronomy and mathematics, while Persian scholar Al-Razi contributed&lt;/s&gt;</td>
-      <td>393</td>
-      <td>415</td>
+      <td>&lt;s&gt; What is the most common bird found in the Alps?&lt;/s&gt;&lt;/s&gt; Many rodents such as voles live underground. Marmots live almost exclusively above the tree line as high as 2,700 m (8,858 ft). They hibernate in large groups to provide warmth, and can be found in all areas of the Alps, in large colonies they build beneath the alpine pastures. Golden eagles and bearded vultures are the largest birds to be found in the Alps; they nest high on rocky ledges and can be found at altitudes of 2,400 m (7,874 ft). The&lt;/s&gt;</td>
+      <td>469</td>
+      <td>486</td>
     </tr>
   </tbody>
 </table>
@@ -1191,6 +1191,13 @@ The argument must be an iterable if specified.</p>
 </div>
     {% endraw %}
 
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Note: <code>n_tokens</code> represents the number of sub-workd tokens the <code>BertTokenizer</code> uses to tokenize the <code>token</code>.  If you use a different tokenizer, you'll need to re-calcuate this column assuming you use the same approach as I do here.</p>
+
+</div>
+</div>
+</div>
     {% raw %}
     
 <div class="cell border-box-sizing code_cell rendered">
@@ -1462,7 +1469,7 @@ The argument must be an iterable if specified.</p>
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h2 id="HF_TokenTensorCategory" class="doc_header"><code>class</code> <code>HF_TokenTensorCategory</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/data.py#L159" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>HF_TokenTensorCategory</code>(<strong><code>x</code></strong>, <strong>**<code>kwargs</code></strong>) :: <code>TensorBase</code></p>
+<h2 id="HF_TokenTensorCategory" class="doc_header"><code>class</code> <code>HF_TokenTensorCategory</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/data.py#L173" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>HF_TokenTensorCategory</code>(<strong><code>x</code></strong>, <strong>**<code>kwargs</code></strong>) :: <code>TensorBase</code></p>
 </blockquote>
 
 </div>
@@ -1493,7 +1500,7 @@ The argument must be an iterable if specified.</p>
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h2 id="HF_TokenCategorize" class="doc_header"><code>class</code> <code>HF_TokenCategorize</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/data.py#L162" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>HF_TokenCategorize</code>(<strong><code>vocab</code></strong>=<em><code>None</code></em>, <strong><code>ignore_token</code></strong>=<em><code>None</code></em>, <strong><code>ignore_token_id</code></strong>=<em><code>None</code></em>) :: <code>Transform</code></p>
+<h2 id="HF_TokenCategorize" class="doc_header"><code>class</code> <code>HF_TokenCategorize</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/data.py#L176" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>HF_TokenCategorize</code>(<strong><code>vocab</code></strong>=<em><code>None</code></em>, <strong><code>ignore_token</code></strong>=<em><code>None</code></em>, <strong><code>ignore_token_id</code></strong>=<em><code>None</code></em>) :: <code>Transform</code></p>
 </blockquote>
 <p>Reversible transform of a list of category string to <code>vocab</code> id</p>
 
@@ -1532,7 +1539,7 @@ The argument must be an iterable if specified.</p>
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h4 id="HF_TokenCategoryBlock" class="doc_header"><code>HF_TokenCategoryBlock</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/data.py#L184" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>HF_TokenCategoryBlock</code>(<strong><code>vocab</code></strong>=<em><code>None</code></em>, <strong><code>ignore_token</code></strong>=<em><code>None</code></em>, <strong><code>ignore_token_id</code></strong>=<em><code>None</code></em>)</p>
+<h4 id="HF_TokenCategoryBlock" class="doc_header"><code>HF_TokenCategoryBlock</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/data.py#L198" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>HF_TokenCategoryBlock</code>(<strong><code>vocab</code></strong>=<em><code>None</code></em>, <strong><code>ignore_token</code></strong>=<em><code>None</code></em>, <strong><code>ignore_token_id</code></strong>=<em><code>None</code></em>)</p>
 </blockquote>
 <p><code>TransformBlock</code> for single-label categorical targets</p>
 

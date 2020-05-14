@@ -21,20 +21,22 @@ class HF_Tokenizer():
     """huggingface friendly tokenization function."""
     def __init__(self, hf_arch, hf_tokenizer, mode='str', list_split_func=str.split, **kwargs):
         store_attr(self, 'hf_arch, hf_tokenizer, mode, list_split_func')
+        self.add_prefix_space = hf_arch in ['gpt2', 'roberta']
 
     def __call__(self, items):
         for txt in items: yield self._tokenize(txt)
 
     def _tokenize(self, txt):
         if (self.mode == 'str'):
-            return self.hf_tokenizer.tokenize(txt)
+            return self.hf_tokenizer.tokenize(txt, add_prefix_space=self.add_prefix_space)
 
         if (self.mode == 'list'):
             try: tokens = ast.literal_eval(txt)
             except:
                 tokens = self.list_split_func(txt)
             finally:
-                return [sub_toks for entity in tokens for sub_toks in self.hf_tokenizer.tokenize(entity)]
+                return [sub_toks for entity in tokens
+                        for sub_toks in self.hf_tokenizer.tokenize(entity, add_prefix_space=self.add_prefix_space)]
 
 # Cell
 @typedispatch
@@ -152,7 +154,19 @@ def build_hf_input(task:ForQuestionAnsweringTask, tokenizer,
     token_type_ids = res['token_type_ids'][0] if ('token_type_ids' in res) else torch.tensor([-9999])
     attention_mask = res['attention_mask'][0] if ('attention_mask' in res) else torch.tensor([-9999])
 
-    return HF_BaseInput([input_ids, token_type_ids, attention_mask]), targets
+    # xlnet and xlm want these arguments as well ...
+    # cls_index: location of CLS token
+    cls_index = input_ids.index(tokenizer.cls_token_id)
+
+    # p_mask: mask with 1 for token than cannot be in the answer (0 for token which can be in an answer)
+    p_mask = np.array(span["token_type_ids"])
+    p_mask = np.minimum(p_mask, 1)
+    if tokenizer.padding_side == "right": p_mask = 1 - p_mask
+    p_mask[np.where(np.array(span["input_ids"]) == tokenizer.sep_token_id)[0]] = 1
+    p_mask[cls_index] = 0
+
+
+    return HF_BaseInput([input_ids, token_type_ids, attention_mask, cls_index, p_mask]), targets
 
 
 # Cell

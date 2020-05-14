@@ -176,6 +176,7 @@ def predict_tokens(self:Learner, inp, **kargs):
     # grab the huggingface tokenizer from the learner's dls.tfms
     learn_hf_tokenizer = self.dls.tfms[0].tokenizer.filter(lambda tok: isinstance(tok, HF_Tokenizer))[0]
     hf_tokenizer = learn_hf_tokenizer.hf_tokenizer
+    add_prefix_space = learn_hf_tokenizer.hf_arch in ['gpt2', 'roberta']
 
     # grab the HF_BatchTransform as well
     learn_hf_batch_transform = learn.dls.before_batch.hf__batch_transform
@@ -185,12 +186,15 @@ def predict_tokens(self:Learner, inp, **kargs):
 
     # calculate the number of subtokens per raw/input token so that we can determine what predictions to
     # return
-    subtoks_per_raw_tok = [ (entity, len(hf_tokenizer.tokenize(str(entity)))) for entity in txt_split ]
+    subtoks_per_raw_tok = [ (entity, len(hf_tokenizer.tokenize(str(entity), add_prefix_space=add_prefix_space)))
+                           for entity in txt_split ]
 
     # very similar to what HF_BatchTransform does with the exception that we are also grabbing
     # the `special_tokens_mask` to help with getting rid or irelevant predicts for any special tokens
     # (e.g., [CLS], [SEP], etc...)
-    txt_toks = [sub_toks for entity in txt_split for sub_toks in hf_tokenizer.tokenize(entity)]
+    txt_toks = [ sub_toks for entity in txt_split
+                for sub_toks in hf_tokenizer.tokenize(entity, add_prefix_space=add_prefix_space) ]
+
     txt_tok_ids = hf_tokenizer.convert_tokens_to_ids(txt_toks)
 
     res = hf_tokenizer.prepare_for_model(txt_tok_ids, None,
