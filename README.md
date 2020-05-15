@@ -73,7 +73,6 @@ blocks = (
 )
 
 def get_x(x): return x.text0
-
 dblock = DataBlock(blocks=blocks, get_x=get_x, get_y=ColReader('label'), splitter=ColSplitter(col='is_valid'))
 
 dls = dblock.dataloaders(imdb_df, bs=4)
@@ -104,8 +103,8 @@ dls.show_batch(hf_tokenizer=hf_tokenizer, max_n=2)
     </tr>
     <tr>
       <th>1</th>
-      <td>many neglect that this isn't just a classic due to the fact that it's the first 3d game, or even the first shoot -'em - up. it's also one of the first stealth games, one of the only ( and definitely the first ) truly claustrophobic games, and just a pretty well - rounded gaming experience in general. with graphics that are terribly dated today, the game thrusts you into the role of b. j. ( don't even * think * i'm going to attempt spelling his last name! ), an american p. o. w. caught in an underground bunker. you fight and search your way through tunnels in order to achieve different objectives for the six episodes ( but, let's face it, most of them are just an excuse to hand you a weapon, surround you with nazis and send you out to waste one of the nazi leaders ). the graphics are, as i mentioned before, quite dated and very simple. the least detailed of basically any 3d game released by a professional team of creators. if you can get over that, however ( and some would suggest that this simplicity only adds to the effect the game has on you ), then you've got one heck of a good shooter / sneaking game. the game play consists of searching for keys, health and ammo, blasting enemies ( aforementioned nazis, and a " boss enemy " per chapter ) of varying difficulty ( which, of course, grows as you move further in the game ), unlocking doors and looking for secret rooms. there is a bonus count after each level is beaten... it goes by how fast you were ( basically, if you beat the'par time ', which is the time it took a tester to go through the same level ; this can be quite fun to try and beat, and with how difficult the levels are to find your way in, they are even challenging after many play - throughs ), how much nazi gold ( treasure ) you collected and how many bad guys you killed. basically, if you got 100 % of any of aforementioned, you get a bonus, helping you reach the coveted high score placings. the game ( mostly, but not always ) allows for two contrastingly different methods of playing... stealthily or gunning down anything and everything you see. you can either run or walk, and amongst your weapons is also a knife... running is heard instantly the moment you enter the same room as the guard, as</td>
-      <td>positive</td>
+      <td>well, what can i say. &lt; br / &gt; &lt; br / &gt; " what the bleep do we know " has achieved the nearly impossible - leaving behind such masterpieces of the genre as " the postman ", " the dungeon master ", " merlin ", and so fourth, it will go down in history as the single worst movie i have ever seen in its entirety. and that, ladies and gentlemen, is impressive indeed, for i have seen many a bad movie. &lt; br / &gt; &lt; br / &gt; this masterpiece of modern cinema consists of two interwoven parts, alternating between a silly and contrived plot about an extremely annoying photographer, abandoned by her husband and forced to take anti - depressants to survive, and a bunch of talking heads going on about how quantum physics supposedly justifies their new - agy pseudo - philosophy. basically, if you start your day off meditating to the likes of enya and kenny g, this movie is for you. if you have a sense of humor, a crowd of people who know how to have fun, and a sizable portion of good weed, then this movie is for you as well. otherwise, stay away. take my word for it. &lt; br / &gt; &lt; br / &gt; the first thing that struck me about " what the bleep do you know " is that is seemed to be edited and put together by the same kinds of people that shoot cheap weddings on camera, complete with pink heart effects, computer - generated sparkles across the screen, and other assorted silliness. who let these people anywhere near a theatrical release is a mystery to me. i guess this is what too much kenny g does to you. the movie was permeated with cheesy gci, the likes that you or i can produce on our own computer via over - the - counter video editing software, but never would, because it's just way too ridiculous. &lt; br / &gt; &lt; br / &gt; the script was _ obviously _ written by someone with no writing experience whatsoever. not only were all the characters and conversations cumbersome and contrived beyond belief, but the " writers " felt like they had to shove every relevant piece of information, or rather disinformation, which is what most of this movie was all about, all the way down your throat. well, given the target audience, that may not have been too bad of an idea. the main character, for example, spends half the movie popping pills.</td>
+      <td>negative</td>
     </tr>
   </tbody>
 </table>
@@ -115,10 +114,10 @@ dls.show_batch(hf_tokenizer=hf_tokenizer, max_n=2)
 
 ```python
 #slow
-# model = HF_BaseModelWrapper(hf_model) ... updated to use the callback approach
+model = HF_BaseModelWrapper(hf_model)
 
 learn = Learner(dls, 
-                hf_model,
+                model,
                 opt_func=partial(Adam, decouple_wd=True),
                 loss_func=CrossEntropyLossFlat(),
                 metrics=[accuracy],
@@ -145,24 +144,24 @@ learn.fit_one_cycle(3, lr_max=1e-3)
   <tbody>
     <tr>
       <td>0</td>
-      <td>0.702851</td>
-      <td>0.680412</td>
-      <td>0.485000</td>
-      <td>00:19</td>
+      <td>0.725591</td>
+      <td>0.695716</td>
+      <td>0.530000</td>
+      <td>00:23</td>
     </tr>
     <tr>
       <td>1</td>
-      <td>0.605172</td>
-      <td>0.658207</td>
-      <td>0.590000</td>
-      <td>00:19</td>
+      <td>0.656113</td>
+      <td>0.610826</td>
+      <td>0.695000</td>
+      <td>00:23</td>
     </tr>
     <tr>
       <td>2</td>
-      <td>0.622096</td>
-      <td>0.604872</td>
-      <td>0.695000</td>
-      <td>00:19</td>
+      <td>0.603551</td>
+      <td>0.607001</td>
+      <td>0.700000</td>
+      <td>00:23</td>
     </tr>
   </tbody>
 </table>
@@ -214,5 +213,3 @@ A word of gratitude to the following individuals, repos, and articles upon which
 - [Fastai with 🤗Transformers (BERT, RoBERTa, XLNet, XLM, DistilBERT)](https://towardsdatascience.com/fastai-with-transformers-bert-roberta-xlnet-xlm-distilbert-4f41ee18ecb2)
 - [Fastai integration with BERT: Multi-label text classification identifying toxicity in texts](https://medium.com/@abhikjha/fastai-integration-with-bert-a0a66b1cecbe)
 - [A Tutorial to Fine-Tuning BERT with Fast AI](https://mlexplained.com/2019/05/13/a-tutorial-to-fine-tuning-bert-with-fast-ai/)
-
-**Note**: Intially the framework supports sequence classification question-answering models (but don't worry, the others are coming ... and soon :) )

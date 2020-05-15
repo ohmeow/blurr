@@ -14,17 +14,7 @@ from fastai2.text.all import *
 
 # Cell
 class HF_QstAndAnsModelCallback(HF_BaseModelCallback):
-
-    def begin_batch(self):
-        x = self.xb[0]
-        model_args = [x[0]]
-        if (self._include_arg('attention_mask', x[1])): model_args.append(x[1])
-        if (self._include_arg('token_type_ids', x[2])): model_args.append(x[2])
-        if (self._include_arg('cls_index', x[3])): model_args.append(x[3])
-        if (self._include_arg('p_mask', x[4])): model_args.append(x[4])
-
-        self.learn.xb = tuplify(model_args)
-
+    """We need to return everything from the model for question/answer tasks"""
     def after_pred(self): self.learn.pred = self.pred
 
 # Cell
@@ -38,8 +28,7 @@ class HF_QstAndAnsModelWrapper(HF_BaseModelWrapper):
         if (self._include_arg('cls_index', x[3])): model_kwargs['cls_index'] = x[3]
         if (self._include_arg('p_mask', x[4])): model_kwargs['p_mask'] = x[4]
 
-        outputs = self.hf_model(**model_kwargs)
-        return outputs
+        return self.hf_model(**model_kwargs)
 
 # Cell
 class MultiTargetLoss(Module):
