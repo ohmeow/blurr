@@ -12,13 +12,13 @@ from .core import *
 
 # Cell
 @typedispatch
-def show_results(x:HF_BaseInput, y:HF_TokenTensorCategory, samples, outs, hf_tokenizer, skip_special_tokens=True,
+def show_results(x:HF_TokenClassificationInput, y:HF_TokenTensorCategory, samples, outs, hf_tokenizer, skip_special_tokens=True,
                  ctxs=None, max_n=6, **kwargs):
 
     if ctxs is None: ctxs = get_empty_df(min(len(samples), max_n))
 
     samples = samples = L((TitledStr(hf_tokenizer.decode(inp, skip_special_tokens=skip_special_tokens).replace(hf_tokenizer.pad_token, '')), *s[1:])
-                          for inp, s in zip(x[0], samples))
+                          for inp, s in zip(x, samples))
 
     ctxs = show_batch[object](x, y, samples, max_n=max_n, ctxs=ctxs, **kwargs)
     for i,ctx in enumerate(ctxs):

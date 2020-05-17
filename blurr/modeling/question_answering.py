@@ -5,12 +5,12 @@ __all__ = ['HF_QstAndAnsModelCallback', 'HF_QstAndAnsModelWrapper', 'MultiTarget
 # Cell
 import ast
 
-from ..data.all import *
-from .core import *
-
 import torch
 from transformers import *
 from fastai2.text.all import *
+
+from ..data.all import *
+from .core import *
 
 # Cell
 class HF_QstAndAnsModelCallback(HF_BaseModelCallback):
@@ -67,3 +67,23 @@ class MultiTargetLoss(Module):
     def decodes(self, outs):
         decodes = [ self.loss_funcs[i].decodes(o) for i, o in enumerate(outs) ]
         return decodes
+
+
+# Cell
+@typedispatch
+def show_results(x:HF_QuestionAnswerInput, y, samples, outs, hf_tokenizer, skip_special_tokens=True,
+                 ctxs=None, max_n=6, **kwargs):
+
+    samples = L()
+    for inp, start, end, pred in zip(x[0], *y, outs):
+        txt = hf_tokenizer.decode(inp, skip_special_tokens=skip_special_tokens).replace(hf_tokenizer.pad_token, '')
+        ans_toks = hf_tokenizer.convert_ids_to_tokens(inp, skip_special_tokens=False)[start:end]
+        pred_ans_toks = hf_tokenizer.convert_ids_to_tokens(inp, skip_special_tokens=False)[int(pred[0]):int(pred[1])]
+
+        samples.append((txt,
+                       (start.item(),end.item()), hf_tokenizer.convert_tokens_to_string(ans_toks),
+                       (int(pred[0]),int(pred[1])), hf_tokenizer.convert_tokens_to_string(pred_ans_toks)))
+
+    df = pd.DataFrame(samples, columns=['text', 'start/end', 'answer', 'pred start/end', 'pred answer'])
+    display_df(df[:max_n])
+    return ctxs

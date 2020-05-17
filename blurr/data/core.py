@@ -85,6 +85,10 @@ class HF_BatchTransform(Transform):
 
         return encoded_samples
 
+#     def decodes(self, encoded_samples):
+#         pdb.set_trace()
+#         if (issubclass(type(encoded_samples), HF_BaseInput)): return encoded_samples.__class__(encoded_samples[0])
+#         return encoded_samples
 
 # Cell
 class HF_TextBlock(TransformBlock):
@@ -97,10 +101,12 @@ class HF_TextBlock(TransformBlock):
 
 # Cell
 @typedispatch
-def show_batch(x:HF_BaseInput, y, samples, hf_tokenizer, skip_special_tokens=True, ctxs=None, max_n=6, **kwargs):
+def show_batch(x:HF_BaseInput, y, samples, hf_tokenizer,
+               skip_special_tokens=True, ctxs=None, max_n=6, **kwargs):
+
     if ctxs is None: ctxs = get_empty_df(min(len(samples), max_n))
 
-    samples = L((TitledStr(hf_tokenizer.decode(inp, skip_special_tokens=skip_special_tokens).replace(hf_tokenizer.pad_token, '')),*s[1:])
+    samples = L((TitledStr(hf_tokenizer.decode(inp, skip_special_tokens=skip_special_tokens).replace(hf_tokenizer.pad_token, '')), *s[1:])
                 for inp, s in zip(x[0], samples))
 
     ctxs = show_batch[object](x, y, samples, max_n=max_n, ctxs=ctxs, **kwargs)
