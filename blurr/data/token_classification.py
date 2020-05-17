@@ -3,15 +3,14 @@
 __all__ = ['HF_TokenTensorCategory', 'HF_TokenCategorize', 'HF_TokenCategoryBlock']
 
 # Cell
-import ast
 from functools import reduce
-
-from ..utils import *
-from .core import *
 
 import torch
 from transformers import *
 from fastai2.text.all import *
+
+from ..utils import *
+from .core import *
 
 # Cell
 class HF_TokenTensorCategory(TensorBase): pass

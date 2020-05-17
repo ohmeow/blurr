@@ -3,14 +3,12 @@
 __all__ = []
 
 # Cell
-import ast
+import ast, torch
+from transformers import *
+from fastai2.text.all import *
 
 from ..data.all import *
 from .core import *
-
-import torch
-from transformers import *
-from fastai2.text.all import *
 
 # Cell
 @typedispatch
@@ -25,7 +23,7 @@ def show_results(x:HF_BaseInput, y:HF_TokenTensorCategory, samples, outs, hf_tok
     ctxs = show_batch[object](x, y, samples, max_n=max_n, ctxs=ctxs, **kwargs)
     for i,ctx in enumerate(ctxs):
         preds = ast.literal_eval(outs[i][0])
-        ctx['target'] = [pred for idx, pred in enumerate(preds) if (y[i][idx] != -100)]
+        ctx['preds'] = [pred for idx, pred in enumerate(preds) if (y[i][idx] != -100)]
 
     display_df(pd.DataFrame(ctxs))
     return ctxs
@@ -39,25 +37,22 @@ def predict_tokens(self:Learner, inp, **kargs):
     pred_lbls, pred_lbl_ids, probs = self.predict(inp)
 
     # grab the huggingface tokenizer from the learner's dls.tfms
-    learn_hf_tokenizer = self.dls.tfms[0].tokenizer.filter(lambda tok: isinstance(tok, HF_Tokenizer))[0]
-    hf_tokenizer = learn_hf_tokenizer.hf_tokenizer
-    add_prefix_space = learn_hf_tokenizer.hf_arch in ['gpt2', 'roberta']
+    hf_textblock_tfm = self.dls.tfms[0]
+    hf_tokenizer = hf_textblock_tfm.hf_tokenizer
+    add_prefix_space = hf_textblock_tfm.add_prefix_space
 
     # grab the HF_BatchTransform as well
     learn_hf_batch_transform = learn.dls.before_batch.hf__batch_transform
 
-    # convert the `inp` to a list if necessary
-    txt_split = inp if isinstance(inp, list) else learn_hf_tokenizer.list_split_func(inp)
-
     # calculate the number of subtokens per raw/input token so that we can determine what predictions to
     # return
     subtoks_per_raw_tok = [ (entity, len(hf_tokenizer.tokenize(str(entity), add_prefix_space=add_prefix_space)))
-                           for entity in txt_split ]
+                           for entity in inp ]
 
     # very similar to what HF_BatchTransform does with the exception that we are also grabbing
     # the `special_tokens_mask` to help with getting rid or irelevant predicts for any special tokens
     # (e.g., [CLS], [SEP], etc...)
-    txt_toks = [ sub_toks for entity in txt_split
+    txt_toks = [ sub_toks for entity in inp
                 for sub_toks in hf_tokenizer.tokenize(entity, add_prefix_space=add_prefix_space) ]
 
     txt_tok_ids = hf_tokenizer.convert_tokens_to_ids(txt_toks)
@@ -85,4 +80,4 @@ def predict_tokens(self:Learner, inp, **kargs):
         raw_trg_idxs.append(idx+offset)
         offset += sub_tok_count-1 if (sub_tok_count > 1) else 0
 
-    return txt_split, actual_pred_lbls[raw_trg_idxs], actual_pred_lbl_ids[raw_trg_idxs], actual_probs[raw_trg_idxs]
+    return inp, actual_pred_lbls[raw_trg_idxs], actual_pred_lbl_ids[raw_trg_idxs], actual_probs[raw_trg_idxs]
