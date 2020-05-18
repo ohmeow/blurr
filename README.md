@@ -1,6 +1,30 @@
-# blurr
-> An extensible integration of huggingface transformer models with fastai v2.
+# Title
+> summary
 
+
+<h1>
+    <img src="https://ohmeow.github.io/blurr/images/blurr-logo.png" style="width:40px;float:left;"/> blurr
+</h1>
+<div style="margin-top:60px;">
+    Named after the <b>fast</b>est <b>transformer</b> (well, at least of the Autobots), 
+    <b>blurr</b> provides both a comprehensive and extensible framework for training and deploying *all* 🤗 
+    <a href="https://huggingface.co/transformers/">huggingface</a> transformer models with 
+    <div style="display:inline-block">
+        <a href="http://dev.fast.ai/">
+            <img src="https://avatars0.githubusercontent.com/u/20547620?s=200&v=4" style="width:20px;float:left" />
+            fastai v2
+        </a>.
+    </div>
+</div>
+
+Utilizing features like fastai's new `@typedispatch` and `@patch` decorators, and a simple class hiearchy, **blurr** provides fastai developers with the ability to train and deploy transformers for sequence classification, question answer, token classification, summarization, and language modeling tasks. Though much of this works out-of-the-box, users will be able to customize the tokenization strategies and model inputs based on task and/or architecture as needed.
+
+**Supports**:
+- Sequence Classification (multiclassification and multi-label classification)
+- Token Classification
+- Question Answering
+
+*Support for summarization, language modeling, and translation tasks is coming soon!!!*
 
 ## Install
 
@@ -32,7 +56,7 @@ from blurr.data.all import *
 from blurr.modeling.all import *
 ```
 
-### Get your data
+### Get your data 💾
 
 ```python
 path = untar_data(URLs.IMDB_SAMPLE)
@@ -41,7 +65,7 @@ model_path = Path('models')
 imdb_df = pd.read_csv(path/'texts.csv')
 ```
 
-### Get your huggingface objects
+### Get your 🤗 huggingface objects
 
 ```python
 task = HF_TASKS_AUTO.ForSequenceClassification
@@ -54,7 +78,7 @@ hf_arch, hf_tokenizer, hf_config, hf_model = BLURR_MODEL_HELPER.get_auto_hf_obje
                                                                                     config=config)
 ```
 
-### Build your DataBlock and your DataLoaders
+### Build your 🧱🧱🧱 DataBlock and your DataLoaders
 
 ```python
 # single input
@@ -94,7 +118,7 @@ dls.show_batch(hf_tokenizer=hf_tokenizer, max_n=2)
 </table>
 
 
-### ... and train
+### ... and train 🚂
 
 ```python
 #slow
@@ -187,7 +211,7 @@ learn.show_results(hf_tokenizer=hf_tokenizer, max_n=2)
 </table>
 
 
-## Updates
+## ❗ Updates
 
 **05/17/2020** 
 * Major code restructuring to make it easier to build out the library.
@@ -203,7 +227,7 @@ learn.show_results(hf_tokenizer=hf_tokenizer, max_n=2)
 * `HF_Tokenizer` can work with strings or a string representation of a list (the later helpful for token classification tasks)
 * `show_batch` and `show_results` methods have been updated to allow better control on how huggingface tokenized data is represented in those methods
 
-## Props
+## ⭐⭐⭐ Props
 
 A word of gratitude to the following individuals, repos, and articles upon which much of this work is inspired from:
 
