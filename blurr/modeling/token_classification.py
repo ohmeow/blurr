@@ -12,20 +12,17 @@ from .core import *
 
 # Cell
 @typedispatch
-def show_results(x:HF_TokenClassificationInput, y:HF_TokenTensorCategory, samples, outs, hf_tokenizer, skip_special_tokens=True,
+def show_results(x:HF_TokenClassInput, y:HF_TokenTensorCategory, samples, outs, hf_tokenizer, skip_special_tokens=True,
                  ctxs=None, max_n=6, **kwargs):
+    res = L()
+    for inp, trg, sample, pred in zip(x[0], y, samples, outs):
+        inp_trg_preds = [ (hf_tokenizer.ids_to_tokens[tok_id.item()], lbl_id.item(), pred_lbl)
+                         for tok_id, lbl_id, pred_lbl in zip(inp, trg, ast.literal_eval(pred[0]))
+                         if (tok_id not in hf_tokenizer.all_special_ids) and lbl_id != -100 ]
 
-    if ctxs is None: ctxs = get_empty_df(min(len(samples), max_n))
+        res.append(f'{[ (itp[0], lbl, itp[2]) for itp, lbl in zip(inp_trg_preds, ast.literal_eval(sample[1])) ]}')
 
-    samples = samples = L((TitledStr(hf_tokenizer.decode(inp, skip_special_tokens=skip_special_tokens).replace(hf_tokenizer.pad_token, '')), *s[1:])
-                          for inp, s in zip(x, samples))
-
-    ctxs = show_batch[object](x, y, samples, max_n=max_n, ctxs=ctxs, **kwargs)
-    for i,ctx in enumerate(ctxs):
-        preds = ast.literal_eval(outs[i][0])
-        ctx['preds'] = [pred for idx, pred in enumerate(preds) if (y[i][idx] != -100)]
-
-    display_df(pd.DataFrame(ctxs))
+    display_df(pd.DataFrame(res, columns=['token / target label / predicted label'])[:max_n])
     return ctxs
 
 # Cell

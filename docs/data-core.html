@@ -91,7 +91,7 @@ description: "This module contains the core bits required to use the fastai Data
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h2 id="HF_BaseInput" class="doc_header"><code>class</code> <code>HF_BaseInput</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/data/core.py#L16" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>HF_BaseInput</code>(<strong><code>iterable</code></strong>=<em><code>()</code></em>) :: <code>list</code></p>
+<h2 id="HF_BaseInput" class="doc_header"><code>class</code> <code>HF_BaseInput</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/data/core.py#L15" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>HF_BaseInput</code>(<strong><code>iterable</code></strong>=<em><code>()</code></em>) :: <code>list</code></p>
 </blockquote>
 <p>Built-in mutable sequence.</p>
 <p>If no argument is given, the constructor creates a new empty list.
@@ -132,9 +132,9 @@ The argument must be an iterable if specified.</p>
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h2 id="HF_Tokenizer" class="doc_header"><code>class</code> <code>HF_Tokenizer</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/data/core.py#L19" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>HF_Tokenizer</code>(<strong><code>hf_arch</code></strong>, <strong><code>hf_tokenizer</code></strong>, <strong><code>mode</code></strong>=<em><code>'str'</code></em>, <strong><code>list_split_func</code></strong>=<em><code>'split'</code></em>, <strong>**<code>kwargs</code></strong>)</p>
+<h2 id="HF_TokenizerTransform" class="doc_header"><code>class</code> <code>HF_TokenizerTransform</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/data/core.py#L18" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>HF_TokenizerTransform</code>(<strong><code>hf_arch</code></strong>, <strong><code>hf_tokenizer</code></strong>, <strong><code>title</code></strong>=<em><code>'text'</code></em>, <strong>**<code>kwargs</code></strong>) :: <code>Transform</code></p>
 </blockquote>
-<p>huggingface friendly tokenization function.</p>
+<p>huggingface friendly tokenization transfor.</p>
 
 </div>
 
@@ -148,8 +148,8 @@ The argument must be an iterable if specified.</p>
 
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p><a href="/blurr/data-core#HF_Tokenizer"><code>HF_Tokenizer</code></a> complies with the requirements of a basic tokenization function in fastai.  See <a href="http://dev.fast.ai/text.core#Tokenizing">here</a>.</p>
-<p>We've updated the <code>_tokenize</code> method to operate on a string or a list (the later being very handy for tasks like token classification whereby the examples consist of a list of tokens and a list of labels for each).</p>
+<p><a href="/blurr/data-core#HF_TokenizerTransform"><code>HF_TokenizerTransform</code></a> was inspired by <a href="http://dev.fast.ai/tutorial.transformers">this article</a>.  It handles both the tokenization and numericalization traditionally split apart in the fastai text DataBlock API.  Addtionally, it's been updated to add a prefix space for the huggingface architectures that need it.</p>
+<p>You can pass a string or list into this Transform, the later being common in token classification tasks like named entity recognition.</p>
 
 </div>
 </div>
@@ -187,7 +187,7 @@ The argument must be an iterable if specified.</p>
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h2 id="HF_BatchTransform" class="doc_header"><code>class</code> <code>HF_BatchTransform</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/data/core.py#L57" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>HF_BatchTransform</code>(<strong><code>hf_arch</code></strong>, <strong><code>hf_tokenizer</code></strong>, <strong><code>max_seq_len</code></strong>=<em><code>512</code></em>, <strong><code>truncation_strategy</code></strong>=<em><code>'longest_first'</code></em>, <strong><code>task</code></strong>=<em><code>None</code></em>) :: <code>Transform</code></p>
+<h2 id="HF_BatchTransform" class="doc_header"><code>class</code> <code>HF_BatchTransform</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/data/core.py#L61" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>HF_BatchTransform</code>(<strong><code>hf_arch</code></strong>, <strong><code>hf_tokenizer</code></strong>, <strong><code>max_seq_len</code></strong>=<em><code>512</code></em>, <strong><code>truncation_strategy</code></strong>=<em><code>'longest_first'</code></em>, <strong><code>task</code></strong>=<em><code>None</code></em>) :: <code>Transform</code></p>
 </blockquote>
 <p>Handles everything you need to assemble a mini-batch of inputs and targets</p>
 
@@ -219,7 +219,7 @@ The argument must be an iterable if specified.</p>
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h2 id="HF_TextBlock" class="doc_header"><code>class</code> <code>HF_TextBlock</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/data/core.py#L87" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>HF_TextBlock</code>(<strong><code>tok_tfms</code></strong>, <strong><code>hf_arch</code></strong>, <strong><code>hf_tokenizer</code></strong>, <strong><code>hf_batch_tfm</code></strong>=<em><code>None</code></em>, <strong><code>vocab</code></strong>=<em><code>None</code></em>, <strong><code>task</code></strong>=<em><code>None</code></em>, <strong><code>max_seq_len</code></strong>=<em><code>512</code></em>, <strong><code>min_freq</code></strong>=<em><code>3</code></em>, <strong><code>max_vocab</code></strong>=<em><code>60000</code></em>, <strong><code>special_toks</code></strong>=<em><code>None</code></em>) :: <code>TransformBlock</code></p>
+<h2 id="HF_TextBlock" class="doc_header"><code>class</code> <code>HF_TextBlock</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/data/core.py#L88" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>HF_TextBlock</code>(<strong><code>hf_arch</code></strong>, <strong><code>hf_tokenizer</code></strong>, <strong><code>hf_batch_tfm</code></strong>=<em><code>None</code></em>, <strong><code>task</code></strong>=<em><code>None</code></em>, <strong><code>max_seq_len</code></strong>=<em><code>512</code></em>, <strong>**<code>kwargs</code></strong>) :: <code>TransformBlock</code></p>
 </blockquote>
 <p>A basic wrapper that links defaults transforms for the data block API</p>
 
@@ -233,34 +233,9 @@ The argument must be an iterable if specified.</p>
 </div>
     {% endraw %}
 
-    {% raw %}
-    
-<div class="cell border-box-sizing code_cell rendered">
-
-<div class="output_wrapper">
-<div class="output">
-
-<div class="output_area">
-
-
-<div class="output_markdown rendered_html output_subarea ">
-<h4 id="HF_TextBlock.from_df" class="doc_header"><code>HF_TextBlock.from_df</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/data/core.py#L101" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>HF_TextBlock.from_df</code>(<strong><code>text_cols_lists</code></strong>, <strong><code>hf_arch</code></strong>, <strong><code>hf_tokenizer</code></strong>, <strong><code>hf_batch_tfm</code></strong>=<em><code>None</code></em>, <strong><code>vocab</code></strong>=<em><code>None</code></em>, <strong><code>task</code></strong>=<em><code>None</code></em>, <strong><code>tok_func_mode</code></strong>=<em><code>'str'</code></em>, <strong><code>res_col_names</code></strong>=<em><code>None</code></em>, <strong><code>max_seq_len</code></strong>=<em><code>512</code></em>, <strong><code>tok_func</code></strong>=<em><code>'SpacyTokenizer'</code></em>, <strong><code>rules</code></strong>=<em><code>None</code></em>, <strong><code>sep</code></strong>=<em><code>' '</code></em>, <strong><code>n_workers</code></strong>=<em><code>16</code></em>, <strong><code>mark_fields</code></strong>=<em><code>None</code></em>, <strong><code>res_col_name</code></strong>=<em><code>'text'</code></em>, <strong>**<code>kwargs</code></strong>)</p>
-</blockquote>
-<p>Creates a HF_TextBlock via a pandas DataFrame</p>
-
-</div>
-
-</div>
-
-</div>
-</div>
-
-</div>
-    {% endraw %}
-
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>Currently, we've only implemented building this block from a pandas DataFrame.  It handles single and multiple text inputs so that it can be used out-of-the-box against any model in the huggingface arsenal (e.g. sequence classification, question-answer, summarization, token classification, etc...).</p>
+<p><a href="/blurr/data-core#HF_TextBlock"><code>HF_TextBlock</code></a> has been dramatically simplified from it's predecessor.  It handles setting up your <a href="/blurr/data-core#HF_TokenizerTransform"><code>HF_TokenizerTransform</code></a> transforms and <a href="/blurr/data-core#HF_BatchTransform"><code>HF_BatchTransform</code></a> transform regardless of data source (e.g., this will work with files, DataFrames, whatever).</p>
 
 </div>
 </div>
@@ -420,7 +395,7 @@ The argument must be an iterable if specified.</p>
 
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>Once you have those elements, you can create your <code>DataBlock</code> as simple as the below. Note that you can use multiple columns in your DataFrame to make up the <em>single</em> text element required by <a href="/blurr/data-core#HF_TextBlock"><code>HF_TextBlock</code></a> below.</p>
+<p>Once you have those elements, you can create your <code>DataBlock</code> as simple as the below.</p>
 
 </div>
 </div>
@@ -433,14 +408,10 @@ The argument must be an iterable if specified.</p>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># single input</span>
-<span class="n">blocks</span> <span class="o">=</span> <span class="p">(</span>
-    <span class="n">HF_TextBlock</span><span class="o">.</span><span class="n">from_df</span><span class="p">(</span><span class="n">text_cols_lists</span><span class="o">=</span><span class="p">[[</span><span class="s1">&#39;text&#39;</span><span class="p">]],</span> <span class="n">hf_arch</span><span class="o">=</span><span class="n">hf_arch</span><span class="p">,</span> <span class="n">hf_tokenizer</span><span class="o">=</span><span class="n">hf_tokenizer</span><span class="p">),</span>
-    <span class="n">CategoryBlock</span>
-<span class="p">)</span>
+<span class="n">blocks</span> <span class="o">=</span> <span class="p">(</span><span class="n">HF_TextBlock</span><span class="p">(</span><span class="n">hf_arch</span><span class="o">=</span><span class="n">hf_arch</span><span class="p">,</span> <span class="n">hf_tokenizer</span><span class="o">=</span><span class="n">hf_tokenizer</span><span class="p">),</span> <span class="n">CategoryBlock</span><span class="p">)</span>
 
 <span class="n">dblock</span> <span class="o">=</span> <span class="n">DataBlock</span><span class="p">(</span><span class="n">blocks</span><span class="o">=</span><span class="n">blocks</span><span class="p">,</span> 
-                   <span class="n">get_x</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">text0</span><span class="p">,</span>
-                   <span class="n">get_y</span><span class="o">=</span><span class="n">ColReader</span><span class="p">(</span><span class="s1">&#39;label&#39;</span><span class="p">),</span> 
+                   <span class="n">get_x</span><span class="o">=</span><span class="n">ColReader</span><span class="p">(</span><span class="s1">&#39;text&#39;</span><span class="p">),</span> <span class="n">get_y</span><span class="o">=</span><span class="n">ColReader</span><span class="p">(</span><span class="s1">&#39;label&#39;</span><span class="p">),</span> 
                    <span class="n">splitter</span><span class="o">=</span><span class="n">ColSplitter</span><span class="p">(</span><span class="n">col</span><span class="o">=</span><span class="s1">&#39;is_valid&#39;</span><span class="p">))</span>
 </pre></div>
 
@@ -479,21 +450,6 @@ The argument must be an iterable if specified.</p>
 </pre></div>
 
     </div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-<div class="output_area">
-
-
-<div class="output_html rendered_html output_subarea ">
-
-</div>
-
-</div>
-
 </div>
 </div>
 
@@ -606,8 +562,8 @@ The argument must be an iterable if specified.</p>
     </tr>
     <tr>
       <th>1</th>
-      <td>THE SHOP AROUND THE CORNER is one of the sweetest and most feel-good romantic comedies ever made. There's just no getting around that, and it's hard to actually put one's feeling for this film into words. It's not one of those films that tries too hard, nor does it come up with the oddest possible scenarios to get the two protagonists together in the end. In fact, all its charm is innate, contained within the characters and the setting and the plot... which is highly believable to boot. It's easy to think that such a love story, as beautiful as any other ever told, *could* happen to you... a feeling you don't often get from other romantic comedies, however sweet and heart-warming they may be. &lt;br /&gt;&lt;br /&gt;Alfred Kralik (James Stewart) and Clara Novak (Margaret Sullavan) don't have the most auspicious of first meetings when she arrives in the shop (Matuschek &amp; Co.) he's been working in for the past nine years, asking for a job. They clash from the very beginning, mostly over a cigarette box that plays music when it's opened--he thinks it's a ludicrous idea; she makes one big sell of it and gets hired. Their bickering takes them through the next six months, even as they both (unconsciously, of course!) fall in love with each other when they share their souls and minds in letters passed through PO Box 237. This would be a pretty thin plotline to base an entire film on, except that THE SHOP AROUND THE CORNER is expertly fleshed-out with a brilliant supporting cast made up of entirely engaging characters, from the fatherly but lonely Hugo Matuschek (Frank Morgan) himself, who learns that his shop really is his home; Pirovitch (Felix Bressart), Kralik's sidekick and friend who always skitters out of the room when faced with the possibility of being asked for his honest opinion; smarmy pimp-du-jour Vadas (Joseph Schildkraut) who ultimately gets his comeuppance from a gloriously righteous Kralik; and ambitious errand boy Pepi Katona (William Tracy) who wants nothing more than to be promoted to the position of clerk for Matuschek &amp; Co. The unpretentious love story between 'Dear Friends' is played out in this little shop in</td>
-      <td>positive</td>
+      <td>I really wanted to love this show. I truly, honestly did.&lt;br /&gt;&lt;br /&gt;For the first time, gay viewers get their own version of the "The Bachelor". With the help of his obligatory "hag" Andra, James, a good looking, well-to-do thirty-something has the chance of love with 15 suitors (or "mates" as they are referred to in the show). The only problem is half of them are straight and James doesn't know this. If James picks a gay one, they get a trip to New Zealand, and If he picks a straight one, straight guy gets $25,000. How can this not be fun?! Take my hand, lets stroll: &lt;br /&gt;&lt;br /&gt;The most glaring problem with this show is the bachelor himself. James is your typical young and successful gay guy with a nice smile and body, the one you'd probably give two glances towards at your local bar before grazing for greener pastures. Why they chose to cast James as the leading man is beyond me. God knows there's so many other hotter and vivacious homosexual men out there dying to be on TV.&lt;br /&gt;&lt;br /&gt;Aside from his rather average physical appearance, James is about as interesting and exciting as a piece of chalk. Even as such, he has this arrogant, smugly condescending aura about him. However, if James were standing up against a blank, white wall he'd meld right into in it. I honestly can't recall a single interesting or noteworthy thing James said during the course of the show. He is THAT boring and forgettable. In fact, one of the mates flat out advised him he wasn't feeling a connection. I thought that was the best part of the show. Also, James speaks with an excruciatingly annoying lilt. Sound feminine or sound masculine, but don't ****ing segue tones in the middle of sentences...so painful to sit through. I hated him so much all throughout the show I kept thinking, "Please choose a straight guy and humiliate yourself and your unfortunate looking hag"&lt;br /&gt;&lt;br /&gt;Then we have the suitors. A remarkably bland bunch of men who don't seem to care either way what is happening. Equally vapid, they seem to be indistinguishable from one guy to the next except, "Hey that guy has blond highlights or oh that one has curly hair" Again, astoundingly inept casting decisions seem to be the aim of this show. While</td>
+      <td>negative</td>
     </tr>
   </tbody>
 </table>

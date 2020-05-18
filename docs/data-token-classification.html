@@ -448,6 +448,13 @@ description: "This module contains the bits required to use the fastai DataBlock
 </div>
     {% endraw %}
 
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Below, we define a new class and transform for token classification targets/predictions.</p>
+
+</div>
+</div>
+</div>
     {% raw %}
     
 <div class="cell border-box-sizing code_cell rendered">
@@ -550,6 +557,47 @@ description: "This module contains the bits required to use the fastai DataBlock
 </div>
     {% endraw %}
 
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Again, we define a custom class, <a href="/blurr/01d_data-token-classification#HF_TokenClassInput"><code>HF_TokenClassInput</code></a>, for the @typedispatched methods to use so that we can override how token classification inputs/targets are assembled, as well as, how the data is shown via methods like <code>show_batch</code> and <code>show_results</code>.</p>
+
+</div>
+</div>
+</div>
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+
+</div>
+    {% endraw %}
+
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+<div class="output_markdown rendered_html output_subarea ">
+<h2 id="HF_TokenClassInput" class="doc_header"><code>class</code> <code>HF_TokenClassInput</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/data/token_classification.py#L49" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>HF_TokenClassInput</code>(<strong><code>iterable</code></strong>=<em><code>()</code></em>) :: <code>list</code></p>
+</blockquote>
+<p>Built-in mutable sequence.</p>
+<p>If no argument is given, the constructor creates a new empty list.
+The argument must be an iterable if specified.</p>
+
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    {% endraw %}
+
     {% raw %}
     
 <div class="cell border-box-sizing code_cell rendered">
@@ -573,11 +621,7 @@ description: "This module contains the bits required to use the fastai DataBlock
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># single input</span>
 <span class="n">blocks</span> <span class="o">=</span> <span class="p">(</span>
-    <span class="n">HF_TextBlock</span><span class="o">.</span><span class="n">from_df</span><span class="p">(</span><span class="n">text_cols_lists</span><span class="o">=</span><span class="p">[[</span><span class="s1">&#39;token&#39;</span><span class="p">]],</span> 
-                         <span class="n">hf_arch</span><span class="o">=</span><span class="n">hf_arch</span><span class="p">,</span> 
-                         <span class="n">hf_tokenizer</span><span class="o">=</span><span class="n">hf_tokenizer</span><span class="p">,</span> 
-                         <span class="n">tok_func_mode</span><span class="o">=</span><span class="s1">&#39;list&#39;</span><span class="p">,</span> 
-                         <span class="n">task</span><span class="o">=</span><span class="n">ForTokenClassificationTask</span><span class="p">()),</span>
+    <span class="n">HF_TextBlock</span><span class="p">(</span><span class="n">hf_arch</span><span class="p">,</span> <span class="n">hf_tokenizer</span><span class="p">,</span> <span class="n">task</span><span class="o">=</span><span class="n">ForTokenClassificationTask</span><span class="p">()),</span>
     <span class="n">HF_TokenCategoryBlock</span><span class="p">(</span><span class="n">vocab</span><span class="o">=</span><span class="n">labels</span><span class="p">)</span>
 <span class="p">)</span>
 
@@ -585,7 +629,7 @@ description: "This module contains the bits required to use the fastai DataBlock
     <span class="k">return</span> <span class="p">[</span> <span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">hf_tokenizer</span><span class="o">.</span><span class="n">tokenize</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">entity</span><span class="p">))))</span> <span class="k">for</span> <span class="n">entity</span><span class="p">,</span> <span class="n">label</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">inp</span><span class="o">.</span><span class="n">token</span><span class="p">,</span> <span class="n">inp</span><span class="o">.</span><span class="n">tag1</span><span class="p">)</span> <span class="p">]</span>
 
 <span class="n">dblock</span> <span class="o">=</span> <span class="n">DataBlock</span><span class="p">(</span><span class="n">blocks</span><span class="o">=</span><span class="n">blocks</span><span class="p">,</span> 
-                   <span class="n">get_x</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">text0</span><span class="p">,</span>
+                   <span class="n">get_x</span><span class="o">=</span><span class="n">ColReader</span><span class="p">(</span><span class="s1">&#39;token&#39;</span><span class="p">),</span>
                    <span class="n">get_y</span><span class="o">=</span><span class="n">get_y</span><span class="p">,</span>
                    <span class="n">splitter</span><span class="o">=</span><span class="n">RandomSplitter</span><span class="p">())</span>
 </pre></div>
@@ -632,21 +676,6 @@ description: "This module contains the bits required to use the fastai DataBlock
 </pre></div>
 
     </div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-<div class="output_area">
-
-
-<div class="output_html rendered_html output_subarea ">
-
-</div>
-
-</div>
-
 </div>
 </div>
 
@@ -706,6 +735,13 @@ description: "This module contains the bits required to use the fastai DataBlock
     {% raw %}
     
 <div class="cell border-box-sizing code_cell rendered">
+
+</div>
+    {% endraw %}
+
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
 <div class="input">
 
 <div class="inner_cell">
@@ -728,20 +764,17 @@ description: "This module contains the bits required to use the fastai DataBlock
   <thead>
     <tr style="text-align: right;">
       <th></th>
-      <th>text</th>
-      <th>category</th>
+      <th>token / target label</th>
     </tr>
   </thead>
   <tbody>
     <tr>
       <th>0</th>
-      <td>Das SS - Freiwilligen - Grenadier - Regiment 88 wurde im März aus einer Kampfgruppe der SS - Führerschule des Wirtschafts - und Verwaltungsdienstes und Teilen des I. / SS - Polizei - Regiments 34 der Ordnungspolizei, Heeresangehörigen und Volkssturm gebildet.</td>
-      <td>['O', 'B-ORGpart', 'I-ORGpart', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'B-ORGpart', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'B-ORGpart', 'I-ORGpart', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O']</td>
+      <td>[('Das', 'O'), ('SS', 'B-ORGpart'), ('88', 'I-ORGpart'), ('wurde', 'O'), ('im', 'O'), ('März', 'O'), ('aus', 'O'), ('einer', 'O'), ('Kampf', 'O'), ('der', 'O'), ('SS', 'B-ORGpart'), ('des', 'O'), ('Wirtschaft', 'O'), ('und', 'O'), ('Verwaltung', 'O'), ('und', 'O'), ('Teilen', 'O'), ('des', 'O'), ('I', 'B-ORGpart'), ('34', 'I-ORGpart'), ('der', 'O'), ('Ordnung', 'O'), (',', 'O'), ('Heer', 'O'), ('und', 'O'), ('Volk', 'O'), ('gebildet', 'O'), ('.', 'O')]</td>
     </tr>
     <tr>
       <th>1</th>
-      <td>Ausbildung In der Bundesrepublik Deutschland können die Befähigungszeugnisse „ Kapitän BK ( Kleine Hochseefischerei ) und „ Kapitän BG ( Große Hochseefischerei ) im Rahmen einer bundeseinheitlichen Regelung erworben werden.</td>
-      <td>['O', 'O', 'O', 'B-ORG', 'I-ORG', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O']</td>
+      <td>[('Scene', 'B-OTH'), ('of', 'I-OTH'), ('a', 'I-OTH'), ('Sexual', 'I-OTH'), ('Nature', 'I-OTH'), ('(', 'O'), ('GB', 'O'), ('2006', 'O'), (')', 'O'), ('-', 'O'), ('Regie', 'O'), (':', 'O'), ('Ed', 'B-PER'), ('Blum', 'I-PER'), ('Short', 'B-OTH'), ('(', 'O'), ('USA', 'B-LOC'), ('2006', 'O'), (')', 'O'), ('-', 'O'), ('Regie', 'O'), (':', 'O'), ('John', 'B-PER'), ('Cameron', 'I-PER'), ('Mitchell', 'I-PER'), (':', 'O'), ('über', 'O'), ('den', 'O'), ('gleichnamigen', 'O'), ('New', 'B-LOCderiv'), ('Yorker', 'I-LOCderiv'), ('Club', 'O'), (',', 'O'), ('der', 'O'), ('vers', 'O'), ('Paar', 'O'), ('eine', 'O'), ('Platt', 'O'), ('zur', 'O'), ('Auf', 'O'), ('ihrer', 'O'), ('Probleme', 'O'), ('bietet', 'O'), ('.', 'O')]</td>
     </tr>
   </tbody>
 </table>

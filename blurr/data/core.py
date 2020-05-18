@@ -57,7 +57,6 @@ def build_hf_input(task, tokenizer, a_tok_ids, b_tok_ids=None, targets=None,
 
     return HF_BaseInput([input_ids, attention_mask, token_type_ids]), targets
 
-
 # Cell
 class HF_BatchTransform(Transform):
     """Handles everything you need to assemble a mini-batch of inputs and targets"""
@@ -85,11 +84,6 @@ class HF_BatchTransform(Transform):
 
         return encoded_samples
 
-#     def decodes(self, encoded_samples):
-#         pdb.set_trace()
-#         if (issubclass(type(encoded_samples), HF_BaseInput)): return encoded_samples.__class__(encoded_samples[0])
-#         return encoded_samples
-
 # Cell
 class HF_TextBlock(TransformBlock):
     def __init__(self, hf_arch, hf_tokenizer, hf_batch_tfm=None, task=None, max_seq_len=512, **kwargs):
@@ -101,9 +95,7 @@ class HF_TextBlock(TransformBlock):
 
 # Cell
 @typedispatch
-def show_batch(x:HF_BaseInput, y, samples, hf_tokenizer,
-               skip_special_tokens=True, ctxs=None, max_n=6, **kwargs):
-
+def show_batch(x:HF_BaseInput, y, samples, hf_tokenizer, skip_special_tokens=True, ctxs=None, max_n=6, **kwargs):
     if ctxs is None: ctxs = get_empty_df(min(len(samples), max_n))
 
     samples = L((TitledStr(hf_tokenizer.decode(inp, skip_special_tokens=skip_special_tokens).replace(hf_tokenizer.pad_token, '')), *s[1:])

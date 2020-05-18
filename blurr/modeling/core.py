@@ -55,10 +55,10 @@ def show_results(x:HF_BaseInput, y, samples, outs, hf_tokenizer, skip_special_to
 
     if ctxs is None: ctxs = get_empty_df(min(len(samples), max_n))
 
-    samples = samples = L((TitledStr(hf_tokenizer.decode(inp, skip_special_tokens=skip_special_tokens).replace(hf_tokenizer.pad_token, '')),*s[1:])
-                          for inp, s in zip(x[0], samples))
+    res = L((TitledStr(hf_tokenizer.decode(inp, skip_special_tokens=skip_special_tokens).replace(hf_tokenizer.pad_token, '')), *s[1:])
+            for inp, s in zip(x[0], samples))
 
-    ctxs = show_batch[object](x, y, samples, max_n=max_n, ctxs=ctxs, **kwargs)
+    ctxs = show_batch[object](x, y, res, max_n=max_n, ctxs=ctxs, **kwargs)
 
     n_preds_per_input = len(outs[0])
     if (n_preds_per_input == 1):

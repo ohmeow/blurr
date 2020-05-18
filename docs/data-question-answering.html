@@ -207,7 +207,101 @@ description: "This module contains the bits required to use the fastai DataBlock
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">max_seq_len</span><span class="o">=</span> <span class="mi">512</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">task</span> <span class="o">=</span> <span class="n">HF_TASKS_AUTO</span><span class="o">.</span><span class="n">ForQuestionAnswering</span>
+
+<span class="n">pretrained_model_name</span> <span class="o">=</span> <span class="s1">&#39;roberta-base&#39;</span> <span class="c1">#&#39;xlm-mlm-ende-1024&#39;</span>
+<span class="n">config</span> <span class="o">=</span> <span class="n">AutoConfig</span><span class="o">.</span><span class="n">from_pretrained</span><span class="p">(</span><span class="n">pretrained_model_name</span><span class="p">)</span>
+
+<span class="n">hf_arch</span><span class="p">,</span> <span class="n">hf_tokenizer</span><span class="p">,</span> <span class="n">hf_config</span><span class="p">,</span> <span class="n">hf_model</span> <span class="o">=</span> <span class="n">BLURR_MODEL_HELPER</span><span class="o">.</span><span class="n">get_auto_hf_objects</span><span class="p">(</span><span class="n">pretrained_model_name</span><span class="p">,</span> 
+                                                                                    <span class="n">task</span><span class="o">=</span><span class="n">task</span><span class="p">,</span> 
+                                                                                    <span class="n">config</span><span class="o">=</span><span class="n">config</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    {% endraw %}
+
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+
+</div>
+    {% endraw %}
+
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+<div class="output_markdown rendered_html output_subarea ">
+<h4 id="pre_process_squad" class="doc_header"><code>pre_process_squad</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/data/question_answering.py#L17" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>pre_process_squad</code>(<strong><code>row</code></strong>, <strong><code>hf_arch</code></strong>, <strong><code>hf_tokenizer</code></strong>)</p>
+</blockquote>
+
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    {% endraw %}
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>The <a href="/blurr/01c_data-question-answering#pre_process_squad"><code>pre_process_squad</code></a> method is structured around how we've setup the squad DataFrame above.</p>
+
+</div>
+</div>
+</div>
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">squad_df</span> <span class="o">=</span> <span class="n">squad_df</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">partial</span><span class="p">(</span><span class="n">pre_process_squad</span><span class="p">,</span> <span class="n">hf_arch</span><span class="o">=</span><span class="n">hf_arch</span><span class="p">,</span> <span class="n">hf_tokenizer</span><span class="o">=</span><span class="n">hf_tokenizer</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stderr output_text">
+<pre>Token indices sequence length is longer than the specified maximum sequence length for this model (16 &gt; 512). Running this sequence through the model will result in indexing errors
+Token indices sequence length is longer than the specified maximum sequence length for this model (11 &gt; 512). Running this sequence through the model will result in indexing errors
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+    {% endraw %}
+
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">max_seq_len</span><span class="o">=</span> <span class="mi">128</span>
 </pre></div>
 
     </div>
@@ -241,30 +335,6 @@ description: "This module contains the bits required to use the fastai DataBlock
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">task</span> <span class="o">=</span> <span class="n">HF_TASKS_AUTO</span><span class="o">.</span><span class="n">ForQuestionAnswering</span>
-
-<span class="n">pretrained_model_name</span> <span class="o">=</span> <span class="s1">&#39;roberta-base&#39;</span> <span class="c1">#&#39;xlm-mlm-ende-1024&#39;</span>
-<span class="n">config</span> <span class="o">=</span> <span class="n">AutoConfig</span><span class="o">.</span><span class="n">from_pretrained</span><span class="p">(</span><span class="n">pretrained_model_name</span><span class="p">)</span>
-
-<span class="n">hf_arch</span><span class="p">,</span> <span class="n">hf_tokenizer</span><span class="p">,</span> <span class="n">hf_config</span><span class="p">,</span> <span class="n">hf_model</span> <span class="o">=</span> <span class="n">BLURR_MODEL_HELPER</span><span class="o">.</span><span class="n">get_auto_hf_objects</span><span class="p">(</span><span class="n">pretrained_model_name</span><span class="p">,</span> 
-                                                                                    <span class="n">task</span><span class="o">=</span><span class="n">task</span><span class="p">,</span> 
-                                                                                    <span class="n">config</span><span class="o">=</span><span class="n">config</span><span class="p">)</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-</div>
-    {% endraw %}
-
-    {% raw %}
-    
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-
-<div class="inner_cell">
-    <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">vocab</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">enumerate</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">max_seq_len</span><span class="p">)));</span>
 </pre></div>
 
@@ -277,7 +347,7 @@ description: "This module contains the bits required to use the fastai DataBlock
 
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>Below we utilize the @typedispatch decorator to completely change how we'll tokenize the data for the <a href="/blurr/utils#ForQuestionAnsweringTask"><code>ForQuestionAnsweringTask</code></a>.</p>
+<p>Below we utilize the @typedispatch decorator to completely change how we'll tokenize the data for the <a href="/blurr/utils#ForQuestionAnsweringTask"><code>ForQuestionAnsweringTask</code></a>.  This requires us defining a custom type to identify question/answer inputs</p>
 
 </div>
 </div>
@@ -289,9 +359,44 @@ description: "This module contains the bits required to use the fastai DataBlock
 </div>
     {% endraw %}
 
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+<div class="output_markdown rendered_html output_subarea ">
+<h2 id="HF_QuestionAnswerInput" class="doc_header"><code>class</code> <code>HF_QuestionAnswerInput</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/data/question_answering.py#L49" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>HF_QuestionAnswerInput</code>(<strong><code>iterable</code></strong>=<em><code>()</code></em>) :: <code>list</code></p>
+</blockquote>
+<p>Built-in mutable sequence.</p>
+<p>If no argument is given, the constructor creates a new empty list.
+The argument must be an iterable if specified.</p>
+
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    {% endraw %}
+
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+
+</div>
+    {% endraw %}
+
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <p>And here we demonstrate some more of the extensibility bits of the framework, by passing in our own instance of <a href="/blurr/data-core#HF_BatchTransform"><code>HF_BatchTransform</code></a>.</p>
+<p>Notice how we set the <code>task=ForQuestionAnsweringTask()</code> so that our custom <code>build_hf_input</code> above, for qustion/answering tasks, gets called rather than the default implementation.</p>
 
 </div>
 </div>
@@ -304,40 +409,20 @@ description: "This module contains the bits required to use the fastai DataBlock
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># (optional): override HF_BatchTransform defaults</span>
-<span class="n">hf_batch_tfm</span> <span class="o">=</span> <span class="n">HF_BatchTransform</span><span class="p">(</span><span class="n">hf_arch</span><span class="p">,</span> <span class="n">hf_tokenizer</span><span class="p">,</span> <span class="n">task</span><span class="o">=</span><span class="n">ForQuestionAnsweringTask</span><span class="p">(),</span>
-                                 <span class="n">max_seq_len</span><span class="o">=</span><span class="mi">128</span><span class="p">,</span> <span class="n">truncation_strategy</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+<span class="n">hf_batch_tfm</span> <span class="o">=</span> <span class="n">HF_BatchTransform</span><span class="p">(</span><span class="n">hf_arch</span><span class="p">,</span> <span class="n">hf_tokenizer</span><span class="p">,</span> <span class="n">max_seq_len</span><span class="o">=</span><span class="n">max_seq_len</span><span class="p">,</span> <span class="n">truncation_strategy</span><span class="o">=</span><span class="s1">&#39;only_second&#39;</span><span class="p">,</span> 
+                                 <span class="n">task</span><span class="o">=</span><span class="n">ForQuestionAnsweringTask</span><span class="p">())</span>
 
 <span class="n">blocks</span> <span class="o">=</span> <span class="p">(</span>
-    <span class="n">HF_TextBlock</span><span class="o">.</span><span class="n">from_df</span><span class="p">(</span><span class="n">text_cols_lists</span><span class="o">=</span><span class="p">[[</span><span class="s1">&#39;question_text&#39;</span><span class="p">],[</span><span class="s1">&#39;context&#39;</span><span class="p">]],</span>
-                         <span class="n">hf_arch</span><span class="o">=</span><span class="n">hf_arch</span><span class="p">,</span> 
-                         <span class="n">hf_tokenizer</span><span class="o">=</span><span class="n">hf_tokenizer</span><span class="p">,</span> 
-                         <span class="n">hf_batch_tfm</span><span class="o">=</span><span class="n">hf_batch_tfm</span><span class="p">),</span>
+    <span class="n">HF_TextBlock</span><span class="p">(</span><span class="n">hf_arch</span><span class="p">,</span> <span class="n">hf_tokenizer</span><span class="p">,</span> <span class="n">hf_batch_tfm</span><span class="o">=</span><span class="n">hf_batch_tfm</span><span class="p">),</span> 
     <span class="n">CategoryBlock</span><span class="p">(</span><span class="n">vocab</span><span class="o">=</span><span class="n">vocab</span><span class="p">),</span>
     <span class="n">CategoryBlock</span><span class="p">(</span><span class="n">vocab</span><span class="o">=</span><span class="n">vocab</span><span class="p">)</span>
 <span class="p">)</span>
 
 <span class="n">dblock</span> <span class="o">=</span> <span class="n">DataBlock</span><span class="p">(</span><span class="n">blocks</span><span class="o">=</span><span class="n">blocks</span><span class="p">,</span> 
-                   <span class="n">get_x</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">text0</span><span class="p">,</span> <span class="n">x</span><span class="o">.</span><span class="n">text1</span><span class="p">),</span>
-                   <span class="n">get_y</span><span class="o">=</span><span class="p">[</span><span class="n">ColReader</span><span class="p">(</span><span class="s1">&#39;answer_start&#39;</span><span class="p">),</span> <span class="n">ColReader</span><span class="p">(</span><span class="s1">&#39;answer_end&#39;</span><span class="p">)],</span>
+                   <span class="n">get_x</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">question_text</span><span class="p">,</span> <span class="n">x</span><span class="o">.</span><span class="n">context</span><span class="p">),</span>
+                   <span class="n">get_y</span><span class="o">=</span><span class="p">[</span><span class="n">ColReader</span><span class="p">(</span><span class="s1">&#39;tok_answer_start&#39;</span><span class="p">),</span> <span class="n">ColReader</span><span class="p">(</span><span class="s1">&#39;tok_answer_end&#39;</span><span class="p">)],</span>
                    <span class="n">splitter</span><span class="o">=</span><span class="n">RandomSplitter</span><span class="p">(),</span>
                    <span class="n">n_inp</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-</div>
-    {% endraw %}
-
-    {% raw %}
-    
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># dblock.summary(squad_df)</span>
 </pre></div>
 
     </div>
@@ -358,30 +443,6 @@ description: "This module contains the bits required to use the fastai DataBlock
 </pre></div>
 
     </div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-<div class="output_area">
-
-
-<div class="output_html rendered_html output_subarea ">
-
-</div>
-
-</div>
-
-<div class="output_area">
-
-
-<div class="output_html rendered_html output_subarea ">
-
-</div>
-
-</div>
-
 </div>
 </div>
 
@@ -463,6 +524,20 @@ description: "This module contains the bits required to use the fastai DataBlock
     {% raw %}
     
 <div class="cell border-box-sizing code_cell rendered">
+
+</div>
+    {% endraw %}
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>The <code>show_batch</code> method above allows us to create a more interpretable view of our question/answer data.</p>
+
+</div>
+</div>
+</div>
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
 <div class="input">
 
 <div class="inner_cell">
@@ -486,22 +561,22 @@ description: "This module contains the bits required to use the fastai DataBlock
     <tr style="text-align: right;">
       <th></th>
       <th>text</th>
-      <th>category</th>
-      <th>category_</th>
+      <th>start/end</th>
+      <th>answer</th>
     </tr>
   </thead>
   <tbody>
     <tr>
       <th>0</th>
-      <td>&lt;s&gt; What were Prussia and Austria looking to expand?&lt;/s&gt;&lt;/s&gt; By the 1860s the Kingdom of Prussia and the Austrian Empire were the two most powerful nations dominated by German-speaking elites. Both sought to expand their influence and territory. The Austrian Empire – like the Holy Roman Empire – was a multi-ethnic state, but German-speaking people there did not have an absolute numerical majority; the creation of the Austro-Hungarian Empire was one result of the growing nationalism of other ethnicities especially the Hungarians. Prussia under Otto von Bismarck would ride on the coat-tails of nationalism to unite all of&lt;/s&gt;</td>
-      <td>160</td>
-      <td>183</td>
+      <td>&lt;s&gt; When was Brazil colonized?&lt;/s&gt;&lt;/s&gt; Child labour has been a consistent struggle for children in Brazil ever since the country was colonized on April 22, 1550 by Pedro Álvares Cabral. Work that many children took part in was not always visible, legal, or paid. Free or slave labour was a common occurrence for many youths and was a part of their everyday lives as they grew into adulthood. Yet due to there being no clear definition of how to classify what a child or youth is, there has been little historical documentation of child labour during the colonial period. Due to this lack of documentation, it is hard&lt;/s&gt;</td>
+      <td>(28, 33)</td>
+      <td>April 22, 1550</td>
     </tr>
     <tr>
       <th>1</th>
-      <td>&lt;s&gt; Where is the Midwest Regional Medical Center?&lt;/s&gt;&lt;/s&gt; The Midwest Regional Medical Center located in the suburb of Midwest City; other major hospitals in the city include the Oklahoma Heart Hospital and the Mercy Health Center. There are 347 physicians for every 100,000 people in the city.&lt;/s&gt;</td>
-      <td>61</td>
-      <td>73</td>
+      <td>&lt;s&gt; What proportion of the federal census records in existence does the National Archives Building house?&lt;/s&gt;&lt;/s&gt; The National Archives Building in downtown Washington holds record collections such as all existing federal census records, ships' passenger lists, military unit records from the American Revolution to the Philippine–American War, records of the Confederate government, the Freedmen's Bureau records, and pension and land records.&lt;/s&gt;</td>
+      <td>(31, 32)</td>
+      <td>all</td>
     </tr>
   </tbody>
 </table>

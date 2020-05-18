@@ -35,8 +35,8 @@ index = {"str_to_class": "00_utils.ipynb",
          "hf_splitter": "02_modeling-core.ipynb",
          "HF_BaseModelWrapper": "02_modeling-core.ipynb",
          "HF_BaseModelCallback": "02_modeling-core.ipynb",
-         "HF_QstAndAnsModelCallback": "02c_modeling-question-answering.ipynb",
          "HF_QstAndAnsModelWrapper": "02c_modeling-question-answering.ipynb",
+         "HF_QstAndAnsModelCallback": "02c_modeling-question-answering.ipynb",
          "MultiTargetLoss": "02c_modeling-question-answering.ipynb",
          "Learner.predict_tokens": "02d_modeling-token-classification.ipynb"}
 

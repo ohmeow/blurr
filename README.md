@@ -2,15 +2,6 @@
 > An extensible integration of huggingface transformer models with fastai v2.
 
 
-## Updates
-
-**05/06/2020** 
-* Initial support for Token classification (e.g., NER) models now included
-* Extended fastai's `Learner` object with a `predict_tokens` method used specifically in token classification
-* `HF_BaseModelCallback` can be used (or extended) instead of the model wrapper to ensure your inputs into the huggingface model is correct (recommended). See docs for examples (and thanks to fastai's Sylvain for the suggestion!)
-* `HF_Tokenizer` can work with strings or a string representation of a list (the later helpful for token classification tasks)
-* `show_batch` and `show_results` methods have been updated to allow better control on how huggingface tokenized data is represented in those methods
-
 ## Install
 
 You can now pip install blurr via `pip install ohmeow-blurr`
@@ -67,20 +58,13 @@ hf_arch, hf_tokenizer, hf_config, hf_model = BLURR_MODEL_HELPER.get_auto_hf_obje
 
 ```python
 # single input
-blocks = (
-    HF_TextBlock.from_df(text_cols_lists=[['text']], hf_arch=hf_arch, hf_tokenizer=hf_tokenizer),
-    CategoryBlock
-)
+blocks = (HF_TextBlock(hf_arch=hf_arch, hf_tokenizer=hf_tokenizer), CategoryBlock)
 
-def get_x(x): return x.text0
-dblock = DataBlock(blocks=blocks, get_x=get_x, get_y=ColReader('label'), splitter=ColSplitter(col='is_valid'))
+dblock = DataBlock(blocks=blocks, get_x=ColReader('text'), get_y=ColReader('label'), 
+                   splitter=ColSplitter(col='is_valid'))
 
 dls = dblock.dataloaders(imdb_df, bs=4)
 ```
-
-
-
-
 
 ```python
 dls.show_batch(hf_tokenizer=hf_tokenizer, max_n=2)
@@ -103,8 +87,8 @@ dls.show_batch(hf_tokenizer=hf_tokenizer, max_n=2)
     </tr>
     <tr>
       <th>1</th>
-      <td>well, what can i say. &lt; br / &gt; &lt; br / &gt; " what the bleep do we know " has achieved the nearly impossible - leaving behind such masterpieces of the genre as " the postman ", " the dungeon master ", " merlin ", and so fourth, it will go down in history as the single worst movie i have ever seen in its entirety. and that, ladies and gentlemen, is impressive indeed, for i have seen many a bad movie. &lt; br / &gt; &lt; br / &gt; this masterpiece of modern cinema consists of two interwoven parts, alternating between a silly and contrived plot about an extremely annoying photographer, abandoned by her husband and forced to take anti - depressants to survive, and a bunch of talking heads going on about how quantum physics supposedly justifies their new - agy pseudo - philosophy. basically, if you start your day off meditating to the likes of enya and kenny g, this movie is for you. if you have a sense of humor, a crowd of people who know how to have fun, and a sizable portion of good weed, then this movie is for you as well. otherwise, stay away. take my word for it. &lt; br / &gt; &lt; br / &gt; the first thing that struck me about " what the bleep do you know " is that is seemed to be edited and put together by the same kinds of people that shoot cheap weddings on camera, complete with pink heart effects, computer - generated sparkles across the screen, and other assorted silliness. who let these people anywhere near a theatrical release is a mystery to me. i guess this is what too much kenny g does to you. the movie was permeated with cheesy gci, the likes that you or i can produce on our own computer via over - the - counter video editing software, but never would, because it's just way too ridiculous. &lt; br / &gt; &lt; br / &gt; the script was _ obviously _ written by someone with no writing experience whatsoever. not only were all the characters and conversations cumbersome and contrived beyond belief, but the " writers " felt like they had to shove every relevant piece of information, or rather disinformation, which is what most of this movie was all about, all the way down your throat. well, given the target audience, that may not have been too bad of an idea. the main character, for example, spends half the movie popping pills.</td>
-      <td>negative</td>
+      <td>the shop around the corner is one of the sweetest and most feel - good romantic comedies ever made. there's just no getting around that, and it's hard to actually put one's feeling for this film into words. it's not one of those films that tries too hard, nor does it come up with the oddest possible scenarios to get the two protagonists together in the end. in fact, all its charm is innate, contained within the characters and the setting and the plot... which is highly believable to boot. it's easy to think that such a love story, as beautiful as any other ever told, * could * happen to you... a feeling you don't often get from other romantic comedies, however sweet and heart - warming they may be. &lt; br / &gt; &lt; br / &gt; alfred kralik ( james stewart ) and clara novak ( margaret sullavan ) don't have the most auspicious of first meetings when she arrives in the shop ( matuschek &amp; co. ) he's been working in for the past nine years, asking for a job. they clash from the very beginning, mostly over a cigarette box that plays music when it's opened - - he thinks it's a ludicrous idea ; she makes one big sell of it and gets hired. their bickering takes them through the next six months, even as they both ( unconsciously, of course! ) fall in love with each other when they share their souls and minds in letters passed through po box 237. this would be a pretty thin plotline to base an entire film on, except that the shop around the corner is expertly fleshed - out with a brilliant supporting cast made up of entirely engaging characters, from the fatherly but lonely hugo matuschek ( frank morgan ) himself, who learns that his shop really is his home ; pirovitch ( felix bressart ), kralik's sidekick and friend who always skitters out of the room when faced with the possibility of being asked for his honest opinion ; smarmy pimp - du - jour vadas ( joseph schildkraut ) who ultimately gets his comeuppance from a gloriously righteous kralik ; and ambitious errand boy pepi katona ( william tracy ) who wants nothing more than to be promoted to the position of clerk for matuschek &amp; co. the unpretentious love story between '</td>
+      <td>positive</td>
     </tr>
   </tbody>
 </table>
@@ -144,24 +128,24 @@ learn.fit_one_cycle(3, lr_max=1e-3)
   <tbody>
     <tr>
       <td>0</td>
-      <td>0.725591</td>
-      <td>0.695716</td>
-      <td>0.530000</td>
-      <td>00:23</td>
+      <td>0.680400</td>
+      <td>0.661521</td>
+      <td>0.545000</td>
+      <td>00:19</td>
     </tr>
     <tr>
       <td>1</td>
-      <td>0.656113</td>
-      <td>0.610826</td>
+      <td>0.636980</td>
+      <td>0.605327</td>
       <td>0.695000</td>
-      <td>00:23</td>
+      <td>00:19</td>
     </tr>
     <tr>
       <td>2</td>
-      <td>0.603551</td>
-      <td>0.607001</td>
-      <td>0.700000</td>
-      <td>00:23</td>
+      <td>0.604755</td>
+      <td>0.599580</td>
+      <td>0.725000</td>
+      <td>00:19</td>
     </tr>
   </tbody>
 </table>
@@ -202,6 +186,22 @@ learn.show_results(hf_tokenizer=hf_tokenizer, max_n=2)
   </tbody>
 </table>
 
+
+## Updates
+
+**05/17/2020** 
+* Major code restructuring to make it easier to build out the library.
+* `HF_TokenizerTransform` replaces `HF_Tokenizer`, handling the tokenization and numericalization in one place.  DataBlock code has been dramatically simplified.
+* Tokenization correctly handles huggingface tokenizers that require `add_prefix_space=True`.
+* `HF_BaseModelCallback` and `HF_BaseModelCallback` are required and work together in order to allow developers to tie into any callback friendly event exposed by fastai2 and also pass in named arguments to the huggingface models.
+* `show_batch` and `show_results` have been updated for Question/Answer and Token Classification models to represent the data and results in a more easily intepretable manner than the defaults.
+
+**05/06/2020** 
+* Initial support for Token classification (e.g., NER) models now included
+* Extended fastai's `Learner` object with a `predict_tokens` method used specifically in token classification
+* `HF_BaseModelCallback` can be used (or extended) instead of the model wrapper to ensure your inputs into the huggingface model is correct (recommended). See docs for examples (and thanks to fastai's Sylvain for the suggestion!)
+* `HF_Tokenizer` can work with strings or a string representation of a list (the later helpful for token classification tasks)
+* `show_batch` and `show_results` methods have been updated to allow better control on how huggingface tokenized data is represented in those methods
 
 ## Props
 

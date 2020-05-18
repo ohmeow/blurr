@@ -79,14 +79,13 @@ def build_hf_input(task:ForQuestionAnsweringTask, tokenizer,
 
 # Cell
 @typedispatch
-def show_batch(x:HF_QuestionAnswerInput, y, samples, hf_tokenizer,
-               skip_special_tokens=True, ctxs=None, max_n=6, **kwargs):
-
-    samples = L()
+def show_batch(x:HF_QuestionAnswerInput, y, samples, hf_tokenizer, skip_special_tokens=True,
+               ctxs=None, max_n=6, **kwargs):
+    res = L()
     for inp, start, end in zip(x[0], *y):
         txt = hf_tokenizer.decode(inp, skip_special_tokens=skip_special_tokens).replace(hf_tokenizer.pad_token, '')
         ans_toks = hf_tokenizer.convert_ids_to_tokens(inp, skip_special_tokens=False)[start:end]
-        samples.append((txt, (start.item(),end.item()), hf_tokenizer.convert_tokens_to_string(ans_toks)))
+        res.append((txt, (start.item(),end.item()), hf_tokenizer.convert_tokens_to_string(ans_toks)))
 
-    display_df(pd.DataFrame(samples, columns=['text', 'start/end', 'answer'])[:max_n])
+    display_df(pd.DataFrame(res, columns=['text', 'start/end', 'answer'])[:max_n])
     return ctxs

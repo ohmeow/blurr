@@ -3,6 +3,7 @@
 __all__ = ['HF_TokenTensorCategory', 'HF_TokenCategorize', 'HF_TokenCategoryBlock', 'HF_TokenClassInput']
 
 # Cell
+import ast
 from functools import reduce
 
 import torch
@@ -80,15 +81,15 @@ def build_hf_input(task:ForTokenClassificationTask, tokenizer, a_tok_ids, b_tok_
 
 # Cell
 @typedispatch
-def show_batch(x:HF_TokenClassInput, y, samples, hf_tokenizer,
-               skip_special_tokens=True, ctxs=None, max_n=6, **kwargs):
+def show_batch(x:HF_TokenClassInput, y, samples, hf_tokenizer, skip_special_tokens=True,
+               ctxs=None, max_n=6, **kwargs):
+    res = L()
+    for inp, trg, sample in zip(x[0], y, samples):
+        inp_targs = [ (hf_tokenizer.ids_to_tokens[tok_id.item()], lbl_id.item())
+                     for tok_id, lbl_id in zip(inp, trg)
+                     if (tok_id not in hf_tokenizer.all_special_ids) and lbl_id != -100 ]
 
-    if ctxs is None: ctxs = get_empty_df(min(len(samples), max_n))
+        res.append(f'{[ (inp_trg[0], lbl) for inp_trg, lbl in zip(inp_targs, ast.literal_eval(sample[1])) ]}')
 
-    samples = L((TitledStr(hf_tokenizer.decode(inp, skip_special_tokens=skip_special_tokens).replace(hf_tokenizer.pad_token, '')), *s[1:])
-                for inp, s in zip(x[0], samples))
-
-    ctxs = show_batch[object](x, y, samples, max_n=max_n, ctxs=ctxs, **kwargs)
-
-    display_df(pd.DataFrame(ctxs))
+    display_df(pd.DataFrame(res, columns=['token / target label'])[:max_n])
     return ctxs
