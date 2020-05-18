@@ -1,30 +1,6 @@
-# Title
-> summary
+# blurr
+> A library that integrates huggingface transformers with version 2 of the fastai framework
 
-
-<h1>
-    <img src="https://ohmeow.github.io/blurr/images/blurr-logo.png" style="width:40px;float:left;"/> blurr
-</h1>
-<div style="margin-top:60px;">
-    Named after the <b>fast</b>est <b>transformer</b> (well, at least of the Autobots), 
-    <b>blurr</b> provides both a comprehensive and extensible framework for training and deploying *all* 🤗 
-    <a href="https://huggingface.co/transformers/">huggingface</a> transformer models with 
-    <div style="display:inline-block">
-        <a href="http://dev.fast.ai/">
-            <img src="https://avatars0.githubusercontent.com/u/20547620?s=200&v=4" style="width:20px;float:left" />
-            fastai v2
-        </a>.
-    </div>
-</div>
-
-Utilizing features like fastai's new `@typedispatch` and `@patch` decorators, and a simple class hiearchy, **blurr** provides fastai developers with the ability to train and deploy transformers for sequence classification, question answer, token classification, summarization, and language modeling tasks. Though much of this works out-of-the-box, users will be able to customize the tokenization strategies and model inputs based on task and/or architecture as needed.
-
-**Supports**:
-- Sequence Classification (multiclassification and multi-label classification)
-- Token Classification
-- Question Answering
-
-*Support for summarization, language modeling, and translation tasks is coming soon!!!*
 
 ## Install
 
@@ -78,7 +54,7 @@ hf_arch, hf_tokenizer, hf_config, hf_model = BLURR_MODEL_HELPER.get_auto_hf_obje
                                                                                     config=config)
 ```
 
-### Build your 🧱🧱🧱 DataBlock and your DataLoaders
+### Build your 🧱🧱🧱 DataBlock 🧱🧱🧱 and your DataLoaders
 
 ```python
 # single input
