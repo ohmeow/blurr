@@ -203,7 +203,7 @@ learn.show_results(hf_tokenizer=hf_tokenizer, max_n=2)
 * `HF_Tokenizer` can work with strings or a string representation of a list (the later helpful for token classification tasks)
 * `show_batch` and `show_results` methods have been updated to allow better control on how huggingface tokenized data is represented in those methods
 
-## ⭐⭐⭐ Props
+## ⭐ Props
 
 A word of gratitude to the following individuals, repos, and articles upon which much of this work is inspired from:
 
