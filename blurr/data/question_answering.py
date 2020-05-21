@@ -15,7 +15,7 @@ from fastai2.text.all import *
 
 # Cell
 def pre_process_squad(row, hf_arch, hf_tokenizer):
-    context, qst, ans = row['context'], row['question_text'], row['answer_text']
+    context, qst, ans = row['context'], row['question'], row['answer_text']
 
     add_prefix_space = hf_arch in ['gpt2', 'roberta']
 

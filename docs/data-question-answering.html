@@ -154,38 +154,38 @@ description: "This module contains the bits required to use the fastai DataBlock
   <thead>
     <tr style="text-align: right;">
       <th></th>
+      <th>id</th>
       <th>title</th>
       <th>context</th>
-      <th>question_id</th>
-      <th>question_text</th>
-      <th>is_impossible</th>
+      <th>question</th>
+      <th>answers</th>
+      <th>ds_type</th>
       <th>answer_text</th>
-      <th>answer_start</th>
-      <th>answer_end</th>
+      <th>is_impossible</th>
     </tr>
   </thead>
   <tbody>
     <tr>
       <th>0</th>
-      <td>New_York_City</td>
-      <td>The New York City Fire Department (FDNY), provides fire protection, technical rescue, primary response to biological, chemical, and radioactive hazards, and emergency medical services for the five boroughs of New York City. The New York City Fire Department is the largest municipal fire department in the United States and the second largest in the world after the Tokyo Fire Department. The FDNY employs approximately 11,080 uniformed firefighters and over 3,300 uniformed EMTs and paramedics. The FDNY's motto is New York's Bravest.</td>
-      <td>56d1076317492d1400aab78c</td>
-      <td>What does FDNY stand for?</td>
+      <td>56be85543aeaaa14008c9063</td>
+      <td>Beyoncé</td>
+      <td>Beyoncé Giselle Knowles-Carter (/biːˈjɒnseɪ/ bee-YON-say) (born September 4, 1981) is an American singer, songwriter, record producer and actress. Born and raised in Houston, Texas, she performed in various singing and dancing competitions as a child, and rose to fame in the late 1990s as lead singer of R&amp;B girl-group Destiny's Child. Managed by her father, Mathew Knowles, the group became one of the world's best-selling girl groups of all time. Their hiatus saw the release of Beyoncé's debut album, Dangerously in Love (2003), which established her as a solo artist worldwide, earned five G...</td>
+      <td>When did Beyonce start becoming popular?</td>
+      <td>{'text': ['in the late 1990s'], 'answer_start': [269]}</td>
+      <td>train</td>
+      <td>in the late 1990s</td>
       <td>False</td>
-      <td>New York City Fire Department</td>
-      <td>4</td>
-      <td>33</td>
     </tr>
     <tr>
       <th>1</th>
-      <td>Cyprus</td>
-      <td>Following the death in 1473 of James II, the last Lusignan king, the Republic of Venice assumed control of the island, while the late king's Venetian widow, Queen Catherine Cornaro, reigned as figurehead. Venice formally annexed the Kingdom of Cyprus in 1489, following the abdication of Catherine. The Venetians fortified Nicosia by building the Venetian Walls, and used it as an important commercial hub. Throughout Venetian rule, the Ottoman Empire frequently raided Cyprus. In 1539 the Ottomans destroyed Limassol and so fearing the worst, the Venetians also fortified Famagusta and Kyrenia.</td>
-      <td>572e7f8003f98919007566df</td>
-      <td>In what year did the Ottomans destroy Limassol?</td>
+      <td>56be85543aeaaa14008c9065</td>
+      <td>Beyoncé</td>
+      <td>Beyoncé Giselle Knowles-Carter (/biːˈjɒnseɪ/ bee-YON-say) (born September 4, 1981) is an American singer, songwriter, record producer and actress. Born and raised in Houston, Texas, she performed in various singing and dancing competitions as a child, and rose to fame in the late 1990s as lead singer of R&amp;B girl-group Destiny's Child. Managed by her father, Mathew Knowles, the group became one of the world's best-selling girl groups of all time. Their hiatus saw the release of Beyoncé's debut album, Dangerously in Love (2003), which established her as a solo artist worldwide, earned five G...</td>
+      <td>What areas did Beyonce compete in when she was growing up?</td>
+      <td>{'text': ['singing and dancing'], 'answer_start': [207]}</td>
+      <td>train</td>
+      <td>singing and dancing</td>
       <td>False</td>
-      <td>1539</td>
-      <td>481</td>
-      <td>485</td>
     </tr>
   </tbody>
 </table>
@@ -276,21 +276,6 @@ description: "This module contains the bits required to use the fastai DataBlock
 </div>
 </div>
 
-<div class="output_wrapper">
-<div class="output">
-
-<div class="output_area">
-
-<div class="output_subarea output_stream output_stderr output_text">
-<pre>Token indices sequence length is longer than the specified maximum sequence length for this model (16 &gt; 512). Running this sequence through the model will result in indexing errors
-Token indices sequence length is longer than the specified maximum sequence length for this model (11 &gt; 512). Running this sequence through the model will result in indexing errors
-</pre>
-</div>
-</div>
-
-</div>
-</div>
-
 </div>
     {% endraw %}
 
@@ -318,7 +303,7 @@ Token indices sequence length is longer than the specified maximum sequence leng
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">squad_df</span> <span class="o">=</span> <span class="n">squad_df</span><span class="p">[(</span><span class="n">squad_df</span><span class="o">.</span><span class="n">answer_end</span> <span class="o">&lt;</span> <span class="n">max_seq_len</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">squad_df</span><span class="o">.</span><span class="n">is_impossible</span> <span class="o">==</span> <span class="kc">False</span><span class="p">)]</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">squad_df</span> <span class="o">=</span> <span class="n">squad_df</span><span class="p">[(</span><span class="n">squad_df</span><span class="o">.</span><span class="n">tok_answer_end</span> <span class="o">&lt;</span> <span class="n">max_seq_len</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">squad_df</span><span class="o">.</span><span class="n">is_impossible</span> <span class="o">==</span> <span class="kc">False</span><span class="p">)]</span>
 </pre></div>
 
     </div>
@@ -419,7 +404,7 @@ The argument must be an iterable if specified.</p>
 <span class="p">)</span>
 
 <span class="n">dblock</span> <span class="o">=</span> <span class="n">DataBlock</span><span class="p">(</span><span class="n">blocks</span><span class="o">=</span><span class="n">blocks</span><span class="p">,</span> 
-                   <span class="n">get_x</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">question_text</span><span class="p">,</span> <span class="n">x</span><span class="o">.</span><span class="n">context</span><span class="p">),</span>
+                   <span class="n">get_x</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">question</span><span class="p">,</span> <span class="n">x</span><span class="o">.</span><span class="n">context</span><span class="p">),</span>
                    <span class="n">get_y</span><span class="o">=</span><span class="p">[</span><span class="n">ColReader</span><span class="p">(</span><span class="s1">&#39;tok_answer_start&#39;</span><span class="p">),</span> <span class="n">ColReader</span><span class="p">(</span><span class="s1">&#39;tok_answer_end&#39;</span><span class="p">)],</span>
                    <span class="n">splitter</span><span class="o">=</span><span class="n">RandomSplitter</span><span class="p">(),</span>
                    <span class="n">n_inp</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
@@ -568,15 +553,15 @@ The argument must be an iterable if specified.</p>
   <tbody>
     <tr>
       <th>0</th>
-      <td>&lt;s&gt; When was Brazil colonized?&lt;/s&gt;&lt;/s&gt; Child labour has been a consistent struggle for children in Brazil ever since the country was colonized on April 22, 1550 by Pedro Álvares Cabral. Work that many children took part in was not always visible, legal, or paid. Free or slave labour was a common occurrence for many youths and was a part of their everyday lives as they grew into adulthood. Yet due to there being no clear definition of how to classify what a child or youth is, there has been little historical documentation of child labour during the colonial period. Due to this lack of documentation, it is hard&lt;/s&gt;</td>
-      <td>(28, 33)</td>
-      <td>April 22, 1550</td>
+      <td>&lt;s&gt; What did Frédéric compose during the year of 1817?&lt;/s&gt;&lt;/s&gt; Fryderyk may have had some piano instruction from his mother, but his first professional music tutor, from 1816 to 1821, was the Czech pianist Wojciech Żywny. His elder sister Ludwika also took lessons from Żywny, and occasionally played duets with her brother. It quickly became apparent that he was a child prodigy. By the age of seven Fryderyk had begun giving public concerts, and in 1817 he composed two polonaises, in G minor and&lt;/s&gt;</td>
+      <td>(118, 122)</td>
+      <td>two polonaises</td>
     </tr>
     <tr>
       <th>1</th>
-      <td>&lt;s&gt; What proportion of the federal census records in existence does the National Archives Building house?&lt;/s&gt;&lt;/s&gt; The National Archives Building in downtown Washington holds record collections such as all existing federal census records, ships' passenger lists, military unit records from the American Revolution to the Philippine–American War, records of the Confederate government, the Freedmen's Bureau records, and pension and land records.&lt;/s&gt;</td>
-      <td>(31, 32)</td>
-      <td>all</td>
+      <td>&lt;s&gt; Which single from B'Day was only released in the U.K.?&lt;/s&gt;&lt;/s&gt; Beyoncé's second solo album B'Day was released on September 5, 2006, in the US, to coincide with her twenty-fifth birthday. It sold 541,000 copies in its first week and debuted atop the Billboard 200, becoming Beyoncé's second consecutive number-one album in the United States. The album's lead single "Déjà Vu", featuring Jay Z, reached the top five on the Billboard Hot 100 chart. The second international single "Irreplaceable" was a commercial success worldwide, reaching number one in&lt;/s&gt;</td>
+      <td>(0, 0)</td>
+      <td></td>
     </tr>
   </tbody>
 </table>
