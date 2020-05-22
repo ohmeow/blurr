@@ -20,7 +20,7 @@ class HF_TokenizerTransform(Transform):
     def __init__(self, hf_arch, hf_tokenizer, title='text', **kwargs):
 
         store_attr(self, 'hf_arch, hf_tokenizer, title')
-        self.add_prefix_space = hf_arch in ['gpt2', 'roberta']
+        self.add_prefix_space = hf_arch in ['gpt2', 'roberta', 'bart']
 
     def encodes(self, inp):
         """Supports both string and list[str] inputs (the later is common for token classification tasks).
@@ -45,7 +45,7 @@ class HF_TokenizerTransform(Transform):
 # Cell
 @typedispatch
 def build_hf_input(task, tokenizer, a_tok_ids, b_tok_ids=None, targets=None,
-                   max_length=512, pad_to_max_length=True, truncation_strategy='longest_first'):
+                   max_length=512, pad_to_max_length=True, truncation_strategy='longest_first', trg_tok_kwargs={}):
 
     res = tokenizer.prepare_for_model(a_tok_ids, b_tok_ids,
                                        max_length=max_length, pad_to_max_length=pad_to_max_length,
@@ -60,25 +60,25 @@ def build_hf_input(task, tokenizer, a_tok_ids, b_tok_ids=None, targets=None,
 # Cell
 class HF_BatchTransform(Transform):
     """Handles everything you need to assemble a mini-batch of inputs and targets"""
-    def __init__(self, hf_arch, hf_tokenizer, max_seq_len=512, truncation_strategy='longest_first', task=None):
+    def __init__(self, hf_arch, hf_tokenizer, max_seq_len=512, truncation_strategy='longest_first', task=None,
+                 trg_tok_kwargs={}):
 
         self.hf_arch = hf_arch
         self.hf_tokenizer = hf_tokenizer
-        store_attr(self, 'max_seq_len, truncation_strategy, task')
+        store_attr(self, 'max_seq_len, truncation_strategy, task, trg_tok_kwargs')
 
     def encodes(self, samples):
         encoded_samples = []
         for idx, sample in enumerate(samples):
             if (isinstance(sample[0], tuple)):
-                a_tok_ids = sample[0][0].tolist()
-                b_tok_ids = sample[0][1].tolist()
+                a_tok_ids, b_tok_ids = sample[0][0].tolist(), sample[0][1].tolist()
             else:
-                a_tok_ids = sample[0].tolist()
-                b_tok_ids = None
+                a_tok_ids, b_tok_ids = sample[0].tolist(), None
 
             hf_base_input, targets = build_hf_input(self.task, self.hf_tokenizer,
                                                     a_tok_ids, b_tok_ids, sample[1:],
-                                                    self.max_seq_len, True, self.truncation_strategy)
+                                                    self.max_seq_len, True, self.truncation_strategy,
+                                                    self.trg_tok_kwargs)
 
             encoded_samples.append((hf_base_input, *targets))
 
@@ -86,12 +86,14 @@ class HF_BatchTransform(Transform):
 
 # Cell
 class HF_TextBlock(TransformBlock):
-    def __init__(self, hf_arch, hf_tokenizer, hf_batch_tfm=None, task=None, max_seq_len=512, **kwargs):
+    def __init__(self, hf_arch, hf_tokenizer, hf_batch_tfm=None, max_seq_len=512, task=None, trg_tok_kwargs={}):
+        if hf_batch_tfm is None:
+            hf_batch_tfm = HF_BatchTransform(hf_arch, hf_tokenizer,
+                                             max_seq_len, task=task, trg_tok_kwargs=trg_tok_kwargs)
 
-        tok_tfms = [ HF_TokenizerTransform(hf_arch, hf_tokenizer, **kwargs) ]
-        if hf_batch_tfm is None: hf_batch_tfm = HF_BatchTransform(hf_arch, hf_tokenizer, max_seq_len, task=task)
-
-        return super().__init__(type_tfms=tok_tfms, dl_type=SortedDL, dls_kwargs={ 'before_batch': hf_batch_tfm })
+        return super().__init__(type_tfms=HF_TokenizerTransform(hf_arch, hf_tokenizer),
+                                dl_type=SortedDL,
+                                dls_kwargs={ 'before_batch': hf_batch_tfm })
 
 # Cell
 @typedispatch
