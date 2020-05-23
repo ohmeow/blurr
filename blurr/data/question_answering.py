@@ -50,8 +50,7 @@ class HF_QuestionAnswerInput(list): pass
 
 # Cell
 @typedispatch
-def build_hf_input(task:ForQuestionAnsweringTask, tokenizer,
-                   a_tok_ids, b_tok_ids=None, targets=None,
+def build_hf_input(task:ForQuestionAnsweringTask, tokenizer, a_tok_ids, b_tok_ids=None, targets=None,
                    max_length=512, pad_to_max_length=True, truncation_strategy=None):
 
     if (truncation_strategy is None):

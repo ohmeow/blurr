@@ -16,12 +16,12 @@ from .core import *
 class HF_QstAndAnsModelWrapper(HF_BaseModelWrapper):
     """A custom model wrapper for question answer models since we need all the outputs (not just the first)"""
     def forward(self, x):
-        model_kwargs = {}
+        model_kwargs, n_inputs = {}, len(x)
         model_kwargs['input_ids'] = x[0]
-        if (self._include_arg('attention_mask', x[1])): model_kwargs['attention_mask'] = x[1]
-        if (self._include_arg('token_type_ids', x[2])): model_kwargs['token_type_ids'] = x[2]
-        if (self._include_arg('cls_index', x[3])): model_kwargs['cls_index'] = x[3]
-        if (self._include_arg('p_mask', x[4])): model_kwargs['p_mask'] = x[4]
+        if (n_inputs > 1 and self._include_arg('attention_mask', x[1])): model_kwargs['attention_mask'] = x[1]
+        if (n_inputs > 2 and self._include_arg('token_type_ids', x[2])): model_kwargs['token_type_ids'] = x[2]
+        if (n_inputs > 3 and self._include_arg('cls_index', x[3])): model_kwargs['cls_index'] = x[3]
+        if (n_inputs > 4 and self._include_arg('p_mask', x[4])): model_kwargs['p_mask'] = x[4]
 
         return self.hf_model(**model_kwargs)
 

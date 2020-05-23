@@ -32,10 +32,10 @@ class HF_BaseModelWrapper(Module):
         self.hf_model_fwd_args = self.hf_model.forward.__code__.co_varnames[:n_fwd_args][1:]
 
     def forward(self, x):
-        model_kwargs = {}
+        model_kwargs, n_inputs = {}, len(x)
         model_kwargs['input_ids'] = x[0]
-        if (self._include_arg('attention_mask', x[1])): model_kwargs['attention_mask'] = x[1]
-        if (self._include_arg('token_type_ids', x[2])): model_kwargs['token_type_ids'] = x[2]
+        if (n_inputs > 1 and self._include_arg('attention_mask', x[1])): model_kwargs['attention_mask'] = x[1]
+        if (n_inputs > 2 and self._include_arg('token_type_ids', x[2])): model_kwargs['token_type_ids'] = x[2]
 
         return self.hf_model(**model_kwargs)
 

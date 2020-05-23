@@ -128,23 +128,23 @@ learn.fit_one_cycle(3, lr_max=1e-3)
   <tbody>
     <tr>
       <td>0</td>
-      <td>0.680400</td>
-      <td>0.661521</td>
-      <td>0.545000</td>
+      <td>0.707755</td>
+      <td>0.657019</td>
+      <td>0.610000</td>
       <td>00:19</td>
     </tr>
     <tr>
       <td>1</td>
-      <td>0.636980</td>
-      <td>0.605327</td>
-      <td>0.695000</td>
+      <td>0.650511</td>
+      <td>0.606425</td>
+      <td>0.745000</td>
       <td>00:19</td>
     </tr>
     <tr>
       <td>2</td>
-      <td>0.604755</td>
-      <td>0.599580</td>
-      <td>0.725000</td>
+      <td>0.600608</td>
+      <td>0.606905</td>
+      <td>0.730000</td>
       <td>00:19</td>
     </tr>
   </tbody>
@@ -188,6 +188,9 @@ learn.show_results(hf_tokenizer=hf_tokenizer, max_n=2)
 
 
 ## ❗ Updates
+
+**05/23/2020** 
+* Initial support for text generation (e.g., summarization, conversational agents) models now included. Only tested with BART so if you try it with other models before I do, lmk what works ... and what doesn't
 
 **05/17/2020** 
 * Major code restructuring to make it easier to build out the library.

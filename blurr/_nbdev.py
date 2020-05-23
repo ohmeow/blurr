@@ -32,25 +32,29 @@ index = {"str_to_class": "00_utils.ipynb",
          "HF_TokenCategorize": "01d_data-token-classification.ipynb",
          "HF_TokenCategoryBlock": "01d_data-token-classification.ipynb",
          "HF_TokenClassInput": "01d_data-token-classification.ipynb",
-         "HF_SummaryInput": "01e_data-summarization.ipynb",
+         "HF_TextGenerationInput": "01e_data-text-generation.ipynb",
          "hf_splitter": "02_modeling-core.ipynb",
          "HF_BaseModelWrapper": "02_modeling-core.ipynb",
          "HF_BaseModelCallback": "02_modeling-core.ipynb",
          "HF_QstAndAnsModelWrapper": "02c_modeling-question-answering.ipynb",
          "HF_QstAndAnsModelCallback": "02c_modeling-question-answering.ipynb",
          "MultiTargetLoss": "02c_modeling-question-answering.ipynb",
-         "Learner.predict_tokens": "02d_modeling-token-classification.ipynb"}
+         "Learner.predict_tokens": "02d_modeling-token-classification.ipynb",
+         "HF_TextGenerationModelWrapper": "02e_modeling-text-generation.ipynb",
+         "text_gen_splitter": "02e_modeling-text-generation.ipynb",
+         "Learner.generate_text": "02e_modeling-text-generation.ipynb"}
 
 modules = ["utils.py",
            "data/core.py",
            "data/language_modeling.py",
            "data/question_answering.py",
            "data/token_classification.py",
-           "data/summarization.py",
+           "data/text_generation.py",
            "modeling/core.py",
            "modeling/language_modeling.py",
            "modeling/question_answering.py",
-           "modeling/token_classification.py"]
+           "modeling/token_classification.py",
+           "modeling/text_generation.py"]
 
 doc_url = "https://ohmeow.github.io/blurr/"
 
