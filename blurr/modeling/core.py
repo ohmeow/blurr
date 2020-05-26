@@ -3,7 +3,7 @@
 __all__ = ['hf_splitter', 'HF_BaseModelWrapper', 'HF_BaseModelCallback']
 
 # Cell
-import torch
+import torch, nlp
 from transformers import *
 from fastai2.text.all import *
 

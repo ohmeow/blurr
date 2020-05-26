@@ -282,7 +282,7 @@ The argument must be an iterable if specified.</p>
 
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Example-usage">Example usage<a class="anchor-link" href="#Example-usage"> </a></h2><p>Below demonstrates how to contruct your <code>DataBlock</code> for a sequence classification task (e.g., a model that requires a single text input)</p>
+<h2 id="Example-usage---Multi-class-classification">Example usage - Multi-class classification<a class="anchor-link" href="#Example-usage---Multi-class-classification"> </a></h2><p>Below demonstrates how to contruct your <code>DataBlock</code> for a sequence classification task (e.g., a model that requires a single text input)</p>
 
 </div>
 </div>
@@ -595,8 +595,489 @@ The argument must be an iterable if specified.</p>
     </tr>
     <tr>
       <th>1</th>
-      <td>Well, what can I say.&lt;br /&gt;&lt;br /&gt;"What the Bleep do we Know" has achieved the nearly impossible - leaving behind such masterpieces of the genre as "The Postman", "The Dungeon Master", "Merlin", and so fourth, it will go down in history as the single worst movie I have ever seen in its entirety. And that, ladies and gentlemen, is impressive indeed, for I have seen many a bad movie.&lt;br /&gt;&lt;br /&gt;This masterpiece of modern cinema consists of two interwoven parts, alternating between a silly and contrived plot about an extremely annoying photographer, abandoned by her husband and forced to take anti-depressants to survive, and a bunch of talking heads going on about how quantum physics supposedly justifies their new-agy pseudo-philosophy. Basically, if you start your day off meditating to the likes of Enya and Kenny G, this movie is for you. If you have a sense of humor, a crowd of people who know how to have fun, and a sizable portion of good weed, then this movie is for you as well. Otherwise, stay away. Take my word for it.&lt;br /&gt;&lt;br /&gt;The first thing that struck me about "What the Bleep do you Know" is that is seemed to be edited and put together by the same kinds of people that shoot cheap weddings on camera, complete with pink heart effects, computer-generated sparkles across the screen, and other assorted silliness. Who let these people anywhere near a theatrical release is a mystery to me. I guess this is what too much Kenny G does to you. The movie was permeated with cheesy GCI, the likes that you or I can produce on our own computer via over-the-counter video editing software, but never would, because it's just way too ridiculous.&lt;br /&gt;&lt;br /&gt;The script was _obviously_ written by someone with no writing experience whatsoever. Not only were all the characters and conversations cumbersome and contrived beyond belief, but the "writers" felt like they had to shove every relevant piece of information, or rather disinformation, which is what most of this movie was all about, all the way down your throat. Well, given the target audience, that may not have been too bad of an idea. The main character, for example, spends half the movie popping pills. Apparently, though, it was deemed not convincing enough, so there are at least a couple of dialogs in throughout, which refer to her</td>
+      <td>Now that Che(2008) has finished its relatively short Australian cinema run (extremely limited release:1 screen in Sydney, after 6wks), I can guiltlessly join both hosts of "At The Movies" in taking Steven Soderbergh to task.&lt;br /&gt;&lt;br /&gt;It's usually satisfying to watch a film director change his style/subject, but Soderbergh's most recent stinker, The Girlfriend Experience(2009), was also missing a story, so narrative (and editing?) seem to suddenly be Soderbergh's main challenge. Strange, after 20-odd years in the business. He was probably never much good at narrative, just hid it well inside "edgy" projects.&lt;br /&gt;&lt;br /&gt;None of this excuses him this present, almost diabolical failure. As David Stratton warns, "two parts of Che don't (even) make a whole". &lt;br /&gt;&lt;br /&gt;Epic biopic in name only, Che(2008) barely qualifies as a feature film! It certainly has no legs, inasmuch as except for its uncharacteristic ultimate resolution forced upon it by history, Soderbergh's 4.5hrs-long dirge just goes nowhere.&lt;br /&gt;&lt;br /&gt;Even Margaret Pomeranz, the more forgiving of Australia's At The Movies duo, noted about Soderbergh's repetitious waste of (HD digital storage): "you're in the woods...you're in the woods...you're in the woods...". I too am surprised Soderbergh didn't give us another 2.5hrs of THAT somewhere between his existing two Parts, because he still left out massive chunks of Che's "revolutionary" life! &lt;br /&gt;&lt;br /&gt;For a biopic of an important but infamous historical figure, Soderbergh unaccountably alienates, if not deliberately insults, his audiences by&lt;br /&gt;&lt;br /&gt;1. never providing most of Che's story; &lt;br /&gt;&lt;br /&gt;2. imposing unreasonable film lengths with mere dullard repetition; &lt;br /&gt;&lt;br /&gt;3. ignoring both true hindsight and a narrative of events; &lt;br /&gt;&lt;br /&gt;4. barely developing an idea, or a character; &lt;br /&gt;&lt;br /&gt;5. remaining claustrophobically episodic; &lt;br /&gt;&lt;br /&gt;6. ignoring proper context for scenes---whatever we do get is mired in disruptive timeshifts; &lt;br /&gt;&lt;br /&gt;7. linguistically</td>
       <td>negative</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    {% endraw %}
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Example-usage---Multi-label-classification">Example usage - Multi-label classification<a class="anchor-link" href="#Example-usage---Multi-label-classification"> </a></h2><p>Below demonstrates how to contruct your <code>DataBlock</code> for a multi-label classification task</p>
+
+</div>
+</div>
+</div>
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># creates a dataset with the first 10% of training set</span>
+<span class="n">raw_data</span> <span class="o">=</span> <span class="n">nlp</span><span class="o">.</span><span class="n">load_dataset</span><span class="p">(</span><span class="s1">&#39;civil_comments&#39;</span><span class="p">,</span> <span class="n">split</span><span class="o">=</span><span class="s1">&#39;train[:1%]&#39;</span><span class="p">)</span> 
+<span class="nb">len</span><span class="p">(</span><span class="n">raw_data</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stderr output_text">
+<pre>Using custom data configuration default
+</pre>
+</div>
+</div>
+
+<div class="output_area">
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>18049</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    {% endraw %}
+
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">toxic_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">raw_data</span><span class="p">)</span>
+<span class="n">toxic_df</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+<div class="output_html rendered_html output_subarea output_execute_result">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>text</th>
+      <th>toxicity</th>
+      <th>severe_toxicity</th>
+      <th>obscene</th>
+      <th>threat</th>
+      <th>insult</th>
+      <th>identity_attack</th>
+      <th>sexual_explicit</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>This is so cool. It's like, 'would you want your mother to read this??' Really great idea, well done!</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.00000</td>
+      <td>0.000000</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>Thank you!! This would make my life a lot less anxiety-inducing. Keep it up, and don't let anyone get in your way!</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.00000</td>
+      <td>0.000000</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>This is such an urgent design problem; kudos to you for taking it on. Very impressive!</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.00000</td>
+      <td>0.000000</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>Is this something I'll be able to install on my site? When will you be releasing it?</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.00000</td>
+      <td>0.000000</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>haha you guys are a bunch of losers.</td>
+      <td>0.893617</td>
+      <td>0.021277</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.87234</td>
+      <td>0.021277</td>
+      <td>0.0</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    {% endraw %}
+
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">lbl_cols</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">toxic_df</span><span class="o">.</span><span class="n">columns</span><span class="p">[</span><span class="mi">1</span><span class="p">:]);</span> <span class="n">lbl_cols</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>[&#39;toxicity&#39;,
+ &#39;severe_toxicity&#39;,
+ &#39;obscene&#39;,
+ &#39;threat&#39;,
+ &#39;insult&#39;,
+ &#39;identity_attack&#39;,
+ &#39;sexual_explicit&#39;]</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    {% endraw %}
+
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">toxic_df</span> <span class="o">=</span> <span class="n">toxic_df</span><span class="o">.</span><span class="n">round</span><span class="p">({</span><span class="n">col</span><span class="p">:</span> <span class="mi">0</span> <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="n">lbl_cols</span><span class="p">})</span>
+<span class="n">toxic_df</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+<div class="output_html rendered_html output_subarea output_execute_result">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>text</th>
+      <th>toxicity</th>
+      <th>severe_toxicity</th>
+      <th>obscene</th>
+      <th>threat</th>
+      <th>insult</th>
+      <th>identity_attack</th>
+      <th>sexual_explicit</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>This is so cool. It's like, 'would you want your mother to read this??' Really great idea, well done!</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>Thank you!! This would make my life a lot less anxiety-inducing. Keep it up, and don't let anyone get in your way!</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>This is such an urgent design problem; kudos to you for taking it on. Very impressive!</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>Is this something I'll be able to install on my site? When will you be releasing it?</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>haha you guys are a bunch of losers.</td>
+      <td>1.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>1.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    {% endraw %}
+
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">task</span> <span class="o">=</span> <span class="n">HF_TASKS_AUTO</span><span class="o">.</span><span class="n">ForSequenceClassification</span>
+
+<span class="n">pretrained_model_name</span> <span class="o">=</span> <span class="s2">&quot;roberta-base&quot;</span> <span class="c1"># &quot;distilbert-base-uncased&quot; &quot;bert-base-uncased&quot;</span>
+<span class="n">config</span> <span class="o">=</span> <span class="n">AutoConfig</span><span class="o">.</span><span class="n">from_pretrained</span><span class="p">(</span><span class="n">pretrained_model_name</span><span class="p">)</span>
+<span class="n">config</span><span class="o">.</span><span class="n">num_labels</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">lbl_cols</span><span class="p">)</span>
+
+<span class="n">hf_arch</span><span class="p">,</span> <span class="n">hf_tokenizer</span><span class="p">,</span> <span class="n">hf_config</span><span class="p">,</span> <span class="n">hf_model</span> <span class="o">=</span> <span class="n">BLURR_MODEL_HELPER</span><span class="o">.</span><span class="n">get_auto_hf_objects</span><span class="p">(</span><span class="n">pretrained_model_name</span><span class="p">,</span> 
+                                                                                    <span class="n">task</span><span class="o">=</span><span class="n">task</span><span class="p">,</span> 
+                                                                                    <span class="n">config</span><span class="o">=</span><span class="n">config</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    {% endraw %}
+
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># single input</span>
+<span class="n">blocks</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="n">HF_TextBlock</span><span class="p">(</span><span class="n">hf_arch</span><span class="o">=</span><span class="n">hf_arch</span><span class="p">,</span> <span class="n">hf_tokenizer</span><span class="o">=</span><span class="n">hf_tokenizer</span><span class="p">),</span> 
+    <span class="n">MultiCategoryBlock</span><span class="p">(</span><span class="n">encoded</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">vocab</span><span class="o">=</span><span class="n">lbl_cols</span><span class="p">)</span>
+<span class="p">)</span>
+
+<span class="n">dblock</span> <span class="o">=</span> <span class="n">DataBlock</span><span class="p">(</span><span class="n">blocks</span><span class="o">=</span><span class="n">blocks</span><span class="p">,</span> 
+                   <span class="n">get_x</span><span class="o">=</span><span class="n">ColReader</span><span class="p">(</span><span class="s1">&#39;text&#39;</span><span class="p">),</span> 
+                   <span class="n">get_y</span><span class="o">=</span><span class="n">ColReader</span><span class="p">(</span><span class="n">lbl_cols</span><span class="p">),</span> 
+                   <span class="n">splitter</span><span class="o">=</span><span class="n">RandomSplitter</span><span class="p">())</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    {% endraw %}
+
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">dls</span> <span class="o">=</span> <span class="n">dblock</span><span class="o">.</span><span class="n">dataloaders</span><span class="p">(</span><span class="n">toxic_df</span><span class="p">,</span> <span class="n">bs</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    {% endraw %}
+
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">b</span> <span class="o">=</span> <span class="n">dls</span><span class="o">.</span><span class="n">one_batch</span><span class="p">()</span>
+<span class="nb">len</span><span class="p">(</span><span class="n">b</span><span class="p">),</span> <span class="n">b</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">b</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>(2, torch.Size([4, 512]), torch.Size([4, 7]))</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    {% endraw %}
+
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">dls</span><span class="o">.</span><span class="n">show_batch</span><span class="p">(</span><span class="n">hf_tokenizer</span><span class="o">=</span><span class="n">hf_tokenizer</span><span class="p">,</span> <span class="n">max_n</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+<div class="output_html rendered_html output_subarea ">
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>text</th>
+      <th>None</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>I have had a question about Einstein's Special Theory of Relativity for some time which scientists all seem to run away from.  Until 1887 the equations used for Relativity were the Galilean transformation equations.\n\n                                                   x'=x-vt\n                                                   y'=y\n                                                   z'=z\n                                                   t'=t\n\nAfter 1887, scientists threw away the Galilean transformation equations and substituted the Lorentz equations.  Some time back I began to ask scientists why they had not used two sets of Galilean transformation equations instead of the Lorentz equations.\n        \n                                                 x = x' - (v2)(t2)'\n                                                 y = y'\n                                                 z = z'\n</td>
+      <td></td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>Yep, I've done it several times and it IS difficult, but not impossible. Cut all departments' budget across the board by 20% this year. Make the dept heads figure out where and how to cut. One idea I've heard is to shorten the state work week (non-emergency, obviously) to four days a week, giving everyone a 10% pay cut for 10% less hours. If people need to then supplement that income with fishing or subsistence, they would have the time to do it. Most employees work a 37.5 hour week. If you cut it down to four 8.5-hour days, that's exactly 10%. I would love someone in the know to do the math on that to see what the savings would be. I have no idea how many non-essential positions we have, but I think most people would rather have a job that doesn't compromise their benefits at a lesser pay than get a straight out pink slip. Every state employee would get a three-day weekend. They could alternate Mondays &amp; Fridays off so there was still coverage, like at service counters (DMV, Parks).</td>
+      <td></td>
     </tr>
   </tbody>
 </table>

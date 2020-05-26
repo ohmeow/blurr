@@ -5,7 +5,7 @@ __all__ = ['HF_BaseInput', 'HF_TokenizerTransform', 'HF_BatchTransform', 'HF_Tex
 # Cell
 from functools import reduce
 
-import torch
+import torch, nlp
 from transformers import *
 from fastai2.text.all import *
 
