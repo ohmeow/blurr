@@ -183,7 +183,7 @@ description: "Various utility functions used by the blurr package."
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h4 id="Singleton object at 0x7f2c7882f3d0>" class="doc_header"><code>Singleton object at 0x7f2c7882f3d0></code><a href="" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>Singleton object at 0x7f2c7882f3d0></code>(<strong>*<code>args</code></strong>, <strong>**<code>kwargs</code></strong>)</p>
+<h4 id="Singleton object at 0x7fd6c01cf190>" class="doc_header"><code>Singleton object at 0x7fd6c01cf190></code><a href="" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>Singleton object at 0x7fd6c01cf190></code>(<strong>*<code>args</code></strong>, <strong>**<code>kwargs</code></strong>)</p>
 </blockquote>
 
 </div>
@@ -247,7 +247,7 @@ description: "Various utility functions used by the blurr package."
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h4 id="ModelHelper.get_architectures" class="doc_header"><code>ModelHelper.get_architectures</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/utils.py#L83" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>ModelHelper.get_architectures</code>()</p>
+<h4 id="ModelHelper.get_architectures" class="doc_header"><code>ModelHelper.get_architectures</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/utils.py#L85" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>ModelHelper.get_architectures</code>()</p>
 </blockquote>
 <p>Used to get all the architectures supported by your <code>Transformers</code> install</p>
 
@@ -268,7 +268,7 @@ description: "Various utility functions used by the blurr package."
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">mh</span><span class="o">.</span><span class="n">get_architectures</span><span class="p">())</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">BLURR_MODEL_HELPER</span><span class="o">.</span><span class="n">get_architectures</span><span class="p">())</span>
 </pre></div>
 
     </div>
@@ -281,7 +281,7 @@ description: "Various utility functions used by the blurr package."
 <div class="output_area">
 
 <div class="output_subarea output_stream output_stdout output_text">
-<pre>[&#39;transfo_xl&#39;, &#39;albert&#39;, &#39;auto&#39;, &#39;bart&#39;, &#39;bert&#39;, &#39;bert_japanese&#39;, &#39;ctrl&#39;, &#39;camembert&#39;, &#39;utils&#39;, &#39;distilbert&#39;, &#39;electra&#39;, &#39;encoder_decoder&#39;, &#39;flaubert&#39;, &#39;gpt2&#39;, &#39;mmbt&#39;, &#39;marian&#39;, &#39;openai&#39;, &#39;reformer&#39;, &#39;roberta&#39;, &#39;t5&#39;, &#39;xlm&#39;, &#39;xlm_roberta&#39;, &#39;xlnet&#39;]
+<pre>[&#39;albert&#39;, &#39;auto&#39;, &#39;bart&#39;, &#39;bert&#39;, &#39;bert_japanese&#39;, &#39;camembert&#39;, &#39;ctrl&#39;, &#39;distilbert&#39;, &#39;electra&#39;, &#39;encoder_decoder&#39;, &#39;flaubert&#39;, &#39;gpt2&#39;, &#39;longformer&#39;, &#39;marian&#39;, &#39;mmbt&#39;, &#39;openai&#39;, &#39;reformer&#39;, &#39;roberta&#39;, &#39;t5&#39;, &#39;transfo_xl&#39;, &#39;xlm&#39;, &#39;xlm_roberta&#39;, &#39;xlnet&#39;]
 </pre>
 </div>
 </div>
@@ -326,7 +326,7 @@ description: "Various utility functions used by the blurr package."
 <div class="output_area">
 
 <div class="output_subarea output_stream output_stdout output_text">
-<pre>(#23) [&lt;HF_ARCHITECTURES.transfo_xl: 1&gt;,&lt;HF_ARCHITECTURES.albert: 2&gt;,&lt;HF_ARCHITECTURES.auto: 3&gt;,&lt;HF_ARCHITECTURES.bart: 4&gt;,&lt;HF_ARCHITECTURES.bert: 5&gt;,&lt;HF_ARCHITECTURES.bert_japanese: 6&gt;,&lt;HF_ARCHITECTURES.ctrl: 7&gt;,&lt;HF_ARCHITECTURES.camembert: 8&gt;,&lt;HF_ARCHITECTURES.utils: 9&gt;,&lt;HF_ARCHITECTURES.distilbert: 10&gt;...]
+<pre>(#23) [&lt;HF_ARCHITECTURES.albert: 1&gt;,&lt;HF_ARCHITECTURES.auto: 2&gt;,&lt;HF_ARCHITECTURES.bart: 3&gt;,&lt;HF_ARCHITECTURES.bert: 4&gt;,&lt;HF_ARCHITECTURES.bert_japanese: 5&gt;,&lt;HF_ARCHITECTURES.camembert: 6&gt;,&lt;HF_ARCHITECTURES.ctrl: 7&gt;,&lt;HF_ARCHITECTURES.distilbert: 8&gt;,&lt;HF_ARCHITECTURES.electra: 9&gt;,&lt;HF_ARCHITECTURES.encoder_decoder: 10&gt;...]
 </pre>
 </div>
 </div>
@@ -348,7 +348,7 @@ description: "Various utility functions used by the blurr package."
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h4 id="ModelHelper.get_config" class="doc_header"><code>ModelHelper.get_config</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/utils.py#L87" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>ModelHelper.get_config</code>(<strong><code>arch</code></strong>)</p>
+<h4 id="ModelHelper.get_config" class="doc_header"><code>ModelHelper.get_config</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/utils.py#L91" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>ModelHelper.get_config</code>(<strong><code>arch</code></strong>)</p>
 </blockquote>
 <p>Used the locate the name of the configuration class for a given architecture</p>
 
@@ -369,7 +369,7 @@ description: "Various utility functions used by the blurr package."
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">mh</span><span class="o">.</span><span class="n">get_config</span><span class="p">(</span><span class="s1">&#39;bert&#39;</span><span class="p">))</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">BLURR_MODEL_HELPER</span><span class="o">.</span><span class="n">get_config</span><span class="p">(</span><span class="s1">&#39;bert&#39;</span><span class="p">))</span>
 </pre></div>
 
     </div>
@@ -382,7 +382,7 @@ description: "Various utility functions used by the blurr package."
 <div class="output_area">
 
 <div class="output_subarea output_stream output_stdout output_text">
-<pre>BertConfig
+<pre>&lt;class &#39;transformers.configuration_bert.BertConfig&#39;&gt;
 </pre>
 </div>
 </div>
@@ -404,7 +404,7 @@ description: "Various utility functions used by the blurr package."
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h4 id="ModelHelper.get_tokenizers" class="doc_header"><code>ModelHelper.get_tokenizers</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/utils.py#L91" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>ModelHelper.get_tokenizers</code>(<strong><code>arch</code></strong>)</p>
+<h4 id="ModelHelper.get_tokenizers" class="doc_header"><code>ModelHelper.get_tokenizers</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/utils.py#L98" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>ModelHelper.get_tokenizers</code>(<strong><code>arch</code></strong>)</p>
 </blockquote>
 <p>Used to get the available huggingface tokenizers for a given architecture. Note: There may be
 multiple tokenizers and so this returns a list.</p>
@@ -426,7 +426,7 @@ multiple tokenizers and so this returns a list.</p>
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">mh</span><span class="o">.</span><span class="n">get_tokenizers</span><span class="p">(</span><span class="s1">&#39;electra&#39;</span><span class="p">))</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">BLURR_MODEL_HELPER</span><span class="o">.</span><span class="n">get_tokenizers</span><span class="p">(</span><span class="s1">&#39;electra&#39;</span><span class="p">))</span>
 </pre></div>
 
     </div>
@@ -439,7 +439,7 @@ multiple tokenizers and so this returns a list.</p>
 <div class="output_area">
 
 <div class="output_subarea output_stream output_stdout output_text">
-<pre>[&#39;ElectraTokenizer&#39; &#39;ElectraTokenizerFast&#39;]
+<pre>[&lt;class &#39;transformers.tokenization_electra.ElectraTokenizer&#39;&gt;, &lt;class &#39;transformers.tokenization_electra.ElectraTokenizerFast&#39;&gt;]
 </pre>
 </div>
 </div>
@@ -461,7 +461,7 @@ multiple tokenizers and so this returns a list.</p>
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h4 id="ModelHelper.get_tasks" class="doc_header"><code>ModelHelper.get_tasks</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/utils.py#L97" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>ModelHelper.get_tasks</code>(<strong><code>arch</code></strong>=<em><code>None</code></em>)</p>
+<h4 id="ModelHelper.get_tasks" class="doc_header"><code>ModelHelper.get_tasks</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/utils.py#L107" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>ModelHelper.get_tasks</code>(<strong><code>arch</code></strong>=<em><code>None</code></em>)</p>
 </blockquote>
 <p>Get the type of tasks for which there is a custom model for (<em>optional: by architecture</em>).
 There are a number of customized models built for specific tasks like token classification,
@@ -484,9 +484,9 @@ question/answering, LM, etc....</p>
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">mh</span><span class="o">.</span><span class="n">get_tasks</span><span class="p">())</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">BLURR_MODEL_HELPER</span><span class="o">.</span><span class="n">get_tasks</span><span class="p">())</span>
 <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">mh</span><span class="o">.</span><span class="n">get_tasks</span><span class="p">(</span><span class="s1">&#39;bart&#39;</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">BLURR_MODEL_HELPER</span><span class="o">.</span><span class="n">get_tasks</span><span class="p">(</span><span class="s1">&#39;bart&#39;</span><span class="p">))</span>
 </pre></div>
 
     </div>
@@ -499,9 +499,9 @@ question/answering, LM, etc....</p>
 <div class="output_area">
 
 <div class="output_subarea output_stream output_stdout output_text">
-<pre>[&#39;ForMaskedLM&#39;, &#39;ForPreTraining&#39;, &#39;ForQuestionAnswering&#39;, &#39;ForSequenceClassification&#39;, &#39;ForTokenClassification&#39;, &#39;ForMultipleChoice&#39;, &#39;WithLMHead&#39;, &#39;ForConditionalGeneration&#39;, &#39;ForNextSentencePrediction&#39;, &#39;ForQuestionAnsweringSimple&#39;, &#39;WithLMHeadModel&#39;, &#39;ForClassification&#39;]
+<pre>[&#39;Classification&#39;, &#39;ConditionalGeneration&#39;, &#39;LMHead&#39;, &#39;LMHeadModel&#39;, &#39;MaskedLM&#39;, &#39;MultipleChoice&#39;, &#39;NextSentencePrediction&#39;, &#39;PreTraining&#39;, &#39;QuestionAnswering&#39;, &#39;QuestionAnsweringSimple&#39;, &#39;SequenceClassification&#39;, &#39;TokenClassification&#39;]
 
-[&#39;ForConditionalGeneration&#39;, &#39;ForSequenceClassification&#39;]
+[&#39;ConditionalGeneration&#39;, &#39;SequenceClassification&#39;]
 </pre>
 </div>
 </div>
@@ -550,10 +550,10 @@ question/answering, LM, etc....</p>
 
 <div class="output_subarea output_stream output_stdout output_text">
 <pre>--- all tasks ---
-(#12) [&lt;HF_TASKS_ALL.ForMaskedLM: 1&gt;,&lt;HF_TASKS_ALL.ForPreTraining: 2&gt;,&lt;HF_TASKS_ALL.ForQuestionAnswering: 3&gt;,&lt;HF_TASKS_ALL.ForSequenceClassification: 4&gt;,&lt;HF_TASKS_ALL.ForTokenClassification: 5&gt;,&lt;HF_TASKS_ALL.ForMultipleChoice: 6&gt;,&lt;HF_TASKS_ALL.WithLMHead: 7&gt;,&lt;HF_TASKS_ALL.ForConditionalGeneration: 8&gt;,&lt;HF_TASKS_ALL.ForNextSentencePrediction: 9&gt;,&lt;HF_TASKS_ALL.ForQuestionAnsweringSimple: 10&gt;...]
+(#12) [&lt;HF_TASKS_ALL.Classification: 1&gt;,&lt;HF_TASKS_ALL.ConditionalGeneration: 2&gt;,&lt;HF_TASKS_ALL.LMHead: 3&gt;,&lt;HF_TASKS_ALL.LMHeadModel: 4&gt;,&lt;HF_TASKS_ALL.MaskedLM: 5&gt;,&lt;HF_TASKS_ALL.MultipleChoice: 6&gt;,&lt;HF_TASKS_ALL.NextSentencePrediction: 7&gt;,&lt;HF_TASKS_ALL.PreTraining: 8&gt;,&lt;HF_TASKS_ALL.QuestionAnswering: 9&gt;,&lt;HF_TASKS_ALL.QuestionAnsweringSimple: 10&gt;...]
 
 --- auto only ---
-(#6) [&lt;HF_TASKS_AUTO.ForMultipleChoice: 1&gt;,&lt;HF_TASKS_AUTO.ForPreTraining: 2&gt;,&lt;HF_TASKS_AUTO.ForQuestionAnswering: 3&gt;,&lt;HF_TASKS_AUTO.ForSequenceClassification: 4&gt;,&lt;HF_TASKS_AUTO.ForTokenClassification: 5&gt;,&lt;HF_TASKS_AUTO.WithLMHead: 6&gt;]
+(#6) [&lt;HF_TASKS_AUTO.LMHead: 1&gt;,&lt;HF_TASKS_AUTO.MultipleChoice: 2&gt;,&lt;HF_TASKS_AUTO.PreTraining: 3&gt;,&lt;HF_TASKS_AUTO.QuestionAnswering: 4&gt;,&lt;HF_TASKS_AUTO.SequenceClassification: 5&gt;,&lt;HF_TASKS_AUTO.TokenClassification: 6&gt;]
 </pre>
 </div>
 </div>
@@ -571,7 +571,7 @@ question/answering, LM, etc....</p>
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">HF_TASKS_ALL</span><span class="o">.</span><span class="n">ForClassification</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">HF_TASKS_ALL</span><span class="o">.</span><span class="n">Classification</span>
 </pre></div>
 
     </div>
@@ -586,7 +586,7 @@ question/answering, LM, etc....</p>
 
 
 <div class="output_text output_subarea output_execute_result">
-<pre>&lt;HF_TASKS_ALL.ForClassification: 12&gt;</pre>
+<pre>&lt;HF_TASKS_ALL.Classification: 1&gt;</pre>
 </div>
 
 </div>
@@ -608,7 +608,7 @@ question/answering, LM, etc....</p>
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h4 id="ModelHelper.get_models" class="doc_header"><code>ModelHelper.get_models</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/utils.py#L107" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>ModelHelper.get_models</code>(<strong><code>arch</code></strong>=<em><code>None</code></em>, <strong><code>task</code></strong>=<em><code>None</code></em>)</p>
+<h4 id="ModelHelper.get_models" class="doc_header"><code>ModelHelper.get_models</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/utils.py#L117" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>ModelHelper.get_models</code>(<strong><code>arch</code></strong>=<em><code>None</code></em>, <strong><code>task</code></strong>=<em><code>None</code></em>)</p>
 </blockquote>
 <p>The transformer models available for use (optional: by architecture | task)</p>
 
@@ -629,7 +629,7 @@ question/answering, LM, etc....</p>
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">L</span><span class="p">(</span><span class="n">mh</span><span class="o">.</span><span class="n">get_models</span><span class="p">()))</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">L</span><span class="p">(</span><span class="n">BLURR_MODEL_HELPER</span><span class="o">.</span><span class="n">get_models</span><span class="p">()))</span>
 </pre></div>
 
     </div>
@@ -642,7 +642,7 @@ question/answering, LM, etc....</p>
 <div class="output_area">
 
 <div class="output_subarea output_stream output_stdout output_text">
-<pre>(#104) [&#39;AdaptiveEmbedding&#39;,&#39;AlbertForMaskedLM&#39;,&#39;AlbertForPreTraining&#39;,&#39;AlbertForQuestionAnswering&#39;,&#39;AlbertForSequenceClassification&#39;,&#39;AlbertForTokenClassification&#39;,&#39;AlbertModel&#39;,&#39;AlbertPreTrainedModel&#39;,&#39;AutoModel&#39;,&#39;AutoModelForMultipleChoice&#39;...]
+<pre>(#111) [&lt;class &#39;transformers.modeling_transfo_xl.AdaptiveEmbedding&#39;&gt;,&lt;class &#39;transformers.modeling_albert.AlbertForMaskedLM&#39;&gt;,&lt;class &#39;transformers.modeling_albert.AlbertForPreTraining&#39;&gt;,&lt;class &#39;transformers.modeling_albert.AlbertForQuestionAnswering&#39;&gt;,&lt;class &#39;transformers.modeling_albert.AlbertForSequenceClassification&#39;&gt;,&lt;class &#39;transformers.modeling_albert.AlbertForTokenClassification&#39;&gt;,&lt;class &#39;transformers.modeling_albert.AlbertModel&#39;&gt;,&lt;class &#39;transformers.modeling_albert.AlbertPreTrainedModel&#39;&gt;,&lt;class &#39;transformers.modeling_auto.AutoModel&#39;&gt;,&lt;class &#39;transformers.modeling_auto.AutoModelForMultipleChoice&#39;&gt;...]
 </pre>
 </div>
 </div>
@@ -660,7 +660,7 @@ question/answering, LM, etc....</p>
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">mh</span><span class="o">.</span><span class="n">get_models</span><span class="p">(</span><span class="n">arch</span><span class="o">=</span><span class="s1">&#39;bert&#39;</span><span class="p">))</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">BLURR_MODEL_HELPER</span><span class="o">.</span><span class="n">get_models</span><span class="p">(</span><span class="n">arch</span><span class="o">=</span><span class="s1">&#39;bert&#39;</span><span class="p">))</span>
 </pre></div>
 
     </div>
@@ -673,7 +673,7 @@ question/answering, LM, etc....</p>
 <div class="output_area">
 
 <div class="output_subarea output_stream output_stdout output_text">
-<pre>[&#39;BertForMaskedLM&#39;, &#39;BertForMultipleChoice&#39;, &#39;BertForNextSentencePrediction&#39;, &#39;BertForPreTraining&#39;, &#39;BertForQuestionAnswering&#39;, &#39;BertForSequenceClassification&#39;, &#39;BertForTokenClassification&#39;, &#39;BertLayer&#39;, &#39;BertModel&#39;, &#39;BertPreTrainedModel&#39;]
+<pre>[&lt;class &#39;transformers.modeling_bert.BertForMaskedLM&#39;&gt;, &lt;class &#39;transformers.modeling_bert.BertForMultipleChoice&#39;&gt;, &lt;class &#39;transformers.modeling_bert.BertForNextSentencePrediction&#39;&gt;, &lt;class &#39;transformers.modeling_bert.BertForPreTraining&#39;&gt;, &lt;class &#39;transformers.modeling_bert.BertForQuestionAnswering&#39;&gt;, &lt;class &#39;transformers.modeling_bert.BertForSequenceClassification&#39;&gt;, &lt;class &#39;transformers.modeling_bert.BertForTokenClassification&#39;&gt;, &lt;class &#39;transformers.modeling_bert.BertLayer&#39;&gt;, &lt;class &#39;transformers.modeling_bert.BertModel&#39;&gt;, &lt;class &#39;transformers.modeling_bert.BertPreTrainedModel&#39;&gt;]
 </pre>
 </div>
 </div>
@@ -691,7 +691,7 @@ question/answering, LM, etc....</p>
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">mh</span><span class="o">.</span><span class="n">get_models</span><span class="p">(</span><span class="n">task</span><span class="o">=</span><span class="s1">&#39;ForTokenClassification&#39;</span><span class="p">))</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">BLURR_MODEL_HELPER</span><span class="o">.</span><span class="n">get_models</span><span class="p">(</span><span class="n">task</span><span class="o">=</span><span class="s1">&#39;TokenClassification&#39;</span><span class="p">))</span>
 </pre></div>
 
     </div>
@@ -704,7 +704,7 @@ question/answering, LM, etc....</p>
 <div class="output_area">
 
 <div class="output_subarea output_stream output_stdout output_text">
-<pre>[&#39;AlbertForTokenClassification&#39;, &#39;AutoModelForTokenClassification&#39;, &#39;BertForTokenClassification&#39;, &#39;CamembertForTokenClassification&#39;, &#39;DistilBertForTokenClassification&#39;, &#39;ElectraForTokenClassification&#39;, &#39;RobertaForTokenClassification&#39;, &#39;XLMForTokenClassification&#39;, &#39;XLMRobertaForTokenClassification&#39;, &#39;XLNetForTokenClassification&#39;]
+<pre>[&lt;class &#39;transformers.modeling_albert.AlbertForTokenClassification&#39;&gt;, &lt;class &#39;transformers.modeling_auto.AutoModelForTokenClassification&#39;&gt;, &lt;class &#39;transformers.modeling_bert.BertForTokenClassification&#39;&gt;, &lt;class &#39;transformers.modeling_camembert.CamembertForTokenClassification&#39;&gt;, &lt;class &#39;transformers.modeling_distilbert.DistilBertForTokenClassification&#39;&gt;, &lt;class &#39;transformers.modeling_electra.ElectraForTokenClassification&#39;&gt;, &lt;class &#39;transformers.modeling_longformer.LongformerForTokenClassification&#39;&gt;, &lt;class &#39;transformers.modeling_roberta.RobertaForTokenClassification&#39;&gt;, &lt;class &#39;transformers.modeling_xlm.XLMForTokenClassification&#39;&gt;, &lt;class &#39;transformers.modeling_xlm_roberta.XLMRobertaForTokenClassification&#39;&gt;, &lt;class &#39;transformers.modeling_xlnet.XLNetForTokenClassification&#39;&gt;]
 </pre>
 </div>
 </div>
@@ -722,7 +722,7 @@ question/answering, LM, etc....</p>
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">mh</span><span class="o">.</span><span class="n">get_models</span><span class="p">(</span><span class="n">arch</span><span class="o">=</span><span class="s1">&#39;bert&#39;</span><span class="p">,</span> <span class="n">task</span><span class="o">=</span><span class="s1">&#39;ForTokenClassification&#39;</span><span class="p">))</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">BLURR_MODEL_HELPER</span><span class="o">.</span><span class="n">get_models</span><span class="p">(</span><span class="n">arch</span><span class="o">=</span><span class="s1">&#39;bert&#39;</span><span class="p">,</span> <span class="n">task</span><span class="o">=</span><span class="s1">&#39;TokenClassification&#39;</span><span class="p">))</span>
 </pre></div>
 
     </div>
@@ -735,52 +735,7 @@ question/answering, LM, etc....</p>
 <div class="output_area">
 
 <div class="output_subarea output_stream output_stdout output_text">
-<pre>[&#39;BertForTokenClassification&#39;]
-</pre>
-</div>
-</div>
-
-</div>
-</div>
-
-</div>
-    {% endraw %}
-
-<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<p>We'll create another enum for the huggingface models</p>
-
-</div>
-</div>
-</div>
-    {% raw %}
-    
-<div class="cell border-box-sizing code_cell rendered">
-
-</div>
-    {% endraw %}
-
-    {% raw %}
-    
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">L</span><span class="p">(</span><span class="n">HF_MODELS</span><span class="p">))</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-<div class="output_area">
-
-<div class="output_subarea output_stream output_stdout output_text">
-<pre>(#104) [&lt;HF_MODELS.AdaptiveEmbedding: 1&gt;,&lt;HF_MODELS.AlbertForMaskedLM: 2&gt;,&lt;HF_MODELS.AlbertForPreTraining: 3&gt;,&lt;HF_MODELS.AlbertForQuestionAnswering: 4&gt;,&lt;HF_MODELS.AlbertForSequenceClassification: 5&gt;,&lt;HF_MODELS.AlbertForTokenClassification: 6&gt;,&lt;HF_MODELS.AlbertModel: 7&gt;,&lt;HF_MODELS.AlbertPreTrainedModel: 8&gt;,&lt;HF_MODELS.AutoModel: 9&gt;,&lt;HF_MODELS.AutoModelForMultipleChoice: 10&gt;...]
+<pre>[&lt;class &#39;transformers.modeling_bert.BertForTokenClassification&#39;&gt;]
 </pre>
 </div>
 </div>
@@ -802,9 +757,9 @@ question/answering, LM, etc....</p>
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h4 id="ModelHelper.get_classes_for_model" class="doc_header"><code>ModelHelper.get_classes_for_model</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/utils.py#L115" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>ModelHelper.get_classes_for_model</code>(<strong><code>model_name_or_enum</code></strong>)</p>
+<h4 id="ModelHelper.get_classes_for_model" class="doc_header"><code>ModelHelper.get_classes_for_model</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/utils.py#L126" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>ModelHelper.get_classes_for_model</code>(<strong><code>model_name_or_cls</code></strong>)</p>
 </blockquote>
-<p>Get tokenizers, config, and model for a given model name / enum</p>
+<p>Get tokenizers, config, and model for a given model name / class</p>
 
 </div>
 
@@ -823,10 +778,10 @@ question/answering, LM, etc....</p>
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">tokenizers</span><span class="p">,</span> <span class="n">config</span><span class="p">,</span> <span class="n">model</span> <span class="o">=</span> <span class="n">mh</span><span class="o">.</span><span class="n">get_classes_for_model</span><span class="p">(</span><span class="s1">&#39;RobertaForSequenceClassification&#39;</span><span class="p">)</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">config</span><span class="p">,</span> <span class="n">tokenizers</span><span class="p">,</span> <span class="n">model</span> <span class="o">=</span> <span class="n">BLURR_MODEL_HELPER</span><span class="o">.</span><span class="n">get_classes_for_model</span><span class="p">(</span><span class="s1">&#39;RobertaForSequenceClassification&#39;</span><span class="p">)</span>
 
-<span class="nb">print</span><span class="p">(</span><span class="n">tokenizers</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">tokenizers</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
 </pre></div>
 
@@ -840,8 +795,8 @@ question/answering, LM, etc....</p>
 <div class="output_area">
 
 <div class="output_subarea output_stream output_stdout output_text">
-<pre>&lt;class &#39;transformers.tokenization_roberta.RobertaTokenizer&#39;&gt;
-&lt;class &#39;transformers.configuration_roberta.RobertaConfig&#39;&gt;
+<pre>&lt;class &#39;transformers.configuration_roberta.RobertaConfig&#39;&gt;
+&lt;class &#39;transformers.tokenization_roberta.RobertaTokenizer&#39;&gt;
 &lt;class &#39;transformers.modeling_roberta.RobertaForSequenceClassification&#39;&gt;
 </pre>
 </div>
@@ -860,10 +815,10 @@ question/answering, LM, etc....</p>
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">tokenizers</span><span class="p">,</span> <span class="n">config</span><span class="p">,</span> <span class="n">model</span> <span class="o">=</span> <span class="n">mh</span><span class="o">.</span><span class="n">get_classes_for_model</span><span class="p">(</span><span class="n">HF_MODELS</span><span class="o">.</span><span class="n">DistilBertModel</span><span class="p">)</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">config</span><span class="p">,</span> <span class="n">tokenizers</span><span class="p">,</span> <span class="n">model</span> <span class="o">=</span> <span class="n">BLURR_MODEL_HELPER</span><span class="o">.</span><span class="n">get_classes_for_model</span><span class="p">(</span><span class="n">DistilBertModel</span><span class="p">)</span>
 
-<span class="nb">print</span><span class="p">(</span><span class="n">tokenizers</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">tokenizers</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
 </pre></div>
 
@@ -877,8 +832,8 @@ question/answering, LM, etc....</p>
 <div class="output_area">
 
 <div class="output_subarea output_stream output_stdout output_text">
-<pre>&lt;class &#39;transformers.tokenization_distilbert.DistilBertTokenizer&#39;&gt;
-&lt;class &#39;transformers.configuration_distilbert.DistilBertConfig&#39;&gt;
+<pre>&lt;class &#39;transformers.configuration_distilbert.DistilBertConfig&#39;&gt;
+&lt;class &#39;transformers.tokenization_distilbert.DistilBertTokenizer&#39;&gt;
 &lt;class &#39;transformers.modeling_distilbert.DistilBertModel&#39;&gt;
 </pre>
 </div>
@@ -901,7 +856,7 @@ question/answering, LM, etc....</p>
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h4 id="ModelHelper.get_model_architecture" class="doc_header"><code>ModelHelper.get_model_architecture</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/utils.py#L125" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>ModelHelper.get_model_architecture</code>(<strong><code>model_name_or_enum</code></strong>)</p>
+<h4 id="ModelHelper.get_model_architecture" class="doc_header"><code>ModelHelper.get_model_architecture</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/utils.py#L136" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>ModelHelper.get_model_architecture</code>(<strong><code>model_name_or_enum</code></strong>)</p>
 </blockquote>
 <p>Get the architecture for a given model name / enum</p>
 
@@ -922,7 +877,7 @@ question/answering, LM, etc....</p>
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">mh</span><span class="o">.</span><span class="n">get_model_architecture</span><span class="p">(</span><span class="s1">&#39;RobertaForSequenceClassification&#39;</span><span class="p">)</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">BLURR_MODEL_HELPER</span><span class="o">.</span><span class="n">get_model_architecture</span><span class="p">(</span><span class="s1">&#39;RobertaForSequenceClassification&#39;</span><span class="p">)</span>
 </pre></div>
 
     </div>
@@ -957,24 +912,6 @@ question/answering, LM, etc....</p>
     {% raw %}
     
 <div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">tokenizer</span> <span class="o">=</span> <span class="n">AutoTokenizer</span><span class="o">.</span><span class="n">from_pretrained</span><span class="p">(</span><span class="s2">&quot;bert-base-cased-finetuned-mrpc&quot;</span><span class="p">)</span>
-<span class="n">model</span> <span class="o">=</span> <span class="n">AutoModelForSequenceClassification</span><span class="o">.</span><span class="n">from_pretrained</span><span class="p">(</span><span class="s2">&quot;bert-base-cased-finetuned-mrpc&quot;</span><span class="p">)</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-</div>
-    {% endraw %}
-
-    {% raw %}
-    
-<div class="cell border-box-sizing code_cell rendered">
 
 <div class="output_wrapper">
 <div class="output">
@@ -983,12 +920,13 @@ question/answering, LM, etc....</p>
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h4 id="ModelHelper.get_auto_hf_objects" class="doc_header"><code>ModelHelper.get_auto_hf_objects</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/utils.py#L130" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>ModelHelper.get_auto_hf_objects</code>(<strong><code>pretrained_model_name_or_path</code></strong>, <strong><code>task</code></strong>, <strong><code>config</code></strong>=<em><code>None</code></em>)</p>
+<h4 id="ModelHelper.get_hf_objects" class="doc_header"><code>ModelHelper.get_hf_objects</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/utils.py#L141" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>ModelHelper.get_hf_objects</code>(<strong><code>pretrained_model_name_or_path</code></strong>, <strong><code>task</code></strong>=<em><code>None</code></em>, <strong><code>config</code></strong>=<em><code>None</code></em>, <strong><code>tokenizer_cls</code></strong>=<em><code>None</code></em>, <strong><code>model_cls</code></strong>=<em><code>None</code></em>, <strong><code>config_kwargs</code></strong>=<em><code>{}</code></em>, <strong><code>tokenizer_kwargs</code></strong>=<em><code>{}</code></em>, <strong><code>model_kwargs</code></strong>=<em><code>{}</code></em>, <strong><code>cache_dir</code></strong>=<em><code>None</code></em>)</p>
 </blockquote>
-<p>Returns the architecture (str), tokenizer (obj), config (obj), and model (obj)
-given a known pre-trained model name or path and a task using Hugginface <code>AutoModel</code> capabilities.
-If a <code>config</code> is passed in, it will be  used when building the model, else the default configuration
-will be used (e.g., <code>AutoConfig.from_pretrained(...)</code>)</p>
+<p>Returns the architecture (str), config (obj), tokenizer (obj), and model (obj) given at minimum a
+<code>pre-trained model name or path</code>. Specify a <code>task</code> to ensure the right "AutoModelFor<task>" is used to
+create the model.</p>
+<p>Optionally, you can pass a config (obj), tokenizer (class), and/or model (class) (along with any
+related kwargs for each) to get as specific as you want w/r/t what huggingface objects are returned.</p>
 
 </div>
 
@@ -1007,12 +945,12 @@ will be used (e.g., <code>AutoConfig.from_pretrained(...)</code>)</p>
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">arch</span><span class="p">,</span> <span class="n">tokenizer</span><span class="p">,</span> <span class="n">config</span><span class="p">,</span> <span class="n">model</span> <span class="o">=</span> <span class="n">mh</span><span class="o">.</span><span class="n">get_auto_hf_objects</span><span class="p">(</span><span class="s2">&quot;bert-base-cased-finetuned-mrpc&quot;</span><span class="p">,</span>
-                                                        <span class="n">task</span><span class="o">=</span><span class="n">HF_TASKS_AUTO</span><span class="o">.</span><span class="n">WithLMHead</span><span class="p">)</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">arch</span><span class="p">,</span> <span class="n">config</span><span class="p">,</span> <span class="n">tokenizer</span><span class="p">,</span> <span class="n">model</span> <span class="o">=</span> <span class="n">BLURR_MODEL_HELPER</span><span class="o">.</span><span class="n">get_hf_objects</span><span class="p">(</span><span class="s2">&quot;bert-base-cased-finetuned-mrpc&quot;</span><span class="p">,</span>
+                                                                   <span class="n">task</span><span class="o">=</span><span class="n">HF_TASKS_AUTO</span><span class="o">.</span><span class="n">LMHead</span><span class="p">)</span>
 
 <span class="nb">print</span><span class="p">(</span><span class="n">arch</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">tokenizer</span><span class="p">))</span>
 <span class="nb">print</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">config</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">tokenizer</span><span class="p">))</span>
 <span class="nb">print</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">model</span><span class="p">))</span>
 </pre></div>
 
@@ -1027,8 +965,8 @@ will be used (e.g., <code>AutoConfig.from_pretrained(...)</code>)</p>
 
 <div class="output_subarea output_stream output_stdout output_text">
 <pre>bert
-&lt;class &#39;transformers.tokenization_bert.BertTokenizer&#39;&gt;
 &lt;class &#39;transformers.configuration_bert.BertConfig&#39;&gt;
+&lt;class &#39;transformers.tokenization_bert.BertTokenizer&#39;&gt;
 &lt;class &#39;transformers.modeling_bert.BertForMaskedLM&#39;&gt;
 </pre>
 </div>
@@ -1047,12 +985,12 @@ will be used (e.g., <code>AutoConfig.from_pretrained(...)</code>)</p>
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">arch</span><span class="p">,</span> <span class="n">tokenizer</span><span class="p">,</span> <span class="n">config</span><span class="p">,</span> <span class="n">model</span> <span class="o">=</span> <span class="n">mh</span><span class="o">.</span><span class="n">get_auto_hf_objects</span><span class="p">(</span><span class="s2">&quot;fmikaelian/flaubert-base-uncased-squad&quot;</span><span class="p">,</span>
-                                                        <span class="n">task</span><span class="o">=</span><span class="n">HF_TASKS_AUTO</span><span class="o">.</span><span class="n">ForQuestionAnswering</span><span class="p">)</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">arch</span><span class="p">,</span> <span class="n">tokenizer</span><span class="p">,</span> <span class="n">config</span><span class="p">,</span> <span class="n">model</span> <span class="o">=</span> <span class="n">BLURR_MODEL_HELPER</span><span class="o">.</span><span class="n">get_hf_objects</span><span class="p">(</span><span class="s2">&quot;fmikaelian/flaubert-base-uncased-squad&quot;</span><span class="p">,</span>
+                                                                   <span class="n">task</span><span class="o">=</span><span class="n">HF_TASKS_AUTO</span><span class="o">.</span><span class="n">QuestionAnswering</span><span class="p">)</span>
 
 <span class="nb">print</span><span class="p">(</span><span class="n">arch</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">tokenizer</span><span class="p">))</span>
 <span class="nb">print</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">config</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">tokenizer</span><span class="p">))</span>
 <span class="nb">print</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">model</span><span class="p">))</span>
 </pre></div>
 
@@ -1062,6 +1000,15 @@ will be used (e.g., <code>AutoConfig.from_pretrained(...)</code>)</p>
 
 <div class="output_wrapper">
 <div class="output">
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stderr output_text">
+<pre>/home/wgilliam/anaconda3/envs/blurr/lib/python3.7/site-packages/transformers/tokenization_utils.py:831: FutureWarning: Parameter max_len is deprecated and will be removed in a future release. Use model_max_length instead.
+  category=FutureWarning,
+</pre>
+</div>
+</div>
 
 <div class="output_area">
 
@@ -1083,44 +1030,17 @@ will be used (e.g., <code>AutoConfig.from_pretrained(...)</code>)</p>
     {% raw %}
     
 <div class="cell border-box-sizing code_cell rendered">
-
-<div class="output_wrapper">
-<div class="output">
-
-<div class="output_area">
-
-
-<div class="output_markdown rendered_html output_subarea ">
-<h4 id="ModelHelper.get_hf_objects" class="doc_header"><code>ModelHelper.get_hf_objects</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/utils.py#L145" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>ModelHelper.get_hf_objects</code>(<strong><code>pretrained_model_name_or_path</code></strong>, <strong><code>tokenizer_cls</code></strong>, <strong><code>model_cls</code></strong>, <strong><code>config</code></strong>=<em><code>None</code></em>)</p>
-</blockquote>
-<p>Returns the architecture (str), tokenizer (class), config (class), and model (class)
-given a known pre-trained model name or path, a tokenizer class, and model class.  If a <code>config</code> object
-is passed in, it will be used when building the model, else the default configuration will be used.</p>
-
-</div>
-
-</div>
-
-</div>
-</div>
-
-</div>
-    {% endraw %}
-
-    {% raw %}
-    
-<div class="cell border-box-sizing code_cell rendered">
 <div class="input">
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">arch</span><span class="p">,</span> <span class="n">tokenizer</span><span class="p">,</span> <span class="n">config</span><span class="p">,</span> <span class="n">model</span> <span class="o">=</span> <span class="n">mh</span><span class="o">.</span><span class="n">get_hf_objects</span><span class="p">(</span><span class="s2">&quot;bert-base-cased-finetuned-mrpc&quot;</span><span class="p">,</span>
-                                                   <span class="n">tokenizer_cls</span><span class="o">=</span><span class="n">BertTokenizer</span><span class="p">,</span> 
-                                                   <span class="n">config</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                                                   <span class="n">model_cls</span><span class="o">=</span><span class="n">HF_MODELS</span><span class="o">.</span><span class="n">BertForNextSentencePrediction</span><span class="p">)</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">arch</span><span class="p">,</span> <span class="n">tokenizer</span><span class="p">,</span> <span class="n">config</span><span class="p">,</span> <span class="n">model</span> <span class="o">=</span> <span class="n">BLURR_MODEL_HELPER</span><span class="o">.</span><span class="n">get_hf_objects</span><span class="p">(</span><span class="s2">&quot;bert-base-cased-finetuned-mrpc&quot;</span><span class="p">,</span>
+                                                                   <span class="n">config</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                                                                   <span class="n">tokenizer_cls</span><span class="o">=</span><span class="n">BertTokenizer</span><span class="p">,</span> 
+                                                                   <span class="n">model_cls</span><span class="o">=</span><span class="n">BertForNextSentencePrediction</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">arch</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">tokenizer</span><span class="p">))</span>
 <span class="nb">print</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">config</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">tokenizer</span><span class="p">))</span>
 <span class="nb">print</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">model</span><span class="p">))</span>
 </pre></div>
 
@@ -1173,7 +1093,7 @@ is passed in, it will be used when building the model, else the default configur
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h2 id="ForMaskedLMTask" class="doc_header"><code>class</code> <code>ForMaskedLMTask</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/utils.py#L177" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>ForMaskedLMTask</code>()</p>
+<h2 id="MaskedLMTask" class="doc_header"><code>class</code> <code>MaskedLMTask</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/utils.py#L197" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>MaskedLMTask</code>()</p>
 </blockquote>
 
 </div>
@@ -1197,7 +1117,7 @@ is passed in, it will be used when building the model, else the default configur
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h2 id="ForQuestionAnsweringTask" class="doc_header"><code>class</code> <code>ForQuestionAnsweringTask</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/utils.py#L178" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>ForQuestionAnsweringTask</code>()</p>
+<h2 id="QuestionAnsweringTask" class="doc_header"><code>class</code> <code>QuestionAnsweringTask</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/utils.py#L198" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>QuestionAnsweringTask</code>()</p>
 </blockquote>
 
 </div>
@@ -1221,7 +1141,7 @@ is passed in, it will be used when building the model, else the default configur
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h2 id="ForSequenceClassificationTask" class="doc_header"><code>class</code> <code>ForSequenceClassificationTask</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/utils.py#L179" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>ForSequenceClassificationTask</code>()</p>
+<h2 id="SequenceClassificationTask" class="doc_header"><code>class</code> <code>SequenceClassificationTask</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/utils.py#L199" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>SequenceClassificationTask</code>()</p>
 </blockquote>
 
 </div>
@@ -1245,7 +1165,7 @@ is passed in, it will be used when building the model, else the default configur
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h2 id="ForTokenClassificationTask" class="doc_header"><code>class</code> <code>ForTokenClassificationTask</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/utils.py#L180" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>ForTokenClassificationTask</code>()</p>
+<h2 id="TokenClassificationTask" class="doc_header"><code>class</code> <code>TokenClassificationTask</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/utils.py#L200" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>TokenClassificationTask</code>()</p>
 </blockquote>
 
 </div>
@@ -1269,7 +1189,7 @@ is passed in, it will be used when building the model, else the default configur
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h2 id="ForPreTrainingTask" class="doc_header"><code>class</code> <code>ForPreTrainingTask</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/utils.py#L181" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>ForPreTrainingTask</code>()</p>
+<h2 id="PreTrainingTask" class="doc_header"><code>class</code> <code>PreTrainingTask</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/utils.py#L201" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>PreTrainingTask</code>()</p>
 </blockquote>
 
 </div>
@@ -1293,7 +1213,7 @@ is passed in, it will be used when building the model, else the default configur
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h2 id="WithLMHeadTask" class="doc_header"><code>class</code> <code>WithLMHeadTask</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/utils.py#L182" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>WithLMHeadTask</code>()</p>
+<h2 id="LMHeadTask" class="doc_header"><code>class</code> <code>LMHeadTask</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/utils.py#L202" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>LMHeadTask</code>()</p>
 </blockquote>
 
 </div>
@@ -1317,7 +1237,7 @@ is passed in, it will be used when building the model, else the default configur
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h2 id="ForConditionalGenerationTask" class="doc_header"><code>class</code> <code>ForConditionalGenerationTask</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/utils.py#L183" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>ForConditionalGenerationTask</code>()</p>
+<h2 id="ConditionalGenerationTask" class="doc_header"><code>class</code> <code>ConditionalGenerationTask</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/utils.py#L203" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>ConditionalGenerationTask</code>()</p>
 </blockquote>
 
 </div>
@@ -1341,7 +1261,7 @@ is passed in, it will be used when building the model, else the default configur
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h2 id="ForMultipleChoiceTask" class="doc_header"><code>class</code> <code>ForMultipleChoiceTask</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/utils.py#L184" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>ForMultipleChoiceTask</code>()</p>
+<h2 id="MultipleChoiceTask" class="doc_header"><code>class</code> <code>MultipleChoiceTask</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/utils.py#L204" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>MultipleChoiceTask</code>()</p>
 </blockquote>
 
 </div>
@@ -1365,7 +1285,7 @@ is passed in, it will be used when building the model, else the default configur
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h2 id="ForNextSentencePredictionTask" class="doc_header"><code>class</code> <code>ForNextSentencePredictionTask</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/utils.py#L185" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>ForNextSentencePredictionTask</code>()</p>
+<h2 id="NextSentencePredictionTask" class="doc_header"><code>class</code> <code>NextSentencePredictionTask</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/utils.py#L205" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>NextSentencePredictionTask</code>()</p>
 </blockquote>
 
 </div>
@@ -1389,7 +1309,7 @@ is passed in, it will be used when building the model, else the default configur
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h2 id="ForQuestionAnsweringSimpleTask" class="doc_header"><code>class</code> <code>ForQuestionAnsweringSimpleTask</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/utils.py#L186" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>ForQuestionAnsweringSimpleTask</code>()</p>
+<h2 id="QuestionAnsweringSimpleTask" class="doc_header"><code>class</code> <code>QuestionAnsweringSimpleTask</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/utils.py#L206" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>QuestionAnsweringSimpleTask</code>()</p>
 </blockquote>
 
 </div>
@@ -1413,7 +1333,7 @@ is passed in, it will be used when building the model, else the default configur
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h2 id="WithLMHeadModelTask" class="doc_header"><code>class</code> <code>WithLMHeadModelTask</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/utils.py#L187" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>WithLMHeadModelTask</code>()</p>
+<h2 id="LMHeadModelTask" class="doc_header"><code>class</code> <code>LMHeadModelTask</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/utils.py#L207" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>LMHeadModelTask</code>()</p>
 </blockquote>
 
 </div>
@@ -1437,7 +1357,7 @@ is passed in, it will be used when building the model, else the default configur
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h2 id="ForClassificationTask" class="doc_header"><code>class</code> <code>ForClassificationTask</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/utils.py#L188" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>ForClassificationTask</code>()</p>
+<h2 id="ClassificationTask" class="doc_header"><code>class</code> <code>ClassificationTask</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/utils.py#L208" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>ClassificationTask</code>()</p>
 </blockquote>
 
 </div>

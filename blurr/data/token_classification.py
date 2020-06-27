@@ -50,7 +50,7 @@ class HF_TokenClassInput(list): pass
 
 # Cell
 @typedispatch
-def build_hf_input(task:ForTokenClassificationTask, tokenizer, a_tok_ids, b_tok_ids=None, targets=None,
+def build_hf_input(task:TokenClassificationTask, tokenizer, a_tok_ids, b_tok_ids=None, targets=None,
                    max_length=512, pad_to_max_length=True, truncation_strategy='longest_first'):
 
     res = tokenizer.prepare_for_model(a_tok_ids, b_tok_ids,
@@ -89,7 +89,7 @@ def show_batch(x:HF_TokenClassInput, y, samples, hf_tokenizer, skip_special_toke
                      for tok_id, lbl_id in zip(inp, trg)
                      if (tok_id not in hf_tokenizer.all_special_ids) and lbl_id != -100 ]
 
-        res.append(f'{[ (inp_trg[0], lbl) for inp_trg, lbl in zip(inp_targs, ast.literal_eval(sample[1])) ]}')
+        res.append([f'{[ (inp_trg[0], lbl) for inp_trg, lbl in zip(inp_targs, ast.literal_eval(sample[1])) ]}'])
 
     display_df(pd.DataFrame(res, columns=['token / target label'])[:max_n])
     return ctxs

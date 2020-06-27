@@ -18,7 +18,7 @@ class HF_TextGenerationInput(list): pass
 
 # Cell
 @typedispatch
-def build_hf_input(task:ForConditionalGenerationTask, tokenizer, a_tok_ids, b_tok_ids=None, targets=None,
+def build_hf_input(task:ConditionalGenerationTask, tokenizer, a_tok_ids, b_tok_ids=None, targets=None,
                    max_length=512, pad_to_max_length=True, truncation_strategy='longest_first', **kwargs):
 
     enc_res = build_hf_input(None, tokenizer, a_tok_ids, b_tok_ids, targets,

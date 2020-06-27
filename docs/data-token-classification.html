@@ -150,16 +150,15 @@ description: "This module contains the bits required to use the fastai DataBlock
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">task</span> <span class="o">=</span> <span class="n">HF_TASKS_AUTO</span><span class="o">.</span><span class="n">ForTokenClassification</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">task</span> <span class="o">=</span> <span class="n">HF_TASKS_AUTO</span><span class="o">.</span><span class="n">TokenClassification</span>
 
 <span class="n">pretrained_model_name</span> <span class="o">=</span> <span class="s2">&quot;bert-base-multilingual-cased&quot;</span>
-<span class="n">config</span> <span class="o">=</span> <span class="n">AutoConfig</span><span class="o">.</span><span class="n">from_pretrained</span><span class="p">(</span><span class="n">pretrained_model_name</span><span class="p">)</span>
-<span class="n">config</span><span class="o">.</span><span class="n">num_labels</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">labels</span><span class="p">)</span>
+<span class="n">n_labels</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">labels</span><span class="p">)</span>
 
-<span class="n">hf_arch</span><span class="p">,</span> <span class="n">hf_tokenizer</span><span class="p">,</span> <span class="n">hf_config</span><span class="p">,</span> <span class="n">hf_model</span> <span class="o">=</span> <span class="n">BLURR_MODEL_HELPER</span><span class="o">.</span><span class="n">get_auto_hf_objects</span><span class="p">(</span><span class="n">pretrained_model_name</span><span class="p">,</span> 
-                                                                                    <span class="n">task</span><span class="o">=</span><span class="n">task</span><span class="p">,</span> 
-                                                                                    <span class="n">config</span><span class="o">=</span><span class="n">config</span><span class="p">)</span>
-<span class="n">hf_arch</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">hf_tokenizer</span><span class="p">),</span> <span class="nb">type</span><span class="p">(</span><span class="n">hf_config</span><span class="p">),</span> <span class="nb">type</span><span class="p">(</span><span class="n">hf_model</span><span class="p">)</span>
+<span class="n">hf_arch</span><span class="p">,</span> <span class="n">hf_config</span><span class="p">,</span> <span class="n">hf_tokenizer</span><span class="p">,</span> <span class="n">hf_model</span> <span class="o">=</span> <span class="n">BLURR_MODEL_HELPER</span><span class="o">.</span><span class="n">get_hf_objects</span><span class="p">(</span><span class="n">pretrained_model_name</span><span class="p">,</span> 
+                                                                               <span class="n">task</span><span class="o">=</span><span class="n">task</span><span class="p">,</span>
+                                                                               <span class="n">config_kwargs</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;num_labels&#39;</span><span class="p">:</span> <span class="n">n_labels</span><span class="p">})</span>
+<span class="n">hf_arch</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">hf_config</span><span class="p">),</span> <span class="nb">type</span><span class="p">(</span><span class="n">hf_tokenizer</span><span class="p">),</span> <span class="nb">type</span><span class="p">(</span><span class="n">hf_model</span><span class="p">)</span>
 </pre></div>
 
     </div>
@@ -175,8 +174,8 @@ description: "This module contains the bits required to use the fastai DataBlock
 
 <div class="output_text output_subarea output_execute_result">
 <pre>(&#39;bert&#39;,
- transformers.tokenization_bert.BertTokenizer,
  transformers.configuration_bert.BertConfig,
+ transformers.tokenization_bert.BertTokenizer,
  transformers.modeling_bert.BertForTokenClassification)</pre>
 </div>
 
@@ -361,7 +360,7 @@ The argument must be an iterable if specified.</p>
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># single input</span>
 <span class="n">blocks</span> <span class="o">=</span> <span class="p">(</span>
-    <span class="n">HF_TextBlock</span><span class="p">(</span><span class="n">hf_arch</span><span class="p">,</span> <span class="n">hf_tokenizer</span><span class="p">,</span> <span class="n">task</span><span class="o">=</span><span class="n">ForTokenClassificationTask</span><span class="p">()),</span>
+    <span class="n">HF_TextBlock</span><span class="p">(</span><span class="n">hf_arch</span><span class="p">,</span> <span class="n">hf_tokenizer</span><span class="p">,</span> <span class="n">task</span><span class="o">=</span><span class="n">TokenClassificationTask</span><span class="p">()),</span>
     <span class="n">HF_TokenCategoryBlock</span><span class="p">(</span><span class="n">vocab</span><span class="o">=</span><span class="n">labels</span><span class="p">)</span>
 <span class="p">)</span>
 
@@ -510,11 +509,11 @@ The argument must be an iterable if specified.</p>
   <tbody>
     <tr>
       <th>0</th>
-      <td>[('NEWS', 'B-OTH'), ('/', 'O'), (':', 'O'), ('Пол', 'B-OTH'), ('С', 'I-OTH'), ('от', 'I-OTH'), ('М', 'I-OTH'), ('в', 'I-OTH'), ('отс', 'I-OTH'), ('Die', 'O'), ('SP', 'B-ORG'), ('legte', 'O'), (',', 'O'), ('wie', 'O'), ('auch', 'O'), ('vier', 'O'), ('weitere', 'O'), ('Parteien', 'O'), (',', 'O'), ('beim', 'O'), ('Oberst', 'O'), ('Gericht', 'O'), ('der', 'O'), ('Ukraine', 'B-LOC'), ('Be', 'O'), ('gegen', 'O'), ('den', 'O'), ('Ab', 'O'), ('der', 'O'), ('Wahl', 'O'), ('ein', 'O'), ('und', 'O'), ('be', 'O'), (',', 'O'), ('es', 'O'), ('sei', 'O'), ('bei', 'O'), ('der', 'O'), ('Aus', 'O'), ('zu', 'O'), ('Un', 'O'), ('gekommen', 'O'), ('.', 'O')]</td>
+      <td>[('Sen', 'O'), ('Ex', 'B-ORG'), ('Mo', 'I-ORG'), ('"', 'O'), ('buy', 'O'), ('"', 'O'), ('Paris', 'B-LOC'), ('(', 'O'), ('akt', 'B-ORG'), ('AG', 'I-ORG'), (')', 'O'), ('-', 'O'), (':', 'O'), ('Ay', 'B-PER'), ('de', 'I-PER'), (',', 'O'), ('Ana', 'O'), ('der', 'O'), ('Société', 'B-ORG'), ('Général', 'I-ORG'), (',', 'O'), ('st', 'O'), ('die', 'O'), ('Akt', 'O'), ('des', 'O'), ('US', 'B-LOCderiv'), ('Unternehmens', 'O'), ('Ex', 'B-ORG'), ('Mo', 'I-ORG'), ('(', 'O'), ('IS', 'O'), ('US', 'O'), ('WK', 'O'), ('852', 'O'), (')', 'O'), ('mit', 'O'), ('"', 'O'), ('buy', 'O'), ('"', 'O'), ('ein', 'O'), ('.', 'O')]</td>
     </tr>
     <tr>
       <th>1</th>
-      <td>[('Der', 'O'), ('28', 'O'), ('und', 'O'), ('sein', 'O'), ('Team', 'O'), (',', 'O'), ('zu', 'O'), ('dem', 'O'), ('auch', 'O'), ('Karla', 'B-PER'), ('Bar', 'I-PER'), ('gehört', 'O'), (',', 'O'), ('demo', 'O'), ('im', 'O'), ('ge', 'O'), ('"', 'O'), ('La', 'B-ORG'), ('Ti', 'I-ORG'), ('Reg', 'I-ORG'), ('Zentrum', 'I-ORG'), ('"', 'O'), ('westlich', 'O'), ('von', 'O'), ('Puerto', 'B-LOC'), ('Viejo', 'I-LOC'), ('de', 'I-LOC'), ('Sara', 'I-LOC'), (',', 'O'), ('wie', 'O'), ('die', 'O'), ('Ur', 'O'), ('vor', 'O'), ('500', 'O'), ('Jahren', 'O'), ('das', 'O'), ('Get', 'O'), ('und', 'O'), ('R', 'O'), ('produzierte', 'O'), ('.', 'O')]</td>
+      <td>[('Viele', 'O'), ('Einzel', 'O'), ('nehmen', 'O'), ('aus', 'O'), ('Un', 'O'), ('die', 'O'), ('10', 'B-OTHpart'), ('nur', 'O'), ('z', 'O'), ('oder', 'O'), ('nach', 'O'), ('R', 'O'), ('an', 'O'), (',', 'O'), ('obwohl', 'O'), ('sie', 'O'), ('ge', 'O'), ('zur', 'O'), ('Anna', 'O'), ('verpflichtet', 'O'), ('sind', 'O'), ('ein', 'O'), ('Problem', 'O'), (',', 'O'), ('das', 'O'), ('schon', 'O'), ('früher', 'O'), ('mit', 'O'), ('den', 'O'), ('5', 'O'), ('und', 'O'), ('10', 'O'), ('bestand', 'B-OTHpart'), ('.', 'O')]</td>
     </tr>
   </tbody>
 </table>

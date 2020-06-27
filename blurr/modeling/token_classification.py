@@ -20,7 +20,7 @@ def show_results(x:HF_TokenClassInput, y:HF_TokenTensorCategory, samples, outs, 
                          for tok_id, lbl_id, pred_lbl in zip(inp, trg, ast.literal_eval(pred[0]))
                          if (tok_id not in hf_tokenizer.all_special_ids) and lbl_id != -100 ]
 
-        res.append(f'{[ (itp[0], lbl, itp[2]) for itp, lbl in zip(inp_trg_preds, ast.literal_eval(sample[1])) ]}')
+        res.append([f'{[ (itp[0], lbl, itp[2]) for itp, lbl in zip(inp_trg_preds, ast.literal_eval(sample[1])) ]}'])
 
     display_df(pd.DataFrame(res, columns=['token / target label / predicted label'])[:max_n])
     return ctxs

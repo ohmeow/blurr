@@ -44,14 +44,10 @@ imdb_df = pd.read_csv(path/'texts.csv')
 ### Get your 🤗 huggingface objects
 
 ```python
-task = HF_TASKS_AUTO.ForSequenceClassification
+task = HF_TASKS_AUTO.SequenceClassification
 
 pretrained_model_name = "bert-base-uncased"
-config = AutoConfig.from_pretrained(pretrained_model_name)
-
-hf_arch, hf_tokenizer, hf_config, hf_model = BLURR_MODEL_HELPER.get_auto_hf_objects(pretrained_model_name, 
-                                                                                    task=task, 
-                                                                                    config=config)
+hf_arch, hf_config, hf_tokenizer, hf_model = BLURR_MODEL_HELPER.get_hf_objects(pretrained_model_name,  task=task)
 ```
 
 ### Build your 🧱🧱🧱 DataBlock 🧱🧱🧱 and your DataLoaders
@@ -60,7 +56,8 @@ hf_arch, hf_tokenizer, hf_config, hf_model = BLURR_MODEL_HELPER.get_auto_hf_obje
 # single input
 blocks = (HF_TextBlock(hf_arch=hf_arch, hf_tokenizer=hf_tokenizer), CategoryBlock)
 
-dblock = DataBlock(blocks=blocks, get_x=ColReader('text'), get_y=ColReader('label'), 
+dblock = DataBlock(blocks=blocks, 
+                   get_x=ColReader('text'), get_y=ColReader('label'), 
                    splitter=ColSplitter(col='is_valid'))
 
 dls = dblock.dataloaders(imdb_df, bs=4)
@@ -87,8 +84,8 @@ dls.show_batch(hf_tokenizer=hf_tokenizer, max_n=2)
     </tr>
     <tr>
       <th>1</th>
-      <td>the shop around the corner is one of the sweetest and most feel - good romantic comedies ever made. there's just no getting around that, and it's hard to actually put one's feeling for this film into words. it's not one of those films that tries too hard, nor does it come up with the oddest possible scenarios to get the two protagonists together in the end. in fact, all its charm is innate, contained within the characters and the setting and the plot... which is highly believable to boot. it's easy to think that such a love story, as beautiful as any other ever told, * could * happen to you... a feeling you don't often get from other romantic comedies, however sweet and heart - warming they may be. &lt; br / &gt; &lt; br / &gt; alfred kralik ( james stewart ) and clara novak ( margaret sullavan ) don't have the most auspicious of first meetings when she arrives in the shop ( matuschek &amp; co. ) he's been working in for the past nine years, asking for a job. they clash from the very beginning, mostly over a cigarette box that plays music when it's opened - - he thinks it's a ludicrous idea ; she makes one big sell of it and gets hired. their bickering takes them through the next six months, even as they both ( unconsciously, of course! ) fall in love with each other when they share their souls and minds in letters passed through po box 237. this would be a pretty thin plotline to base an entire film on, except that the shop around the corner is expertly fleshed - out with a brilliant supporting cast made up of entirely engaging characters, from the fatherly but lonely hugo matuschek ( frank morgan ) himself, who learns that his shop really is his home ; pirovitch ( felix bressart ), kralik's sidekick and friend who always skitters out of the room when faced with the possibility of being asked for his honest opinion ; smarmy pimp - du - jour vadas ( joseph schildkraut ) who ultimately gets his comeuppance from a gloriously righteous kralik ; and ambitious errand boy pepi katona ( william tracy ) who wants nothing more than to be promoted to the position of clerk for matuschek &amp; co. the unpretentious love story between '</td>
-      <td>positive</td>
+      <td>well, what can i say. &lt; br / &gt; &lt; br / &gt; " what the bleep do we know " has achieved the nearly impossible - leaving behind such masterpieces of the genre as " the postman ", " the dungeon master ", " merlin ", and so fourth, it will go down in history as the single worst movie i have ever seen in its entirety. and that, ladies and gentlemen, is impressive indeed, for i have seen many a bad movie. &lt; br / &gt; &lt; br / &gt; this masterpiece of modern cinema consists of two interwoven parts, alternating between a silly and contrived plot about an extremely annoying photographer, abandoned by her husband and forced to take anti - depressants to survive, and a bunch of talking heads going on about how quantum physics supposedly justifies their new - agy pseudo - philosophy. basically, if you start your day off meditating to the likes of enya and kenny g, this movie is for you. if you have a sense of humor, a crowd of people who know how to have fun, and a sizable portion of good weed, then this movie is for you as well. otherwise, stay away. take my word for it. &lt; br / &gt; &lt; br / &gt; the first thing that struck me about " what the bleep do you know " is that is seemed to be edited and put together by the same kinds of people that shoot cheap weddings on camera, complete with pink heart effects, computer - generated sparkles across the screen, and other assorted silliness. who let these people anywhere near a theatrical release is a mystery to me. i guess this is what too much kenny g does to you. the movie was permeated with cheesy gci, the likes that you or i can produce on our own computer via over - the - counter video editing software, but never would, because it's just way too ridiculous. &lt; br / &gt; &lt; br / &gt; the script was _ obviously _ written by someone with no writing experience whatsoever. not only were all the characters and conversations cumbersome and contrived beyond belief, but the " writers " felt like they had to shove every relevant piece of information, or rather disinformation, which is what most of this movie was all about, all the way down your throat. well, given the target audience, that may not have been too bad of an idea. the main character, for example, spends half the movie popping pills.</td>
+      <td>negative</td>
     </tr>
   </tbody>
 </table>
@@ -128,23 +125,23 @@ learn.fit_one_cycle(3, lr_max=1e-3)
   <tbody>
     <tr>
       <td>0</td>
-      <td>0.707755</td>
-      <td>0.657019</td>
-      <td>0.610000</td>
+      <td>0.689996</td>
+      <td>0.670810</td>
+      <td>0.580000</td>
       <td>00:19</td>
     </tr>
     <tr>
       <td>1</td>
-      <td>0.650511</td>
-      <td>0.606425</td>
-      <td>0.745000</td>
+      <td>0.614452</td>
+      <td>0.608095</td>
+      <td>0.670000</td>
       <td>00:19</td>
     </tr>
     <tr>
       <td>2</td>
-      <td>0.600608</td>
-      <td>0.606905</td>
-      <td>0.730000</td>
+      <td>0.602578</td>
+      <td>0.613986</td>
+      <td>0.710000</td>
       <td>00:19</td>
     </tr>
   </tbody>
@@ -188,6 +185,11 @@ learn.show_results(hf_tokenizer=hf_tokenizer, max_n=2)
 
 
 ## ❗ Updates
+
+**06/27/2020** 
+* Simplified the `BLURR_MODEL_HELPER.get_hf_objects` method to support a wide range of options in terms of building the necessary huggingface objects (architecture, config, tokenizer, and model).  Also added `cache_dir` for saving pre-trained objects in a custom directory.
+* Misc. renaming and cleanup that may break existing code (please see the docs/source if things blow up)
+* Added missing required libraries to requirements.txt (e.g., nlp)
 
 **05/23/2020** 
 * Initial support for text generation (e.g., summarization, conversational agents) models now included. Only tested with BART so if you try it with other models before I do, lmk what works ... and what doesn't

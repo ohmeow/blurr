@@ -91,7 +91,7 @@ class HF_TextBlock(TransformBlock):
             hf_batch_tfm = HF_BatchTransform(hf_arch, hf_tokenizer, max_seq_len, task=task, **kwargs)
 
         dl_type = SortedDL
-        if (isinstance(task, ForConditionalGenerationTask)): dl_type=None
+        if (isinstance(task, ConditionalGenerationTask)): dl_type=None
 
         return super().__init__(type_tfms=HF_TokenizerTransform(hf_arch, hf_tokenizer),
                                 dl_type=dl_type, dls_kwargs={ 'before_batch': hf_batch_tfm })
