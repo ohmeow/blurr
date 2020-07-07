@@ -34,6 +34,7 @@ index = {"str_to_class": "00_utils.ipynb",
          "Learner.blurr_predict_tokens": "02d_modeling-token-classification.ipynb",
          "text_gen_splitter": "02e_modeling-text-generation.ipynb",
          "HF_TextGenModelCallback": "02e_modeling-text-generation.ipynb",
+         "HF_MaskedLMLoss": "02e_modeling-text-generation.ipynb",
          "Learner.generate_text": "02e_modeling-text-generation.ipynb"}
 
 modules = ["utils.py",
