@@ -217,6 +217,24 @@ description: "This module contains the bits required to use the fastai DataBlock
 </div>
 </div>
 
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stderr output_text">
+<pre>Some weights of the model checkpoint at roberta-base were not used when initializing RobertaForQuestionAnswering: [&#39;lm_head.bias&#39;, &#39;lm_head.dense.weight&#39;, &#39;lm_head.dense.bias&#39;, &#39;lm_head.layer_norm.weight&#39;, &#39;lm_head.layer_norm.bias&#39;, &#39;lm_head.decoder.weight&#39;]
+- This IS expected if you are initializing RobertaForQuestionAnswering from the checkpoint of a model trained on another task or with another architecture (e.g. initializing a BertForSequenceClassification model from a BertForPretraining model).
+- This IS NOT expected if you are initializing RobertaForQuestionAnswering from the checkpoint of a model that you expect to be exactly identical (initializing a BertForSequenceClassification model from a BertForSequenceClassification model).
+Some weights of RobertaForQuestionAnswering were not initialized from the model checkpoint at roberta-base and are newly initialized: [&#39;qa_outputs.weight&#39;, &#39;qa_outputs.bias&#39;]
+You should probably TRAIN this model on a down-stream task to be able to use it for predictions and inference.
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
 </div>
     {% endraw %}
 
@@ -326,9 +344,43 @@ description: "This module contains the bits required to use the fastai DataBlock
 </div>
     {% endraw %}
 
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+
+</div>
+    {% endraw %}
+
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+<div class="output_markdown rendered_html output_subarea ">
+<h2 id="HF_QuestionAnswerInput" class="doc_header"><code>class</code> <code>HF_QuestionAnswerInput</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/data/question_answering.py#L46" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>HF_QuestionAnswerInput</code>(<strong><code>iterable</code></strong>=<em><code>()</code></em>) :: <code>list</code></p>
+</blockquote>
+<p>Built-in mutable sequence.</p>
+<p>If no argument is given, the constructor creates a new empty list.
+The argument must be an iterable if specified.</p>
+
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    {% endraw %}
+
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>Below we utilize the @typedispatch decorator to completely change how we'll tokenize the data for the <code>ForQuestionAnsweringTask</code>.  This requires us defining a custom type to identify question/answer inputs</p>
+<p>We'll return a <a href="/blurr/01c_data-question-answering#HF_QuestionAnswerInput"><code>HF_QuestionAnswerInput</code></a> from our <a href="/blurr/data-core#HF_BatchTransform"><code>HF_BatchTransform</code></a> so that we can customize the show_batch/results methods for this task.</p>
 
 </div>
 </div>
@@ -351,11 +403,9 @@ description: "This module contains the bits required to use the fastai DataBlock
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h2 id="HF_QuestionAnswerInput" class="doc_header"><code>class</code> <code>HF_QuestionAnswerInput</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/data/question_answering.py#L49" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>HF_QuestionAnswerInput</code>(<strong><code>iterable</code></strong>=<em><code>()</code></em>) :: <code>list</code></p>
+<h2 id="HF_QABatchTransform" class="doc_header"><code>class</code> <code>HF_QABatchTransform</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/data/question_answering.py#L49" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>HF_QABatchTransform</code>(<strong><code>hf_arch</code></strong>, <strong><code>hf_tokenizer</code></strong>, <strong>**<code>kwargs</code></strong>) :: <a href="/blurr/data-core#HF_BatchTransform"><code>HF_BatchTransform</code></a></p>
 </blockquote>
-<p>Built-in mutable sequence.</p>
-<p>If no argument is given, the constructor creates a new empty list.
-The argument must be an iterable if specified.</p>
+<p>Handles everything you need to assemble a mini-batch of inputs and targets</p>
 
 </div>
 
@@ -363,21 +413,13 @@ The argument must be an iterable if specified.</p>
 
 </div>
 </div>
-
-</div>
-    {% endraw %}
-
-    {% raw %}
-    
-<div class="cell border-box-sizing code_cell rendered">
 
 </div>
     {% endraw %}
 
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>And here we demonstrate some more of the extensibility bits of the framework, by passing in our own instance of <a href="/blurr/data-core#HF_BatchTransform"><code>HF_BatchTransform</code></a>.</p>
-<p>Notice how we set the <code>task=ForQuestionAnsweringTask()</code> so that our custom <code>build_hf_input</code> above, for qustion/answering tasks, gets called rather than the default implementation.</p>
+<p>By overriding <a href="/blurr/data-core#HF_BatchTransform"><code>HF_BatchTransform</code></a> we can add other inputs to each example for this particular task.</p>
 
 </div>
 </div>
@@ -389,12 +431,12 @@ The argument must be an iterable if specified.</p>
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># (optional): override HF_BatchTransform defaults</span>
-<span class="n">hf_batch_tfm</span> <span class="o">=</span> <span class="n">HF_BatchTransform</span><span class="p">(</span><span class="n">hf_arch</span><span class="p">,</span> <span class="n">hf_tokenizer</span><span class="p">,</span> <span class="n">max_seq_len</span><span class="o">=</span><span class="n">max_seq_len</span><span class="p">,</span> <span class="n">truncation_strategy</span><span class="o">=</span><span class="s1">&#39;only_second&#39;</span><span class="p">,</span> 
-                                 <span class="n">task</span><span class="o">=</span><span class="n">QuestionAnsweringTask</span><span class="p">())</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">hf_batch_tfm</span> <span class="o">=</span> <span class="n">HF_QABatchTransform</span><span class="p">(</span><span class="n">hf_arch</span><span class="p">,</span> <span class="n">hf_tokenizer</span><span class="p">)</span>
 
 <span class="n">blocks</span> <span class="o">=</span> <span class="p">(</span>
-    <span class="n">HF_TextBlock</span><span class="p">(</span><span class="n">hf_arch</span><span class="p">,</span> <span class="n">hf_tokenizer</span><span class="p">,</span> <span class="n">hf_batch_tfm</span><span class="o">=</span><span class="n">hf_batch_tfm</span><span class="p">),</span> 
+    <span class="n">HF_TextBlock</span><span class="p">(</span><span class="n">hf_arch</span><span class="p">,</span> <span class="n">hf_tokenizer</span><span class="p">,</span> <span class="n">max_length</span><span class="o">=</span><span class="n">max_seq_len</span><span class="p">,</span> <span class="n">truncation</span><span class="o">=</span><span class="s1">&#39;only_second&#39;</span><span class="p">,</span> 
+                 <span class="n">hf_batch_tfm</span><span class="o">=</span><span class="n">hf_batch_tfm</span><span class="p">,</span> 
+                 <span class="n">tok_kwargs</span><span class="o">=</span><span class="p">{</span> <span class="s1">&#39;return_special_tokens_mask&#39;</span><span class="p">:</span> <span class="kc">True</span> <span class="p">}),</span> 
     <span class="n">CategoryBlock</span><span class="p">(</span><span class="n">vocab</span><span class="o">=</span><span class="n">vocab</span><span class="p">),</span>
     <span class="n">CategoryBlock</span><span class="p">(</span><span class="n">vocab</span><span class="o">=</span><span class="n">vocab</span><span class="p">)</span>
 <span class="p">)</span>
@@ -470,7 +512,7 @@ The argument must be an iterable if specified.</p>
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">b</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">b</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">b</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">b</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">3</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">b</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">4</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">b</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">b</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">b</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;input_ids&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">b</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;attention_mask&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">b</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">b</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span>
 </pre></div>
 
     </div>
@@ -485,13 +527,7 @@ The argument must be an iterable if specified.</p>
 
 
 <div class="output_text output_subarea output_execute_result">
-<pre>(torch.Size([4, 128]),
- torch.Size([4, 128]),
- torch.Size([4, 1]),
- torch.Size([4, 1]),
- torch.Size([4, 128]),
- torch.Size([4]),
- torch.Size([4]))</pre>
+<pre>(torch.Size([4, 128]), torch.Size([4, 128]), torch.Size([4]), torch.Size([4]))</pre>
 </div>
 
 </div>
@@ -523,7 +559,7 @@ The argument must be an iterable if specified.</p>
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">dls</span><span class="o">.</span><span class="n">show_batch</span><span class="p">(</span><span class="n">hf_tokenizer</span><span class="o">=</span><span class="n">hf_tokenizer</span><span class="p">,</span> <span class="n">skip_special_tokens</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">max_n</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">dls</span><span class="o">.</span><span class="n">show_batch</span><span class="p">(</span><span class="n">hf_tokenizer</span><span class="o">=</span><span class="n">hf_tokenizer</span><span class="p">,</span> <span class="n">max_n</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
 </pre></div>
 
     </div>
@@ -549,15 +585,15 @@ The argument must be an iterable if specified.</p>
   <tbody>
     <tr>
       <th>0</th>
-      <td>&lt;s&gt; What is the latest term used to describe Beyoncé fans?&lt;/s&gt;&lt;/s&gt; The Bey Hive is the name given to Beyoncé's fan base. Fans were previously titled "The Beyontourage", (a portmanteau of Beyoncé and entourage). The name Bey Hive derives from the word beehive, purposely misspelled to resemble her first name, and was penned by fans after petitions on the online social networking service Twitter and online news reports during competitions.&lt;/s&gt;</td>
-      <td>(16, 19)</td>
-      <td>Bey Hive</td>
+      <td>Where did Beyonce perform in 2011? In 2011, documents obtained by WikiLeaks revealed that Beyoncé was one of many entertainers who performed for the family of Libyan ruler Muammar Gaddafi. Rolling Stone reported that the music industry was urging them to return the money they earned for the concerts; a spokesperson for Beyoncé later confirmed to The Huffington Post that she donated the money to the Clinton Bush Haiti Fund. Later that year she became the first solo female artist to headline the main Pyramid stage at the 2011 Glastonbury Festival in over twenty years, and was named the highest-paid performer in the world per minute.</td>
+      <td>(103, 107)</td>
+      <td>Glastonbury Festival</td>
     </tr>
     <tr>
       <th>1</th>
-      <td>&lt;s&gt; What other composer did Chopin develop a friendship with?&lt;/s&gt;&lt;/s&gt; At the age of 21 he settled in Paris. Thereafter, during the last 18 years of his life, he gave only some 30 public performances, preferring the more intimate atmosphere of the salon. He supported himself by selling his compositions and teaching piano, for which he was in high demand. Chopin formed a friendship with Franz Liszt and was admired by many of his musical contemporaries, including Robert Schumann. In 1835 he obtained French citizenship. After a failed engagement to Maria Wodzińska, from 1837 to 1847 he maintained&lt;/s&gt;</td>
-      <td>(78, 82)</td>
-      <td>Franz Liszt</td>
+      <td>What are Beyoncé's backup singers called? In 2006, Beyoncé introduced her all-female tour band Suga Mama (also the name of a song in B'Day) which includes bassists, drummers, guitarists, horn players, keyboardists and percussionists. Her background singers, The Mamas, consist of Montina Cooper-Donnell, Crystal Collins and Tiffany Moniqué Riddick. They made their debut appearance at the 2006 BET Awards and re-appeared in the music videos for "Irreplaceable" and "Green Light". The band have supported Beyoncé in most subsequent live performances</td>
+      <td>(63, 66)</td>
+      <td>The Mamas</td>
     </tr>
   </tbody>
 </table>

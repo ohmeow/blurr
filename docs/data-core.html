@@ -91,7 +91,48 @@ description: "This module contains the core bits required to use the fastai Data
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h2 id="HF_BaseInput" class="doc_header"><code>class</code> <code>HF_BaseInput</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/data/core.py#L15" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>HF_BaseInput</code>(<strong><code>iterable</code></strong>=<em><code>()</code></em>) :: <code>list</code></p>
+<h2 id="HF_TokenizerTransform" class="doc_header"><code>class</code> <code>HF_TokenizerTransform</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/data/core.py#L15" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>HF_TokenizerTransform</code>(<strong><code>hf_arch</code></strong>, <strong><code>hf_tokenizer</code></strong>, <strong><code>max_length</code></strong>=<em><code>None</code></em>, <strong><code>padding</code></strong>=<em><code>'max_length'</code></em>, <strong><code>truncation</code></strong>=<em><code>True</code></em>, <strong><code>is_pretokenized</code></strong>=<em><code>False</code></em>, <strong><code>tok_kwargs</code></strong>=<em><code>{}</code></em>) :: <code>ItemTransform</code></p>
+</blockquote>
+<p>huggingface friendly tokenization transfor.</p>
+
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    {% endraw %}
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><a href="/blurr/data-core#HF_TokenizerTransform"><code>HF_TokenizerTransform</code></a> was inspired by <a href="http://dev.fast.ai/tutorial.transformers">this article</a>.  It handles both the tokenization and numericalization traditionally split apart in the fastai text DataBlock API.  For huggingface tokenizers that require a prefix space, it will be included automatically.</p>
+<p>You can pass a string or list into this Transform, the later being for tasks that require two input sequneces (e.g. question answer tasks for example require a "context" and a "question" sequence).</p>
+<p>In order to make the tokenization/numericalization process more efficient, this transform has been updated to return a <code>transformers.tokenization_utils_base.BatchEncoding</code> dictionary with all the required transformer inputs (e.g. input_ids, attention_mask, etc...). Previously, it only returned the raw input_ids for <em>each</em> sequence which were then put together to come up with all the required inputs and padding in a <code>before_batch</code> transform.</p>
+
+</div>
+</div>
+</div>
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+
+</div>
+    {% endraw %}
+
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+<div class="output_markdown rendered_html output_subarea ">
+<h2 id="HF_BaseInput" class="doc_header"><code>class</code> <code>HF_BaseInput</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/data/core.py#L52" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>HF_BaseInput</code>(<strong><code>iterable</code></strong>=<em><code>()</code></em>) :: <code>list</code></p>
 </blockquote>
 <p>Built-in mutable sequence.</p>
 <p>If no argument is given, the constructor creates a new empty list.
@@ -109,7 +150,7 @@ The argument must be an iterable if specified.</p>
 
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>The <a href="/blurr/data-core#HF_BaseInput"><code>HF_BaseInput</code></a> object is used to encapsulate all the inputs required by whatever huggingface model we are using. We use it as a container for the <code>input_ids</code>, <code>token_type_ids</code>, and <code>attention_mask</code> tensors required by most models, and also as a mean to customize @typedispatched functions like <code>DataLoaders.show_batch</code> and <code>Learner.show_results</code>.</p>
+<p>A <a href="/blurr/data-core#HF_BaseInput"><code>HF_BaseInput</code></a> object is returned from the <code>decodes</code> method of <a href="/blurr/data-core#HF_BatchTransform"><code>HF_BatchTransform</code></a> as a mean to customize @typedispatched functions like <code>DataLoaders.show_batch</code> and <code>Learner.show_results</code>.  It encapsulates a list with <em>one</em> item, the input_ids for the sequence.</p>
 
 </div>
 </div>
@@ -132,62 +173,7 @@ The argument must be an iterable if specified.</p>
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h2 id="HF_TokenizerTransform" class="doc_header"><code>class</code> <code>HF_TokenizerTransform</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/data/core.py#L18" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>HF_TokenizerTransform</code>(<strong><code>hf_arch</code></strong>, <strong><code>hf_tokenizer</code></strong>, <strong><code>title</code></strong>=<em><code>'text'</code></em>, <strong>**<code>kwargs</code></strong>) :: <code>Transform</code></p>
-</blockquote>
-<p>huggingface friendly tokenization transfor.</p>
-
-</div>
-
-</div>
-
-</div>
-</div>
-
-</div>
-    {% endraw %}
-
-<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<p><a href="/blurr/data-core#HF_TokenizerTransform"><code>HF_TokenizerTransform</code></a> was inspired by <a href="http://dev.fast.ai/tutorial.transformers">this article</a>.  It handles both the tokenization and numericalization traditionally split apart in the fastai text DataBlock API.  Addtionally, it's been updated to add a prefix space for the huggingface architectures that need it.</p>
-<p>You can pass a string or list into this Transform, the later being common in token classification tasks like named entity recognition.</p>
-
-</div>
-</div>
-</div>
-    {% raw %}
-    
-<div class="cell border-box-sizing code_cell rendered">
-
-</div>
-    {% endraw %}
-
-<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<p><code>build_hf_input</code> uses fastai's @typedispatched decorator to provide for complete flexibility in terms of how your numericalized tokens are assembled, and also what you return via <a href="/blurr/data-core#HF_BaseInput"><code>HF_BaseInput</code></a> and as your targets.  You can override this implementation as needed by assigning a type to the <code>task</code> argument (and optionally the <code>tokenizer</code> argument as well).</p>
-<p>What you return here is what will be fed into your huggingface model.</p>
-
-</div>
-</div>
-</div>
-    {% raw %}
-    
-<div class="cell border-box-sizing code_cell rendered">
-
-</div>
-    {% endraw %}
-
-    {% raw %}
-    
-<div class="cell border-box-sizing code_cell rendered">
-
-<div class="output_wrapper">
-<div class="output">
-
-<div class="output_area">
-
-
-<div class="output_markdown rendered_html output_subarea ">
-<h2 id="HF_BatchTransform" class="doc_header"><code>class</code> <code>HF_BatchTransform</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/data/core.py#L61" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>HF_BatchTransform</code>(<strong><code>hf_arch</code></strong>, <strong><code>hf_tokenizer</code></strong>, <strong><code>max_seq_len</code></strong>=<em><code>512</code></em>, <strong><code>truncation_strategy</code></strong>=<em><code>'longest_first'</code></em>, <strong><code>task</code></strong>=<em><code>None</code></em>, <strong>**<code>kwargs</code></strong>) :: <code>Transform</code></p>
+<h2 id="HF_BatchTransform" class="doc_header"><code>class</code> <code>HF_BatchTransform</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/data/core.py#L55" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>HF_BatchTransform</code>(<strong><code>hf_arch</code></strong>, <strong><code>hf_tokenizer</code></strong>, <strong><code>hf_input_return_type</code></strong>=<em><code>'HF_BaseInput'</code></em>, <strong>**<code>kwargs</code></strong>) :: <code>Transform</code></p>
 </blockquote>
 <p>Handles everything you need to assemble a mini-batch of inputs and targets</p>
 
@@ -219,7 +205,7 @@ The argument must be an iterable if specified.</p>
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h2 id="HF_TextBlock" class="doc_header"><code>class</code> <code>HF_TextBlock</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/data/core.py#L87" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>HF_TextBlock</code>(<strong><code>hf_arch</code></strong>, <strong><code>hf_tokenizer</code></strong>, <strong><code>hf_batch_tfm</code></strong>=<em><code>None</code></em>, <strong><code>max_seq_len</code></strong>=<em><code>512</code></em>, <strong><code>task</code></strong>=<em><code>None</code></em>, <strong>**<code>kwargs</code></strong>) :: <code>TransformBlock</code></p>
+<h2 id="HF_TextBlock" class="doc_header"><code>class</code> <code>HF_TextBlock</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/data/core.py#L67" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>HF_TextBlock</code>(<strong><code>hf_arch</code></strong>, <strong><code>hf_tokenizer</code></strong>, <strong><code>hf_tok_tfm</code></strong>=<em><code>None</code></em>, <strong><code>max_length</code></strong>=<em><code>512</code></em>, <strong><code>padding</code></strong>=<em><code>'max_length'</code></em>, <strong><code>truncation</code></strong>=<em><code>True</code></em>, <strong><code>is_pretokenized</code></strong>=<em><code>False</code></em>, <strong><code>hf_batch_tfm</code></strong>=<em><code>None</code></em>, <strong><code>hf_input_return_type</code></strong>=<em><code>'HF_BaseInput'</code></em>, <strong><code>dl_type</code></strong>=<em><code>'SortedDL'</code></em>, <strong>**<code>tok_kwargs</code></strong>) :: <code>TransformBlock</code></p>
 </blockquote>
 <p>A basic wrapper that links defaults transforms for the data block API</p>
 
@@ -235,7 +221,7 @@ The argument must be an iterable if specified.</p>
 
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p><a href="/blurr/data-core#HF_TextBlock"><code>HF_TextBlock</code></a> has been dramatically simplified from it's predecessor.  It handles setting up your <a href="/blurr/data-core#HF_TokenizerTransform"><code>HF_TokenizerTransform</code></a> transforms and <a href="/blurr/data-core#HF_BatchTransform"><code>HF_BatchTransform</code></a> transform regardless of data source (e.g., this will work with files, DataFrames, whatever).</p>
+<p><a href="/blurr/data-core#HF_TextBlock"><code>HF_TextBlock</code></a> has been dramatically simplified from it's predecessor.  It handles setting up your <a href="/blurr/data-core#HF_TokenizerTransform"><code>HF_TokenizerTransform</code></a> and <a href="/blurr/data-core#HF_BatchTransform"><code>HF_BatchTransform</code></a> transform regardless of data source (e.g., this will work with files, DataFrames, whatever).</p>
 
 </div>
 </div>
@@ -386,6 +372,24 @@ The argument must be an iterable if specified.</p>
 </div>
 </div>
 
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stderr output_text">
+<pre>Some weights of the model checkpoint at roberta-base were not used when initializing RobertaForSequenceClassification: [&#39;lm_head.bias&#39;, &#39;lm_head.dense.weight&#39;, &#39;lm_head.dense.bias&#39;, &#39;lm_head.layer_norm.weight&#39;, &#39;lm_head.layer_norm.bias&#39;, &#39;lm_head.decoder.weight&#39;]
+- This IS expected if you are initializing RobertaForSequenceClassification from the checkpoint of a model trained on another task or with another architecture (e.g. initializing a BertForSequenceClassification model from a BertForPretraining model).
+- This IS NOT expected if you are initializing RobertaForSequenceClassification from the checkpoint of a model that you expect to be exactly identical (initializing a BertForSequenceClassification model from a BertForSequenceClassification model).
+Some weights of RobertaForSequenceClassification were not initialized from the model checkpoint at roberta-base and are newly initialized: [&#39;classifier.dense.weight&#39;, &#39;classifier.dense.bias&#39;, &#39;classifier.out_proj.weight&#39;, &#39;classifier.out_proj.bias&#39;]
+You should probably TRAIN this model on a down-stream task to be able to use it for predictions and inference.
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
 </div>
     {% endraw %}
 
@@ -407,7 +411,8 @@ The argument must be an iterable if specified.</p>
 <span class="n">blocks</span> <span class="o">=</span> <span class="p">(</span><span class="n">HF_TextBlock</span><span class="p">(</span><span class="n">hf_arch</span><span class="o">=</span><span class="n">hf_arch</span><span class="p">,</span> <span class="n">hf_tokenizer</span><span class="o">=</span><span class="n">hf_tokenizer</span><span class="p">),</span> <span class="n">CategoryBlock</span><span class="p">)</span>
 
 <span class="n">dblock</span> <span class="o">=</span> <span class="n">DataBlock</span><span class="p">(</span><span class="n">blocks</span><span class="o">=</span><span class="n">blocks</span><span class="p">,</span> 
-                   <span class="n">get_x</span><span class="o">=</span><span class="n">ColReader</span><span class="p">(</span><span class="s1">&#39;text&#39;</span><span class="p">),</span> <span class="n">get_y</span><span class="o">=</span><span class="n">ColReader</span><span class="p">(</span><span class="s1">&#39;label&#39;</span><span class="p">),</span> 
+                   <span class="n">get_x</span><span class="o">=</span><span class="n">ColReader</span><span class="p">(</span><span class="s1">&#39;text&#39;</span><span class="p">),</span> 
+                   <span class="n">get_y</span><span class="o">=</span><span class="n">ColReader</span><span class="p">(</span><span class="s1">&#39;label&#39;</span><span class="p">),</span> 
                    <span class="n">splitter</span><span class="o">=</span><span class="n">ColSplitter</span><span class="p">(</span><span class="n">col</span><span class="o">=</span><span class="s1">&#39;is_valid&#39;</span><span class="p">))</span>
 </pre></div>
 
@@ -459,7 +464,7 @@ The argument must be an iterable if specified.</p>
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">b</span> <span class="o">=</span> <span class="n">dls</span><span class="o">.</span><span class="n">one_batch</span><span class="p">();</span> <span class="nb">len</span><span class="p">(</span><span class="n">b</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">b</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="nb">len</span><span class="p">(</span><span class="n">b</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> 
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">b</span> <span class="o">=</span> <span class="n">dls</span><span class="o">.</span><span class="n">one_batch</span><span class="p">();</span> <span class="nb">len</span><span class="p">(</span><span class="n">b</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">b</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;input_ids&#39;</span><span class="p">]),</span> <span class="nb">len</span><span class="p">(</span><span class="n">b</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> 
 </pre></div>
 
     </div>
@@ -474,7 +479,47 @@ The argument must be an iterable if specified.</p>
 
 
 <div class="output_text output_subarea output_execute_result">
-<pre>(2, 3, 4)</pre>
+<pre>(2, 4, 4)</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    {% endraw %}
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Let's take a look at the actual types represented by our batch</p>
+
+</div>
+</div>
+</div>
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">explode_types</span><span class="p">(</span><span class="n">b</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>{tuple: [dict, fastai2.torch_core.TensorCategory]}</pre>
 </div>
 
 </div>
@@ -492,43 +537,7 @@ The argument must be an iterable if specified.</p>
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">b</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">b</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">b</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">b</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-<div class="output_area">
-
-
-
-<div class="output_text output_subarea output_execute_result">
-<pre>(torch.Size([4, 512]),
- torch.Size([4, 512]),
- torch.Size([4, 1]),
- torch.Size([4]))</pre>
-</div>
-
-</div>
-
-</div>
-</div>
-
-</div>
-    {% endraw %}
-
-    {% raw %}
-    
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">dls</span><span class="o">.</span><span class="n">show_batch</span><span class="p">(</span><span class="n">hf_tokenizer</span><span class="o">=</span><span class="n">hf_tokenizer</span><span class="p">,</span> <span class="n">max_n</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">dls</span><span class="o">.</span><span class="n">show_batch</span><span class="p">(</span><span class="n">max_n</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
 </pre></div>
 
     </div>
@@ -553,13 +562,13 @@ The argument must be an iterable if specified.</p>
   <tbody>
     <tr>
       <th>0</th>
-      <td>Raising Victor Vargas: A Review&lt;br /&gt;&lt;br /&gt;You know, Raising Victor Vargas is like sticking your hands into a big, steaming bowl of oatmeal. It's warm and gooey, but you're not sure if it feels right. Try as I might, no matter how warm and gooey Raising Victor Vargas became I was always aware that something didn't quite feel right. Victor Vargas suffers from a certain overconfidence on the director's part. Apparently, the director thought that the ethnic backdrop of a Latino family on the lower east side, and an idyllic storyline would make the film critic proof. He was right, but it didn't fool me. Raising Victor Vargas is the story about a seventeen-year old boy called, you guessed it, Victor Vargas (Victor Rasuk) who lives his teenage years chasing more skirt than the Rolling Stones could do in all the years they've toured. The movie starts off in `Ugly Fat' Donna's bedroom where Victor is sure to seduce her, but a cry from outside disrupts his plans when his best-friend Harold (Kevin Rivera) comes-a-looking for him. Caught in the attempt by Harold and his sister, Victor Vargas runs off for damage control. Yet even with the embarrassing implication that he's been boffing the homeliest girl in the neighborhood, nothing dissuades young Victor from going off on the hunt for more fresh meat. On a hot, New York City day they make way to the local public swimming pool where Victor's eyes catch a glimpse of the lovely young nymph Judy (Judy Marte), who's not just pretty, but a strong and independent too. The relationship that develops between Victor and Judy becomes the focus of the film. The story also focuses on Victor's family that is comprised of his grandmother or abuelita (Altagracia Guzman), his brother Nino (also played by real life brother to Victor, Silvestre Rasuk) and his sister Vicky (Krystal Rodriguez). The action follows Victor between scenes with Judy and scenes with his family. Victor tries to cope with being an oversexed pimp-daddy, his feelings for Judy and his grandmother's conservative Catholic upbringing.&lt;br /&gt;&lt;br /&gt;The problems that arise from Raising Victor Vargas are a few, but glaring errors. Throughout the film you get to know certain characters like Vicky, Nino, Grandma,</td>
+      <td>Un-bleeping-believable! Meg Ryan doesn't even look her usual pert lovable self in this, which normally makes me forgive her shallow ticky acting schtick. Hard to believe she was the producer on this dog. Plus Kevin Kline: what kind of suicide trip has his career been on? Whoosh... Banzai!!! Finally this was directed by the guy who did Big Chill? Must be a replay of Jonestown - hollywood style. Wooofff!</td>
       <td>negative</td>
     </tr>
     <tr>
       <th>1</th>
-      <td>I really wanted to love this show. I truly, honestly did.&lt;br /&gt;&lt;br /&gt;For the first time, gay viewers get their own version of the "The Bachelor". With the help of his obligatory "hag" Andra, James, a good looking, well-to-do thirty-something has the chance of love with 15 suitors (or "mates" as they are referred to in the show). The only problem is half of them are straight and James doesn't know this. If James picks a gay one, they get a trip to New Zealand, and If he picks a straight one, straight guy gets $25,000. How can this not be fun?! Take my hand, lets stroll: &lt;br /&gt;&lt;br /&gt;The most glaring problem with this show is the bachelor himself. James is your typical young and successful gay guy with a nice smile and body, the one you'd probably give two glances towards at your local bar before grazing for greener pastures. Why they chose to cast James as the leading man is beyond me. God knows there's so many other hotter and vivacious homosexual men out there dying to be on TV.&lt;br /&gt;&lt;br /&gt;Aside from his rather average physical appearance, James is about as interesting and exciting as a piece of chalk. Even as such, he has this arrogant, smugly condescending aura about him. However, if James were standing up against a blank, white wall he'd meld right into in it. I honestly can't recall a single interesting or noteworthy thing James said during the course of the show. He is THAT boring and forgettable. In fact, one of the mates flat out advised him he wasn't feeling a connection. I thought that was the best part of the show. Also, James speaks with an excruciatingly annoying lilt. Sound feminine or sound masculine, but don't ****ing segue tones in the middle of sentences...so painful to sit through. I hated him so much all throughout the show I kept thinking, "Please choose a straight guy and humiliate yourself and your unfortunate looking hag"&lt;br /&gt;&lt;br /&gt;Then we have the suitors. A remarkably bland bunch of men who don't seem to care either way what is happening. Equally vapid, they seem to be indistinguishable from one guy to the next except, "Hey that guy has blond highlights or oh that one has curly hair" Again, astoundingly inept casting decisions seem to be the aim of this show. While</td>
-      <td>negative</td>
+      <td>Why should you watch this? There are certainly no reasons why you shouldn't watch it! Superbly and amusingly directed by Albert and David Maysles, Grey Gardens was originally intended to be a film on the gentrification of East Hampton, but it turned out to the brothers that it would be more interesting to produce a study on the eccentric life of the two Edith Bouvier Beales, the aunt and cousin of Jacqueline Kennedy Onassis. Their life was certainly an amusing one (Edith spent most of her day in bed singing operas, Edie performing pirouettes and majorette dances with their many cats, one was named Ted Z. Kennedy) The film is interesting because it is both funny and sad - Edith died shortly after the film was released (in February 1977) aged 82 after experiencing some of the fame that she and Edie received after the film (she danced and sang in a nightclub Edie Beale Jr was born in 1925 and is still living in Miami Beach.This film is both engaging and spellbounding.</td>
+      <td>positive</td>
     </tr>
   </tbody>
 </table>
@@ -921,6 +930,24 @@ The argument must be an iterable if specified.</p>
 </div>
 </div>
 
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stderr output_text">
+<pre>Some weights of the model checkpoint at roberta-base were not used when initializing RobertaForSequenceClassification: [&#39;lm_head.bias&#39;, &#39;lm_head.dense.weight&#39;, &#39;lm_head.dense.bias&#39;, &#39;lm_head.layer_norm.weight&#39;, &#39;lm_head.layer_norm.bias&#39;, &#39;lm_head.decoder.weight&#39;]
+- This IS expected if you are initializing RobertaForSequenceClassification from the checkpoint of a model trained on another task or with another architecture (e.g. initializing a BertForSequenceClassification model from a BertForPretraining model).
+- This IS NOT expected if you are initializing RobertaForSequenceClassification from the checkpoint of a model that you expect to be exactly identical (initializing a BertForSequenceClassification model from a BertForSequenceClassification model).
+Some weights of RobertaForSequenceClassification were not initialized from the model checkpoint at roberta-base and are newly initialized: [&#39;classifier.dense.weight&#39;, &#39;classifier.dense.bias&#39;, &#39;classifier.out_proj.weight&#39;, &#39;classifier.out_proj.bias&#39;]
+You should probably TRAIN this model on a down-stream task to be able to use it for predictions and inference.
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
 </div>
     {% endraw %}
 
@@ -975,7 +1002,7 @@ The argument must be an iterable if specified.</p>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">b</span> <span class="o">=</span> <span class="n">dls</span><span class="o">.</span><span class="n">one_batch</span><span class="p">()</span>
-<span class="nb">len</span><span class="p">(</span><span class="n">b</span><span class="p">),</span> <span class="n">b</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">b</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span>
+<span class="nb">len</span><span class="p">(</span><span class="n">b</span><span class="p">),</span> <span class="n">b</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;input_ids&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">b</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span>
 </pre></div>
 
     </div>
@@ -1033,12 +1060,12 @@ The argument must be an iterable if specified.</p>
   <tbody>
     <tr>
       <th>0</th>
-      <td>I have had a question about Einstein's Special Theory of Relativity for some time which scientists all seem to run away from.  Until 1887 the equations used for Relativity were the Galilean transformation equations.\n\n                                                   x'=x-vt\n                                                   y'=y\n                                                   z'=z\n                                                   t'=t\n\nAfter 1887, scientists threw away the Galilean transformation equations and substituted the Lorentz equations.  Some time back I began to ask scientists why they had not used two sets of Galilean transformation equations instead of the Lorentz equations.\n        \n                                                 x = x' - (v2)(t2)'\n                                                 y = y'\n                                                 z = z'\n</td>
+      <td>Ryan's family has already posted on Facebook saying that "“the arrests stop here.” \n\nIt thus does not sound like he is going to allow himself to be arrested.   Law enforcement will no doubt be forced to gun him down, just like they were forced to shoot Finicum.   This is just so crazy that his family thinks that he can somehow avoid arrest.   They are for all practical reasons sentencing him to death, by taking such an extreme stand.\n\nThe government really needs to crack down, and make an example out of these people.   It looks like he is facing a mandatory 10 years in Federal prison, based on these charges.</td>
       <td></td>
     </tr>
     <tr>
       <th>1</th>
-      <td>What’s not on the table: Legislator Salary padding #3\n\nAsk Sen. McGuire why she and Majority colleagues like Sen. Giessel and Reps. Neuman and Keller looted the state treasury by claiming per diem at the federal rate of $292 per day for lodging and food while living at home during the 2015 Anchorage special session- with each of them putting thousands of dollars into their pockets: McGuire ($3,504), Giessel ($1,971), Keller ($1,971), and Neuman ($4,964). If McGuire and the Gang are willing to stuff their own pockets like this, imagine what they could do if they start raiding the Permanent Fund.\n\nhttp://www.alaskapublic.org/2015/06/12/legislatures-per-diem-expenses-approach-200k/\n\nAlso, since "conservatives" like Neuman, Giessel, McGuire, Reinbold, and Vasquez always holding up the private sector as a model, be sure to ask them to identify one company in Alaska that pays its employees thousands of dollars in excess of expenses. I bet they can't.\n\nBut they will cut teachers and police.</td>
+      <td>Interesting take on religion Jeff, thanks.  I remember all those "devout, born-agains" just loving Dubya because he was--like them--a "good Christian man."  Who laughed as he sent a born-again woman to the gas chamber as governor of Texas (setting a record for executions only broken by his numerically-challenged successor, Rick Perry).  Now we have those same "born-agains" lining up behind a thrice-wed bloodthirsty narcissistic buffoon like Trump (who, like Reagan, hasn't set foot in a church in decades), and a lying master of dirty tricks like Cruz, who fled the Catholic church, in Texas, for one with more voters.  Most Europeans have gotten past tying religion and politics.  If only we could.  God may not be dead, but she certainly has better things to do than hang out in the voting booth.  (Or kitchen table, as we fill out our mail-in ballots.)</td>
       <td></td>
     </tr>
   </tbody>

@@ -186,7 +186,6 @@ description: "This module contains custom models, loss functions, custom splitte
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">pretrained_model_name</span> <span class="o">=</span> <span class="s2">&quot;facebook/bart-large-cnn&quot;</span>
-
 <span class="n">hf_arch</span><span class="p">,</span> <span class="n">hf_config</span><span class="p">,</span> <span class="n">hf_tokenizer</span><span class="p">,</span> <span class="n">hf_model</span> <span class="o">=</span> <span class="n">BLURR_MODEL_HELPER</span><span class="o">.</span><span class="n">get_hf_objects</span><span class="p">(</span><span class="n">pretrained_model_name</span><span class="p">,</span> 
                                                                                <span class="n">model_cls</span><span class="o">=</span><span class="n">BartForConditionalGeneration</span><span class="p">)</span>
 
@@ -199,6 +198,15 @@ description: "This module contains custom models, loss functions, custom splitte
 
 <div class="output_wrapper">
 <div class="output">
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stderr output_text">
+<pre>Some weights of BartForConditionalGeneration were not initialized from the model checkpoint at facebook/bart-large-cnn and are newly initialized: [&#39;final_logits_bias&#39;]
+You should probably TRAIN this model on a down-stream task to be able to use it for predictions and inference.
+</pre>
+</div>
+</div>
 
 <div class="output_area">
 
@@ -226,9 +234,11 @@ description: "This module contains custom models, loss functions, custom splitte
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">blocks</span> <span class="o">=</span> <span class="p">(</span> 
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">hf_batch_tfm</span> <span class="o">=</span> <span class="n">HF_TextGenerationBatchTransform</span><span class="p">(</span><span class="n">hf_arch</span><span class="p">,</span> <span class="n">hf_tokenizer</span><span class="p">)</span>
+
+<span class="n">blocks</span> <span class="o">=</span> <span class="p">(</span> 
     <span class="n">HF_TextBlock</span><span class="p">(</span><span class="n">hf_arch</span><span class="p">,</span> <span class="n">hf_tokenizer</span><span class="p">),</span> 
-    <span class="n">HF_TextBlock</span><span class="p">(</span><span class="n">hf_arch</span><span class="p">,</span> <span class="n">hf_tokenizer</span><span class="p">,</span> <span class="n">task</span><span class="o">=</span><span class="n">ConditionalGenerationTask</span><span class="p">(),</span> <span class="n">trg_max_length</span><span class="o">=</span><span class="mi">250</span><span class="p">)</span>
+    <span class="n">HF_TextBlock</span><span class="p">(</span><span class="n">hf_arch</span><span class="p">,</span> <span class="n">hf_tokenizer</span><span class="p">,</span> <span class="n">hf_batch_tfm</span><span class="o">=</span><span class="n">hf_batch_tfm</span><span class="p">,</span> <span class="n">max_length</span><span class="o">=</span><span class="mi">150</span><span class="p">)</span>
 <span class="p">)</span>
 
 <span class="n">dblock</span> <span class="o">=</span> <span class="n">DataBlock</span><span class="p">(</span><span class="n">blocks</span><span class="o">=</span><span class="n">blocks</span><span class="p">,</span> 
@@ -285,26 +295,10 @@ description: "This module contains custom models, loss functions, custom splitte
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="nb">len</span><span class="p">(</span><span class="n">b</span><span class="p">),</span> <span class="n">b</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">b</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># len(b), b[0][&#39;input_ids&#39;].shape, b[1].shape</span>
 </pre></div>
 
     </div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-<div class="output_area">
-
-
-
-<div class="output_text output_subarea output_execute_result">
-<pre>(2, torch.Size([4, 512]), torch.Size([4, 250]))</pre>
-</div>
-
-</div>
-
 </div>
 </div>
 
@@ -343,48 +337,16 @@ description: "This module contains custom models, loss functions, custom splitte
   <tbody>
     <tr>
       <th>0</th>
-      <td>(CNN Student News) -- October 27, 2009. Downloadable Maps. Download PDF maps related to today's show:  • Afghanistan &amp; Pakistan • Los Angeles &amp; San Diego • Ft. Jackson, South Carolina. Transcript. THIS IS A RUSH TRANSCRIPT. THIS COPY MAY NOT BE IN ITS FINAL FORM AND MAY BE UPDATED. NATISHA LANCE, CNN STUDENT NEWS ANCHOR: A member of the military is making history. We'll explain how in today's edition of CNN Student News. Hi, everyone. Carl Azuz is off this week. I'm Natisha Lance. First Up: Afghan Crashes. LANCE: First up, Pakistan and Afghanistan. The countries share a border, and they also share a common problem: threats from militant groups and terrorists like the Taliban and al Qaeda. It's an issue facing both nations' governments, and one that the U.S. government is concerned about as well. That's why President Obama has been holding a series of meetings with some of his advisers. They're reviewing the U.S. strategy in Afghanistan and Pakistan. Samantha Hayes has the latest on those meetings and on the violence in the region. (BEGIN VIDEO) SAMANTHA HAYES, CNN CORRESPONDENT, WASHINGTON, D.C.: Two helicopter crashes make it the deadliest day in four years for Americans in Afghanistan. While a NATO security force spokesman says enemy fire is not to blame, the loss of 14 Americans comes while President Barack Obama is considering a request to send thousands more troops to the region to fight al Qaeda. The president addressed service men and women in Jacksonville, Florida Monday, after a White House meeting with his national security team. U.S. PRESIDENT BARACK OBAMA: Fourteen Americans gave their lives, and our prayers are with these service members, their civilian colleagues and the families who loved them. HAYES: The deadliest of the two crashes happened following a raid on suspected drug traffickers, and three DEA agents were among those killed. Also among the dead, three U.S. civilians, members of the embassy community. The State Department says the efforts of civilians and other nonmilitary personnel are essential to the overall mission. JACOB LEW, DEPUTY SECRETARY OF STATE: Improving Afghan governance, providing security, justice, jobs and services, and giving the Afghan people a meaningful alternative, as much as possible, to the Taliban's recruiting. HAYES: Democratic Senator John Kerry, off</td>
-      <td>Consider U.S. efforts to offer Afghan citizens an alternative to the Taliban.\nHear how a proposed health care bill addresses the issue of the public option.\nMeet a soldier who is making history at the U.S. Army Drill Sergeant School.\nUse the Daily Discussion to help students understand today's featured news stories.</td>
+      <td>(CNN) -- With just months to go before the presidential campaign ends all meaningful activity on Capitol Hill, members of Congress are struggling to move a few must-pass pieces of legislation. One of the most pressing is the highway bill, which Congress is considering this week. Not only does all federal funding for transportation depend on passing a bill by March 31; the highway trust fund itself is scheduled to go broke in 2013 and the deal in the making pays for only two years. This is essential national maintenance. Yet Congress is - you guessed it - gridlocked. We all know Washington is broken. What's less clear: Did it ever work better? If it did, what was different? What ingredients have been lost, and can we recapture them? One place to look, especially apt in this instance: The 1956 congressional debate that created the interstate highway system. The 1956 Federal Aid Highway Act was the health-care legislation of its day, an epic Washington battle. The pressure had been building for decades as the number of cars exploded. Traffic was a national nightmare. Many intercity roads were hardly passable, and most Americans recognized that new highways were essential to continue the unprecedented growth the country had been enjoying since the end of World War II. What no one could agree on was how to pay for the new system. The 1950s were a more consensual era, of course. Both Democrats and Republicans had wanted to nominate Gen. Dwight D. Eisenhower for president in 1952, and during the debate over the highway bill, his approval ratings rarely dipped below 70%. But that doesn't mean there were no disagreements. Opinion: What's wrong with Congress? It's not big enough. Ideological divisions were if anything sharper than they are today -- Republicans were the party of big business, Democrats the champions of the people and the New Deal. Elections were just as competitive, partisan jockeying just as intense. And the debate about how to pay for the highway system -- tolls, taxes, bonds or some other way -- wasn't just about money. It was about values - what kind of country we wanted to be. The debate built in intensity through the early '50s. There were blue-ribbon commissions, competing proposals, an array of shifting alliances and armies of lobbyists. The president's proposal and a rival Democratic plan were both shot down in early summer 1955. The main obstacles: truckers, motorists and the oil industry, all resisting new gasoline, tire and vehicle sales taxes. While the American Trucking Association worked behind the</td>
+      <td>Tamar Jacoby: Congress weighing highway bill that provides transportation funds.\nShe says 1956 debate that created interestate system should give Congress a clue.\nShe says battle was fierce, like health care bill today; Congress made deal for public good.\nJacoby: Truckers, drivers accepted a tax; Congress should learn from this.</td>
     </tr>
     <tr>
       <th>1</th>
-      <td>(CNN Student News) -- March 23, 2010. Download PDF maps related to today's show:. • Haiti • China. Transcript. THIS IS A RUSH TRANSCRIPT. THIS COPY MAY NOT BE IN ITS FINAL FORM AND MAY BE UPDATED. CARL AZUZ, CNN STUDENT NEWS ANCHOR: Happy birthday, Roger Bannister -- first man to run the mile in less than four minutes. In more than twice that time, you'll be up to speed on today's headlines. I'm Carl Azuz. First Up: Health Care. AZUZ: First up, it's the biggest expansion of the United States health care system in more than forty years. And by a vote of 219-212, the U.S. House of Representatives passed a health care reform bill late Sunday night. This is the same bill that the Senate passed last December. This means that when President Obama signs it, it's law. The House also passed a set of changes to the Senate bill. We're gonna get back to that in just a second. But first, you know this health care issue has been controversial. We want you to check out some of the reaction to last night's vote. REP. NANCY PELOSI, (D) HOUSE SPEAKER: Thirty-two million more Americans having access to health care. $1.3 trillion saved for the taxpayer and accountability for the insurance companies so they cannot come between patients and their doctors. REP. JOHN BOEHNER, (R) HOUSE MINORITY LEADER: Shame on us. Shame on this body. Shame on each and every one of you who substitutes your will and your desires above those of your fellow countrymen. BARACK OBAMA, PRESIDENT OF THE UNITED STATES: This legislation will not fix everything that ails our health care system, but it moves us decisively in the right direction. This is what change looks like. AZUZ: Okay, so the House passed the bill. Now what? Well, President Obama is expected to sign it today. Again, as soon as he does that, the Senate bill becomes law. But how about those changes passed by the House? Those still need to get through the Senate. That process can't start until  the president signs the original bill. Some analysts are saying that the package of changes could inspire a pretty heated battle in the Senate. We're going to have more on that as the debate gets going. Another thing that's</td>
-      <td>Find out what comes next after the passage of a health care reform bill.\nLearn about a proposal that would change how student loans are funded.\nFollow the steps that led to a showdown between China and Google.\nUse the Daily Discussion to help students understand today's featured news stories.</td>
+      <td>ATLANTA, Georgia (CNN)  -- The Bigfoot in the freezer is made of rubber, a Web posting asserted Tuesday. The frozen creature reputed to be Bigfoot turned out to be made of rubber, an enthusaist reports. The initial promoter of two hikers' claim that they found the body of Bigfoot in Georgia said he has determined that the discovery was a hoax. The body turned out to be rubber, and the two men who claimed that they found it, Matthew Whitton and Rick Dyer, have admitted that it was a costume, said a posting Tuesday on the Web sites of Searching for Bigfoot Inc. and Squatchdetective. The posting purportedly was written by Steve Kulls, who maintains the Squatchdetective Web site and hosts a similarly named Internet radio program, where the find was announced weeks ago. In addition, Stanford University anthropologist Richard Klein said Monday that he was not aware he had been identified as participating in the project and would not be involved in any effort to examine the purported Bigfoot carcass. Whitton and Dyer announced last week that they had found the body of a 7-foot-7-inch, 500-pound half-ape, half-human creature while hiking in the north Georgia mountains in June. They said they put the carcass in a freezer and had spotted about three similar living creatures. "We were not looking for Bigfoot," Whitton, a Clayton County, Georgia, police officer, said Friday during a news conference. "We wouldn't know what we were doing if we did." He and Dyer insisted that scientific analysis would bear out their claim. The hoax was discovered after an "expedited melting process," Kulls wrote. "A break appeared up near the feet area... as the team and I began examining this area near the feet, I observed the foot which looked unnatural, reached in and confirmed it was a rubber foot." Kulls said he contacted Tom Biscardi, the self-described "Real Bigfoot Hunter" who has been searching since 1971 for the creature of legend and appeared alongside Whitton and Dyer at the news conference. "Later that day, Tom Biscardi informed us that both Matthew Whitton and Ricky Dyer admitted it was a costume," the posting said. Whitton and Dyer reportedly agreed to sign a promissory note and an admission of the hoax and meet with Biscardi at their hotel on Sunday. But when Biscardi went to the hotel, the two had left, Kull</td>
+      <td>Hikers' discovery made of rubber, Web sites say.\nMen who made claim didn't show up for CNN's "American Morning"\nStanford professor says his alleged participation in project is news to him.\n"There is virtually no prospect of this animal being real," professor says.</td>
     </tr>
   </tbody>
 </table>
-</div>
-
-</div>
-
-</div>
-</div>
-
-</div>
-    {% endraw %}
-
-    {% raw %}
-    
-<div class="cell border-box-sizing code_cell rendered">
-
-</div>
-    {% endraw %}
-
-    {% raw %}
-    
-<div class="cell border-box-sizing code_cell rendered">
-
-<div class="output_wrapper">
-<div class="output">
-
-<div class="output_area">
-
-
-<div class="output_markdown rendered_html output_subarea ">
-<h2 id="HF_TextGenerationModelWrapper" class="doc_header"><code>class</code> <code>HF_TextGenerationModelWrapper</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/modeling/text_generation.py#L14" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>HF_TextGenerationModelWrapper</code>(<strong><code>hf_model</code></strong>) :: <a href="/blurr/modeling-core#HF_BaseModelWrapper"><code>HF_BaseModelWrapper</code></a></p>
-</blockquote>
-<p>Same as <code>nn.Module</code>, but no need for subclasses to call <code>super().__init__</code></p>
-
 </div>
 
 </div>
@@ -420,7 +382,7 @@ description: "This module contains custom models, loss functions, custom splitte
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h4 id="text_gen_splitter" class="doc_header"><code>text_gen_splitter</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/modeling/text_generation.py#L25" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>text_gen_splitter</code>(<strong><code>m</code></strong>, <strong><code>arch</code></strong>)</p>
+<h4 id="text_gen_splitter" class="doc_header"><code>text_gen_splitter</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/modeling/text_generation.py#L14" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>text_gen_splitter</code>(<strong><code>m</code></strong>, <strong><code>arch</code></strong>)</p>
 </blockquote>
 <p>Custom param splitter for text generation models</p>
 
@@ -437,17 +399,77 @@ description: "This module contains custom models, loss functions, custom splitte
     {% raw %}
     
 <div class="cell border-box-sizing code_cell rendered">
+
+</div>
+    {% endraw %}
+
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+<div class="output_markdown rendered_html output_subarea ">
+<h2 id="HF_TextGenModelCallback" class="doc_header"><code>class</code> <code>HF_TextGenModelCallback</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/modeling/text_generation.py#L30" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>HF_TextGenModelCallback</code>() :: <a href="/blurr/modeling-core#HF_BaseModelCallback"><code>HF_BaseModelCallback</code></a></p>
+</blockquote>
+<p>Basic class handling tweaks of the training loop by changing a <code>Learner</code> in various events</p>
+
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    {% endraw %}
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Since these huggingface transformers return the loss if when we are training, and pass in both <code>labels</code> and <code>decoder_input_ids</code> in the input, we use the callback above to capture it and then set <code>self.learn.loss</code> to it <em>prior</em> to the backward pass by overriding <code>after_loss</code>.</p>
+<p>As a loss function is therefore not required by our <code>Learner</code>, we can set it to <code>noop</code> as we do below.</p>
+
+</div>
+</div>
+</div>
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
 <div class="input">
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">model</span> <span class="o">=</span> <span class="n">HF_TextGenerationModelWrapper</span><span class="p">(</span><span class="n">hf_model</span><span class="p">)</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="k">class</span> <span class="nc">HF_MaskedLMLoss</span><span class="p">():</span>
+    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inp</span><span class="p">,</span> <span class="n">targ</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span> <span class="k">return</span>
+    <span class="k">def</span> <span class="nf">decodes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span> <span class="k">return</span> <span class="n">x</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">dim</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">activation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span> <span class="k">return</span> <span class="n">F</span><span class="o">.</span><span class="n">softmax</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">dim</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    {% endraw %}
+
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">model</span> <span class="o">=</span> <span class="n">HF_BaseModelWrapper</span><span class="p">(</span><span class="n">hf_model</span><span class="p">)</span>
 
 <span class="n">learn</span> <span class="o">=</span> <span class="n">Learner</span><span class="p">(</span><span class="n">dls</span><span class="p">,</span> 
                 <span class="n">model</span><span class="p">,</span>
                 <span class="n">opt_func</span><span class="o">=</span><span class="n">ranger</span><span class="p">,</span>
-                <span class="n">loss_func</span><span class="o">=</span><span class="n">CrossEntropyLossFlat</span><span class="p">(</span><span class="n">ignore_index</span><span class="o">=</span><span class="n">hf_tokenizer</span><span class="o">.</span><span class="n">pad_token_id</span><span class="p">),</span>
-                <span class="n">cbs</span><span class="o">=</span><span class="p">[</span><span class="n">HF_BaseModelCallback</span><span class="p">],</span>
+                <span class="n">loss_func</span><span class="o">=</span><span class="n">HF_MaskedLMLoss</span><span class="p">(),</span>
+                <span class="n">cbs</span><span class="o">=</span><span class="p">[</span><span class="n">HF_TextGenModelCallback</span><span class="p">],</span>
                 <span class="n">splitter</span><span class="o">=</span><span class="n">partial</span><span class="p">(</span><span class="n">text_gen_splitter</span><span class="p">,</span> <span class="n">arch</span><span class="o">=</span><span class="n">hf_arch</span><span class="p">))</span><span class="c1">#.to_fp16()</span>
 
 <span class="n">learn</span><span class="o">.</span><span class="n">create_opt</span><span class="p">()</span> 
@@ -468,7 +490,7 @@ description: "This module contains custom models, loss functions, custom splitte
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># learn.summary()</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># learn.blurr_summary()</span>
 </pre></div>
 
     </div>
@@ -487,7 +509,7 @@ description: "This module contains custom models, loss functions, custom splitte
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">b</span> <span class="o">=</span> <span class="n">dls</span><span class="o">.</span><span class="n">one_batch</span><span class="p">()</span>
 <span class="n">preds</span> <span class="o">=</span> <span class="n">learn</span><span class="o">.</span><span class="n">model</span><span class="p">(</span><span class="n">b</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
-<span class="nb">len</span><span class="p">(</span><span class="n">preds</span><span class="p">),</span><span class="n">preds</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span>
+<span class="nb">len</span><span class="p">(</span><span class="n">preds</span><span class="p">),</span><span class="n">preds</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">preds</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span>
 </pre></div>
 
     </div>
@@ -502,7 +524,9 @@ description: "This module contains custom models, loss functions, custom splitte
 
 
 <div class="output_text output_subarea output_execute_result">
-<pre>(2, torch.Size([4, 250, 50264]))</pre>
+<pre>(3,
+ tensor(3.1455, device=&#39;cuda:1&#39;, grad_fn=&lt;NllLossBackward&gt;),
+ torch.Size([4, 149, 50264]))</pre>
 </div>
 
 </div>
@@ -520,7 +544,7 @@ description: "This module contains custom models, loss functions, custom splitte
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="nb">len</span><span class="p">(</span><span class="n">b</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">b</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="n">b</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">b</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span> <span class="n">b</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="nb">len</span><span class="p">(</span><span class="n">b</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">b</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="n">b</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;input_ids&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">b</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span> <span class="n">b</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span>
 </pre></div>
 
     </div>
@@ -535,7 +559,7 @@ description: "This module contains custom models, loss functions, custom splitte
 
 
 <div class="output_text output_subarea output_execute_result">
-<pre>(2, 4, torch.Size([4, 512]), 4, torch.Size([4, 250]))</pre>
+<pre>(2, 4, torch.Size([4, 512]), 4, torch.Size([4, 150]))</pre>
 </div>
 
 </div>
@@ -609,7 +633,7 @@ description: "This module contains custom models, loss functions, custom splitte
 
 
 <div class="output_text output_subarea output_execute_result">
-<pre>SuggestedLRs(lr_min=0.017378008365631102, lr_steep=7.585775847473997e-07)</pre>
+<pre>SuggestedLRs(lr_min=1.58489319801447e-07, lr_steep=1.3182567499825382e-06)</pre>
 </div>
 
 </div>
@@ -619,7 +643,7 @@ description: "This module contains custom models, loss functions, custom splitte
 
 
 <div class="output_png output_subarea ">
-<img src="data:image/png;base64,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
+<img src="data:image/png;base64,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
 "
 >
 </div>
@@ -666,21 +690,21 @@ description: "This module contains custom models, loss functions, custom splitte
   <tbody>
     <tr>
       <td>0</td>
-      <td>3.585893</td>
-      <td>3.168727</td>
-      <td>01:11</td>
+      <td>3.529278</td>
+      <td>3.303249</td>
+      <td>00:56</td>
     </tr>
     <tr>
       <td>1</td>
-      <td>3.516942</td>
-      <td>3.158353</td>
-      <td>01:11</td>
+      <td>3.476161</td>
+      <td>3.290421</td>
+      <td>00:56</td>
     </tr>
     <tr>
       <td>2</td>
-      <td>3.510635</td>
-      <td>3.156650</td>
-      <td>01:12</td>
+      <td>3.454700</td>
+      <td>3.288520</td>
+      <td>00:56</td>
     </tr>
   </tbody>
 </table>
@@ -743,15 +767,15 @@ description: "This module contains custom models, loss functions, custom splitte
   <tbody>
     <tr>
       <th>0</th>
-      <td>(CNN) -- Home to up to 10 percent of all known species, Mexico is recognized as one of the most biodiverse regions on the planet. The twin threats of climate change and human encroachment on natural environments are, however, threatening the existence of the country's rich wildlife. And there is a great deal to lose. In the United Nations Environment Program (UNEP) World Conservation Monitoring Centre's list of megadiverse countries Mexico ranks 11th. The list represents a group of 17 countries that harbor the majority of the Earth's species and are therefore considered extremely biodiverse. From its coral reefs in the Caribbean Sea to its tropical jungles in Chiapas and the Yucatan peninsula and its deserts and prairies in the north, Mexico boasts an incredibly rich variety of flora and fauna. Some 574 out of 717 reptile species found in Mexico -- the most in any country -- can only be encountered within its borders. It is home to 502 types of mammals, 290 species of birds, 1,150 varieties of birds and 26,000 classifications of plants. Pronatura, a non-profit organization that works to promote conservation and sustainable development in Mexico, has selected six species which it says symbolize the problems faced by the destruction of nature. "These are only some of the species which have some degree of conservation," says Eduardo Cota Corona, Director of Conservation at Pronatura. "However, there is a countless number of species in Mexico which find themselves in danger of extinction." Golden Eagle. It is the country's national symbol yet the Golden Eagle is close to extinction in Mexico. One of the largest raptors or birds of prey in the world, the Golden Eagle's wingspan can reach lengths greater than two metres. Only the Bald Eagle and the California Greater exceed it in size in North America. With its powerful hooked bill and long and sharp claws it can sometimes capture prey of a size that is surprising for its size, including crane, wild ungulates and domestic livestock, though more often than not it tends to feed off small mammals such as rabbits, hares, ground squirrels and prairie dogs as well as reptiles and small-to-medium sized birds. Primarily a solitary bird, the Golden Eagle pairs up to breed, building nests made of dry branches in cliffs and escarpments. The female typically lays two eggs which are incubated by both the male and female. Usually, only one of the hatchlings survives. The Golden Eagle can be found in</td>
-      <td>Mexico hosts to up to 10 percent of all known species on Earth.\nIt is home to 502 types of mammals, 290 bird species and 26,000 types of plants.\nHuman development and climate change is placing a big strain on its biodiversity.\nThe Golden Eagle is under threat in spite of being the country's national symbol.</td>
-      <td>Mexico. up 10 to 10 percent of all known species. the. The threats is home to 502 types of mammals, 290 species species and 26,000</td>
+      <td>(CNN) -- As violence again roils Iraq, the United Nations reported more than 65,000 people had fled conflict areas in the past week. The Office of the United Nations High Commissioner for Refugees said in a report that those Iraqis fled from the cities of Falluja and Ramadi in Iraq's central Anbar province. More than 140,000 people have been made homeless since new fighting broke out at the end of 2013, according to Iraq's Ministry of Displacement and Migration. It is the largest displacement in Iraq since the sectarian violence of 2006-2008. That figure adds to the 1.13 million people already internally displaced and mostly residing in Baghdad, Diyala and Ninewa provinces. Adrian Edwards, spokesman for the refugee agency, told reporters in Geneva that its staff and other people in Anbar had reported many civilians were unable to leave conflict-affected areas where food and fuel were in short supply. "Most of the recently displaced remain outside Falluja city, accommodated by relatives or staying in schools, mosques and hospitals where resources are running low," he said. "Host families are having difficulties sustaining the burden of caring for the displaced." More violence was recorded on Friday. Seven people were killed and nine others were hurt in separate incidents when Iraqi Army mortars landed in residential areas in Falluja, health officials there told CNN.</td>
+      <td>More than 65,000 have fled Falluja and Ramadi in past week.\nThis is on top of more than 1.1 million internally displaced persons.\nMore violence was recorded in Iraq Friday with seven reported killed.</td>
+      <td>The. 65,000 people fled conflictuja and Ramadi in the week. More. is the top of the than 140.13 million people displaced people..</td>
     </tr>
     <tr>
       <th>1</th>
-      <td>ATLANTA, Georgia (CNN) -- The company name flashed and swirled around the darkened convention hall as the music began to pump. Before squeezing into Body Magic, a before-and-after volunteer is measured by Monica Bennett. "Money money money money, money! Money money money money, money!" A man dressed in designer duds strutted across the stage to the tune of The O'Jays' 1970s hit, now the theme song for "The Apprentice." "If you want to get paid, you've got to get up on your feet," he called out. "They say money doesn't grow on trees. Well, I've got a money tree in my backyard, and Ardyss planted it there!" With that the faithful rose and hollered, the applause crescendoed, and the smiles - and dreams - spread wide.  See how the sales pitch works ». Few issues pique public interest more than opportunities to make money and achieve beauty. The estimated 3,000 people from around the country who streamed into the Georgia World Congress Center in Atlanta in early August were a testament to that. They came to rally around Ardyss International, a Las Vegas, Nevada-based direct sales company that makes a fortune off undergarments. Body Magic, the company's flagship girdle-and-corset combo, which retails for $140 plus tax and shipping, can "bring your butt back to high school fine," the man on stage announced. You can wear it and get thin, the claims go, or you can sell it and get rich. The company's other products include the Angel Bra, Panty Reshaper, undergarments for men, nutritional supplements and skin-care items. Think Mary Kay cosmetics. That's the kind of multilevel or network marketing model on which Ardyss is based. Distributors can make money through sales. But they can make even more from profit cuts and bonuses that float to the top if they recruit other distributors, who in turn recruit other distributors, and so on and so on. "I've only been involved for two months, and I have a check with a comma in it," said Robbyn Washington of Snellville, Georgia. While many such companies are legitimate, others smack of pyramid schemes, prompting legal disputes and investigations by consumer protection agencies such as the Federal Trade Commission. The FTC has no complaints about Ardyss International on file. But the Better Business Bureau, with which Ardyss</td>
-      <td>Company behind Body Magic booms amid claims of big money, smaller waistlines.\nMultilevel marketing businesses draw interest and spur hope during recession.\nStaying cautious and realistic is important for prospective distributors.\nHLN money expert Clark Howard: "Don't believe it's paved in gold"</td>
-      <td>&lt;s&gt;. Ar Magic.ob. sales of beauty money. beauty waistlines. Some.ilevel or model can interest from sometimes legal, economic. FTCs</td>
+      <td>(CNN)The same superbug that contributed to two deaths in Los Angeles has been reported in North Carolina, where one person has died, a spokesman told CNN. Eighteen people have contracted carbapenem-resistant Enterobacteriaceae, or CRE, so far this year, said Kevin McCarthy, spokesman with the Carolinas HealthCare System. Of those, 15 had CRE upon admission to the hospital in Charlotte; three acquired it in the hospital, and one died, the spokesman said. The cause of death was not immediately clear. McCarthy declined to provide details on any of the patients. It was also not clear how any of them became infected. In Los Angeles, seven patients contracted CRE after routine endoscopic procedures. Two of them died, the Ronald Reagan UCLA Medical Center said last week. CRE was a contributing factor in the deaths, but the exact cause of the deaths wasn't immediately disclosed in those cases either. Hospital officials there have said the outbreak was caused by two medical scopes that still carried the deadly bacteria even though disinfection guidelines were followed. The UCLA hospital was using a duodenoscope made by Olympus, but the Food and Drug Administration is also reviewing data from the two other U.S. companies that make the devices, Fujifilm and Pentax. The medical center is contacting 179 others who underwent endoscopic procedures between October and January. It's offering them home tests to screen for the bacteria. In a statement, McCarthy said Carolinas HealthCare System uses standard methods for disinfecting its equipment, saying that all duodenoscopes that have been tested have shown to be negative for CRE. Some CRE bacteria can resist most antibiotics, the Centers for Disease Control and Prevention says on its website. CNN's Ben Tinker, Michael Martinez and Steve Almasy contributed to this report.</td>
+      <td>Eighteen people have contracted CRE so far this year at a hospital in Charlotte, North Carolina.\nCRE is highly resistant to many forms of antibiotic treatments, the CDC says.</td>
+      <td>. people have contracted carb in far this year. Carol North in Charlotte, North Carolina.. contributed a resistant to most antibio</td>
     </tr>
   </tbody>
 </table>
@@ -781,28 +805,20 @@ description: "This module contains custom models, loss functions, custom splitte
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">test_article</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">To Disney or not to Disney? For many travelers, especially those with children, it&#39;s not even a question they ask. </span>
-<span class="s2">They already know the answer. &quot;Yes.&quot; To these visitors, Disney is Mickey Mouse, princesses, magic and fun. It&#39;s </span>
-<span class="s2">happy memories of childhood brought back to life in your children, a clean place where the rides are safe and the </span>
-<span class="s2">Disney characters are always happy to pose for pictures with your kids. That&#39;s Deb Koma, who visited once as a </span>
-<span class="s2">child and walked back into the Magic Kingdom in the mid-1990s with her young son. &quot;It was so perfect, everybody </span>
-<span class="s2">was so happy, everything was so maintained,&quot; said Koma, who now works for the AllEars.net, an unofficial Disney </span>
-<span class="s2">planning and fan site. &quot;You were in a perfect fantasy world. That, and my little boy loved it.&quot; But for other </span>
-<span class="s2">vacationers, Disney inspires a firm &quot;no.&quot; To those travelers, Disney is merely a commercial machine built to </span>
-<span class="s2">sell tickets, overpriced toys and a stereotype of girls as princesses. They may remember visiting Disneyland </span>
-<span class="s2">or Disney World when they were children, but they aren&#39;t taking their kids there. Downtown Disney to make way </span>
-<span class="s2">for Disney Springs. That&#39;s the Rev. J.C. Mitchell, who will be heading to Orlando, Florida, this year for a work </span>
-<span class="s2">conference but will not be taking his family with him, even though his job will cover most of the costs of his </span>
-<span class="s2">trip. &quot;We do not enjoy Disney,&quot; wrote Mitchell, who went to Disney World as a child, via e-mail. &quot;We believe </span>
-<span class="s2">it symbolically represents the excesses of our extremely individualistic society.&quot; What is it about Disney </span>
-<span class="s2">that creates such a strong response from its dedicated fans and foes? Whether you love or hate or merely </span>
-<span class="s2">tolerate the expansion of what Walt Disney started in 1923, there&#39;s no doubting that Disney is popular </span>
-<span class="s2">and its influence is everywhere. All of those theme parks, resorts, cruises, movies, television shows, </span>
-<span class="s2">toys and other Disney businesses earned the company  11.3𝑏𝑖𝑙𝑙𝑖𝑜𝑛𝑖𝑛𝑡ℎ𝑒𝑙𝑎𝑠𝑡𝑡ℎ𝑟𝑒𝑒𝑚𝑜𝑛𝑡ℎ𝑠𝑜𝑓2012.𝑀𝑜𝑟𝑒𝑡ℎ𝑎𝑛 3 billion </span>
-<span class="s2">of that money came from Disney cruises and its 11 theme parks and 43 resorts across North America, Europe </span>
-<span class="s2">and Asia. One more park is under construction in Shanghai. People like Disney. It ranked as the third most </span>
-<span class="s2">well-regarded company--behind only Amazon.com and Apple--in a recent Harris Interactive survey of people&#39;s </span>
-<span class="s2">opinions of the most visible companies&#39; reputations. </span>
+<span class="s2">About 10 men armed with pistols and small machine guns raided a casino in Switzerland and made off </span>
+<span class="s2">into France with several hundred thousand Swiss francs in the early hours of Sunday morning, police said. </span>
+<span class="s2">The men, dressed in black clothes and black ski masks, split into two groups during the raid on the Grand Casino </span>
+<span class="s2">Basel, Chief Inspector Peter Gill told CNN. One group tried to break into the casino&#39;s vault on the lower level </span>
+<span class="s2">but could not get in, but they did rob the cashier of the money that was not secured, he said. The second group </span>
+<span class="s2">of armed robbers entered the upper level where the roulette and blackjack tables are located and robbed the </span>
+<span class="s2">cashier there, he said. As the thieves were leaving the casino, a woman driving by and unaware of what was </span>
+<span class="s2">occurring unknowingly blocked the armed robbers&#39; vehicles. A gunman pulled the woman from her vehicle, beat </span>
+<span class="s2">her, and took off for the French border. The other gunmen followed into France, which is only about 100 </span>
+<span class="s2">meters (yards) from the casino, Gill said. There were about 600 people in the casino at the time of the robbery. </span>
+<span class="s2">There were no serious injuries, although one guest on the Casino floor was kicked in the head by one of the </span>
+<span class="s2">robbers when he moved, the police officer said. Swiss authorities are working closely with French authorities, </span>
+<span class="s2">Gill said. The robbers spoke French and drove vehicles with French license plates. CNN&#39;s Andreena Narayan </span>
+<span class="s2">contributed to this report.</span>
 <span class="s2">&quot;&quot;&quot;</span>
 </pre></div>
 
@@ -820,7 +836,7 @@ description: "This module contains custom models, loss functions, custom splitte
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">res</span> <span class="o">=</span> <span class="n">learn</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">test_article</span><span class="p">)</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">res</span> <span class="o">=</span> <span class="n">learn</span><span class="o">.</span><span class="n">blurr_predict</span><span class="p">(</span><span class="n">test_article</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">res</span><span class="p">[</span><span class="mi">0</span><span class="p">][:</span><span class="mi">150</span><span class="p">])</span>
 </pre></div>
 
@@ -843,7 +859,7 @@ description: "This module contains custom models, loss functions, custom splitte
 <div class="output_area">
 
 <div class="output_subarea output_stream output_stdout output_text">
-<pre>DisneyDisney. some fans not to Disney? For many travelers, the those with children, it&#39;s not even a question they ask. To                , already kno
+<pre>re 10 men armed with pistols and small machine guns raided a casino in Switzerland. made off. intointo France. several hundred thousand Swiss francs. 
 </pre>
 </div>
 </div>
@@ -868,11 +884,11 @@ description: "This module contains custom models, loss functions, custom splitte
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">test_input_ids</span> <span class="o">=</span> <span class="n">dls</span><span class="o">.</span><span class="n">train_ds</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">learn</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">hf_model</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">test_input_ids</span> <span class="o">=</span> <span class="n">dls</span><span class="o">.</span><span class="n">train_ds</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;input_ids&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">learn</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">hf_model</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
 <span class="n">gen_text</span> <span class="o">=</span> <span class="n">learn</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">hf_model</span><span class="o">.</span><span class="n">generate</span><span class="p">(</span><span class="n">test_input_ids</span><span class="p">,</span> <span class="n">num_beams</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">max_length</span><span class="o">=</span><span class="mi">130</span><span class="p">,</span> <span class="n">min_length</span><span class="o">=</span><span class="mi">30</span><span class="p">)</span>
 
 <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;=== Target ===&#39;</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">hf_tokenizer</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="n">dls</span><span class="o">.</span><span class="n">train_ds</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">],</span> <span class="n">skip_special_tokens</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">clean_up_tokenization_spaces</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span><span class="si">}</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">hf_tokenizer</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="n">dls</span><span class="o">.</span><span class="n">train_ds</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">][</span><span class="s2">&quot;input_ids&quot;</span><span class="p">],</span> <span class="n">skip_special_tokens</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">clean_up_tokenization_spaces</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span><span class="si">}</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
 
 <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;=== Prediction ===&#39;</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">hf_tokenizer</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="n">gen_text</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">skip_special_tokens</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">clean_up_tokenization_spaces</span><span class="o">=</span><span class="kc">False</span><span class="p">))</span>
@@ -889,13 +905,13 @@ description: "This module contains custom models, loss functions, custom splitte
 
 <div class="output_subarea output_stream output_stdout output_text">
 <pre>=== Target ===
- Dorothy Brown: Missouri Gov. Nixon appointed highway patrol chief to take over in Ferguson .
-She says lesson of Michael Brown case: underrepresented black citizens must vote .
-Most Ferguson citizens are black, but power structure dominated by whites, she says .
-Brown: Police out of control; young man is dead. Citizens should respond at ballot box .
+ Tamar Jacoby: Congress weighing highway bill that provides transportation funds .
+She says 1956 debate that created interestate system should give Congress a clue .
+She says battle was fierce, like health care bill today; Congress made deal for public good .
+Jacoby: Truckers, drivers accepted a tax; Congress should learn from this .
 
 === Prediction ===
-Missouri Gov. Jay Nixon appointed Capt. Ron Johnson of the Missouri State Highway Patrol to take over the security on the ground in Ferguson. The miracle of Ferguson is that the citizens have had the courage to stand up to a power structure that generally does not include them.
+Julian Zelizer: Congress is struggling to move a few must-pass pieces of legislation. He says the 1956 debate that created the interstate highway system was an epic Washington battle. He asks: Did it ever work better? If it did, what was different? What ingredients have been lost, and can we recapture them?
 </pre>
 </div>
 </div>
@@ -932,7 +948,7 @@ Missouri Gov. Jay Nixon appointed Capt. Ron Johnson of the Missouri State Highwa
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h4 id="Learner.generate_text" class="doc_header"><code>Learner.generate_text</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/modeling/text_generation.py#L55" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>Learner.generate_text</code>(<strong><code>inp</code></strong>, <strong><code>max_length</code></strong>=<em><code>130</code></em>, <strong><code>min_length</code></strong>=<em><code>30</code></em>, <strong>**<code>kwargs</code></strong>)</p>
+<h4 id="Learner.generate_text" class="doc_header"><code>Learner.generate_text</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/modeling/text_generation.py#L51" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>Learner.generate_text</code>(<strong><code>inp</code></strong>, <strong><code>max_length</code></strong>=<em><code>130</code></em>, <strong><code>min_length</code></strong>=<em><code>30</code></em>, <strong>**<code>kwargs</code></strong>)</p>
 </blockquote>
 <p>Uses the built-in <code>generate</code> method to generate the text
 (see <a href="https://huggingface.co/transformers/main_classes/model.html#transformers.PreTrainedModel.generate">here</a>
@@ -972,13 +988,13 @@ for a list of arguments you can pass in)</p>
 
 <div class="output_subarea output_stream output_stdout output_text">
 <pre>=== Prediction 1 ===
-Disney has 11 theme parks and 43 resorts across North America, Europe, Asia. It ranked as the third most well-regarded company in a recent Harris Interactive survey. The Rev. J.C. Mitchell: &#34;We do not enjoy Disney&#34;
+About 10 men armed with pistols and small machine guns raided a casino in Switzerland. They made off with several hundred thousand Swiss francs in the early hours of Sunday morning. A woman driving by unknowingly blocked the armed robbers&#39; vehicles.
 
 === Prediction 2 ===
-Disney has 11 theme parks and 43 resorts across North America, Europe, Asia. It ranked as the third most well-regarded company in a recent Harris Interactive survey. The Rev. J.C. Mitchell: &#34;We do not enjoy Disney.&#34;
+About 10 men armed with pistols and small machine guns raided a casino in Switzerland. They made off with several hundred thousand Swiss francs in the early hours of Sunday morning. The robbers spoke French and drove vehicles with French license plates.
 
 === Prediction 3 ===
-Disney has 11 theme parks and 43 resorts across North America, Europe, Asia. It ranked as the third most well-regarded company in a recent Harris Interactive survey.
+About 10 men armed with pistols and small machine guns raided a casino in Switzerland. They made off with several hundred thousand Swiss francs in the early hours of Sunday morning. The robbers spoke French and drove vehicles with French license plates, police said.
 
 </pre>
 </div>
@@ -1037,7 +1053,7 @@ Disney has 11 theme parks and 43 resorts across North America, Europe, Asia. It 
 
 
 <div class="output_text output_subarea output_execute_result">
-<pre>[&#39;Disney has 11 theme parks and 43 resorts across North America, Europe, Asia. It ranked as the third most well-regarded company in a recent Harris Interactive survey. The Rev. J.C. Mitchell: &#34;We do not enjoy Disney&#34;&#39;]</pre>
+<pre>[&#34;About 10 men armed with pistols and small machine guns raided a casino in Switzerland. They made off with several hundred thousand Swiss francs in the early hours of Sunday morning. A woman driving by unknowingly blocked the armed robbers&#39; vehicles.&#34;]</pre>
 </div>
 
 </div>

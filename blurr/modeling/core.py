@@ -5,7 +5,9 @@ __all__ = ['hf_splitter', 'HF_BaseModelWrapper', 'HF_BaseModelCallback']
 # Cell
 import torch, nlp
 from transformers import *
+
 from fastai2.text.all import *
+from fastai2.callback.hook import _print_shapes
 
 from ..utils import *
 from ..data.core import *
@@ -32,33 +34,57 @@ class HF_BaseModelWrapper(Module):
         self.hf_model_fwd_args = self.hf_model.forward.__code__.co_varnames[:n_fwd_args][1:]
 
     def forward(self, x):
-        model_kwargs, n_inputs = {}, len(x)
-        model_kwargs['input_ids'] = x[0]
-        if (n_inputs > 1 and self._include_arg('attention_mask', x[1])): model_kwargs['attention_mask'] = x[1]
-        if (n_inputs > 2 and self._include_arg('token_type_ids', x[2])): model_kwargs['token_type_ids'] = x[2]
+        for k in list(x):
+            if k not in self.hf_model_fwd_args: del x[k]
 
-        return self.hf_model(**model_kwargs)
-
-    def _include_arg(self, arg_name, tensor_val):
-        if (tensor_val[0][0].item() == -9999 or arg_name not in self.hf_model_fwd_args): return False
-        return True
+        return self.hf_model(**x)
 
 # Cell
 class HF_BaseModelCallback(Callback):
-    def after_pred(self):
-        self.learn.pred = self.pred[0]
+    def after_pred(self): self.learn.pred = self.pred[0]
+
+# Cell
+@patch
+def blurr_summary(self:nn.Module, *xb):
+    "Print a summary of `self` using `xb`"
+    sample_inputs,infos = layer_info(self, *xb)
+    n,bs = 64,find_bs(xb)
+    inp_sz = _print_shapes(apply(lambda x:x.shape, xb[0]['input_ids']), bs)
+    res = f"{self.__class__.__name__} (Input shape: {inp_sz})\n"
+    res += "=" * n + "\n"
+    res += f"{'Layer (type)':<20} {'Output Shape':<20} {'Param #':<10} {'Trainable':<10}\n"
+    res += "=" * n + "\n"
+    ps,trn_ps = 0,0
+    infos = [o for o in infos if o is not None] #see comment in previous cell
+    for typ,np,trn,sz in infos:
+        if sz is None: continue
+        ps += np
+        if trn: trn_ps += np
+        res += f"{typ:<20} {_print_shapes(sz, bs)[:19]:<20} {np:<10,} {str(trn):<10}\n"
+        res += "_" * n + "\n"
+    res += f"\nTotal params: {ps:,}\n"
+    res += f"Total trainable params: {trn_ps:,}\n"
+    res += f"Total non-trainable params: {ps - trn_ps:,}\n\n"
+    return PrettyString(res)
+
+# Cell
+@patch
+def blurr_summary(self:Learner):
+    "Print a summary of the model, optimizer and loss function."
+    xb = self.dls.train.one_batch()[:self.dls.train.n_inp]
+    res = self.model.blurr_summary(*xb)
+    res += f"Optimizer used: {self.opt_func}\nLoss function: {self.loss_func}\n\n"
+    if self.opt is not None:
+        res += f"Model " + ("unfrozen\n\n" if self.opt.frozen_idx==0 else f"frozen up to parameter group number {self.opt.frozen_idx}\n\n")
+    res += "Callbacks:\n" + '\n'.join(f"  - {cb}" for cb in sort_by_run(self.cbs))
+    return PrettyString(res)
 
 # Cell
 @typedispatch
-def show_results(x:HF_BaseInput, y, samples, outs, hf_tokenizer, skip_special_tokens=True,
-                 ctxs=None, max_n=6, **kwargs):
+def show_results(x:HF_BaseInput, y, samples, outs, hf_tokenizer=None, ctxs=None, max_n=6, **kwargs):
 
     if ctxs is None: ctxs = get_empty_df(min(len(samples), max_n))
-
-    res = L((TitledStr(hf_tokenizer.decode(inp, skip_special_tokens=skip_special_tokens).replace(hf_tokenizer.pad_token, '')), *s[1:])
-            for inp, s in zip(x[0], samples))
-
-    ctxs = show_batch[object](x, y, res, max_n=max_n, ctxs=ctxs, **kwargs)
+    ctxs = show_batch[object](x, y, samples, max_n=max_n, ctxs=ctxs, **kwargs)
 
     n_preds_per_input = len(outs[0])
     if (n_preds_per_input == 1):
@@ -69,3 +95,23 @@ def show_results(x:HF_BaseInput, y, samples, outs, hf_tokenizer, skip_special_to
 
     display_df(pd.DataFrame(ctxs))
     return ctxs
+
+# Cell
+@patch
+def blurr_predict(self:Learner, item, rm_type_tfms=None, with_input=False):
+    dl = self.dls.test_dl([item], rm_type_tfms=rm_type_tfms, num_workers=0)
+
+    # this is where we have to change things up since a blurr "input" is represented by a dictionary of
+    # tensors (input_ids, attention_mask, token_type_ids, etc...) and not a single tensor (which fastai assumes
+    # in a number of places)
+    b = dl.one_batch()
+    inp = b[0]
+    preds, _, dec_preds = self.get_preds(dl=dl, with_input=False, with_decoded=True)
+
+    i = getattr(self.dls, 'n_inp', -1)
+    inp = (inp,) if i==1 else tuplify(inp)
+    dec = self.dls.decode_batch(inp + tuplify(dec_preds))[0]
+    dec_inp,dec_targ = map(detuplify, [dec[:i],dec[i:]])
+    res = dec_targ,dec_preds[0],preds[0]
+    if with_input: res = (dec_inp,) + res
+    return res

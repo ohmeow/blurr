@@ -50,6 +50,13 @@ pretrained_model_name = "bert-base-uncased"
 hf_arch, hf_config, hf_tokenizer, hf_model = BLURR_MODEL_HELPER.get_hf_objects(pretrained_model_name,  task=task)
 ```
 
+    Some weights of the model checkpoint at bert-base-uncased were not used when initializing BertForSequenceClassification: ['cls.predictions.bias', 'cls.predictions.transform.dense.weight', 'cls.predictions.transform.dense.bias', 'cls.predictions.decoder.weight', 'cls.seq_relationship.weight', 'cls.seq_relationship.bias', 'cls.predictions.transform.LayerNorm.weight', 'cls.predictions.transform.LayerNorm.bias']
+    - This IS expected if you are initializing BertForSequenceClassification from the checkpoint of a model trained on another task or with another architecture (e.g. initializing a BertForSequenceClassification model from a BertForPretraining model).
+    - This IS NOT expected if you are initializing BertForSequenceClassification from the checkpoint of a model that you expect to be exactly identical (initializing a BertForSequenceClassification model from a BertForSequenceClassification model).
+    Some weights of BertForSequenceClassification were not initialized from the model checkpoint at bert-base-uncased and are newly initialized: ['classifier.weight', 'classifier.bias']
+    You should probably TRAIN this model on a down-stream task to be able to use it for predictions and inference.
+
+
 ### Build your 🧱🧱🧱 DataBlock 🧱🧱🧱 and your DataLoaders
 
 ```python
@@ -79,12 +86,12 @@ dls.show_batch(hf_tokenizer=hf_tokenizer, max_n=2)
   <tbody>
     <tr>
       <th>0</th>
-      <td>raising victor vargas : a review &lt; br / &gt; &lt; br / &gt; you know, raising victor vargas is like sticking your hands into a big, steaming bowl of oatmeal. it's warm and gooey, but you're not sure if it feels right. try as i might, no matter how warm and gooey raising victor vargas became i was always aware that something didn't quite feel right. victor vargas suffers from a certain overconfidence on the director's part. apparently, the director thought that the ethnic backdrop of a latino family on the lower east side, and an idyllic storyline would make the film critic proof. he was right, but it didn't fool me. raising victor vargas is the story about a seventeen - year old boy called, you guessed it, victor vargas ( victor rasuk ) who lives his teenage years chasing more skirt than the rolling stones could do in all the years they've toured. the movie starts off in ` ugly fat'donna's bedroom where victor is sure to seduce her, but a cry from outside disrupts his plans when his best - friend harold ( kevin rivera ) comes - a - looking for him. caught in the attempt by harold and his sister, victor vargas runs off for damage control. yet even with the embarrassing implication that he's been boffing the homeliest girl in the neighborhood, nothing dissuades young victor from going off on the hunt for more fresh meat. on a hot, new york city day they make way to the local public swimming pool where victor's eyes catch a glimpse of the lovely young nymph judy ( judy marte ), who's not just pretty, but a strong and independent too. the relationship that develops between victor and judy becomes the focus of the film. the story also focuses on victor's family that is comprised of his grandmother or abuelita ( altagracia guzman ), his brother nino ( also played by real life brother to victor, silvestre rasuk ) and his sister vicky ( krystal rodriguez ). the action follows victor between scenes with judy and scenes with his family. victor tries to cope with being an oversexed pimp - daddy, his feelings for judy and his grandmother's conservative catholic upbringing. &lt; br / &gt; &lt; br / &gt; the problems that arise from raising victor vargas are a few, but glaring errors. throughout the film you get to know certain characters like vicky, nino, grandma, judy and even</td>
+      <td>un - bleeping - believable! meg ryan doesn't even look her usual pert lovable self in this, which normally makes me forgive her shallow ticky acting schtick. hard to believe she was the producer on this dog. plus kevin kline : what kind of suicide trip has his career been on? whoosh... banzai!!! finally this was directed by the guy who did big chill? must be a replay of jonestown - hollywood style. wooofff!</td>
       <td>negative</td>
     </tr>
     <tr>
       <th>1</th>
-      <td>well, what can i say. &lt; br / &gt; &lt; br / &gt; " what the bleep do we know " has achieved the nearly impossible - leaving behind such masterpieces of the genre as " the postman ", " the dungeon master ", " merlin ", and so fourth, it will go down in history as the single worst movie i have ever seen in its entirety. and that, ladies and gentlemen, is impressive indeed, for i have seen many a bad movie. &lt; br / &gt; &lt; br / &gt; this masterpiece of modern cinema consists of two interwoven parts, alternating between a silly and contrived plot about an extremely annoying photographer, abandoned by her husband and forced to take anti - depressants to survive, and a bunch of talking heads going on about how quantum physics supposedly justifies their new - agy pseudo - philosophy. basically, if you start your day off meditating to the likes of enya and kenny g, this movie is for you. if you have a sense of humor, a crowd of people who know how to have fun, and a sizable portion of good weed, then this movie is for you as well. otherwise, stay away. take my word for it. &lt; br / &gt; &lt; br / &gt; the first thing that struck me about " what the bleep do you know " is that is seemed to be edited and put together by the same kinds of people that shoot cheap weddings on camera, complete with pink heart effects, computer - generated sparkles across the screen, and other assorted silliness. who let these people anywhere near a theatrical release is a mystery to me. i guess this is what too much kenny g does to you. the movie was permeated with cheesy gci, the likes that you or i can produce on our own computer via over - the - counter video editing software, but never would, because it's just way too ridiculous. &lt; br / &gt; &lt; br / &gt; the script was _ obviously _ written by someone with no writing experience whatsoever. not only were all the characters and conversations cumbersome and contrived beyond belief, but the " writers " felt like they had to shove every relevant piece of information, or rather disinformation, which is what most of this movie was all about, all the way down your throat. well, given the target audience, that may not have been too bad of an idea. the main character, for example, spends half the movie popping pills.</td>
+      <td>one of the worst movies i ever saw. my only thought was : " how can i get my money back from hollywood video ". this is no way worth four dollars, or any dollars. i think it was an attempt to rip off the mexican, or vin diesel's movies, but it failed miserably to do this. &lt; br / &gt; &lt; br / &gt; the acting was terrible, i felt sorry for the actors that they couldn't find something better to do with their time. the story was ridiculous. we were calling out the lines ahead of the actors, it was so predictable. the mexican accent of the leading lady was insultingly exaggerated, worse than a cartoon. &lt; br / &gt; &lt; br / &gt; skip it.</td>
       <td>negative</td>
     </tr>
   </tbody>
@@ -125,23 +132,23 @@ learn.fit_one_cycle(3, lr_max=1e-3)
   <tbody>
     <tr>
       <td>0</td>
-      <td>0.689996</td>
-      <td>0.670810</td>
-      <td>0.580000</td>
+      <td>0.675002</td>
+      <td>0.663773</td>
+      <td>0.615000</td>
       <td>00:19</td>
     </tr>
     <tr>
       <td>1</td>
-      <td>0.614452</td>
-      <td>0.608095</td>
-      <td>0.670000</td>
+      <td>0.620771</td>
+      <td>0.621418</td>
+      <td>0.695000</td>
       <td>00:19</td>
     </tr>
     <tr>
       <td>2</td>
-      <td>0.602578</td>
-      <td>0.613986</td>
-      <td>0.710000</td>
+      <td>0.625141</td>
+      <td>0.613817</td>
+      <td>0.700000</td>
       <td>00:19</td>
     </tr>
   </tbody>
@@ -170,21 +177,25 @@ learn.show_results(hf_tokenizer=hf_tokenizer, max_n=2)
   <tbody>
     <tr>
       <th>0</th>
-      <td>how viewers react to this new " adaption " of shirley jackson's book, which was promoted as not being a remake of the original 1963 movie ( true enough ), will be based, i suspect, on the following : those who were big fans of either the book or original movie are not going to think much of this one... and those who have never been exposed to either, and who are big fans of hollywood's current trend towards " special effects " being the first and last word in how " good " a film is, are going to love it. &lt; br / &gt; &lt; br / &gt; things i did not like about this adaption : &lt; br / &gt; &lt; br / &gt; 1. it was not a true adaption of the book. from the articles i had read, this movie was supposed to cover other aspects in the book that the first one never got around to. and, that seemed reasonable, no film can cover a book word for word unless it is the length of the stand! ( and not even then ) but, there were things in this movie that were never by any means ever mentioned or even hinted at, in the movie. reminded me of the way they decided to kill off the black man in the original movie version of the shining. i didn't like that, either. what the movie's press release should have said is... " we got the basic, very basic, idea from shirley jackson's book, we kept the same names of the house and several ( though not all ) of the leading character's names, but then we decided to write our own story, and, what the heck, we watched the changeling and the shining and ghost first, and decided to throw in a bit of them, too. " &lt; br / &gt; &lt; br / &gt; 2. they completely lost the theme of a parapyschologist inviting carefully picked guest who had all had brushes with the paranormal in their pasts, to investigate a house that truly seemed to have been " born bad ". no, instead, this " doctor " got everyone to the house under the false pretense of studying their " insomnia " ( he really invited them there to scare them to death and then see how they reacted to their fear... like lab rats, who he mentioned never got told they are part of an experiment... nice guy ). this doctor, who did not have the same name, by the way, was as different from the</td>
-      <td>negative</td>
-      <td>negative</td>
+      <td>this very funny british comedy shows what might happen if a section of london, in this case pimlico, were to declare itself independent from the rest of the uk and its laws, taxes &amp; post - war restrictions. merry mayhem is what would happen. &lt; br / &gt; &lt; br / &gt; the explosion of a wartime bomb leads to the discovery of ancient documents which show that pimlico was ceded to the duchy of burgundy centuries ago, a small historical footnote long since forgotten. to the new burgundians, however, this is an unexpected opportunity to live as they please, free from any interference from whitehall. &lt; br / &gt; &lt; br / &gt; stanley holloway is excellent as the minor city politician who suddenly finds himself leading one of the world's tiniest nations. dame margaret rutherford is a delight as the history professor who sides with pimlico. others in the stand - out cast include hermione baddeley, paul duplis, naughton wayne, basil radford &amp; sir michael hordern. &lt; br / &gt; &lt; br / &gt; welcome to burgundy!</td>
+      <td>positive</td>
+      <td>positive</td>
     </tr>
     <tr>
       <th>1</th>
-      <td>the trouble with the book, " memoirs of a geisha " is that it had japanese surfaces but underneath the surfaces it was all an american man's way of thinking. reading the book is like watching a magnificent ballet with great music, sets, and costumes yet performed by barnyard animals dressed in those costumesso far from japanese ways of thinking were the characters. &lt; br / &gt; &lt; br / &gt; the movie isn't about japan or real geisha. it is a story about a few american men's mistaken ideas about japan and geisha filtered through their own ignorance and misconceptions. so what is this movie if it isn't about japan or geisha? is it pure fantasy as so many people have said? yes, but then why make it into an american fantasy? &lt; br / &gt; &lt; br / &gt; there were so many missed opportunities. imagine a culture where there are no puritanical hang - ups, no connotations of sin about sex. sex is natural and normal. how is sex handled in this movie? right. like it was dirty. the closest thing to a sex scene in the movie has sayuri wrinkling up her nose and grimacing with distaste for five seconds as if the man trying to mount her had dropped a handful of cockroaches on her crotch. &lt; br / &gt; &lt; br / &gt; does anyone actually enjoy sex in this movie? nope. one character is said to be promiscuous but all we see is her pushing away her lover because it looks like she doesn't want to get caught doing something dirty. such typical american puritanism has no place in a movie about japanese geisha. &lt; br / &gt; &lt; br / &gt; did sayuri enjoy her first ravishing by some old codger after her cherry was auctioned off? nope. she lies there like a cold slab of meat on a chopping block. of course she isn't supposed to enjoy it. and that is what i mean about this movie. why couldn't they have given her something to enjoy? why does all the sex have to be sinful and wrong? &lt; br / &gt; &lt; br / &gt; behind mameha the chairman was sayuri's secret patron, and as such he was behind the auction of her virginity. he could have rigged the auction and won her himself. nobu didn't even bid. so why did the chairman let that old codger win her and, reeking of old - man stink,</td>
-      <td>negative</td>
-      <td>negative</td>
+      <td>" how to lose friends &amp; alienate people " is not based on tiger woods'infidelities. it is a mediocre romantic comedy based on toby young's book on his experiences working as a journalist covering celebrities. the film stars simon pegg as sidney young, a zany british journalist who takes a job in an illustrious celebrity magazine in new york. young is restless in getting caught up all type of shenanigans to alienate all around him, hence movie title. he is uproarious, daring, and moronic. but nevertheless for some very bizarre reason, he is a somewhat likable character. sidney befriends a fellow journalist, the composed alison olsen, played quite admirably by kirsten dunst. however, sidney is primarily longing for the sexpot actress sophie maes played by the fantastic ms. megan fox. this foxtrot is short on acting proficiency but high on " eye candy " material. sidney gets in all kinds of tomfoolery in order to move up the journalist ladder in the magazine co. those are the peak comedic moments of the film. however, i think that director robert weide and screenwriter peter straughan might lose some viewers and alienated authentic rom - com material by developing an implausible romantic plot line between sidney &amp; alison ; even though team weidstraughan did formulate an entertaining narrative otherwise. pegg did peg his character down to the wire with his hilarious performance as sidney young. jeff bridges was again building " the dude " bridges with his enigmatic supporting work as clayton harding, the magazine's suave prez. but the rest of the film's acting was not worthy enough to feature here. " how to lose friends &amp; alienate people " should not be alienated entirely, but you might lose some movie friends if you publicize it as a superlative romantic comedy. * * * average</td>
+      <td>positive</td>
+      <td>positive</td>
     </tr>
   </tbody>
 </table>
 
 
 ## ❗ Updates
+
+**07/06/2020** 
+* Updated everything to work huggingface>=3.02
+* Changed a lot of the internals to make everything more efficient and performant along with the latest version of huggingface ... meaning, I have broken things for folks using previous versions of blurr :).
 
 **06/27/2020** 
 * Simplified the `BLURR_MODEL_HELPER.get_hf_objects` method to support a wide range of options in terms of building the necessary huggingface objects (architecture, config, tokenizer, and model).  Also added `cache_dir` for saving pre-trained objects in a custom directory.

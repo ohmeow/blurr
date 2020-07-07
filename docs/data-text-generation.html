@@ -202,6 +202,15 @@ description: "This module contains the bits required to use the fastai DataBlock
 
 <div class="output_area">
 
+<div class="output_subarea output_stream output_stderr output_text">
+<pre>Some weights of BartForConditionalGeneration were not initialized from the model checkpoint at facebook/bart-large-cnn and are newly initialized: [&#39;final_logits_bias&#39;]
+You should probably TRAIN this model on a down-stream task to be able to use it for predictions and inference.
+</pre>
+</div>
+</div>
+
+<div class="output_area">
+
 
 
 <div class="output_text output_subarea output_execute_result">
@@ -221,7 +230,8 @@ description: "This module contains the bits required to use the fastai DataBlock
 
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>We're going to customize our <code>build_hf_input</code> for generation tasks to all include <code>decoder_input_ids</code> which is useful for summarization and conversational training tasks (see <a href="https://huggingface.co/transformers/model_doc/bart.html#transformers.BartModel.forward">here</a> for more information)</p>
+<p>We're going to create a subclass of <a href="/blurr/data-core#HF_BatchTransform"><code>HF_BatchTransform</code></a> (<a href="/blurr/01e_data-text-generation#HF_TextGenerationBatchTransform"><code>HF_TextGenerationBatchTransform</code></a>) for generation tasks to all include <code>decoder_input_ids</code> which is useful for summarization and conversational training tasks (see <a href="https://huggingface.co/transformers/model_doc/bart.html#transformers.BartModel.forward">here</a> for more information).  This also requires us to provide a <code>labels</code> attribute with the target_ids shifted to the right by one since the task to is to predict the next token based on the current (and all previous) <code>decoder_input_ids</code>.</p>
+<p>Notice that we also update are targets to just be the <code>input_ids</code> of our target sequence so that fastai's <code>Learner.show_results</code> works (again, almost all the fastai bits require returning a tensor to function).</p>
 
 </div>
 </div>
@@ -270,13 +280,47 @@ The argument must be an iterable if specified.</p>
     {% raw %}
     
 <div class="cell border-box-sizing code_cell rendered">
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+<div class="output_markdown rendered_html output_subarea ">
+<h2 id="HF_TextGenerationBatchTransform" class="doc_header"><code>class</code> <code>HF_TextGenerationBatchTransform</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/data/text_generation.py#L20" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>HF_TextGenerationBatchTransform</code>(<strong><code>hf_arch</code></strong>, <strong><code>hf_tokenizer</code></strong>, <strong>**<code>kwargs</code></strong>) :: <a href="/blurr/data-core#HF_BatchTransform"><code>HF_BatchTransform</code></a></p>
+</blockquote>
+<p>Handles everything you need to assemble a mini-batch of inputs and targets</p>
+
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    {% endraw %}
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>We had to override the <code>decodes</code> method above because, while both our inputs and targets are technically the same things, we update the later to consist of <em>only</em> the target input_ids so that methods like <code>Learner.show_results</code> work.  Nevertheless, because fastai remembers what they are, <a href="/blurr/data-core#HF_TokenizerTransform.decodes"><code>HF_TokenizerTransform.decodes</code></a> will be called for both and it works on a <code>list</code> of input_ids.</p>
+
+</div>
+</div>
+</div>
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
 <div class="input">
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">blocks</span> <span class="o">=</span> <span class="p">(</span> 
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">hf_batch_tfm</span> <span class="o">=</span> <span class="n">HF_TextGenerationBatchTransform</span><span class="p">(</span><span class="n">hf_arch</span><span class="p">,</span> <span class="n">hf_tokenizer</span><span class="p">)</span>
+
+<span class="n">blocks</span> <span class="o">=</span> <span class="p">(</span> 
     <span class="n">HF_TextBlock</span><span class="p">(</span><span class="n">hf_arch</span><span class="p">,</span> <span class="n">hf_tokenizer</span><span class="p">),</span> 
-    <span class="n">HF_TextBlock</span><span class="p">(</span><span class="n">hf_arch</span><span class="p">,</span> <span class="n">hf_tokenizer</span><span class="p">,</span> <span class="n">task</span><span class="o">=</span><span class="n">ConditionalGenerationTask</span><span class="p">(),</span> <span class="n">trg_max_length</span><span class="o">=</span><span class="mi">150</span><span class="p">)</span>
+    <span class="n">HF_TextBlock</span><span class="p">(</span><span class="n">hf_arch</span><span class="p">,</span> <span class="n">hf_tokenizer</span><span class="p">,</span> <span class="n">hf_batch_tfm</span><span class="o">=</span><span class="n">hf_batch_tfm</span><span class="p">,</span> <span class="n">max_length</span><span class="o">=</span><span class="mi">150</span><span class="p">)</span>
 <span class="p">)</span>
 
 <span class="n">dblock</span> <span class="o">=</span> <span class="n">DataBlock</span><span class="p">(</span><span class="n">blocks</span><span class="o">=</span><span class="n">blocks</span><span class="p">,</span> 
@@ -350,7 +394,7 @@ The argument must be an iterable if specified.</p>
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="nb">len</span><span class="p">(</span><span class="n">b</span><span class="p">),</span> <span class="n">b</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">b</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="nb">len</span><span class="p">(</span><span class="n">b</span><span class="p">),</span> <span class="n">b</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;input_ids&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">b</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span>
 </pre></div>
 
     </div>
@@ -415,13 +459,13 @@ The argument must be an iterable if specified.</p>
   <tbody>
     <tr>
       <th>0</th>
-      <td>(CNN) -- Home to up to 10 percent of all known species, Mexico is recognized as one of the most biodiverse regions on the planet. The twin threats of climate change and human encroachment on natural environments are, however, threatening the existence of the country's rich wildlife. And there is a great deal to lose. In the United Nations Environment Program (UNEP) World Conservation Monitoring Centre's list of megadiverse countries Mexico ranks 11th. The list represents a group of 17 countries that harbor the majority of the Earth's species and are therefore considered extremely biodiverse. From its coral reefs in the Caribbean Sea to its tropical jungles in Chiapas and the Yucatan peninsula and its deserts and prairies in the north, Mexico boasts an incredibly rich variety of flora and fauna. Some 574 out of 717 reptile species found in Mexico -- the most in any country -- can only be encountered within its borders. It is home to 502 types of mammals, 290 species of birds, 1,150 varieties of birds and 26,000 classifications of plants. Pronatura, a non-profit organization that works to promote conservation and sustainable development in Mexico, has selected six species which it says symbolize the problems faced by the destruction of nature. "These are only some of the species which have some degree of conservation," says Eduardo Cota Corona, Director of Conservation at Pronatura. "However, there is a countless number of species in Mexico which find themselves in danger of extinction." Golden Eagle. It is the country's national symbol yet the Golden Eagle is close to extinction in Mexico. One of the largest raptors or birds of prey in the world, the Golden Eagle's wingspan can reach lengths greater than two metres. Only the Bald Eagle and the California Greater exceed it in size in North America. With its powerful hooked bill and long and sharp claws it can sometimes capture prey of a size that is surprising for its size, including crane, wild ungulates and domestic livestock, though more often than not it tends to feed off small mammals such as rabbits, hares, ground squirrels and prairie dogs as well as reptiles and small-to-medium sized birds. Primarily a solitary bird, the Golden Eagle pairs up to breed, building nests made of dry branches in cliffs and escarpments. The female typically lays two eggs which are incubated by both the male and female. Usually, only one of the hatchlings survives. The Golden Eagle can be found in</td>
-      <td>Mexico hosts to up to 10 percent of all known species on Earth.\nIt is home to 502 types of mammals, 290 bird species and 26,000 types of plants.\nHuman development and climate change is placing a big strain on its biodiversity.\nThe Golden Eagle is under threat in spite of being the country's national symbol.</td>
+      <td>(CNN) -- Will elementary and middle school students soon be able to put up their own Facebook pages? It looks like it. According to news accounts, Facebook is considering doing away with its rule that no one under age 13 may have a Facebook page. Cranky math instructors and tyrannical P.E. coaches must be at least a tad nervous at the thought of what the little darlings might post about them. But the change could be a good thing if it encourages a reasonable amount of parent involvement. The things the rest of us do on Facebook -- reveal what we had for lunch, post way too many photos of our kids and pets, comment on what Queen Elizabeth wore for her 60th anniversary jubilee -- are considered too dangerous for 10-, 11-, or 12-year-olds to do, even if their "public" consists only of people they've invited to be their friends. One result is that millions of pre-teens -- 7.5 million, according to a Consumer Reports account last year -- have established profiles on Facebook, some using fictitious names. Five million of them are younger than 10. What's most disturbing is that in many cases, parents have helped their kids circumvent the rules. What, pray tell, does that teach their children? The parameters of the policy under consideration at Facebook are undetermined but would work something like PG-13 movies. One idea is that the child's page would be linked through the parent's page -- a sidecar, if you will. Savvy parents would give their children as much privacy as possible even if wincing sometimes at what they saw. But they'd also have the opportunity to step in if they noticed something that was hurtful, dangerous or inappropriate. Schools of thought: My kids won't be on Facebook anytime soon. Despite what some adults might think or read, teens, at least by their own account, are pretty responsible when it comes to social networking. According to the Pew Research Center's Internet and American Life Project, more than 7 out of 10 teens say that other teens with whom they're online are kind, not mean. Of course, they've seen instances of cruelty. But let's not forget they see that in school, too; in fact, according to what they told Pew, most of the bullying they see or experience happens in person. Only 15% say they've been victims of online cruelty -- interestingly, the same proportion of adults who report being hurt by other adults. According to Pew, teens are receiving lots of counsel about Internet</td>
+      <td>Facebook is considering changing rule to allow preteens to have their own pages.\nLaura Stepp: 7.5 million preteens are already on Facebook, 5 million under 10.\nChildren's pages could be linked through their parents' pages, she says, allowing supervision.\nStepp: Letting your child have a Facebook page is a chance to teach safe online behavior.</td>
     </tr>
     <tr>
       <th>1</th>
-      <td>(CNN Student News) -- October 27, 2009. Downloadable Maps. Download PDF maps related to today's show:  • Afghanistan &amp; Pakistan • Los Angeles &amp; San Diego • Ft. Jackson, South Carolina. Transcript. THIS IS A RUSH TRANSCRIPT. THIS COPY MAY NOT BE IN ITS FINAL FORM AND MAY BE UPDATED. NATISHA LANCE, CNN STUDENT NEWS ANCHOR: A member of the military is making history. We'll explain how in today's edition of CNN Student News. Hi, everyone. Carl Azuz is off this week. I'm Natisha Lance. First Up: Afghan Crashes. LANCE: First up, Pakistan and Afghanistan. The countries share a border, and they also share a common problem: threats from militant groups and terrorists like the Taliban and al Qaeda. It's an issue facing both nations' governments, and one that the U.S. government is concerned about as well. That's why President Obama has been holding a series of meetings with some of his advisers. They're reviewing the U.S. strategy in Afghanistan and Pakistan. Samantha Hayes has the latest on those meetings and on the violence in the region. (BEGIN VIDEO) SAMANTHA HAYES, CNN CORRESPONDENT, WASHINGTON, D.C.: Two helicopter crashes make it the deadliest day in four years for Americans in Afghanistan. While a NATO security force spokesman says enemy fire is not to blame, the loss of 14 Americans comes while President Barack Obama is considering a request to send thousands more troops to the region to fight al Qaeda. The president addressed service men and women in Jacksonville, Florida Monday, after a White House meeting with his national security team. U.S. PRESIDENT BARACK OBAMA: Fourteen Americans gave their lives, and our prayers are with these service members, their civilian colleagues and the families who loved them. HAYES: The deadliest of the two crashes happened following a raid on suspected drug traffickers, and three DEA agents were among those killed. Also among the dead, three U.S. civilians, members of the embassy community. The State Department says the efforts of civilians and other nonmilitary personnel are essential to the overall mission. JACOB LEW, DEPUTY SECRETARY OF STATE: Improving Afghan governance, providing security, justice, jobs and services, and giving the Afghan people a meaningful alternative, as much as possible, to the Taliban's recruiting. HAYES: Democratic Senator John Kerry, off</td>
-      <td>Consider U.S. efforts to offer Afghan citizens an alternative to the Taliban.\nHear how a proposed health care bill addresses the issue of the public option.\nMeet a soldier who is making history at the U.S. Army Drill Sergeant School.\nUse the Daily Discussion to help students understand today's featured news stories.</td>
+      <td>(CNN) -- It's just another coming of age story -- one we've all heard before -- but now it's about us. Just as Holden Caulfield awoke to the excitement of the adult world around him and wanted to escape the phonies, youth voters brought a novel and intense energy to the world of politics during the 2008 election in an effort to escape the phonies we'd been listening to our whole lives. Our debut into the world of politics was significant: The candidate with overwhelming youth support, Barack Obama, came out on top. I was too young to vote in that election, but after volunteering for the Obama campaign, I felt what many first-time voters and volunteers felt after the last election: proud, accomplished and significant. Four years later, what was once to us the novel and exciting adult world of politics now seems bitter and partisan. We're a little bit older, less bright-eyed and a little more cynical. It is not surprising that a generation not tempered by past disappointments, that had hoped its representatives would work in good faith to fix America's problems, might be less enthusiastic this time around. The percentage of youth voters who plan on voting fell from 78% in 2008 to just 58% this summer. We're the least likely of any age group to vote in November. Opinion: What Democrats need to do in Charlotte. But what a mistake it would be for us to throw in the towel now. Just because our politics and government can disappoint us sometimes doesn't mean we should forget how far we've come. President Obama understands what our generation contributed in 2008. He knows where we stand on issues and he agrees with us -- he's been our biggest ally in Washington since the start of his presidency. The president's signature legislative achievement, the Affordable Care Act, allows us to stay on our parents' health plan until we are 26. That means we'll have health insurance when we graduate from college, which more and more of us will be able to do thanks to the president's push to double funding for Pell Grants and his insistence on keeping interest rates low for the 7.4 million students taking out student loans. Because of Obama's repeal of "don't ask, don't tell," anyone can join the military, regardless of sexual orientation, an issue important to our generation. When Congress refused to pass the DREAM Act, Obama changed policy administratively, enabling immigrants who came to the country as children to avoid deportation. Opinion: Can Obama convince voters to turn to him again? Our president showed</td>
+      <td>Jack Schlossberg: Young voters invested energy and hope in the 2008 Obama campaign.\nHe says some aren't as enthusiastic after realizing political struggle is difficult.\nSchlossberg: President Obama has delivered on health care, student loans, climate issues.\nHe says part of growing up is realizing that change doesn't come without sustained effort.</td>
     </tr>
   </tbody>
 </table>

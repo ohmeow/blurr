@@ -12,7 +12,7 @@ from .core import *
 
 # Cell
 @typedispatch
-def show_results(x:HF_TokenClassInput, y:HF_TokenTensorCategory, samples, outs, hf_tokenizer, skip_special_tokens=True,
+def show_results(x:HF_TokenClassInput, y:HF_TokenTensorCategory, samples, outs, hf_tokenizer,
                  ctxs=None, max_n=6, **kwargs):
     res = L()
     for inp, trg, sample, pred in zip(x[0], y, samples, outs):
@@ -27,38 +27,30 @@ def show_results(x:HF_TokenClassInput, y:HF_TokenTensorCategory, samples, outs, 
 
 # Cell
 @patch
-def predict_tokens(self:Learner, inp, **kargs):
+def blurr_predict_tokens(self:Learner, inp, **kargs):
     """Remove all the unnecessary predicted tokens after calling `Learner.predict`, so that you only
     get the predicted labels, label ids, and probabilities for what you passed into it in addition to the input
     """
-    pred_lbls, pred_lbl_ids, probs = self.predict(inp)
+    pred_lbls, pred_lbl_ids, probs = self.blurr_predict(inp)
 
     # grab the huggingface tokenizer from the learner's dls.tfms
     hf_textblock_tfm = self.dls.tfms[0]
     hf_tokenizer = hf_textblock_tfm.hf_tokenizer
-    add_prefix_space = hf_textblock_tfm.add_prefix_space
-
-    # grab the HF_BatchTransform as well
-    learn_hf_batch_transform = learn.dls.before_batch.hf__batch_transform
+    tok_kwargs = hf_textblock_tfm.tok_kwargs
 
     # calculate the number of subtokens per raw/input token so that we can determine what predictions to
     # return
-    subtoks_per_raw_tok = [ (entity, len(hf_tokenizer.tokenize(str(entity), add_prefix_space=add_prefix_space)))
-                           for entity in inp ]
+    subtoks_per_raw_tok = [ (entity, len(hf_tokenizer.tokenize(str(entity)))) for entity in inp ]
 
     # very similar to what HF_BatchTransform does with the exception that we are also grabbing
     # the `special_tokens_mask` to help with getting rid or irelevant predicts for any special tokens
     # (e.g., [CLS], [SEP], etc...)
-    txt_toks = [ sub_toks for entity in inp
-                for sub_toks in hf_tokenizer.tokenize(entity, add_prefix_space=add_prefix_space) ]
-
-    txt_tok_ids = hf_tokenizer.convert_tokens_to_ids(txt_toks)
-
-    res = hf_tokenizer.prepare_for_model(txt_tok_ids, None,
-                                         max_length=learn_hf_batch_transform.max_seq_len,
-                                         pad_to_max_length=True,
-                                         truncation_strategy=None,
-                                         return_special_tokens_mask=True)
+    res = hf_tokenizer(inp, None,
+                       max_length=hf_textblock_tfm.max_length,
+                       padding=hf_textblock_tfm.padding,
+                       truncation=hf_textblock_tfm.truncation,
+                       is_pretokenized=hf_textblock_tfm.is_pretokenized,
+                       **tok_kwargs)
 
     special_toks_msk = L(res['special_tokens_mask'])
     actual_tok_idxs = special_toks_msk.argwhere(lambda el: el != 1)
