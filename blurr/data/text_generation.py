@@ -43,7 +43,7 @@ class HF_TextGenerationBatchTransform(HF_BatchTransform):
 
 # Cell
 @typedispatch
-def show_batch(x:HF_TextGenerationInput, y, samples, hf_tokenizer, ctxs=None, max_n=6, **kwargs):
+def show_batch(x:HF_TextGenerationInput, y, samples, dataloaders=None, ctxs=None, max_n=6, **kwargs):
     res = L([ (s[0], s[1]) for s in samples ])
     display_df(pd.DataFrame(res, columns=['text', 'target'])[:max_n])
     return ctxs

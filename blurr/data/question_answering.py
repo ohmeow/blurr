@@ -62,7 +62,9 @@ class HF_QABatchTransform(HF_BatchTransform):
 
 # Cell
 @typedispatch
-def show_batch(x:HF_QuestionAnswerInput, y, samples, hf_tokenizer=None, ctxs=None, max_n=6, **kwargs):
+def show_batch(x:HF_QuestionAnswerInput, y, samples, dataloaders=None, ctxs=None, max_n=6, **kwargs):
+    hf_tokenizer = dataloaders.valid.hf_tokenizer
+
     res = L()
     for sample, input_ids, start, end in zip(samples, x[0], *y):
         txt = sample[0]

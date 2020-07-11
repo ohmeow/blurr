@@ -72,7 +72,9 @@ class HF_TokenClassBatchTransform(HF_BatchTransform):
 
 # Cell
 @typedispatch
-def show_batch(x:HF_TokenClassInput, y, samples, hf_tokenizer, ctxs=None, max_n=6, **kwargs):
+def show_batch(x:HF_TokenClassInput, y, samples, dataloaders=None, ctxs=None, max_n=6, **kwargs):
+    hf_tokenizer = dataloaders.valid.hf_tokenizer
+
     res = L()
     for inp, trg, sample in zip(x[0], y, samples):
         inp_targs = [ (hf_tokenizer.ids_to_tokens[tok_id.item()], lbl_id.item())

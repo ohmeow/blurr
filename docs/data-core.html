@@ -91,7 +91,7 @@ description: "This module contains the core bits required to use the fastai Data
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h2 id="HF_TokenizerTransform" class="doc_header"><code>class</code> <code>HF_TokenizerTransform</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/data/core.py#L15" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>HF_TokenizerTransform</code>(<strong><code>hf_arch</code></strong>, <strong><code>hf_tokenizer</code></strong>, <strong><code>max_length</code></strong>=<em><code>None</code></em>, <strong><code>padding</code></strong>=<em><code>'max_length'</code></em>, <strong><code>truncation</code></strong>=<em><code>True</code></em>, <strong><code>is_pretokenized</code></strong>=<em><code>False</code></em>, <strong><code>tok_kwargs</code></strong>=<em><code>{}</code></em>) :: <code>ItemTransform</code></p>
+<h2 id="HF_TokenizerTransform" class="doc_header"><code>class</code> <code>HF_TokenizerTransform</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/data/core.py#L15" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>HF_TokenizerTransform</code>(<strong><code>hf_arch</code></strong>, <strong><code>hf_tokenizer</code></strong>, <strong><code>max_length</code></strong>=<em><code>None</code></em>, <strong><code>padding</code></strong>=<em><code>'max_length'</code></em>, <strong><code>truncation</code></strong>=<em><code>True</code></em>, <strong><code>is_pretokenized</code></strong>=<em><code>False</code></em>, <strong>**<code>kwargs</code></strong>) :: <code>ItemTransform</code></p>
 </blockquote>
 <p>huggingface friendly tokenization transfor.</p>
 
@@ -132,7 +132,7 @@ description: "This module contains the core bits required to use the fastai Data
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h2 id="HF_BaseInput" class="doc_header"><code>class</code> <code>HF_BaseInput</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/data/core.py#L52" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>HF_BaseInput</code>(<strong><code>iterable</code></strong>=<em><code>()</code></em>) :: <code>list</code></p>
+<h2 id="HF_BaseInput" class="doc_header"><code>class</code> <code>HF_BaseInput</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/data/core.py#L53" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>HF_BaseInput</code>(<strong><code>iterable</code></strong>=<em><code>()</code></em>) :: <code>list</code></p>
 </blockquote>
 <p>Built-in mutable sequence.</p>
 <p>If no argument is given, the constructor creates a new empty list.
@@ -173,7 +173,7 @@ The argument must be an iterable if specified.</p>
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h2 id="HF_BatchTransform" class="doc_header"><code>class</code> <code>HF_BatchTransform</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/data/core.py#L55" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>HF_BatchTransform</code>(<strong><code>hf_arch</code></strong>, <strong><code>hf_tokenizer</code></strong>, <strong><code>hf_input_return_type</code></strong>=<em><code>'HF_BaseInput'</code></em>, <strong>**<code>kwargs</code></strong>) :: <code>Transform</code></p>
+<h2 id="HF_BatchTransform" class="doc_header"><code>class</code> <code>HF_BatchTransform</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/data/core.py#L56" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>HF_BatchTransform</code>(<strong><code>hf_arch</code></strong>, <strong><code>hf_tokenizer</code></strong>, <strong><code>hf_input_return_type</code></strong>=<em><code>'HF_BaseInput'</code></em>, <strong>**<code>kwargs</code></strong>) :: <code>Transform</code></p>
 </blockquote>
 <p>Handles everything you need to assemble a mini-batch of inputs and targets</p>
 
@@ -205,7 +205,7 @@ The argument must be an iterable if specified.</p>
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h2 id="HF_TextBlock" class="doc_header"><code>class</code> <code>HF_TextBlock</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/data/core.py#L67" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>HF_TextBlock</code>(<strong><code>hf_arch</code></strong>, <strong><code>hf_tokenizer</code></strong>, <strong><code>hf_tok_tfm</code></strong>=<em><code>None</code></em>, <strong><code>max_length</code></strong>=<em><code>512</code></em>, <strong><code>padding</code></strong>=<em><code>'max_length'</code></em>, <strong><code>truncation</code></strong>=<em><code>True</code></em>, <strong><code>is_pretokenized</code></strong>=<em><code>False</code></em>, <strong><code>hf_batch_tfm</code></strong>=<em><code>None</code></em>, <strong><code>hf_input_return_type</code></strong>=<em><code>'HF_BaseInput'</code></em>, <strong><code>dl_type</code></strong>=<em><code>'SortedDL'</code></em>, <strong>**<code>tok_kwargs</code></strong>) :: <code>TransformBlock</code></p>
+<h2 id="HF_TextBlock" class="doc_header"><code>class</code> <code>HF_TextBlock</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/data/core.py#L68" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>HF_TextBlock</code>(<strong><code>hf_arch</code></strong>, <strong><code>hf_tokenizer</code></strong>, <strong><code>hf_tok_tfm</code></strong>=<em><code>None</code></em>, <strong><code>max_length</code></strong>=<em><code>512</code></em>, <strong><code>padding</code></strong>=<em><code>'max_length'</code></em>, <strong><code>truncation</code></strong>=<em><code>True</code></em>, <strong><code>is_pretokenized</code></strong>=<em><code>False</code></em>, <strong><code>hf_batch_tfm</code></strong>=<em><code>None</code></em>, <strong><code>hf_input_return_type</code></strong>=<em><code>'HF_BaseInput'</code></em>, <strong><code>dl_type</code></strong>=<em><code>'SortedDL'</code></em>, <strong><code>tok_kwargs</code></strong>=<em><code>{}</code></em>, <strong><code>batch_kwargs</code></strong>=<em><code>{}</code></em>, <strong>**<code>kwargs</code></strong>) :: <code>TransformBlock</code></p>
 </blockquote>
 <p>A basic wrapper that links defaults transforms for the data block API</p>
 
@@ -567,7 +567,7 @@ You should probably TRAIN this model on a down-stream task to be able to use it 
     </tr>
     <tr>
       <th>1</th>
-      <td>Why should you watch this? There are certainly no reasons why you shouldn't watch it! Superbly and amusingly directed by Albert and David Maysles, Grey Gardens was originally intended to be a film on the gentrification of East Hampton, but it turned out to the brothers that it would be more interesting to produce a study on the eccentric life of the two Edith Bouvier Beales, the aunt and cousin of Jacqueline Kennedy Onassis. Their life was certainly an amusing one (Edith spent most of her day in bed singing operas, Edie performing pirouettes and majorette dances with their many cats, one was named Ted Z. Kennedy) The film is interesting because it is both funny and sad - Edith died shortly after the film was released (in February 1977) aged 82 after experiencing some of the fame that she and Edie received after the film (she danced and sang in a nightclub Edie Beale Jr was born in 1925 and is still living in Miami Beach.This film is both engaging and spellbounding.</td>
+      <td>Almost too well done... "John Carpenter's Vampires" was entertaining, a solid piece of popcorn-entertainment with a budget small enough not to be overrun by special effects. And obviously aiming on the "From Dusk Till Dawn"-audience. "Vampires: Los Muertos" tries the same starting with a rock-star Jon Bon Jovi playing one of the main characters, but does that almost too well...: I haven't seen Jon Bon Jovi in any other movie, so I am not able to compare his acting in "Vampires: Los Muertos" to his other roles, but I was really suprised of his good performance. After the movie started he convinced me not expecting him to grab any guitar and playing "It' my life" or something, but kill vampires, showing no mercy and doing a job which has to be done. This means a lot, because a part of the audience (also me) was probably thinking: "...just because he's a rockstar...". Of course Bon Jovi is not James Woods but to be honest: It could have been much worse, and in my opinion Bon Jovi did a very good performance. The vampiress played by Arly Jover is not the leather dressed killer-machine of a vampire-leader we met in Part 1 (or in similar way in "Ghosts of Mars"). Jover plays the vampire very seductive and very sexy, moving as lithe as a cat, attacking as fast as a snake and dressed in thin, light almost transparent very erotic cloth. And even the optical effects supporting her kind of movement are very well made. It really takes some beating. But the director is in some parts of the film only just avoiding turning the movie from an action-horrorfilm into a sensitive horrormovie like Murnau's "Nosferatu". You can almost see the director's temptation to create a movie with a VERY personal note and different to the original. This is the real strength of the movie and at the same time its weakest point: The audience celebrating the fun-bloodbath of the first movie is probably expecting a pure fun-bloodbath for the second time and might be a little disappointed. Make no mistake: "Vampires:Los Muertos" IS a fun-bloodbath but it's just not ALL THE TIME this kind of movie. Just think of the massacre in the bar compared to the scene in which the vampiress tries to seduce Zoe</td>
       <td>positive</td>
     </tr>
   </tbody>
@@ -1035,7 +1035,7 @@ You should probably TRAIN this model on a down-stream task to be able to use it 
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">dls</span><span class="o">.</span><span class="n">show_batch</span><span class="p">(</span><span class="n">hf_tokenizer</span><span class="o">=</span><span class="n">hf_tokenizer</span><span class="p">,</span> <span class="n">max_n</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">dls</span><span class="o">.</span><span class="n">show_batch</span><span class="p">(</span><span class="n">dataloaders</span><span class="o">=</span><span class="n">dls</span><span class="p">,</span> <span class="n">max_n</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
 </pre></div>
 
     </div>
@@ -1060,12 +1060,12 @@ You should probably TRAIN this model on a down-stream task to be able to use it 
   <tbody>
     <tr>
       <th>0</th>
-      <td>Ryan's family has already posted on Facebook saying that "“the arrests stop here.” \n\nIt thus does not sound like he is going to allow himself to be arrested.   Law enforcement will no doubt be forced to gun him down, just like they were forced to shoot Finicum.   This is just so crazy that his family thinks that he can somehow avoid arrest.   They are for all practical reasons sentencing him to death, by taking such an extreme stand.\n\nThe government really needs to crack down, and make an example out of these people.   It looks like he is facing a mandatory 10 years in Federal prison, based on these charges.</td>
+      <td>She lives in Springfield and works in Eugene at Awbrey Park Elementary School. The subhead in print edition was incorrect in saying "Eugene woman."</td>
       <td></td>
     </tr>
     <tr>
       <th>1</th>
-      <td>Interesting take on religion Jeff, thanks.  I remember all those "devout, born-agains" just loving Dubya because he was--like them--a "good Christian man."  Who laughed as he sent a born-again woman to the gas chamber as governor of Texas (setting a record for executions only broken by his numerically-challenged successor, Rick Perry).  Now we have those same "born-agains" lining up behind a thrice-wed bloodthirsty narcissistic buffoon like Trump (who, like Reagan, hasn't set foot in a church in decades), and a lying master of dirty tricks like Cruz, who fled the Catholic church, in Texas, for one with more voters.  Most Europeans have gotten past tying religion and politics.  If only we could.  God may not be dead, but she certainly has better things to do than hang out in the voting booth.  (Or kitchen table, as we fill out our mail-in ballots.)</td>
+      <td>I, and my family are most grateful to Ms. Brown and her team for tackling the some 50,000 pages of documents from the investigation, and thousands more from trial testimony to put together the finest legal representation Mr. Gable has received since the day he was made a convenient target for the murder of my brother, Mike. \nAn indictment would not have have taken 15 months were it not for the fact that  a handful of  those conducting the investigation at the uppermost tier, were criminally and financially compromised by the exposure of their involvement in the many years of profit-taking in the cloistered world of  prisons. Senior OSP, DOC officials, working in concert with a "brilliant and progressive" Governor who had his own horrible, dark past to conceal, succeeded in keeping the investigation out of the federal spotlight, and swing it around to  a suspect in Frank Gable that was created by lies, and extortion. \nFortunes were made, PERS preserved, only two paid. Mike and Gable.</td>
       <td></td>
     </tr>
   </tbody>

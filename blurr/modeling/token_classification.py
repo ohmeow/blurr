@@ -12,8 +12,12 @@ from .core import *
 
 # Cell
 @typedispatch
-def show_results(x:HF_TokenClassInput, y:HF_TokenTensorCategory, samples, outs, hf_tokenizer,
+def show_results(x:HF_TokenClassInput, y:HF_TokenTensorCategory, samples, outs, learner=None,
                  ctxs=None, max_n=6, **kwargs):
+    # grab tokenizer
+    hf_textblock_tfm = learner.dls.tfms[0]
+    hf_tokenizer = hf_textblock_tfm.hf_tokenizer
+
     res = L()
     for inp, trg, sample, pred in zip(x[0], y, samples, outs):
         inp_trg_preds = [ (hf_tokenizer.ids_to_tokens[tok_id.item()], lbl_id.item(), pred_lbl)
@@ -36,7 +40,7 @@ def blurr_predict_tokens(self:Learner, inp, **kargs):
     # grab the huggingface tokenizer from the learner's dls.tfms
     hf_textblock_tfm = self.dls.tfms[0]
     hf_tokenizer = hf_textblock_tfm.hf_tokenizer
-    tok_kwargs = hf_textblock_tfm.tok_kwargs
+    tok_kwargs = hf_textblock_tfm.kwargs
 
     # calculate the number of subtokens per raw/input token so that we can determine what predictions to
     # return

@@ -14,13 +14,14 @@ from ..utils import *
 # Cell
 class HF_TokenizerTransform(ItemTransform):
     """huggingface friendly tokenization transfor."""
-    def __init__(self, hf_arch, hf_tokenizer, max_length=None, padding='max_length', truncation=True,
-                 is_pretokenized=False, tok_kwargs={}):
+    def __init__(self, hf_arch, hf_tokenizer,
+                 max_length=None, padding='max_length', truncation=True, is_pretokenized=False, **kwargs):
 
         # gpt2, roberta, bart (and maybe others) tokenizers require a prefix space
-        if (hasattr(hf_tokenizer, 'add_prefix_space')): tok_kwargs['add_prefix_space'] = True
+        if (hasattr(hf_tokenizer, 'add_prefix_space')): kwargs['add_prefix_space'] = True
 
-        store_attr(self, 'hf_arch, hf_tokenizer, is_pretokenized, max_length, padding, truncation, tok_kwargs')
+        store_attr(self, 'hf_arch, hf_tokenizer, is_pretokenized, max_length, padding, truncation')
+        store_attr(self, 'kwargs')
 
     def encodes(self, inp):
         """Supports both string and list[str] inputs (the later is common for token classification tasks).
@@ -34,7 +35,7 @@ class HF_TokenizerTransform(ItemTransform):
                                 truncation=self.truncation,
                                 is_pretokenized=self.is_pretokenized,
                                 return_tensors='pt',
-                                **self.tok_kwargs)
+                                **self.kwargs)
 
         for k in res.keys(): res[k] = res[k].squeeze(0)
         return res
@@ -68,20 +69,20 @@ class HF_TextBlock(TransformBlock):
     def __init__(self, hf_arch, hf_tokenizer,
                  hf_tok_tfm=None, max_length=512, padding='max_length', truncation=True, is_pretokenized=False,
                  hf_batch_tfm=None, hf_input_return_type=HF_BaseInput,
-                 dl_type = SortedDL, **tok_kwargs):
+                 dl_type = SortedDL, tok_kwargs={}, batch_kwargs={}, **kwargs):
 
         if (hf_tok_tfm is None):
             hf_tok_tfm = HF_TokenizerTransform(hf_arch, hf_tokenizer, max_length,
                                                padding, truncation, is_pretokenized, **tok_kwargs)
 
         if (hf_batch_tfm is None):
-            hf_batch_tfm = HF_BatchTransform(hf_arch, hf_tokenizer, hf_input_return_type)
+            hf_batch_tfm = HF_BatchTransform(hf_arch, hf_tokenizer, hf_input_return_type, **batch_kwargs)
 
         return super().__init__(type_tfms=hf_tok_tfm, dl_type=dl_type, dls_kwargs={ 'before_batch': hf_batch_tfm })
 
 # Cell
 @typedispatch
-def show_batch(x:HF_BaseInput, y, samples, hf_tokenizer=None, ctxs=None, max_n=6, **kwargs):
+def show_batch(x:HF_BaseInput, y, samples, dataloaders=None, ctxs=None, max_n=6, **kwargs):
     if ctxs is None: ctxs = get_empty_df(min(len(samples), max_n))
     ctxs = show_batch[object](x, y, samples, max_n=max_n, ctxs=ctxs, **kwargs)
 
