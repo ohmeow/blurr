@@ -93,7 +93,7 @@ description: "This module contains the core bits required to use the fastai Data
 <div class="output_markdown rendered_html output_subarea ">
 <h2 id="HF_TokenizerTransform" class="doc_header"><code>class</code> <code>HF_TokenizerTransform</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/data/core.py#L15" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>HF_TokenizerTransform</code>(<strong><code>hf_arch</code></strong>, <strong><code>hf_tokenizer</code></strong>, <strong><code>max_length</code></strong>=<em><code>None</code></em>, <strong><code>padding</code></strong>=<em><code>'max_length'</code></em>, <strong><code>truncation</code></strong>=<em><code>True</code></em>, <strong><code>is_pretokenized</code></strong>=<em><code>False</code></em>, <strong>**<code>kwargs</code></strong>) :: <code>ItemTransform</code></p>
 </blockquote>
-<p>huggingface friendly tokenization transfor.</p>
+<p>huggingface friendly tokenization transform.</p>
 
 </div>
 
@@ -132,7 +132,7 @@ description: "This module contains the core bits required to use the fastai Data
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h2 id="HF_BaseInput" class="doc_header"><code>class</code> <code>HF_BaseInput</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/data/core.py#L53" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>HF_BaseInput</code>(<strong><code>iterable</code></strong>=<em><code>()</code></em>) :: <code>list</code></p>
+<h2 id="HF_BaseInput" class="doc_header"><code>class</code> <code>HF_BaseInput</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/data/core.py#L51" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>HF_BaseInput</code>(<strong><code>iterable</code></strong>=<em><code>()</code></em>) :: <code>list</code></p>
 </blockquote>
 <p>Built-in mutable sequence.</p>
 <p>If no argument is given, the constructor creates a new empty list.
@@ -173,9 +173,10 @@ The argument must be an iterable if specified.</p>
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h2 id="HF_BatchTransform" class="doc_header"><code>class</code> <code>HF_BatchTransform</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/data/core.py#L56" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>HF_BatchTransform</code>(<strong><code>hf_arch</code></strong>, <strong><code>hf_tokenizer</code></strong>, <strong><code>hf_input_return_type</code></strong>=<em><code>'HF_BaseInput'</code></em>, <strong>**<code>kwargs</code></strong>) :: <code>Transform</code></p>
+<h2 id="HF_BatchTransform" class="doc_header"><code>class</code> <code>HF_BatchTransform</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/data/core.py#L54" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>HF_BatchTransform</code>(<strong><code>hf_arch</code></strong>, <strong><code>hf_tokenizer</code></strong>, <strong><code>hf_input_return_type</code></strong>=<em><code>'HF_BaseInput'</code></em>, <strong>**<code>kwargs</code></strong>) :: <code>Transform</code></p>
 </blockquote>
-<p>Handles everything you need to assemble a mini-batch of inputs and targets</p>
+<p>Handles everything you need to assemble a mini-batch of inputs and targets, as well as decode
+HF_TokenizerTransform inputs</p>
 
 </div>
 
@@ -537,7 +538,7 @@ You should probably TRAIN this model on a down-stream task to be able to use it 
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">dls</span><span class="o">.</span><span class="n">show_batch</span><span class="p">(</span><span class="n">max_n</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">dls</span><span class="o">.</span><span class="n">show_batch</span><span class="p">(</span><span class="n">dataloaders</span><span class="o">=</span><span class="n">dls</span><span class="p">,</span> <span class="n">max_n</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
 </pre></div>
 
     </div>
@@ -567,7 +568,7 @@ You should probably TRAIN this model on a down-stream task to be able to use it 
     </tr>
     <tr>
       <th>1</th>
-      <td>Almost too well done... "John Carpenter's Vampires" was entertaining, a solid piece of popcorn-entertainment with a budget small enough not to be overrun by special effects. And obviously aiming on the "From Dusk Till Dawn"-audience. "Vampires: Los Muertos" tries the same starting with a rock-star Jon Bon Jovi playing one of the main characters, but does that almost too well...: I haven't seen Jon Bon Jovi in any other movie, so I am not able to compare his acting in "Vampires: Los Muertos" to his other roles, but I was really suprised of his good performance. After the movie started he convinced me not expecting him to grab any guitar and playing "It' my life" or something, but kill vampires, showing no mercy and doing a job which has to be done. This means a lot, because a part of the audience (also me) was probably thinking: "...just because he's a rockstar...". Of course Bon Jovi is not James Woods but to be honest: It could have been much worse, and in my opinion Bon Jovi did a very good performance. The vampiress played by Arly Jover is not the leather dressed killer-machine of a vampire-leader we met in Part 1 (or in similar way in "Ghosts of Mars"). Jover plays the vampire very seductive and very sexy, moving as lithe as a cat, attacking as fast as a snake and dressed in thin, light almost transparent very erotic cloth. And even the optical effects supporting her kind of movement are very well made. It really takes some beating. But the director is in some parts of the film only just avoiding turning the movie from an action-horrorfilm into a sensitive horrormovie like Murnau's "Nosferatu". You can almost see the director's temptation to create a movie with a VERY personal note and different to the original. This is the real strength of the movie and at the same time its weakest point: The audience celebrating the fun-bloodbath of the first movie is probably expecting a pure fun-bloodbath for the second time and might be a little disappointed. Make no mistake: "Vampires:Los Muertos" IS a fun-bloodbath but it's just not ALL THE TIME this kind of movie. Just think of the massacre in the bar compared to the scene in which the vampiress tries to seduce Zoe</td>
+      <td>Name just says it all. I watched this movie with my dad when it came out and having served in Korea he had great admiration for the man. The disappointing thing about this film is that it only concentrate on a short period of the man's life - interestingly enough the man's entire life would have made such an epic bio-pic that it is staggering to imagine the cost for production.&lt;br /&gt;&lt;br /&gt;Some posters elude to the flawed characteristics about the man, which are cheap shots. The theme of the movie "Duty, Honor, Country" are not just mere words blathered from the lips of a high-brassed officer - it is the deep declaration of one man's total devotion to his country.&lt;br /&gt;&lt;br /&gt;Ironically Peck being the liberal that he was garnered a better understanding of the man. He does a great job showing the fearless general tempered with the humane side of the man.</td>
       <td>positive</td>
     </tr>
   </tbody>
@@ -959,10 +960,7 @@ You should probably TRAIN this model on a down-stream task to be able to use it 
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># single input</span>
-<span class="n">blocks</span> <span class="o">=</span> <span class="p">(</span>
-    <span class="n">HF_TextBlock</span><span class="p">(</span><span class="n">hf_arch</span><span class="o">=</span><span class="n">hf_arch</span><span class="p">,</span> <span class="n">hf_tokenizer</span><span class="o">=</span><span class="n">hf_tokenizer</span><span class="p">),</span> 
-    <span class="n">MultiCategoryBlock</span><span class="p">(</span><span class="n">encoded</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">vocab</span><span class="o">=</span><span class="n">lbl_cols</span><span class="p">)</span>
-<span class="p">)</span>
+<span class="n">blocks</span> <span class="o">=</span> <span class="p">(</span><span class="n">HF_TextBlock</span><span class="p">(</span><span class="n">hf_arch</span><span class="o">=</span><span class="n">hf_arch</span><span class="p">,</span> <span class="n">hf_tokenizer</span><span class="o">=</span><span class="n">hf_tokenizer</span><span class="p">),</span> <span class="n">MultiCategoryBlock</span><span class="p">(</span><span class="n">encoded</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">vocab</span><span class="o">=</span><span class="n">lbl_cols</span><span class="p">))</span>
 
 <span class="n">dblock</span> <span class="o">=</span> <span class="n">DataBlock</span><span class="p">(</span><span class="n">blocks</span><span class="o">=</span><span class="n">blocks</span><span class="p">,</span> 
                    <span class="n">get_x</span><span class="o">=</span><span class="n">ColReader</span><span class="p">(</span><span class="s1">&#39;text&#39;</span><span class="p">),</span> 
@@ -1060,12 +1058,12 @@ You should probably TRAIN this model on a down-stream task to be able to use it 
   <tbody>
     <tr>
       <th>0</th>
-      <td>She lives in Springfield and works in Eugene at Awbrey Park Elementary School. The subhead in print edition was incorrect in saying "Eugene woman."</td>
+      <td>It's not just the animals that are patient and forgiving.  Dan and Tammy are good people.  The horses are beautiful.</td>
       <td></td>
     </tr>
     <tr>
       <th>1</th>
-      <td>I, and my family are most grateful to Ms. Brown and her team for tackling the some 50,000 pages of documents from the investigation, and thousands more from trial testimony to put together the finest legal representation Mr. Gable has received since the day he was made a convenient target for the murder of my brother, Mike. \nAn indictment would not have have taken 15 months were it not for the fact that  a handful of  those conducting the investigation at the uppermost tier, were criminally and financially compromised by the exposure of their involvement in the many years of profit-taking in the cloistered world of  prisons. Senior OSP, DOC officials, working in concert with a "brilliant and progressive" Governor who had his own horrible, dark past to conceal, succeeded in keeping the investigation out of the federal spotlight, and swing it around to  a suspect in Frank Gable that was created by lies, and extortion. \nFortunes were made, PERS preserved, only two paid. Mike and Gable.</td>
+      <td>Yes, we have had land disposals, but those parcels for the most part have been “remote lands” which only benefited those of us that had the means (money &amp; transportation [i.e. planes and boats]) to settle those offerings and haven’t added to our local tax base.   We need to enlarge our existing tax bases, forging a more private economy built with Alaskans hard work, tenacity and equal opportunities in the creation of New Wealth.   This will strengthen our resolve and broaden our opportunities for all Alaskans, as we once accomplished in 1999 with 83% of the voters supporting the Permanent Fund Dividend!</td>
       <td></td>
     </tr>
   </tbody>

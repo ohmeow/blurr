@@ -13,7 +13,7 @@ from ..utils import *
 
 # Cell
 class HF_TokenizerTransform(ItemTransform):
-    """huggingface friendly tokenization transfor."""
+    """huggingface friendly tokenization transform."""
     def __init__(self, hf_arch, hf_tokenizer,
                  max_length=None, padding='max_length', truncation=True, is_pretokenized=False, **kwargs):
 
@@ -24,9 +24,9 @@ class HF_TokenizerTransform(ItemTransform):
         store_attr(self, 'kwargs')
 
     def encodes(self, inp):
-        """Supports both string and list[str] inputs (the later is common for token classification tasks).
-        Returns the numericalized (token_ids) of the input so no need to run this through a Numericalization
-        transform."""
+        """Supports passing in one or two input sequences, or a list[str] (the later is common for token
+        classification tasks where you should also set `is_pretokenized=True`).
+        Returns all the tensors for the input sequence(s) in a dictionary."""
         inps = [inp, None] if (isinstance(inp, str) or self.is_pretokenized) else inp
 
         res = self.hf_tokenizer(inps[0], inps[1],
@@ -41,9 +41,7 @@ class HF_TokenizerTransform(ItemTransform):
         return res
 
     def decodes(self, encoded_inp):
-        """This will get called multiple times for a given encoded input because our batch transform will add
-        other elements to it (e.g., attention_mask, token_type_ids, etc...) as required by the defined huggingface
-        tokenizer and model.  If it can't decode it, return None."""
+        """Returns the first item of the list `encoded_inp`; this should be the 'input_ids'."""
         input_ids = filter(lambda el: el != self.hf_tokenizer.pad_token_id, encoded_inp[0].cpu().numpy())
         decoded_input = self.hf_tokenizer.decode(input_ids, skip_special_tokens=True)
         return TitledStr(decoded_input)
@@ -54,7 +52,9 @@ class HF_BaseInput(list): pass
 
 # Cell
 class HF_BatchTransform(Transform):
-    """Handles everything you need to assemble a mini-batch of inputs and targets"""
+    """Handles everything you need to assemble a mini-batch of inputs and targets, as well as decode
+    HF_TokenizerTransform inputs
+    """
     def __init__(self, hf_arch, hf_tokenizer, hf_input_return_type=HF_BaseInput, **kwargs):
         store_attr(self, 'hf_arch, hf_tokenizer, hf_input_return_type, kwargs')
 

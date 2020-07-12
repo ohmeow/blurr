@@ -7,10 +7,10 @@ import ast, torch
 from transformers import *
 from fastai2.text.all import *
 
-from rouge_score import rouge_scorer, scoring
-
 from ..data.all import *
 from .core import *
+
+from rouge_score import rouge_scorer, scoring
 
 # Cell
 def calculate_rouge(predicted_txts, reference_txts, rouge_keys=["rouge1", "rouge2", "rougeL"], use_stemmer=True):
