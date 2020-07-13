@@ -236,7 +236,7 @@ HF_TokenizerTransform inputs</p>
 
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Example-usage---Multi-class-classification">Example usage - Multi-class classification<a class="anchor-link" href="#Example-usage---Multi-class-classification"> </a></h2><p>Below demonstrates how to contruct your <code>DataBlock</code> for a sequence classification task (e.g., a model that requires a single text input)</p>
+<h2 id="Sequence-classification">Sequence classification<a class="anchor-link" href="#Sequence-classification"> </a></h2><p>Below demonstrates how to contruct your <code>DataBlock</code> for a sequence classification task (e.g., a model that requires a single text input)</p>
 
 </div>
 </div>
@@ -568,7 +568,1003 @@ You should probably TRAIN this model on a down-stream task to be able to use it 
     </tr>
     <tr>
       <th>1</th>
-      <td>Name just says it all. I watched this movie with my dad when it came out and having served in Korea he had great admiration for the man. The disappointing thing about this film is that it only concentrate on a short period of the man's life - interestingly enough the man's entire life would have made such an epic bio-pic that it is staggering to imagine the cost for production.&lt;br /&gt;&lt;br /&gt;Some posters elude to the flawed characteristics about the man, which are cheap shots. The theme of the movie "Duty, Honor, Country" are not just mere words blathered from the lips of a high-brassed officer - it is the deep declaration of one man's total devotion to his country.&lt;br /&gt;&lt;br /&gt;Ironically Peck being the liberal that he was garnered a better understanding of the man. He does a great job showing the fearless general tempered with the humane side of the man.</td>
+      <td>"National Treasure" (2004) is a thoroughly misguided hodge-podge of plot entanglements that borrow from nearly every cloak and dagger government conspiracy cliché that has ever been written. The film stars Nicholas Cage as Benjamin Franklin Gates (how precious is that, I ask you?); a seemingly normal fellow who, for no other reason than being of a lineage of like-minded misguided fortune hunters, decides to steal a 'national treasure' that has been hidden by the United States founding fathers. After a bit of subtext and background that plays laughably (unintentionally) like Indiana Jones meets The Patriot, the film degenerates into one misguided whimsy after another  attempting to create a 'Stanley Goodspeed' regurgitation of Nicholas Cage and launch the whole convoluted mess forward with a series of high octane, but disconnected misadventures.&lt;br /&gt;&lt;br /&gt;The relevancy and logic to having George Washington and his motley crew of patriots burying a king's ransom someplace on native soil, and then, going through the meticulous plan of leaving clues scattered throughout U.S. currency art work, is something that director Jon Turteltaub never quite gets around to explaining. Couldn't Washington found better usage for such wealth during the start up of the country? Hence, we are left with a mystery built on top of an enigma that is already on shaky ground by the time Ben appoints himself the new custodian of this untold wealth. Ben's intentions are noble  if confusing. He's set on protecting the treasure. For who and when?your guess is as good as mine.&lt;br /&gt;&lt;br /&gt;But there are a few problems with Ben's crusade. First up, his friend, Ian Holmes (Sean Bean) decides that he can't wait for Ben to make up his mind about stealing the Declaration of Independence from the National Archives (oh, yeah  brilliant idea!). Presumably, the back of that famous document holds the secret answer to the ultimate fortune. So Ian tries to kill Ben. The assassination attempt is, of course, unsuccessful, if overly melodramatic. It also affords Ben the opportunity to pick up, and pick on, the very sultry curator of the archives, Abigail Chase (Diane Kruger). She thinks Ben is clearly a nut  at least at the beginning. But true to action/romance form, Abby's resolve melts quicker than you can say, "is that the Hope Diamond?"</td>
+      <td>negative</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    {% endraw %}
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Tests">Tests<a class="anchor-link" href="#Tests"> </a></h2><p>The tests below to ensure the core DataBlock code above works for <strong>all</strong> pretrained sequence classification models available in huggingface.  These tests are excluded from the CI workflow because of how long they would take to run and the amount of data that would be required to download.</p>
+<p><strong>Note</strong>: Feel free to modify the code below to test whatever pretrained classification models you are working with ... and if any of your pretrained sequence classification models fail, please submit a github issue <em>(or a PR if you'd like to fix it yourself)</em></p>
+
+</div>
+</div>
+</div>
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">BLURR_MODEL_HELPER</span><span class="o">.</span><span class="n">get_models</span><span class="p">(</span><span class="n">task</span><span class="o">=</span><span class="s1">&#39;SequenceClassification&#39;</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>[transformers.modeling_albert.AlbertForSequenceClassification,
+ transformers.modeling_auto.AutoModelForSequenceClassification,
+ transformers.modeling_bart.BartForSequenceClassification,
+ transformers.modeling_bert.BertForSequenceClassification,
+ transformers.modeling_camembert.CamembertForSequenceClassification,
+ transformers.modeling_distilbert.DistilBertForSequenceClassification,
+ transformers.modeling_electra.ElectraForSequenceClassification,
+ transformers.modeling_flaubert.FlaubertForSequenceClassification,
+ transformers.modeling_longformer.LongformerForSequenceClassification,
+ transformers.modeling_mobilebert.MobileBertForSequenceClassification,
+ transformers.modeling_roberta.RobertaForSequenceClassification,
+ transformers.modeling_xlm.XLMForSequenceClassification,
+ transformers.modeling_xlm_roberta.XLMRobertaForSequenceClassification,
+ transformers.modeling_xlnet.XLNetForSequenceClassification]</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    {% endraw %}
+
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">pretrained_model_names</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s1">&#39;albert-base-v1&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;facebook/bart-base&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;bert-base-uncased&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;camembert-base&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;distilbert-base-uncased&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;monologg/electra-small-finetuned-imdb&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;flaubert/flaubert_small_cased&#39;</span><span class="p">,</span> 
+    <span class="s1">&#39;allenai/longformer-base-4096&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;google/mobilebert-uncased&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;roberta-base&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;xlm-mlm-en-2048&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;xlm-roberta-base&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;xlnet-base-cased&#39;</span>
+<span class="p">]</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    {% endraw %}
+
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">path</span> <span class="o">=</span> <span class="n">untar_data</span><span class="p">(</span><span class="n">URLs</span><span class="o">.</span><span class="n">IMDB_SAMPLE</span><span class="p">)</span>
+
+<span class="n">model_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="s1">&#39;models&#39;</span><span class="p">)</span>
+<span class="n">imdb_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">path</span><span class="o">/</span><span class="s1">&#39;texts.csv&#39;</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    {% endraw %}
+
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1">#slow</span>
+<span class="n">task</span> <span class="o">=</span> <span class="n">HF_TASKS_AUTO</span><span class="o">.</span><span class="n">SequenceClassification</span>
+
+<span class="k">for</span> <span class="n">model_name</span> <span class="ow">in</span> <span class="n">pretrained_model_names</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;=== </span><span class="si">{</span><span class="n">model_name</span><span class="si">}</span><span class="s1"> ===</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+    
+    <span class="n">hf_arch</span><span class="p">,</span> <span class="n">hf_config</span><span class="p">,</span> <span class="n">hf_tokenizer</span><span class="p">,</span> <span class="n">hf_model</span> <span class="o">=</span> <span class="n">BLURR_MODEL_HELPER</span><span class="o">.</span><span class="n">get_hf_objects</span><span class="p">(</span><span class="n">model_name</span><span class="p">,</span> <span class="n">task</span><span class="o">=</span><span class="n">task</span><span class="p">)</span>
+    
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;architecture:</span><span class="se">\t</span><span class="si">{</span><span class="n">hf_arch</span><span class="si">}</span><span class="se">\n</span><span class="s1">tokenizer:</span><span class="se">\t</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">hf_tokenizer</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+
+    <span class="n">blocks</span> <span class="o">=</span> <span class="p">(</span><span class="n">HF_TextBlock</span><span class="p">(</span><span class="n">hf_arch</span><span class="o">=</span><span class="n">hf_arch</span><span class="p">,</span> <span class="n">hf_tokenizer</span><span class="o">=</span><span class="n">hf_tokenizer</span><span class="p">,</span> <span class="n">max_length</span><span class="o">=</span><span class="mi">128</span><span class="p">),</span> <span class="n">CategoryBlock</span><span class="p">)</span>
+
+    <span class="n">dblock</span> <span class="o">=</span> <span class="n">DataBlock</span><span class="p">(</span><span class="n">blocks</span><span class="o">=</span><span class="n">blocks</span><span class="p">,</span> 
+                       <span class="n">get_x</span><span class="o">=</span><span class="n">ColReader</span><span class="p">(</span><span class="s1">&#39;text&#39;</span><span class="p">),</span> 
+                       <span class="n">get_y</span><span class="o">=</span><span class="n">ColReader</span><span class="p">(</span><span class="s1">&#39;label&#39;</span><span class="p">),</span> 
+                       <span class="n">splitter</span><span class="o">=</span><span class="n">ColSplitter</span><span class="p">(</span><span class="n">col</span><span class="o">=</span><span class="s1">&#39;is_valid&#39;</span><span class="p">))</span>
+    
+    <span class="n">dls</span> <span class="o">=</span> <span class="n">dblock</span><span class="o">.</span><span class="n">dataloaders</span><span class="p">(</span><span class="n">imdb_df</span><span class="p">,</span> <span class="n">bs</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span> 
+    <span class="n">b</span> <span class="o">=</span> <span class="n">dls</span><span class="o">.</span><span class="n">one_batch</span><span class="p">()</span>
+    
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;*** TESTING DataLoaders ***</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">test_eq</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">b</span><span class="p">),</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="n">test_eq</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">b</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;input_ids&#39;</span><span class="p">]),</span> <span class="mi">4</span><span class="p">)</span>
+        <span class="n">test_eq</span><span class="p">(</span><span class="n">b</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;input_ids&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Size</span><span class="p">([</span><span class="mi">4</span><span class="p">,</span> <span class="mi">128</span><span class="p">]))</span>
+        <span class="n">test_eq</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">b</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span> <span class="mi">4</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;--- PASSED: Batch size and input shapes ---&#39;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="p">(</span><span class="nb">hasattr</span><span class="p">(</span><span class="n">hf_tokenizer</span><span class="p">,</span> <span class="s1">&#39;add_prefix_space&#39;</span><span class="p">)):</span>
+            <span class="n">test_eq</span><span class="p">(</span><span class="n">dls</span><span class="o">.</span><span class="n">tfms</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;add_prefix_space&#39;</span><span class="p">],</span> <span class="kc">True</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;--- PASSED: Tokenizer results (prefix space included) ---&#39;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;--- PASSED: Tokenizer results ---&#39;</span><span class="p">)</span>
+
+        <span class="n">dls</span><span class="o">.</span><span class="n">show_batch</span><span class="p">(</span><span class="n">dataloaders</span><span class="o">=</span><span class="n">dls</span><span class="p">,</span> <span class="n">max_n</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+    <span class="k">except</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;--- FAILED: DataLoaders ---</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>=== albert-base-v1 ===
+
+</pre>
+</div>
+</div>
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stderr output_text">
+<pre>Some weights of the model checkpoint at albert-base-v1 were not used when initializing AlbertForSequenceClassification: [&#39;predictions.bias&#39;, &#39;predictions.LayerNorm.weight&#39;, &#39;predictions.LayerNorm.bias&#39;, &#39;predictions.dense.weight&#39;, &#39;predictions.dense.bias&#39;, &#39;predictions.decoder.weight&#39;, &#39;predictions.decoder.bias&#39;]
+- This IS expected if you are initializing AlbertForSequenceClassification from the checkpoint of a model trained on another task or with another architecture (e.g. initializing a BertForSequenceClassification model from a BertForPretraining model).
+- This IS NOT expected if you are initializing AlbertForSequenceClassification from the checkpoint of a model that you expect to be exactly identical (initializing a BertForSequenceClassification model from a BertForSequenceClassification model).
+Some weights of AlbertForSequenceClassification were not initialized from the model checkpoint at albert-base-v1 and are newly initialized: [&#39;classifier.weight&#39;, &#39;classifier.bias&#39;]
+You should probably TRAIN this model on a down-stream task to be able to use it for predictions and inference.
+</pre>
+</div>
+</div>
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>architecture:	albert
+tokenizer:	AlbertTokenizer
+
+*** TESTING DataLoaders ***
+
+--- PASSED: Batch size and input shapes ---
+--- PASSED: Tokenizer results ---
+</pre>
+</div>
+</div>
+
+<div class="output_area">
+
+
+<div class="output_html rendered_html output_subarea ">
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>text</th>
+      <th>category</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>un-bleeping-believable! meg ryan doesn't even look her usual pert lovable self in this, which normally makes me forgive her shallow ticky acting schtick. hard to believe she was the producer on this dog. plus kevin kline: what kind of suicide trip has his career been on? whoosh... banzai!!! finally this was directed by the guy who did big chill? must be a replay of jonestown - hollywood style. wooofff!</td>
+      <td>negative</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>when marlene dietrich was labeled box office poison in 1938 one of a handful of actresses so named by the trades papers, it was films like the garden of allah. how a film could be so breathtakingly beautiful to behold and be so insipidly dull is beyond me. also how marlene if she was trying to expand her range and not play a sexpot got stuck with such an old fashioned story is beyond me.br /br /the garden of allah, one of the very first films in modern technicolor was a novel set at the turn of the last century by</td>
+      <td>negative</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+</div>
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>=== facebook/bart-base ===
+
+</pre>
+</div>
+</div>
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stderr output_text">
+<pre>Some weights of the model checkpoint at facebook/bart-base were not used when initializing BartForSequenceClassification: [&#39;final_logits_bias&#39;]
+- This IS expected if you are initializing BartForSequenceClassification from the checkpoint of a model trained on another task or with another architecture (e.g. initializing a BertForSequenceClassification model from a BertForPretraining model).
+- This IS NOT expected if you are initializing BartForSequenceClassification from the checkpoint of a model that you expect to be exactly identical (initializing a BertForSequenceClassification model from a BertForSequenceClassification model).
+Some weights of BartForSequenceClassification were not initialized from the model checkpoint at facebook/bart-base and are newly initialized: [&#39;classification_head.dense.weight&#39;, &#39;classification_head.dense.bias&#39;, &#39;classification_head.out_proj.weight&#39;, &#39;classification_head.out_proj.bias&#39;]
+You should probably TRAIN this model on a down-stream task to be able to use it for predictions and inference.
+</pre>
+</div>
+</div>
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>architecture:	bart
+tokenizer:	BartTokenizer
+
+*** TESTING DataLoaders ***
+
+--- PASSED: Batch size and input shapes ---
+--- PASSED: Tokenizer results (prefix space included) ---
+</pre>
+</div>
+</div>
+
+<div class="output_area">
+
+
+<div class="output_html rendered_html output_subarea ">
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>text</th>
+      <th>category</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>Un-bleeping-believable! Meg Ryan doesn't even look her usual pert lovable self in this, which normally makes me forgive her shallow ticky acting schtick. Hard to believe she was the producer on this dog. Plus Kevin Kline: what kind of suicide trip has his career been on? Whoosh... Banzai!!! Finally this was directed by the guy who did Big Chill? Must be a replay of Jonestown - hollywood style. Wooofff!</td>
+      <td>negative</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>The sitcom "The league of Gentlemen" follows the lives of several bizarre inhabitants of the fictional village "Royston Vasey". The different scenes are linked together by their common setting.&lt;br /&gt;&lt;br /&gt;In the first series, a sketch show, the main plot deals with a new road which is going to be built through Royston Vasey. Consequently, more foreigners visit the small town. But Edward and Tubbs, the owners of a "local" shop, which is actually far away from the town, do not like foreigners. Whenever a visitor enters their shop, they kill him. In my opinion some</td>
+      <td>negative</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+</div>
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>=== bert-base-uncased ===
+
+</pre>
+</div>
+</div>
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stderr output_text">
+<pre>Some weights of the model checkpoint at bert-base-uncased were not used when initializing BertForSequenceClassification: [&#39;cls.predictions.bias&#39;, &#39;cls.predictions.transform.dense.weight&#39;, &#39;cls.predictions.transform.dense.bias&#39;, &#39;cls.predictions.decoder.weight&#39;, &#39;cls.seq_relationship.weight&#39;, &#39;cls.seq_relationship.bias&#39;, &#39;cls.predictions.transform.LayerNorm.weight&#39;, &#39;cls.predictions.transform.LayerNorm.bias&#39;]
+- This IS expected if you are initializing BertForSequenceClassification from the checkpoint of a model trained on another task or with another architecture (e.g. initializing a BertForSequenceClassification model from a BertForPretraining model).
+- This IS NOT expected if you are initializing BertForSequenceClassification from the checkpoint of a model that you expect to be exactly identical (initializing a BertForSequenceClassification model from a BertForSequenceClassification model).
+Some weights of BertForSequenceClassification were not initialized from the model checkpoint at bert-base-uncased and are newly initialized: [&#39;classifier.weight&#39;, &#39;classifier.bias&#39;]
+You should probably TRAIN this model on a down-stream task to be able to use it for predictions and inference.
+</pre>
+</div>
+</div>
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>architecture:	bert
+tokenizer:	BertTokenizer
+
+*** TESTING DataLoaders ***
+
+--- PASSED: Batch size and input shapes ---
+--- PASSED: Tokenizer results ---
+</pre>
+</div>
+</div>
+
+<div class="output_area">
+
+
+<div class="output_html rendered_html output_subarea ">
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>text</th>
+      <th>category</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>un - bleeping - believable! meg ryan doesn't even look her usual pert lovable self in this, which normally makes me forgive her shallow ticky acting schtick. hard to believe she was the producer on this dog. plus kevin kline : what kind of suicide trip has his career been on? whoosh... banzai!!! finally this was directed by the guy who did big chill? must be a replay of jonestown - hollywood style. wooofff!</td>
+      <td>negative</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>rock n'roll is a messy business and dig! demonstrates this masterfully. a project of serious ambition, and perhaps foolhardiness, the filmmaker is able to mend together seven tumultuous years of following around two unwieldy rock groups. with that said, the abundance of quality material ensures the film's ability to captivate the audience. if you've ever been interested in any realm of the music industry, this movie will undoubtedly be an arresting viewing. the music in the film, although it suffers minimally from requisite cutting and pasting, is worth the price of admission alone. the</td>
+      <td>positive</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+</div>
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>=== camembert-base ===
+
+</pre>
+</div>
+</div>
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stderr output_text">
+<pre>Some weights of the model checkpoint at camembert-base were not used when initializing CamembertForSequenceClassification: [&#39;lm_head.bias&#39;, &#39;lm_head.dense.weight&#39;, &#39;lm_head.dense.bias&#39;, &#39;lm_head.layer_norm.weight&#39;, &#39;lm_head.layer_norm.bias&#39;, &#39;lm_head.decoder.weight&#39;]
+- This IS expected if you are initializing CamembertForSequenceClassification from the checkpoint of a model trained on another task or with another architecture (e.g. initializing a BertForSequenceClassification model from a BertForPretraining model).
+- This IS NOT expected if you are initializing CamembertForSequenceClassification from the checkpoint of a model that you expect to be exactly identical (initializing a BertForSequenceClassification model from a BertForSequenceClassification model).
+Some weights of CamembertForSequenceClassification were not initialized from the model checkpoint at camembert-base and are newly initialized: [&#39;classifier.dense.weight&#39;, &#39;classifier.dense.bias&#39;, &#39;classifier.out_proj.weight&#39;, &#39;classifier.out_proj.bias&#39;]
+You should probably TRAIN this model on a down-stream task to be able to use it for predictions and inference.
+</pre>
+</div>
+</div>
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>architecture:	camembert
+tokenizer:	CamembertTokenizer
+
+*** TESTING DataLoaders ***
+
+--- PASSED: Batch size and input shapes ---
+--- PASSED: Tokenizer results ---
+</pre>
+</div>
+</div>
+
+<div class="output_area">
+
+
+<div class="output_html rendered_html output_subarea ">
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>text</th>
+      <th>category</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>Un-bleeping-believable! Meg Ryan doesn't even look her usual pert lovable self in this, which normally makes me forgive her shallow ticky acting schtick. Hard to believe she was the producer on this dog. Plus Kevin Kline: what kind of suicide trip has his career been on? Whoosh... Banzai!!! Finally this was directed by the guy who did Big Chill? Must be a replay of Jonestown -</td>
+      <td>negative</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>I consider myself a huge movie buff. I was sick on the couch and popped in this film. Right from the opening to the end I watched in awe at these great actors, i'd never seen, say great word. The filming was beautiful. It was just what I needed. I hope that this message is heard over any bad comments written by others. The Director has a heart and it beats with his actors throughout. Thanku for</td>
+      <td>positive</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+</div>
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>=== distilbert-base-uncased ===
+
+</pre>
+</div>
+</div>
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stderr output_text">
+<pre>Some weights of the model checkpoint at distilbert-base-uncased were not used when initializing DistilBertForSequenceClassification: [&#39;vocab_transform.weight&#39;, &#39;vocab_transform.bias&#39;, &#39;vocab_layer_norm.weight&#39;, &#39;vocab_layer_norm.bias&#39;, &#39;vocab_projector.weight&#39;, &#39;vocab_projector.bias&#39;]
+- This IS expected if you are initializing DistilBertForSequenceClassification from the checkpoint of a model trained on another task or with another architecture (e.g. initializing a BertForSequenceClassification model from a BertForPretraining model).
+- This IS NOT expected if you are initializing DistilBertForSequenceClassification from the checkpoint of a model that you expect to be exactly identical (initializing a BertForSequenceClassification model from a BertForSequenceClassification model).
+Some weights of DistilBertForSequenceClassification were not initialized from the model checkpoint at distilbert-base-uncased and are newly initialized: [&#39;pre_classifier.weight&#39;, &#39;pre_classifier.bias&#39;, &#39;classifier.weight&#39;, &#39;classifier.bias&#39;]
+You should probably TRAIN this model on a down-stream task to be able to use it for predictions and inference.
+</pre>
+</div>
+</div>
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>architecture:	distilbert
+tokenizer:	DistilBertTokenizer
+
+*** TESTING DataLoaders ***
+
+--- PASSED: Batch size and input shapes ---
+--- PASSED: Tokenizer results ---
+</pre>
+</div>
+</div>
+
+<div class="output_area">
+
+
+<div class="output_html rendered_html output_subarea ">
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>text</th>
+      <th>category</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>un - bleeping - believable! meg ryan doesn't even look her usual pert lovable self in this, which normally makes me forgive her shallow ticky acting schtick. hard to believe she was the producer on this dog. plus kevin kline : what kind of suicide trip has his career been on? whoosh... banzai!!! finally this was directed by the guy who did big chill? must be a replay of jonestown - hollywood style. wooofff!</td>
+      <td>negative</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>dvd has become the equivalent of the old late night double - bill circuit, the last chance to catch old movies on the verge of being completely forgotten like the border. there were great expectations for this back in 1982 a script co - written by the wild bunch's walon green, jack nicholson in the days when he could still act without semaphore and a great supporting cast ( harvey keitel, warren oates, valerie perrine ), tony richardson directing ( although he was pretty much a spent force by then ) but now it doesn't even turn up on tv. the material certainly offers a rich</td>
+      <td>negative</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+</div>
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>=== monologg/electra-small-finetuned-imdb ===
+
+</pre>
+</div>
+</div>
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stderr output_text">
+<pre>Some weights of the model checkpoint at monologg/electra-small-finetuned-imdb were not used when initializing ElectraForSequenceClassification: [&#39;classifier.weight&#39;, &#39;classifier.bias&#39;]
+- This IS expected if you are initializing ElectraForSequenceClassification from the checkpoint of a model trained on another task or with another architecture (e.g. initializing a BertForSequenceClassification model from a BertForPretraining model).
+- This IS NOT expected if you are initializing ElectraForSequenceClassification from the checkpoint of a model that you expect to be exactly identical (initializing a BertForSequenceClassification model from a BertForSequenceClassification model).
+Some weights of ElectraForSequenceClassification were not initialized from the model checkpoint at monologg/electra-small-finetuned-imdb and are newly initialized: [&#39;classifier.dense.weight&#39;, &#39;classifier.dense.bias&#39;, &#39;classifier.out_proj.weight&#39;, &#39;classifier.out_proj.bias&#39;]
+You should probably TRAIN this model on a down-stream task to be able to use it for predictions and inference.
+</pre>
+</div>
+</div>
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>architecture:	electra
+tokenizer:	ElectraTokenizer
+
+*** TESTING DataLoaders ***
+
+--- PASSED: Batch size and input shapes ---
+--- PASSED: Tokenizer results ---
+</pre>
+</div>
+</div>
+
+<div class="output_area">
+
+
+<div class="output_html rendered_html output_subarea ">
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>text</th>
+      <th>category</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>un - bleeping - believable! meg ryan doesn't even look her usual pert lovable self in this, which normally makes me forgive her shallow ticky acting schtick. hard to believe she was the producer on this dog. plus kevin kline : what kind of suicide trip has his career been on? whoosh... banzai!!! finally this was directed by the guy who did big chill? must be a replay of jonestown - hollywood style. wooofff!</td>
+      <td>negative</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>the only redeeming quality of this film is the actual storyline... otherwise, this movie was terrible. the acting was ridiculously bad, and the set design was cheesy and very tacky. the story was decent, but it was very hard to watch due to all the horrid acting. i wouldn't recommend watching this one... the only redeeming quality of this film was that the actors were somewhat attractive... especially ryan bauer, the man who plays the soap opera star. some of the editing was well done, but there are continuity errors all over the place..</td>
+      <td>negative</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+</div>
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>=== flaubert/flaubert_small_cased ===
+
+</pre>
+</div>
+</div>
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stderr output_text">
+<pre>Some weights of the model checkpoint at flaubert/flaubert_small_cased were not used when initializing FlaubertForSequenceClassification: [&#39;pred_layer.proj.bias&#39;, &#39;pred_layer.proj.weight&#39;]
+- This IS expected if you are initializing FlaubertForSequenceClassification from the checkpoint of a model trained on another task or with another architecture (e.g. initializing a BertForSequenceClassification model from a BertForPretraining model).
+- This IS NOT expected if you are initializing FlaubertForSequenceClassification from the checkpoint of a model that you expect to be exactly identical (initializing a BertForSequenceClassification model from a BertForSequenceClassification model).
+Some weights of FlaubertForSequenceClassification were not initialized from the model checkpoint at flaubert/flaubert_small_cased and are newly initialized: [&#39;sequence_summary.summary.weight&#39;, &#39;sequence_summary.summary.bias&#39;]
+You should probably TRAIN this model on a down-stream task to be able to use it for predictions and inference.
+</pre>
+</div>
+</div>
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>architecture:	flaubert
+tokenizer:	FlaubertTokenizer
+
+*** TESTING DataLoaders ***
+
+--- PASSED: Batch size and input shapes ---
+--- PASSED: Tokenizer results ---
+</pre>
+</div>
+</div>
+
+<div class="output_area">
+
+
+<div class="output_html rendered_html output_subarea ">
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>text</th>
+      <th>category</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>Un-bleeping-believable! Meg Ryan doesn' t even look her usual pert lovable self in this, which normally makes me forgive her shallow ticky acting schtick. Hard to believe she was the producer on this dog. Plus Kevin Kline : what kind of suicide trip has his career been on? Whoosh... Banzai!!! Finally this was directed by the guy who did Big Chill? Must be a replay of Jonestown - hollywood style. Wooofff!</td>
+      <td>negative</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>We toss around the term " superstar " way too lightly these days, but here' s one guy that truly deserves it. &lt; br / &gt; &lt; br / &gt; I was glued to the set this entire show. The song selection was perfect -- it only contained the songs I actually wanted to hear and cut in with documentary footage during the weaker new songs. I loved that the band was just a five guys on stage in a very minimalist environment. ( With songs of this</td>
+      <td>positive</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+</div>
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>=== allenai/longformer-base-4096 ===
+
+</pre>
+</div>
+</div>
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stderr output_text">
+<pre>Some weights of the model checkpoint at allenai/longformer-base-4096 were not used when initializing LongformerForSequenceClassification: [&#39;lm_head.bias&#39;, &#39;lm_head.dense.weight&#39;, &#39;lm_head.dense.bias&#39;, &#39;lm_head.layer_norm.weight&#39;, &#39;lm_head.layer_norm.bias&#39;, &#39;lm_head.decoder.weight&#39;]
+- This IS expected if you are initializing LongformerForSequenceClassification from the checkpoint of a model trained on another task or with another architecture (e.g. initializing a BertForSequenceClassification model from a BertForPretraining model).
+- This IS NOT expected if you are initializing LongformerForSequenceClassification from the checkpoint of a model that you expect to be exactly identical (initializing a BertForSequenceClassification model from a BertForSequenceClassification model).
+Some weights of LongformerForSequenceClassification were not initialized from the model checkpoint at allenai/longformer-base-4096 and are newly initialized: [&#39;classifier.dense.weight&#39;, &#39;classifier.dense.bias&#39;, &#39;classifier.out_proj.weight&#39;, &#39;classifier.out_proj.bias&#39;]
+You should probably TRAIN this model on a down-stream task to be able to use it for predictions and inference.
+</pre>
+</div>
+</div>
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>architecture:	longformer
+tokenizer:	LongformerTokenizer
+
+*** TESTING DataLoaders ***
+
+--- PASSED: Batch size and input shapes ---
+--- PASSED: Tokenizer results (prefix space included) ---
+</pre>
+</div>
+</div>
+
+<div class="output_area">
+
+
+<div class="output_html rendered_html output_subarea ">
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>text</th>
+      <th>category</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>Un-bleeping-believable! Meg Ryan doesn't even look her usual pert lovable self in this, which normally makes me forgive her shallow ticky acting schtick. Hard to believe she was the producer on this dog. Plus Kevin Kline: what kind of suicide trip has his career been on? Whoosh... Banzai!!! Finally this was directed by the guy who did Big Chill? Must be a replay of Jonestown - hollywood style. Wooofff!</td>
+      <td>negative</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>This is a worthless sequel to a great action movie. Cheap looking, and worst of all, BORING ACTION SCENES! The only decent thing about the movie is the last fight sequence. Only 82 minutes, but it feels like it goes on forever! Even die-hard Van Damme fans(like myself) should avoid this one!</td>
+      <td>negative</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+</div>
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>=== google/mobilebert-uncased ===
+
+</pre>
+</div>
+</div>
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stderr output_text">
+<pre>Some weights of the model checkpoint at google/mobilebert-uncased were not used when initializing MobileBertForSequenceClassification: [&#39;cls.predictions.bias&#39;, &#39;cls.predictions.transform.dense.weight&#39;, &#39;cls.predictions.transform.dense.bias&#39;, &#39;cls.predictions.transform.LayerNorm.weight&#39;, &#39;cls.predictions.transform.LayerNorm.bias&#39;, &#39;cls.predictions.dense.weight&#39;, &#39;cls.predictions.decoder.weight&#39;, &#39;cls.seq_relationship.weight&#39;, &#39;cls.seq_relationship.bias&#39;]
+- This IS expected if you are initializing MobileBertForSequenceClassification from the checkpoint of a model trained on another task or with another architecture (e.g. initializing a BertForSequenceClassification model from a BertForPretraining model).
+- This IS NOT expected if you are initializing MobileBertForSequenceClassification from the checkpoint of a model that you expect to be exactly identical (initializing a BertForSequenceClassification model from a BertForSequenceClassification model).
+Some weights of MobileBertForSequenceClassification were not initialized from the model checkpoint at google/mobilebert-uncased and are newly initialized: [&#39;classifier.weight&#39;, &#39;classifier.bias&#39;]
+You should probably TRAIN this model on a down-stream task to be able to use it for predictions and inference.
+</pre>
+</div>
+</div>
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>architecture:	mobilebert
+tokenizer:	MobileBertTokenizer
+
+*** TESTING DataLoaders ***
+
+--- PASSED: Batch size and input shapes ---
+--- PASSED: Tokenizer results ---
+</pre>
+</div>
+</div>
+
+<div class="output_area">
+
+
+<div class="output_html rendered_html output_subarea ">
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>text</th>
+      <th>category</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>un - bleeping - believable! meg ryan doesn't even look her usual pert lovable self in this, which normally makes me forgive her shallow ticky acting schtick. hard to believe she was the producer on this dog. plus kevin kline : what kind of suicide trip has his career been on? whoosh... banzai!!! finally this was directed by the guy who did big chill? must be a replay of jonestown - hollywood style. wooofff!</td>
+      <td>negative</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>a wonderful and gritty war film that focuses on the inner torment of blinded marine al schmid. although it is tough and unpleasant it is in the end heroic - schmid's triumph over disability and depression. the battle scene was superb. but one bone to pick. no matter how many. 50 bullets they fired i never saw any water or dirt being kicked up by the impacts! it hurt the realism, but i can live with it. fine performance by eleanor parker, again, as his girl friend.</td>
+      <td>positive</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+</div>
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>=== roberta-base ===
+
+</pre>
+</div>
+</div>
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stderr output_text">
+<pre>Some weights of the model checkpoint at roberta-base were not used when initializing RobertaForSequenceClassification: [&#39;lm_head.bias&#39;, &#39;lm_head.dense.weight&#39;, &#39;lm_head.dense.bias&#39;, &#39;lm_head.layer_norm.weight&#39;, &#39;lm_head.layer_norm.bias&#39;, &#39;lm_head.decoder.weight&#39;]
+- This IS expected if you are initializing RobertaForSequenceClassification from the checkpoint of a model trained on another task or with another architecture (e.g. initializing a BertForSequenceClassification model from a BertForPretraining model).
+- This IS NOT expected if you are initializing RobertaForSequenceClassification from the checkpoint of a model that you expect to be exactly identical (initializing a BertForSequenceClassification model from a BertForSequenceClassification model).
+Some weights of RobertaForSequenceClassification were not initialized from the model checkpoint at roberta-base and are newly initialized: [&#39;classifier.dense.weight&#39;, &#39;classifier.dense.bias&#39;, &#39;classifier.out_proj.weight&#39;, &#39;classifier.out_proj.bias&#39;]
+You should probably TRAIN this model on a down-stream task to be able to use it for predictions and inference.
+</pre>
+</div>
+</div>
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>architecture:	roberta
+tokenizer:	RobertaTokenizer
+
+*** TESTING DataLoaders ***
+
+--- PASSED: Batch size and input shapes ---
+--- PASSED: Tokenizer results (prefix space included) ---
+</pre>
+</div>
+</div>
+
+<div class="output_area">
+
+
+<div class="output_html rendered_html output_subarea ">
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>text</th>
+      <th>category</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>Un-bleeping-believable! Meg Ryan doesn't even look her usual pert lovable self in this, which normally makes me forgive her shallow ticky acting schtick. Hard to believe she was the producer on this dog. Plus Kevin Kline: what kind of suicide trip has his career been on? Whoosh... Banzai!!! Finally this was directed by the guy who did Big Chill? Must be a replay of Jonestown - hollywood style. Wooofff!</td>
+      <td>negative</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>This movie was awful in the worst way: you just didn't care. You didn't care what happened in the plot; you didn't care about the characters. Everyone was devoid of heart. I ended up walking out about an 45 minutes into it because I simply didn't want to subject my mind to it any more. There is far too much sex in the film. Sex can be okay; it can even make the movie (hence Karma Sutra) but the intercourse here was not beautiful or sexy. It was just ugly. Don't see this film.</td>
+      <td>negative</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+</div>
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>=== xlm-mlm-en-2048 ===
+
+</pre>
+</div>
+</div>
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stderr output_text">
+<pre>Some weights of the model checkpoint at xlm-mlm-en-2048 were not used when initializing XLMForSequenceClassification: [&#39;pred_layer.proj.weight&#39;, &#39;pred_layer.proj.bias&#39;]
+- This IS expected if you are initializing XLMForSequenceClassification from the checkpoint of a model trained on another task or with another architecture (e.g. initializing a BertForSequenceClassification model from a BertForPretraining model).
+- This IS NOT expected if you are initializing XLMForSequenceClassification from the checkpoint of a model that you expect to be exactly identical (initializing a BertForSequenceClassification model from a BertForSequenceClassification model).
+Some weights of XLMForSequenceClassification were not initialized from the model checkpoint at xlm-mlm-en-2048 and are newly initialized: [&#39;sequence_summary.summary.weight&#39;, &#39;sequence_summary.summary.bias&#39;]
+You should probably TRAIN this model on a down-stream task to be able to use it for predictions and inference.
+</pre>
+</div>
+</div>
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>architecture:	xlm
+tokenizer:	XLMTokenizer
+
+*** TESTING DataLoaders ***
+
+--- PASSED: Batch size and input shapes ---
+--- PASSED: Tokenizer results ---
+</pre>
+</div>
+</div>
+
+<div class="output_area">
+
+
+<div class="output_html rendered_html output_subarea ">
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>text</th>
+      <th>category</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>un-bleeping-believable! meg ryan doesn 't even look her usual pert lovable self in this, which normally makes me forgive her shallow ticky acting schtick. hard to believe she was the producer on this dog. plus kevin kline : what kind of suicide trip has his career been on? whoosh... banzai!!! finally this was directed by the guy who did big chill? must be a replay of jonestown - hollywood style. wooofff!</td>
+      <td>negative</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>i have never posted a review before, but i had to do it for this film! this film is so bad, i found myself trying to justify how bad it is by trying to think of it as kitsch or parody. but it isn 't. it is truly, un-self-consciously bad. this is a serious attempt that flops gloriously. other reviewers have pointed out the film's many flaws, so i 'll try not to repeat these, but i do urge you to see this film. throughout it i was either speechless, literally gasping with disbelief, or rolling on the floor in hysterics. i haven 't</td>
+      <td>negative</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+</div>
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>=== xlm-roberta-base ===
+
+</pre>
+</div>
+</div>
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stderr output_text">
+<pre>Some weights of the model checkpoint at xlm-roberta-base were not used when initializing XLMRobertaForSequenceClassification: [&#39;lm_head.bias&#39;, &#39;lm_head.dense.weight&#39;, &#39;lm_head.dense.bias&#39;, &#39;lm_head.layer_norm.weight&#39;, &#39;lm_head.layer_norm.bias&#39;, &#39;lm_head.decoder.weight&#39;]
+- This IS expected if you are initializing XLMRobertaForSequenceClassification from the checkpoint of a model trained on another task or with another architecture (e.g. initializing a BertForSequenceClassification model from a BertForPretraining model).
+- This IS NOT expected if you are initializing XLMRobertaForSequenceClassification from the checkpoint of a model that you expect to be exactly identical (initializing a BertForSequenceClassification model from a BertForSequenceClassification model).
+Some weights of XLMRobertaForSequenceClassification were not initialized from the model checkpoint at xlm-roberta-base and are newly initialized: [&#39;classifier.dense.weight&#39;, &#39;classifier.dense.bias&#39;, &#39;classifier.out_proj.weight&#39;, &#39;classifier.out_proj.bias&#39;]
+You should probably TRAIN this model on a down-stream task to be able to use it for predictions and inference.
+</pre>
+</div>
+</div>
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>architecture:	xlm_roberta
+tokenizer:	XLMRobertaTokenizer
+
+*** TESTING DataLoaders ***
+
+--- PASSED: Batch size and input shapes ---
+--- PASSED: Tokenizer results ---
+</pre>
+</div>
+</div>
+
+<div class="output_area">
+
+
+<div class="output_html rendered_html output_subarea ">
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>text</th>
+      <th>category</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>Un-bleeping-believable! Meg Ryan doesn't even look her usual pert lovable self in this, which normally makes me forgive her shallow ticky acting schtick. Hard to believe she was the producer on this dog. Plus Kevin Kline: what kind of suicide trip has his career been on? Whoosh... Banzai!!! Finally this was directed by the guy who did Big Chill? Must be a replay of Jonestown - hollywood style. Wooofff!</td>
+      <td>negative</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>Okay, 'enjoy' is a pretty relative term, but flexibility is in order when you're dealing with a filmmaker of James Glickenhaus' calibre.&lt;br /&gt;&lt;br /&gt;McBain is truly one of the most ridiculous, over the top action films I've ever seen, without the nasty edge of The Exterminator. Other reviews have commented on a suspension of disbelief regarding the film's heroic middle aged commandos, but how about making a film in the Philippines that is set in Colombia? All the extras are Filipino. In fact the</td>
+      <td>negative</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+</div>
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>=== xlnet-base-cased ===
+
+</pre>
+</div>
+</div>
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stderr output_text">
+<pre>Some weights of the model checkpoint at xlnet-base-cased were not used when initializing XLNetForSequenceClassification: [&#39;lm_loss.weight&#39;, &#39;lm_loss.bias&#39;]
+- This IS expected if you are initializing XLNetForSequenceClassification from the checkpoint of a model trained on another task or with another architecture (e.g. initializing a BertForSequenceClassification model from a BertForPretraining model).
+- This IS NOT expected if you are initializing XLNetForSequenceClassification from the checkpoint of a model that you expect to be exactly identical (initializing a BertForSequenceClassification model from a BertForSequenceClassification model).
+Some weights of XLNetForSequenceClassification were not initialized from the model checkpoint at xlnet-base-cased and are newly initialized: [&#39;sequence_summary.summary.weight&#39;, &#39;sequence_summary.summary.bias&#39;, &#39;logits_proj.weight&#39;, &#39;logits_proj.bias&#39;]
+You should probably TRAIN this model on a down-stream task to be able to use it for predictions and inference.
+</pre>
+</div>
+</div>
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>architecture:	xlnet
+tokenizer:	XLNetTokenizer
+
+*** TESTING DataLoaders ***
+
+--- PASSED: Batch size and input shapes ---
+--- PASSED: Tokenizer results ---
+</pre>
+</div>
+</div>
+
+<div class="output_area">
+
+
+<div class="output_html rendered_html output_subarea ">
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>text</th>
+      <th>category</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>Un-bleeping-believable! Meg Ryan doesn't even look her usual pert lovable self in this, which normally makes me forgive her shallow ticky acting schtick. Hard to believe she was the producer on this dog. Plus Kevin Kline: what kind of suicide trip has his career been on? Whoosh... Banzai!!! Finally this was directed by the guy who did Big Chill? Must be a replay of Jonestown - hollywood style. Wooofff!</td>
+      <td>negative</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>I do miss the company Vestron, they sure had their finger on the pulse of unique and unusual cinema back in the 1980s. This is very apparent with the astonishing Paperhouse, a film that touches me deeply each and every time I watch it.&lt;br /&gt;&lt;br /&gt;The idea of a girl manipulating a dream world with her drawings (thusly the dream world manipulating reality), and also connecting with and affecting the life of a boy she's never actually met, is fascinating and never disappoints. Charlotte Burke at first seems quite precocious and yet you warm up to her because</td>
       <td>positive</td>
     </tr>
   </tbody>
@@ -585,7 +1581,7 @@ You should probably TRAIN this model on a down-stream task to be able to use it 
 
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Example-usage---Multi-label-classification">Example usage - Multi-label classification<a class="anchor-link" href="#Example-usage---Multi-label-classification"> </a></h2><p>Below demonstrates how to contruct your <code>DataBlock</code> for a multi-label classification task</p>
+<h2 id="Example:-Multi-label-classification">Example: Multi-label classification<a class="anchor-link" href="#Example:-Multi-label-classification"> </a></h2><p>Below demonstrates how to contruct your <code>DataBlock</code> for a multi-label classification task</p>
 
 </div>
 </div>
@@ -1058,12 +2054,12 @@ You should probably TRAIN this model on a down-stream task to be able to use it 
   <tbody>
     <tr>
       <th>0</th>
-      <td>It's not just the animals that are patient and forgiving.  Dan and Tammy are good people.  The horses are beautiful.</td>
+      <td>We the public should know that an officer will not kill unless absolutely necessary.   By keeping the officer's name secret, we remove the obligation to take responsibility or own one's actions.  Keeping names in the public eye, we have the security of knowing that officers will be aware that they may be held accountable and thus be motivated to adopt less confrontational tactics in their work so as to avoid public exposure.  By allowing the individuals who kill for the government to remain anonymous, we empower the government to kill.  Do we really want that?  Really?</td>
       <td></td>
     </tr>
     <tr>
       <th>1</th>
-      <td>Yes, we have had land disposals, but those parcels for the most part have been “remote lands” which only benefited those of us that had the means (money &amp; transportation [i.e. planes and boats]) to settle those offerings and haven’t added to our local tax base.   We need to enlarge our existing tax bases, forging a more private economy built with Alaskans hard work, tenacity and equal opportunities in the creation of New Wealth.   This will strengthen our resolve and broaden our opportunities for all Alaskans, as we once accomplished in 1999 with 83% of the voters supporting the Permanent Fund Dividend!</td>
+      <td>As often on new government sanctioned journeys, there are issues   to be worked out of our legalized marijuana.  The State took care to make sure they got their money (taxes) but have done nothing to secure oversight that any of us and especially medical patients are consuming safe marijuana.  Almost ALL dispensaries in Lane County have 'dropped' the organic.  They have NO IDEA if pesticides were used.  This is unsafe.....and just asking for tragedy.  State:  "Where's the oversight and protection"?  L2g</td>
       <td></td>
     </tr>
   </tbody>
