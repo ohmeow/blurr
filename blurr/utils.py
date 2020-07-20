@@ -7,9 +7,7 @@ __all__ = ['str_to_class', 'Singleton', 'ModelHelper', 'BLURR_MODEL_HELPER', 'HF
 import sys, inspect
 from enum import Enum
 
-import pandas as pd
 import torch
-
 from transformers import *
 from fastai2.text.all import *
 
