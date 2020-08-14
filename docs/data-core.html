@@ -448,6 +448,47 @@ HF_TokenizerTransform inputs</p>
 
 <div class="inner_cell">
     <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">dls</span><span class="o">.</span><span class="n">one_batch</span><span class="p">()</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>({&#39;input_ids&#39;: tensor([[    0,  1890,    12,  ...,     1,     1,     1],
+          [    0,    38,   657,  ...,     1,     1,     1],
+          [    0,  2780,   162,  ...,     7,   109,     2],
+          [    0,  1308, 10384,  ...,     1,     1,     1]], device=&#39;cuda:1&#39;),
+  &#39;attention_mask&#39;: tensor([[1, 1, 1,  ..., 0, 0, 0],
+          [1, 1, 1,  ..., 0, 0, 0],
+          [1, 1, 1,  ..., 1, 1, 1],
+          [1, 1, 1,  ..., 0, 0, 0]], device=&#39;cuda:1&#39;)},
+ TensorCategory([0, 0, 1, 1], device=&#39;cuda:1&#39;))</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    {% endraw %}
+
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">b</span> <span class="o">=</span> <span class="n">dls</span><span class="o">.</span><span class="n">one_batch</span><span class="p">();</span> <span class="nb">len</span><span class="p">(</span><span class="n">b</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">b</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;input_ids&#39;</span><span class="p">]),</span> <span class="nb">len</span><span class="p">(</span><span class="n">b</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> 
 </pre></div>
 
@@ -551,7 +592,7 @@ HF_TokenizerTransform inputs</p>
     </tr>
     <tr>
       <th>1</th>
-      <td>Users who have rated this movie so highly simply can't have seen enough good films to compare it with. Have they all been brainwashed?? I have rarely felt so disappointed by a film and some of that must be attributable to the ridiculous hype surrounding this movie.&lt;br /&gt;&lt;br /&gt;From the first, BU is just a chase film. We pick it up at the end of one chase and go straight into another. And another. And another. And another. Do you see a pattern emerging? There is virtually no time 'wasted' on plot, character development, or boring old reality.&lt;br /&gt;&lt;br /&gt;If you haven't see the other two Bourne films, you're pretty lost. If you have - you only WISH you were lost - somewhere a long way from a cinema.&lt;br /&gt;&lt;br /&gt;Paul Greengrass's dispassionate style worked exceptionally well on United 93 which was a sentiment overload desperate to happen, but on Bourne and his interminable woes it just has the effect of removing the audience from involvement with the character. He runs. He jumps. He punches. He gets blown up. He clears tall buildings. Yada yada yada. Above all - he SURVIVES. He survives like a plastic Action Man survives, which only makes the ridiculous stunts he pulls all the more slack and lacking in any kind of tension. So he drives off a building? So what? He'll survive. Yawn.&lt;br /&gt;&lt;br /&gt;There's a girl thrown into the mix because Bourne's love interest died in a previous incarnation, but she's just decor. I've seen more character depth and snappy dialogue in episodes of Captain Scarlet.&lt;br /&gt;&lt;br /&gt;Bourne's own journey of literal self-discovery is dull and formless and tells us nothing we didn't know from the first movie. He was turned into a killing machine. Big deal. He finds out his true identity. So what? It doesn't have any emotional resonance when it comes.&lt;br /&gt;&lt;br /&gt;The 'twist' ending is telegraphed and weak. Oh, dear, the more I think about this film the more I hate it! I've already reduced my score to 4 during the writing of this comment! I'd better end now before the slide continues.&lt;br /&gt;&lt;br /&gt;I love a good action flick and I love a good thriller. The Bourne Ultimatum is neither. It's a loud, tedious series of flashy edits, ridiculous sound</td>
+      <td>A dog found in a local kennel is mated with Satan and has a litter of puppies, one of which is given to a family who has just lost their previous dog to a hit &amp; run. The puppy wants no time in making like Donald Trump and firing the Mexican housekeeper, how festive. Only the father suspects that this canine is more then he appears, the rest of the family loves the demonic pooch. So it's up to dad to say the day.&lt;br /&gt;&lt;br /&gt;This late 70's made for TV horror flick has little going for it except a misplaced feeling of nostalgia. When I saw this as a kid I found it to be a tense nail-biter, but revisiting it as an adult I now realize that it's merely lame,boring, and not really well-acted in the least bit.&lt;br /&gt;&lt;br /&gt;My Grade: D</td>
       <td>negative</td>
     </tr>
   </tbody>
@@ -922,7 +963,7 @@ HF_TokenizerTransform inputs</p>
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">toxic_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">raw_data</span><span class="p">)</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">toxic_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">raw_data</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="n">raw_data</span><span class="o">.</span><span class="n">features</span><span class="o">.</span><span class="n">keys</span><span class="p">()))</span>
 <span class="n">toxic_df</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
 </pre></div>
 
@@ -1323,12 +1364,12 @@ HF_TokenizerTransform inputs</p>
   <tbody>
     <tr>
       <th>0</th>
-      <td>Terrible, Free Speach killed by an algorithm.......\n"We don't have enough staff to monitor comments"\nHmmmmmm, then hire some workers!</td>
-      <td></td>
+      <td>F u c k the homeless. The people giving handouts should be a s s raped!</td>
+      <td>toxicity;obscene;threat;insult;sexual_explicit</td>
     </tr>
     <tr>
       <th>1</th>
-      <td>Who didn't know that uber would sooner than later use their investment banker might to run low income tax drivers out of business.  It's the American way!  snark</td>
+      <td>Lasted three days, O 'Christian'.  Rumor has it that's long enough for a resurrection.  Wouldn't count on it in your case, though...</td>
       <td></td>
     </tr>
   </tbody>

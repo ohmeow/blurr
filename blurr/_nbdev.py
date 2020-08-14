@@ -21,8 +21,8 @@ index = {"str_to_class": "00_utils.ipynb",
          "HF_TokenCategoryBlock": "01d_data-token-classification.ipynb",
          "HF_TokenClassInput": "01d_data-token-classification.ipynb",
          "HF_TokenClassBatchTransform": "01d_data-token-classification.ipynb",
-         "HF_TextGenerationInput": "01e_data-text-generation.ipynb",
-         "HF_TextGenerationBatchTransform": "01e_data-text-generation.ipynb",
+         "HF_SummarizationInput": "01e_data-summarization.ipynb",
+         "HF_SummarizationBatchTransform": "01e_data-summarization.ipynb",
          "hf_splitter": "02_modeling-core.ipynb",
          "HF_BaseModelWrapper": "02_modeling-core.ipynb",
          "HF_BaseModelCallback": "02_modeling-core.ipynb",
@@ -35,23 +35,23 @@ index = {"str_to_class": "00_utils.ipynb",
          "calculate_token_class_metrics": "02d_modeling-token-classification.ipynb",
          "HF_TokenClassCallback": "02d_modeling-token-classification.ipynb",
          "Learner.blurr_predict_tokens": "02d_modeling-token-classification.ipynb",
-         "calculate_rouge": "02e_modeling-text-generation.ipynb",
-         "HF_TextGenModelCallback": "02e_modeling-text-generation.ipynb",
-         "text_gen_splitter": "02e_modeling-text-generation.ipynb",
-         "HF_MaskedLMLoss": "02e_modeling-text-generation.ipynb",
-         "Learner.generate_text": "02e_modeling-text-generation.ipynb"}
+         "calculate_rouge": "02e_modeling-summarization.ipynb",
+         "HF_SummarizationModelCallback": "02e_modeling-summarization.ipynb",
+         "summarization_splitter": "02e_modeling-summarization.ipynb",
+         "HF_MaskedLMLoss": "02e_modeling-summarization.ipynb",
+         "Learner.blurr_summarize": "02e_modeling-summarization.ipynb"}
 
 modules = ["utils.py",
            "data/core.py",
            "data/language_modeling.py",
            "data/question_answering.py",
            "data/token_classification.py",
-           "data/text_generation.py",
+           "data/summarization.py",
            "modeling/core.py",
            "modeling/language_modeling.py",
            "modeling/question_answering.py",
            "modeling/token_classification.py",
-           "modeling/text_generation.py"]
+           "modeling/summarization.py"]
 
 doc_url = "https://ohmeow.github.io/blurr/"
 
