@@ -57,7 +57,7 @@ class HF_TokenClassCallback(HF_BaseModelCallback):
 
         self.do_setup = False
 
-    def begin_fit(self): self.setup()
+    def before_fit(self): self.setup()
 
 
     # --- batch begin/after phases ---
@@ -84,7 +84,7 @@ class HF_TokenClassCallback(HF_BaseModelCallback):
 
 
     # --- validation begin/after phases ---
-    def begin_validate(self): self.results = []
+    def before_validate(self): self.results = []
 
     def after_validate(self):
         if (len(self.results) < 1): return

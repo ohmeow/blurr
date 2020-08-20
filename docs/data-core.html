@@ -7,6 +7,7 @@ sidebar: home_sidebar
 
 summary: "This module contains the core bits required to use the fastai DataBlock API and/or mid-level data processing pipelines to organize your data in a way modelable by huggingface transformer implementations."
 description: "This module contains the core bits required to use the fastai DataBlock API and/or mid-level data processing pipelines to organize your data in a way modelable by huggingface transformer implementations."
+nb_path: "nbs/01_data-core.ipynb"
 ---
 <!--
 
@@ -41,8 +42,7 @@ description: "This module contains the core bits required to use the fastai Data
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="c1">#cuda</span>
-<span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">set_device</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">set_device</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Using GPU #</span><span class="si">{</span><span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">current_device</span><span class="p">()</span><span class="si">}</span><span class="s1">: </span><span class="si">{</span><span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">get_device_name</span><span class="p">()</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
 </pre></div>
 
@@ -91,7 +91,7 @@ description: "This module contains the core bits required to use the fastai Data
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h2 id="HF_TokenizerTransform" class="doc_header"><code>class</code> <code>HF_TokenizerTransform</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/data/core.py#L15" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>HF_TokenizerTransform</code>(<strong><code>hf_arch</code></strong>, <strong><code>hf_tokenizer</code></strong>, <strong><code>max_length</code></strong>=<em><code>None</code></em>, <strong><code>padding</code></strong>=<em><code>'max_length'</code></em>, <strong><code>truncation</code></strong>=<em><code>True</code></em>, <strong><code>is_pretokenized</code></strong>=<em><code>False</code></em>, <strong>**<code>kwargs</code></strong>) :: <code>ItemTransform</code></p>
+<h2 id="HF_TokenizerTransform" class="doc_header"><code>class</code> <code>HF_TokenizerTransform</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/data/core.py#L15" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>HF_TokenizerTransform</code>(<strong><code>hf_arch</code></strong>, <strong><code>hf_tokenizer</code></strong>, <strong><code>max_length</code></strong>=<em><code>None</code></em>, <strong><code>padding</code></strong>=<em><code>True</code></em>, <strong><code>truncation</code></strong>=<em><code>True</code></em>, <strong><code>is_pretokenized</code></strong>=<em><code>False</code></em>, <strong>**<code>kwargs</code></strong>) :: <code>ItemTransform</code></p>
 </blockquote>
 <p>huggingface friendly tokenization transform.</p>
 
@@ -206,7 +206,42 @@ HF_TokenizerTransform inputs</p>
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h2 id="HF_TextBlock" class="doc_header"><code>class</code> <code>HF_TextBlock</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/data/core.py#L68" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>HF_TextBlock</code>(<strong><code>hf_arch</code></strong>, <strong><code>hf_tokenizer</code></strong>, <strong><code>hf_tok_tfm</code></strong>=<em><code>None</code></em>, <strong><code>max_length</code></strong>=<em><code>512</code></em>, <strong><code>padding</code></strong>=<em><code>'max_length'</code></em>, <strong><code>truncation</code></strong>=<em><code>True</code></em>, <strong><code>is_pretokenized</code></strong>=<em><code>False</code></em>, <strong><code>hf_batch_tfm</code></strong>=<em><code>None</code></em>, <strong><code>hf_input_return_type</code></strong>=<em><code>'HF_BaseInput'</code></em>, <strong><code>dl_type</code></strong>=<em><code>'SortedDL'</code></em>, <strong><code>tok_kwargs</code></strong>=<em><code>{}</code></em>, <strong><code>batch_kwargs</code></strong>=<em><code>{}</code></em>, <strong>**<code>kwargs</code></strong>) :: <code>TransformBlock</code></p>
+<h4 id="pad_hf_inputs" class="doc_header"><code>pad_hf_inputs</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/data/core.py#L68" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>pad_hf_inputs</code>(<strong><code>samples</code></strong>, <strong><code>arch</code></strong>, <strong><code>hf_input_idxs</code></strong>=<em><code>[0]</code></em>, <strong><code>pad_idx</code></strong>=<em><code>0</code></em>, <strong><code>pad_first</code></strong>=<em><code>False</code></em>)</p>
+</blockquote>
+<p>Add this to your batch transforms if you are using dynamic padding with <a href="/blurr/data-core#HF_TokenizerTransform"><code>HF_TokenizerTransform</code></a>
+(e.g., padding is set to anything except 'max_length') to ensure all HF tensors are sized to longest input
+in the batch.</p>
+<p>Note: This is automatically included as necessary by <a href="/blurr/data-core#HF_TextBlock"><code>HF_TextBlock</code></a></p>
+
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    {% endraw %}
+
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+
+</div>
+    {% endraw %}
+
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+<div class="output_markdown rendered_html output_subarea ">
+<h2 id="HF_TextBlock" class="doc_header"><code>class</code> <code>HF_TextBlock</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/data/core.py#L98" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>HF_TextBlock</code>(<strong><code>hf_arch</code></strong>, <strong><code>hf_tokenizer</code></strong>, <strong><code>hf_tok_tfm</code></strong>=<em><code>None</code></em>, <strong><code>max_length</code></strong>=<em><code>512</code></em>, <strong><code>padding</code></strong>=<em><code>True</code></em>, <strong><code>truncation</code></strong>=<em><code>True</code></em>, <strong><code>is_pretokenized</code></strong>=<em><code>False</code></em>, <strong><code>hf_batch_tfm</code></strong>=<em><code>None</code></em>, <strong><code>hf_input_return_type</code></strong>=<em><code>'HF_BaseInput'</code></em>, <strong><code>hf_input_idxs</code></strong>=<em><code>[0]</code></em>, <strong><code>dl_type</code></strong>=<em><code>'SortedDL'</code></em>, <strong><code>tok_kwargs</code></strong>=<em><code>{}</code></em>, <strong><code>batch_kwargs</code></strong>=<em><code>{}</code></em>, <strong>**<code>kwargs</code></strong>) :: <code>TransformBlock</code></p>
 </blockquote>
 <p>A basic wrapper that links defaults transforms for the data block API</p>
 
@@ -363,8 +398,7 @@ HF_TokenizerTransform inputs</p>
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="c1">#hide_output</span>
-<span class="n">task</span> <span class="o">=</span> <span class="n">HF_TASKS_AUTO</span><span class="o">.</span><span class="n">SequenceClassification</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">task</span> <span class="o">=</span> <span class="n">HF_TASKS_AUTO</span><span class="o">.</span><span class="n">SequenceClassification</span>
 
 <span class="n">pretrained_model_name</span> <span class="o">=</span> <span class="s2">&quot;roberta-base&quot;</span> <span class="c1"># &quot;distilbert-base-uncased&quot; &quot;bert-base-uncased&quot;</span>
 <span class="n">hf_arch</span><span class="p">,</span> <span class="n">hf_config</span><span class="p">,</span> <span class="n">hf_tokenizer</span><span class="p">,</span> <span class="n">hf_model</span> <span class="o">=</span> <span class="n">BLURR_MODEL_HELPER</span><span class="o">.</span><span class="n">get_hf_objects</span><span class="p">(</span><span class="n">pretrained_model_name</span><span class="p">,</span> <span class="n">task</span><span class="o">=</span><span class="n">task</span><span class="p">)</span>
@@ -391,8 +425,7 @@ HF_TokenizerTransform inputs</p>
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># single input</span>
-<span class="n">blocks</span> <span class="o">=</span> <span class="p">(</span><span class="n">HF_TextBlock</span><span class="p">(</span><span class="n">hf_arch</span><span class="o">=</span><span class="n">hf_arch</span><span class="p">,</span> <span class="n">hf_tokenizer</span><span class="o">=</span><span class="n">hf_tokenizer</span><span class="p">),</span> <span class="n">CategoryBlock</span><span class="p">)</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">blocks</span> <span class="o">=</span> <span class="p">(</span><span class="n">HF_TextBlock</span><span class="p">(</span><span class="n">hf_arch</span><span class="o">=</span><span class="n">hf_arch</span><span class="p">,</span> <span class="n">hf_tokenizer</span><span class="o">=</span><span class="n">hf_tokenizer</span><span class="p">),</span> <span class="n">CategoryBlock</span><span class="p">)</span>
 
 <span class="n">dblock</span> <span class="o">=</span> <span class="n">DataBlock</span><span class="p">(</span><span class="n">blocks</span><span class="o">=</span><span class="n">blocks</span><span class="p">,</span> 
                    <span class="n">get_x</span><span class="o">=</span><span class="n">ColReader</span><span class="p">(</span><span class="s1">&#39;text&#39;</span><span class="p">),</span> 
@@ -414,7 +447,7 @@ HF_TokenizerTransform inputs</p>
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># dblock.summary(imdb_df)</span>
+<div class=" highlight hl-ipython3"><pre><span></span> 
 </pre></div>
 
     </div>
@@ -448,7 +481,7 @@ HF_TokenizerTransform inputs</p>
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">dls</span><span class="o">.</span><span class="n">one_batch</span><span class="p">()</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">b</span> <span class="o">=</span> <span class="n">dls</span><span class="o">.</span><span class="n">one_batch</span><span class="p">();</span> <span class="nb">len</span><span class="p">(</span><span class="n">b</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">b</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;input_ids&#39;</span><span class="p">]),</span> <span class="n">b</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;input_ids&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">b</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> 
 </pre></div>
 
     </div>
@@ -463,48 +496,7 @@ HF_TokenizerTransform inputs</p>
 
 
 <div class="output_text output_subarea output_execute_result">
-<pre>({&#39;input_ids&#39;: tensor([[    0,  1890,    12,  ...,     1,     1,     1],
-          [    0,    38,   657,  ...,     1,     1,     1],
-          [    0,  2780,   162,  ...,     7,   109,     2],
-          [    0,  1308, 10384,  ...,     1,     1,     1]], device=&#39;cuda:1&#39;),
-  &#39;attention_mask&#39;: tensor([[1, 1, 1,  ..., 0, 0, 0],
-          [1, 1, 1,  ..., 0, 0, 0],
-          [1, 1, 1,  ..., 1, 1, 1],
-          [1, 1, 1,  ..., 0, 0, 0]], device=&#39;cuda:1&#39;)},
- TensorCategory([0, 0, 1, 1], device=&#39;cuda:1&#39;))</pre>
-</div>
-
-</div>
-
-</div>
-</div>
-
-</div>
-    {% endraw %}
-
-    {% raw %}
-    
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">b</span> <span class="o">=</span> <span class="n">dls</span><span class="o">.</span><span class="n">one_batch</span><span class="p">();</span> <span class="nb">len</span><span class="p">(</span><span class="n">b</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">b</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;input_ids&#39;</span><span class="p">]),</span> <span class="nb">len</span><span class="p">(</span><span class="n">b</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> 
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-<div class="output_area">
-
-
-
-<div class="output_text output_subarea output_execute_result">
-<pre>(2, 4, 4)</pre>
+<pre>(2, 4, torch.Size([4, 512]), 4)</pre>
 </div>
 
 </div>
@@ -592,7 +584,7 @@ HF_TokenizerTransform inputs</p>
     </tr>
     <tr>
       <th>1</th>
-      <td>A dog found in a local kennel is mated with Satan and has a litter of puppies, one of which is given to a family who has just lost their previous dog to a hit &amp; run. The puppy wants no time in making like Donald Trump and firing the Mexican housekeeper, how festive. Only the father suspects that this canine is more then he appears, the rest of the family loves the demonic pooch. So it's up to dad to say the day.&lt;br /&gt;&lt;br /&gt;This late 70's made for TV horror flick has little going for it except a misplaced feeling of nostalgia. When I saw this as a kid I found it to be a tense nail-biter, but revisiting it as an adult I now realize that it's merely lame,boring, and not really well-acted in the least bit.&lt;br /&gt;&lt;br /&gt;My Grade: D</td>
+      <td>Man, I really wanted to like these shows. I am starving for some good television and I applaud TNT for providing these "opportunites". But, sadly, I am in the minority I guess when it comes to the Cinematic Stephen King. As brilliant as King's writing is, the irony is that it simply doesn't translate well to the screen, big or small. With few exceptions (very few), the King experience cannot be filmed with the same impact that the stories have when read. Many people would disagree with this, but I'm sure that in their heart of hearts they have to admit that the best filmed King story is but a pale memory of the one they read. The reason is simple. The average King story takes place in the mind-scape of the characters in the story. He gives us glimpses of their inner thoughts, their emotions and their sometimes fractured or unreal points of view. In short, King takes the reader places where you can't put a Panavision camera. As an audience watching the filmed King, we're left with less than half the information than the reader has access to. It's not too far a stretch to claim that One becomes a character in a King story they read, whereas One is limited to petty voyeurism of that same character when filmed. For as long as King writes, Hollywood will try shooting everything that comes out of his word processor, without any regard to whether or not they should. I don't blame the filmmakers for trying, but it takes an incredible amount of talent and circumspection to pull off the elusive Stephen King adaptation that works. The task is akin to turning lead into gold, or some arcane Zen mastery. Oh well, better luck next time.</td>
       <td>negative</td>
     </tr>
   </tbody>
@@ -699,6 +691,27 @@ HF_TokenizerTransform inputs</p>
 
 <div class="inner_cell">
     <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1">#     tok = AutoTokenizer.from_pretrained(model_name)</span>
+<span class="c1">#     print(f&#39;=== {model_name} ===&#39;)</span>
+<span class="c1">#     print(f&#39;=== {tok.padding_side} ===&#39;)</span>
+<span class="c1">#     print(f&#39;=== {tok.pad_token_id} ===&#39;)</span>
+<span class="c1">#     print(tok([&#39;hi&#39;, &#39;hello everyone. its good to be here&#39;], [&#39;yo&#39;, &#39;yo&#39;], padding=&#39;max_length&#39;, max_length=128))</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    {% endraw %}
+
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">path</span> <span class="o">=</span> <span class="n">untar_data</span><span class="p">(</span><span class="n">URLs</span><span class="o">.</span><span class="n">IMDB_SAMPLE</span><span class="p">)</span>
 
 <span class="n">model_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="s1">&#39;models&#39;</span><span class="p">)</span>
@@ -719,8 +732,7 @@ HF_TokenizerTransform inputs</p>
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="c1">#slow</span>
-<span class="c1">#hide_output</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1">#hide_output</span>
 <span class="n">task</span> <span class="o">=</span> <span class="n">HF_TASKS_AUTO</span><span class="o">.</span><span class="n">SequenceClassification</span>
 <span class="n">test_results</span> <span class="o">=</span> <span class="p">[]</span>
 
@@ -920,8 +932,7 @@ HF_TokenizerTransform inputs</p>
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># creates a dataset with the first 10% of training set</span>
-<span class="n">raw_data</span> <span class="o">=</span> <span class="n">nlp</span><span class="o">.</span><span class="n">load_dataset</span><span class="p">(</span><span class="s1">&#39;civil_comments&#39;</span><span class="p">,</span> <span class="n">split</span><span class="o">=</span><span class="s1">&#39;train[:1%]&#39;</span><span class="p">)</span> 
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">raw_data</span> <span class="o">=</span> <span class="n">nlp</span><span class="o">.</span><span class="n">load_dataset</span><span class="p">(</span><span class="s1">&#39;civil_comments&#39;</span><span class="p">,</span> <span class="n">split</span><span class="o">=</span><span class="s1">&#39;train[:1%]&#39;</span><span class="p">)</span> 
 <span class="nb">len</span><span class="p">(</span><span class="n">raw_data</span><span class="p">)</span>
 </pre></div>
 
@@ -1240,8 +1251,7 @@ HF_TokenizerTransform inputs</p>
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="c1">#hide_output</span>
-<span class="n">task</span> <span class="o">=</span> <span class="n">HF_TASKS_AUTO</span><span class="o">.</span><span class="n">SequenceClassification</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">task</span> <span class="o">=</span> <span class="n">HF_TASKS_AUTO</span><span class="o">.</span><span class="n">SequenceClassification</span>
 
 <span class="n">pretrained_model_name</span> <span class="o">=</span> <span class="s2">&quot;roberta-base&quot;</span> <span class="c1"># &quot;distilbert-base-uncased&quot; &quot;bert-base-uncased&quot;</span>
 <span class="n">n_labels</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">lbl_cols</span><span class="p">)</span>
@@ -1265,8 +1275,7 @@ HF_TokenizerTransform inputs</p>
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># single input</span>
-<span class="n">blocks</span> <span class="o">=</span> <span class="p">(</span><span class="n">HF_TextBlock</span><span class="p">(</span><span class="n">hf_arch</span><span class="o">=</span><span class="n">hf_arch</span><span class="p">,</span> <span class="n">hf_tokenizer</span><span class="o">=</span><span class="n">hf_tokenizer</span><span class="p">),</span> <span class="n">MultiCategoryBlock</span><span class="p">(</span><span class="n">encoded</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">vocab</span><span class="o">=</span><span class="n">lbl_cols</span><span class="p">))</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">blocks</span> <span class="o">=</span> <span class="p">(</span><span class="n">HF_TextBlock</span><span class="p">(</span><span class="n">hf_arch</span><span class="o">=</span><span class="n">hf_arch</span><span class="p">,</span> <span class="n">hf_tokenizer</span><span class="o">=</span><span class="n">hf_tokenizer</span><span class="p">),</span> <span class="n">MultiCategoryBlock</span><span class="p">(</span><span class="n">encoded</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">vocab</span><span class="o">=</span><span class="n">lbl_cols</span><span class="p">))</span>
 
 <span class="n">dblock</span> <span class="o">=</span> <span class="n">DataBlock</span><span class="p">(</span><span class="n">blocks</span><span class="o">=</span><span class="n">blocks</span><span class="p">,</span> 
                    <span class="n">get_x</span><span class="o">=</span><span class="n">ColReader</span><span class="p">(</span><span class="s1">&#39;text&#39;</span><span class="p">),</span> 
@@ -1321,7 +1330,7 @@ HF_TokenizerTransform inputs</p>
 
 
 <div class="output_text output_subarea output_execute_result">
-<pre>(2, torch.Size([4, 512]), torch.Size([4, 7]))</pre>
+<pre>(2, torch.Size([4, 167]), torch.Size([4, 7]))</pre>
 </div>
 
 </div>
@@ -1364,12 +1373,12 @@ HF_TokenizerTransform inputs</p>
   <tbody>
     <tr>
       <th>0</th>
-      <td>F u c k the homeless. The people giving handouts should be a s s raped!</td>
-      <td>toxicity;obscene;threat;insult;sexual_explicit</td>
+      <td>I don't think she is aware of the 'blind trusts' set up by previous millionaires who have held the office of President.  Or even the Federal law on such things for other Federal officials.    She probably doesn't even know that President Obama's assets are in one.  She refuses to do her own research so she isn't likely to discover it, either.</td>
+      <td></td>
     </tr>
     <tr>
       <th>1</th>
-      <td>Lasted three days, O 'Christian'.  Rumor has it that's long enough for a resurrection.  Wouldn't count on it in your case, though...</td>
+      <td>"Data" in this context is whatever we read or hear from a variety of sources on a particular topic. It's not necessarily a bunch of spreadsheet stuff...we all use various types of data in all aspects of living and thinking.</td>
       <td></td>
     </tr>
   </tbody>

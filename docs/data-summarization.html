@@ -7,6 +7,7 @@ sidebar: home_sidebar
 
 summary: "This module contains the bits required to use the fastai DataBlock API and/or mid-level data processing pipelines to organize your data for summarization tasks using architectures like BART and T5."
 description: "This module contains the bits required to use the fastai DataBlock API and/or mid-level data processing pipelines to organize your data for summarization tasks using architectures like BART and T5."
+nb_path: "nbs/01e_data-summarization.ipynb"
 ---
 <!--
 
@@ -41,8 +42,7 @@ description: "This module contains the bits required to use the fastai DataBlock
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="c1">#cuda</span>
-<span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">set_device</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">set_device</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Using GPU #</span><span class="si">{</span><span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">current_device</span><span class="p">()</span><span class="si">}</span><span class="s1">: </span><span class="si">{</span><span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">get_device_name</span><span class="p">()</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
 </pre></div>
 
@@ -202,6 +202,14 @@ description: "This module contains the bits required to use the fastai DataBlock
 
 <div class="output_area">
 
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>
+</pre>
+</div>
+</div>
+
+<div class="output_area">
+
 <div class="output_subarea output_stream output_stderr output_text">
 <pre>Some weights of BartForConditionalGeneration were not initialized from the model checkpoint at facebook/bart-large-cnn and are newly initialized: [&#39;final_logits_bias&#39;]
 You should probably TRAIN this model on a down-stream task to be able to use it for predictions and inference.
@@ -322,7 +330,7 @@ HF_TokenizerTransform inputs</p>
 
 <span class="n">blocks</span> <span class="o">=</span> <span class="p">(</span> 
     <span class="n">HF_TextBlock</span><span class="p">(</span><span class="n">hf_arch</span><span class="p">,</span> <span class="n">hf_tokenizer</span><span class="p">),</span> 
-    <span class="n">HF_TextBlock</span><span class="p">(</span><span class="n">hf_arch</span><span class="p">,</span> <span class="n">hf_tokenizer</span><span class="p">,</span> <span class="n">hf_batch_tfm</span><span class="o">=</span><span class="n">hf_batch_tfm</span><span class="p">,</span> <span class="n">max_length</span><span class="o">=</span><span class="mi">150</span><span class="p">)</span>
+    <span class="n">HF_TextBlock</span><span class="p">(</span><span class="n">hf_arch</span><span class="p">,</span> <span class="n">hf_tokenizer</span><span class="p">,</span> <span class="n">hf_batch_tfm</span><span class="o">=</span><span class="n">hf_batch_tfm</span><span class="p">,</span> <span class="n">max_length</span><span class="o">=</span><span class="mi">150</span><span class="p">,</span> <span class="n">hf_input_idxs</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">])</span>
 <span class="p">)</span>
 
 <span class="n">dblock</span> <span class="o">=</span> <span class="n">DataBlock</span><span class="p">(</span><span class="n">blocks</span><span class="o">=</span><span class="n">blocks</span><span class="p">,</span> 
@@ -345,7 +353,7 @@ HF_TokenizerTransform inputs</p>
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># dblock.summary(cnndm_df)</span>
+<div class=" highlight hl-ipython3"><pre><span></span> 
 </pre></div>
 
     </div>
@@ -411,7 +419,7 @@ HF_TokenizerTransform inputs</p>
 
 
 <div class="output_text output_subarea output_execute_result">
-<pre>(2, torch.Size([4, 512]), torch.Size([4, 150]))</pre>
+<pre>(2, torch.Size([4, 512]), torch.Size([4, 77]))</pre>
 </div>
 
 </div>
@@ -461,13 +469,13 @@ HF_TokenizerTransform inputs</p>
   <tbody>
     <tr>
       <th>0</th>
-      <td>It's no secret that a battle has boiled over in the Republican Party. The fight has played out in the policy arena but also on the campaign trail. And since the inception of the tea party in 2009, it seemed like that wing had the upper hand. It slowly made effective inroads into a party many members of the vocal new group thought had lost its way. They elected a new breed of Republican into office, including Texas Sen. Ted Cruz and Kentucky Sen. Rand Paul, who surprised the political world by defeating establishment-backed candidates in their respective primaries. But those two successes haven't been the norm, especially in the Senate, as many inexperienced but ideologically more pure candidates have been unable to seal the deal. In 2010, Sharron Angle won the Senate primary in Nevada and Christine O'Donnell won in Delaware. Two years later, Richard Mourdock and Todd Akin won in Indiana and Missouri respectively. All four went on to lose against the Democrat. In a year in which Republicans have their best shot in several elections of regaining control of the Senate, party leaders are hoping to avoid general election stumbles. The Republican establishment is off to a good start this primary season, but it had an easy opener. Texas Sen. John Cornyn easily won his primary against tea party backed challenger Rep. Steve Stockman, who was largely persona-non-grata during his campaign. Still he spent $2.6 million in the final weeks leading up to the early March primary. Brian Walsh, a former Cornyn spokesman and former communications director for the National Republican Senatorial Committee (NRSC), which works to get Republicans elected to the Senate, said Cornyn did the work necessary to beat a challenger, including researching possible opponents and raising money. "It's not a coincidence that John Cornyn won," he said. Republican incumbents fight back. Senate Republicans want to make sure that what happened in Texas happens elsewhere. Senate Republican Leader Mitch McConnell, who is facing a primary challenge from Matt Bevin, has taken the unusual step of publicly criticizing at least one group working to defeat some GOP incumbents, including McConnell - the Senate Conservative Fund. "I think we are going to crush them everywhere," referring to SCF-backed candidates. "I don't think they are going to have a single nominee anywhere in the country," he said in a recent interview with The New York Times. And in an interview with The Weekly Standard, McConnell said the organization is giving conservatism "a bad name." "We know their business model is only</td>
-      <td>Republicans are taking an aggressive stance against intra-party opposition.\nOne conservative groups called Mississippi Republican incumbent a "liberal"\nEstablishment trying to prevent candidates who can't win in general election.</td>
+      <td>(CNN) -- Sylvia Robinson, a singer-songwriter who went on to become a pioneer in the hip-hop music business, introducing the seminal "Rapper's Delight," died Thursday in New Jersey of congestive heart failure. She was 76. Best known as an artist for 1973's sultry "Pillow Talk," Robinson was a "trendsetter" in music, publicist Lynn K. Hobson told CNN. "She was known as the founder of hip-hop," Hobson said. "She was vibrant, with an over-the-top personality." Robinson's singing, producing and songwriting career dated back to the 1950s, when she recorded as "Little Sylvia" and later as one half of the duo "Mickey &amp; Sylvia." The team's hit "Love Is Strange," which hit the pop charts in early 1957 and reached No. 1 on the rhythm-and-blues chart, found new life three decades later in the 1987 movie "Dirty Dancing." She also produced "Love On a Two-Way Street" for the Moments in 1970. Born Sylvia Vanterpool, Robinson and her late husband, Joe, founded Sugar Hill Records in 1979 and released the early hip hop hit, "Rapper's Delight," performed by the Sugar Hill Gang. Her eldest son, Joey, was a member of the group she formed. The song, which adapted the musical track of Chic's "Good Times," began with the familiar lines, "I said a hip hop, a hippie, a hippie to the hip hip hop, you don't stop to rock it." The label also signed Grandmaster Flash and the Furious Five, which had success in the 1980s, including the hit "The Message." Kanye West and Alicia Keys are among the artists who sampled songs associated with Robinson, Hobson said. The funeral is scheduled for October 11 at Community Baptist Church in Englewood, New Jersey. "RIP to my grandmother," MTV personality Darnell Robinson, the entrepreneur's grandson, wrote on his Twitter account Thursday. "We lost Mommy Sylvia this morning but she will never be forgotten!" CNN's Phil Gast contributed to this report.</td>
+      <td>Singer-songwriter and music entrepreneur dies at 76.\nShe was most known for single "Pillow Talk"\nSylvia Robinson helped start Sugar Hill Records.</td>
     </tr>
     <tr>
       <th>1</th>
-      <td>When Rachel Frederickson, 24, stepped out onto the stage at NBC's "The Biggest Loser" finale Tuesday night, some wondered if she had gone too far. While the show is known for its dramatic weight loss transformations -- most winners lose more than 50% of their body weight -- Frederickson appeared extremely thin. And the looks on trainers Bob Harper and Jillian Michaels' faces could be interpreted as shock -- or dismay. Frederickson went from 260 pounds to 105 pounds, losing 59.62% of her body weight. At 5 feet, 5 inches tall, that puts her body mass index at 17.5. Anything under 18.5 is considered by the National Institutes of Health to be underweight. NBC on Wednesday declined to comment on its $250,000 grand prize winner, a voice-over artist who lives in Los Angeles. Social media, however, was buzzing. "Are you kidding?" One woman wrote on the show's Facebook page. "Rachel looks anorexic! She has gone from one extreme to the other!" Other posts called Frederickson "frail" and said she seemed "dizzy" and "disoriented" on stage. "She obviously worked incredibly hard to achieve her weight loss goals, but I am wondering if the pressure of winning a large cash prize caused her to take it too far," one said. Others posted on Frederickson's Facebook page, asking her to get help and expressing disappointment. "I'm saddened that my 13-year-old daughter watched as you were rewarded for doing that to your body," one woman said. Frederickson as of Wednesday had not responded to the posts and had not commented on the controversy on Twitter. Michaels issued a statement late Wednesday on social media on behalf of herself and Harper, saying, "Bob and I want to take a moment to congratulate all of the BL contestants on their hard work. We're not comfortable commenting on Rachel's journey because (we) weren't her trainers and weren't given an opportunity to work with her at any point. Any questions about the contestants on the Biggest Loser should be directed to the show's producers." Asked by another Twitter user whether she was concerned about Frederickson's weight, Michaels posted, "We won't comment because we had nothing to do with it and want no part in shaming someone with 'public statements.'" HLNtv.com: Opinion: Dropping pounds nothing like 'Biggest Loser' BMI applies less on an individual level and is more utilized for population norms -- many people</td>
-      <td>Social media is buzzing over "The Biggest Loser" winner's 155-pound drop.\nLosing a lot of weight with unhealthy methods can be dangerous, experts say.\nBeing too thin can be as dangerous as being obese.</td>
+      <td>(CNN) -- Rory McIlroy has been reflecting on his meltdown at the Masters, after the 21-year-old squandered a four-stroke lead going into the final round at Augusta, eventually carding an eight-over-par 80 to finish 10 strokes behind winner Charl Schwartzel. Speaking to the official Masters website, the Northern Irishman said: "I'm very disappointed. "I was leading this golf tournament with nine holes to go, and I just unraveled. Hit a bad tee shot on 10, and then never really recovered. It's going to be hard to take for a few days, but I'll get over it." McIlroy is not alone in crumbling on the back nine whilst leading the Masters and joins a famous list that includes great names such as Ben Hogan, Arnold Palmer, Scott Hoch and Greg Norman. Can McIlroy conquer mental minefield? And McIlory admitted that when he missed the fairway on the 13th hole, he knew his Masters dream had died. "I'd knew that unless I birdied my way in, I realized I didn't have a chance," McIlroy said. "I realized that was it then. "But this is my first experience at it and hopefully the next time I'm in this position I'll be able to handle it better. "I didn't handle it particularly well obviously, but it was a character-building day, put it that way. I'll come out stronger for it." And, speaking on his Twitter feed, McIlroy quoted Muhammad Ali, saying: "It's repetition of affirmations that leads to belief -- and once that belief becomes a deep conviction, things begin to happen." McIlory also received some words of encouragement from Schwartzel who said: "Golf is a really funny game -- one moment you're on top of it, the next moment it bites you. "Rory is going to feel hurt. It's not easy what he went through. He is such a phenomenal player and he will win one. "The first just happens to be the toughest, and that may be the biggest lesson of all," added the South African.</td>
+      <td>Rory McIlory has spoken about his final round heartbreak at the Masters.\nThe 21-year-old wasted a four-stroke lead to finish 10 shots behind Charl Schwartzel.\nThe Northern Irishman also quoted boxer Muhammad Ali on his Twitter page.</td>
     </tr>
   </tbody>
 </table>

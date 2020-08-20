@@ -7,6 +7,7 @@ sidebar: home_sidebar
 
 summary: "This module contains the bits required to use the fastai DataBlock API and/or mid-level data processing pipelines to organize your data for token classification tasks (e.g., NER or named entity recognition, etc...)."
 description: "This module contains the bits required to use the fastai DataBlock API and/or mid-level data processing pipelines to organize your data for token classification tasks (e.g., NER or named entity recognition, etc...)."
+nb_path: "nbs/01d_data-token-classification.ipynb"
 ---
 <!--
 
@@ -41,8 +42,7 @@ description: "This module contains the bits required to use the fastai DataBlock
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="c1">#cuda</span>
-<span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">set_device</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">set_device</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Using GPU #</span><span class="si">{</span><span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">current_device</span><span class="p">()</span><span class="si">}</span><span class="s1">: </span><span class="si">{</span><span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">get_device_name</span><span class="p">()</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
 </pre></div>
 
@@ -81,8 +81,7 @@ description: "This module contains the bits required to use the fastai DataBlock
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># ensures these cols are represented as lists (rather than string)</span>
-<span class="n">df_converters</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;tokens&#39;</span><span class="p">:</span> <span class="n">ast</span><span class="o">.</span><span class="n">literal_eval</span><span class="p">,</span> <span class="s1">&#39;labels&#39;</span><span class="p">:</span> <span class="n">ast</span><span class="o">.</span><span class="n">literal_eval</span><span class="p">,</span> <span class="s1">&#39;nested-labels&#39;</span><span class="p">:</span> <span class="n">ast</span><span class="o">.</span><span class="n">literal_eval</span><span class="p">}</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">df_converters</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;tokens&#39;</span><span class="p">:</span> <span class="n">ast</span><span class="o">.</span><span class="n">literal_eval</span><span class="p">,</span> <span class="s1">&#39;labels&#39;</span><span class="p">:</span> <span class="n">ast</span><span class="o">.</span><span class="n">literal_eval</span><span class="p">,</span> <span class="s1">&#39;nested-labels&#39;</span><span class="p">:</span> <span class="n">ast</span><span class="o">.</span><span class="n">literal_eval</span><span class="p">}</span>
 
 <span class="n">path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="s1">&#39;./&#39;</span><span class="p">)</span>
 <span class="n">germ_eval_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">path</span><span class="o">/</span><span class="s1">&#39;germeval2014_sample.csv&#39;</span><span class="p">,</span> <span class="n">converters</span><span class="o">=</span><span class="n">df_converters</span><span class="p">);</span> <span class="nb">len</span><span class="p">(</span><span class="n">germ_eval_df</span><span class="p">)</span>
@@ -377,7 +376,7 @@ You should probably TRAIN this model on a down-stream task to be able to use it 
 
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p><a href="/blurr/01d_data-token-classification#HF_TokenCategorize"><code>HF_TokenCategorize</code></a> modifies the fastai <code>Categorize</code> transform in a couple of ways.  First, it allows your targets to consist of a <code>Category</code> <strong><em>per</em></strong> token, and second, it uses the idea of an <code>ignore_token</code> to mask subtokens that don't need a prediction.  For example, the target of special tokens (e.g., pad, cls, sep) are set to <code>ignore_token</code> as are subsequent sub-tokens of a given token should more than 1 sub-token make it up.</p>
+<p><a href="/blurr/data-token-classification#HF_TokenCategorize"><code>HF_TokenCategorize</code></a> modifies the fastai <code>Categorize</code> transform in a couple of ways.  First, it allows your targets to consist of a <code>Category</code> <strong><em>per</em></strong> token, and second, it uses the idea of an <code>ignore_token</code> to mask subtokens that don't need a prediction.  For example, the target of special tokens (e.g., pad, cls, sep) are set to <code>ignore_token</code> as are subsequent sub-tokens of a given token should more than 1 sub-token make it up.</p>
 
 </div>
 </div>
@@ -416,7 +415,7 @@ You should probably TRAIN this model on a down-stream task to be able to use it 
 
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>Again, we define a custom class, <a href="/blurr/01d_data-token-classification#HF_TokenClassInput"><code>HF_TokenClassInput</code></a>, for the @typedispatched methods to use so that we can override how token classification inputs/targets are assembled, as well as, how the data is shown via methods like <code>show_batch</code> and <code>show_results</code>.</p>
+<p>Again, we define a custom class, <a href="/blurr/data-token-classification#HF_TokenClassInput"><code>HF_TokenClassInput</code></a>, for the @typedispatched methods to use so that we can override how token classification inputs/targets are assembled, as well as, how the data is shown via methods like <code>show_batch</code> and <code>show_results</code>.</p>
 
 </div>
 </div>
@@ -490,7 +489,7 @@ HF_TokenizerTransform inputs</p>
 
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p><a href="/blurr/01d_data-token-classification#HF_TokenClassBatchTransform"><code>HF_TokenClassBatchTransform</code></a> is used to turn any targets we don't want to include in the loss calcuation (e.g. padding, cls, sep, etc...).</p>
+<p><a href="/blurr/data-token-classification#HF_TokenClassBatchTransform"><code>HF_TokenClassBatchTransform</code></a> is used to turn any targets we don't want to include in the loss calcuation (e.g. padding, cls, sep, etc...).</p>
 
 </div>
 </div>
@@ -541,7 +540,7 @@ HF_TokenizerTransform inputs</p>
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># dblock.summary(test_df)</span>
+<div class=" highlight hl-ipython3"><pre><span></span> 
 </pre></div>
 
     </div>
@@ -607,7 +606,7 @@ HF_TokenizerTransform inputs</p>
 
 
 <div class="output_text output_subarea output_execute_result">
-<pre>(2, torch.Size([4, 512]), torch.Size([4, 512]))</pre>
+<pre>(2, torch.Size([4, 37]), torch.Size([4, 37]))</pre>
 </div>
 
 </div>
@@ -656,11 +655,11 @@ HF_TokenizerTransform inputs</p>
   <tbody>
     <tr>
       <th>0</th>
-      <td>[('Die', 'O'), ('Arbeiten', 'O'), ('am', 'O'), ('Helene', 'B-LOC'), ('sollen', 'O'), ('noch', 'O'), ('in', 'O'), ('den', 'O'), ('Sommer', 'O'), ('beginnen', 'O'), (',', 'O'), ('ebenso', 'O'), ('die', 'O'), ('am', 'O'), ('Wu', 'B-LOC'), ('in', 'O'), ('der', 'O'), ('Nähe', 'O'), ('des', 'O'), ('ehemaligen', 'O'), ('Arbeit', 'O'), ('.', 'O')]</td>
+      <td>[('Nicht', 'O'), ('ihr', 'O'), ('gel', 'O'), ('"', 'O'), ('football', 'O'), ('"', 'O'), (',', 'O'), ('wo', 'O'), ('sich', 'O'), ('ganz', 'O'), ('Ker', 'O'), ('in', 'O'), ('Pla', 'O'), ('um', 'O'), ('ein', 'O'), ('Led', 'O'), ('pr', 'O'), (',', 'O'), ('sondern', 'O'), ('etwas', 'O'), ('ganz', 'O'), ('Andere', 'O'), ('.', 'O')]</td>
     </tr>
     <tr>
       <th>1</th>
-      <td>[('Erster', 'B-OTH'), ('Weltkrieg', 'I-OTH'), ('und', 'O'), ('Weimarer', 'B-ORG'), ('Republik', 'I-ORG'), ('Nach', 'O'), ('dem', 'O'), ('Ersten', 'B-OTH'), ('Weltkrieg', 'I-OTH'), ('wurde', 'O'), ('auf', 'O'), ('der', 'O'), ('57', 'O'), ('G', 'O'), ('1919', 'O'), ('in', 'O'), ('Frankfurt', 'B-LOC'), ('wiederum', 'O'), ('die', 'O'), ('Unit', 'B-ORG'), ('mit', 'O'), ('cand', 'O'), ('.', 'O'), ('med', 'O'), ('.', 'O'), ('A', 'B-PER'), ('Hai', 'I-PER'), ('als', 'O'), ('V', 'O'), ('zum', 'O'), ('Vor', 'O'), ('gewählt', 'O'), ('.', 'O')]</td>
+      <td>[('Gala', 'B-OTH'), ('forderte', 'O'), ('seinen', 'O'), ('Spieler', 'O'), ('heraus', 'O'), (',', 'O'), ('eine', 'O'), ('Anzahl', 'O'), ('von', 'O'), ('verschiedenen', 'O'), ('Welt', 'O'), (',', 'O'), ('die', 'O'), ('aus', 'O'), ('verschiedenen', 'O'), ('Richtung', 'O'), ('an', 'O'), (',', 'O'), ('zu', 'O'), ('eli', 'O'), ('.', 'O')]</td>
     </tr>
   </tbody>
 </table>

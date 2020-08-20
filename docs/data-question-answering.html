@@ -7,6 +7,7 @@ sidebar: home_sidebar
 
 summary: "This module contains the bits required to use the fastai DataBlock API and/or mid-level data processing pipelines to organize your data for question/answering tasks."
 description: "This module contains the bits required to use the fastai DataBlock API and/or mid-level data processing pipelines to organize your data for question/answering tasks."
+nb_path: "nbs/01c_data-question-answering.ipynb"
 ---
 <!--
 
@@ -41,8 +42,7 @@ description: "This module contains the bits required to use the fastai DataBlock
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="c1">#cuda</span>
-<span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">set_device</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">set_device</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Using GPU #</span><span class="si">{</span><span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">current_device</span><span class="p">()</span><span class="si">}</span><span class="s1">: </span><span class="si">{</span><span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">get_device_name</span><span class="p">()</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
 </pre></div>
 
@@ -271,7 +271,7 @@ You should probably TRAIN this model on a down-stream task to be able to use it 
 
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>The <a href="/blurr/01c_data-question-answering#pre_process_squad"><code>pre_process_squad</code></a> method is structured around how we've setup the squad DataFrame above.</p>
+<p>The <a href="/blurr/data-question-answering#pre_process_squad"><code>pre_process_squad</code></a> method is structured around how we've setup the squad DataFrame above.</p>
 
 </div>
 </div>
@@ -380,7 +380,7 @@ The argument must be an iterable if specified.</p>
 
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>We'll return a <a href="/blurr/01c_data-question-answering#HF_QuestionAnswerInput"><code>HF_QuestionAnswerInput</code></a> from our <a href="/blurr/data-core#HF_BatchTransform"><code>HF_BatchTransform</code></a> so that we can customize the show_batch/results methods for this task.</p>
+<p>We'll return a <a href="/blurr/data-question-answering#HF_QuestionAnswerInput"><code>HF_QuestionAnswerInput</code></a> from our <a href="/blurr/data-core#HF_BatchTransform"><code>HF_BatchTransform</code></a> so that we can customize the show_batch/results methods for this task.</p>
 
 </div>
 </div>
@@ -586,15 +586,15 @@ HF_TokenizerTransform inputs</p>
   <tbody>
     <tr>
       <th>0</th>
-      <td>Beyonce, during October 2014, partnered with whom to produce an outdoor line of clothing? In October 2014, Beyoncé signed a deal to launch an activewear line of clothing with British fashion retailer Topshop. The 50-50 venture is called Parkwood Topshop Athletic Ltd and is scheduled to launch its first dance, fitness and sports ranges in autumn 2015. The line will launch in April 2016.</td>
-      <td>(42, 44)</td>
-      <td>Topshop</td>
+      <td>What kind of service is Tidal? On March 30, 2015, it was announced that Beyoncé is a co-owner, with various other music artists, in the music streaming service Tidal. The service specialises in lossless audio and high definition music videos. Beyoncé's husband Jay Z acquired the parent company of Tidal, Aspiro, in the first quarter of 2015. Including Beyoncé and Jay-Z, sixteen artist stakeholders (such as Kanye West, Rihanna, Madonna, Chris Martin, Nicki Minaj and more) co-own Tidal, with the majority owning a 3%</td>
+      <td>(37, 40)</td>
+      <td>music streaming service</td>
     </tr>
     <tr>
       <th>1</th>
-      <td>Beyonce and Jay Z got a Guinness World record for what in 2009? Forbes magazine began reporting on Beyoncé's earnings in 2008, calculating that the $80 million earned between June 2007 to June 2008, for her music, tour, films and clothing line made her the world's best-paid music personality at the time, above Madonna and Celine Dion. They placed her fourth on the Celebrity 100 list in 2009 and ninth on the "Most Powerful Women in the World" list in 2010. The following year, Forbes placed her eighth on the "Best-Paid Celebrities Under 30" list, having earned $</td>
-      <td>(0, 0)</td>
-      <td></td>
+      <td>What was the given name of Chopin's father? Fryderyk's father, Nicolas Chopin, was a Frenchman from Lorraine who had emigrated to Poland in 1787 at the age of sixteen. Nicolas tutored children of the Polish aristocracy, and in 1806 married Justyna Krzyżanowska, a poor relative of the Skarbeks, one of the families for whom he worked. Fryderyk was baptized on Easter Sunday, 23 April 1810, in the same church where his parents had married, in Brochów. His eighteen-year-old godfather,</td>
+      <td>(20, 21)</td>
+      <td>Nicolas</td>
     </tr>
   </tbody>
 </table>

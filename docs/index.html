@@ -7,6 +7,7 @@ sidebar: home_sidebar
 
 summary: "A library that integrates huggingface transformers with version 2 of the fastai framework"
 description: "A library that integrates huggingface transformers with version 2 of the fastai framework"
+nb_path: "nbs/index.ipynb"
 ---
 <!--
 
@@ -174,8 +175,7 @@ You should probably TRAIN this model on a down-stream task to be able to use it 
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># single input</span>
-<span class="n">blocks</span> <span class="o">=</span> <span class="p">(</span><span class="n">HF_TextBlock</span><span class="p">(</span><span class="n">hf_arch</span><span class="o">=</span><span class="n">hf_arch</span><span class="p">,</span> <span class="n">hf_tokenizer</span><span class="o">=</span><span class="n">hf_tokenizer</span><span class="p">),</span> <span class="n">CategoryBlock</span><span class="p">)</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">blocks</span> <span class="o">=</span> <span class="p">(</span><span class="n">HF_TextBlock</span><span class="p">(</span><span class="n">hf_arch</span><span class="o">=</span><span class="n">hf_arch</span><span class="p">,</span> <span class="n">hf_tokenizer</span><span class="o">=</span><span class="n">hf_tokenizer</span><span class="p">),</span> <span class="n">CategoryBlock</span><span class="p">)</span>
 
 <span class="n">dblock</span> <span class="o">=</span> <span class="n">DataBlock</span><span class="p">(</span><span class="n">blocks</span><span class="o">=</span><span class="n">blocks</span><span class="p">,</span> 
                    <span class="n">get_x</span><span class="o">=</span><span class="n">ColReader</span><span class="p">(</span><span class="s1">&#39;text&#39;</span><span class="p">),</span> <span class="n">get_y</span><span class="o">=</span><span class="n">ColReader</span><span class="p">(</span><span class="s1">&#39;label&#39;</span><span class="p">),</span> 
@@ -228,7 +228,7 @@ You should probably TRAIN this model on a down-stream task to be able to use it 
     </tr>
     <tr>
       <th>1</th>
-      <td>jungle fever is too highly stylized, stereotyped, and comes across as essentially dishonest. wesley snipes was wrong for the lead and there was no chemistry between him and annabella sciorra. even though there's plenty of talent in this movie, it's mostly wasted because the parts are reduced to little more than decorative cameos. also, instead of simply showing racism for the ugly and stupid thing it is, spike lee chooses to wave it around like a flag in a most whining and irritating manner. i made it through most of the film but i couldn't quite finish it, and that, for me, rarely happens.</td>
+      <td>" national treasure " ( 2004 ) is a thoroughly misguided hodge - podge of plot entanglements that borrow from nearly every cloak and dagger government conspiracy cliche that has ever been written. the film stars nicholas cage as benjamin franklin gates ( how precious is that, i ask you? ) ; a seemingly normal fellow who, for no other reason than being of a lineage of like - minded misguided fortune hunters, decides to steal a'national treasure'that has been hidden by the united states founding fathers. after a bit of subtext and background that plays laughably ( unintentionally ) like indiana jones meets the patriot, the film degenerates into one misguided whimsy after another attempting to create a'stanley goodspeed'regurgitation of nicholas cage and launch the whole convoluted mess forward with a series of high octane, but disconnected misadventures. &lt; br / &gt; &lt; br / &gt; the relevancy and logic to having george washington and his motley crew of patriots burying a king's ransom someplace on native soil, and then, going through the meticulous plan of leaving clues scattered throughout u. s. currency art work, is something that director jon turteltaub never quite gets around to explaining. couldn't washington found better usage for such wealth during the start up of the country? hence, we are left with a mystery built on top of an enigma that is already on shaky ground by the time ben appoints himself the new custodian of this untold wealth. ben's intentions are noble if confusing. he's set on protecting the treasure. for who and when? your guess is as good as mine. &lt; br / &gt; &lt; br / &gt; but there are a few problems with ben's crusade. first up, his friend, ian holmes ( sean bean ) decides that he can't wait for ben to make up his mind about stealing the declaration of independence from the national archives ( oh, yeah brilliant idea! ). presumably, the back of that famous document holds the secret answer to the ultimate fortune. so ian tries to kill ben. the assassination attempt is, of course, unsuccessful, if overly melodramatic. it also affords ben the opportunity to pick up, and pick on, the very sultry curator of the archives, abigail chase ( diane kruger ). she thinks ben is clearly a nut at least at the beginning. but true to action / romance form</td>
       <td>negative</td>
     </tr>
   </tbody>
@@ -256,8 +256,7 @@ You should probably TRAIN this model on a down-stream task to be able to use it 
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="c1">#slow</span>
-<span class="n">model</span> <span class="o">=</span> <span class="n">HF_BaseModelWrapper</span><span class="p">(</span><span class="n">hf_model</span><span class="p">)</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">model</span> <span class="o">=</span> <span class="n">HF_BaseModelWrapper</span><span class="p">(</span><span class="n">hf_model</span><span class="p">)</span>
 
 <span class="n">learn</span> <span class="o">=</span> <span class="n">Learner</span><span class="p">(</span><span class="n">dls</span><span class="p">,</span> 
                 <span class="n">model</span><span class="p">,</span>
@@ -297,24 +296,24 @@ You should probably TRAIN this model on a down-stream task to be able to use it 
   <tbody>
     <tr>
       <td>0</td>
-      <td>0.709718</td>
-      <td>0.751911</td>
-      <td>0.465000</td>
-      <td>00:19</td>
+      <td>0.644810</td>
+      <td>0.584691</td>
+      <td>0.655000</td>
+      <td>00:32</td>
     </tr>
     <tr>
       <td>1</td>
-      <td>0.662812</td>
-      <td>0.615188</td>
-      <td>0.695000</td>
-      <td>00:19</td>
+      <td>0.364105</td>
+      <td>0.297011</td>
+      <td>0.900000</td>
+      <td>00:32</td>
     </tr>
     <tr>
       <td>2</td>
-      <td>0.620050</td>
-      <td>0.599570</td>
-      <td>0.740000</td>
-      <td>00:19</td>
+      <td>0.261818</td>
+      <td>0.298283</td>
+      <td>0.880000</td>
+      <td>00:32</td>
     </tr>
   </tbody>
 </table>
@@ -335,8 +334,7 @@ You should probably TRAIN this model on a down-stream task to be able to use it 
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="c1">#slow</span>
-<span class="n">learn</span><span class="o">.</span><span class="n">show_results</span><span class="p">(</span><span class="n">hf_tokenizer</span><span class="o">=</span><span class="n">hf_tokenizer</span><span class="p">,</span> <span class="n">max_n</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">learn</span><span class="o">.</span><span class="n">show_results</span><span class="p">(</span><span class="n">hf_tokenizer</span><span class="o">=</span><span class="n">hf_tokenizer</span><span class="p">,</span> <span class="n">max_n</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
 </pre></div>
 
     </div>
@@ -377,9 +375,9 @@ You should probably TRAIN this model on a down-stream task to be able to use it 
     </tr>
     <tr>
       <th>1</th>
-      <td>it seems evident from this adaptation that he did not. not only did he leave the plot behind, he made up his own! the things that he chose to leave in were so ridiculously unbelievable that i was happy he chose to leave out some of the most important parts of the novel. the plot was hazy, inconsistent and choppy to say the least. i don't want to say anything mean - spirited about the actors, but they can't act! dickens is difficult, of course, but this is pathetic! micawber was nothing more than a mid - nineteenth century kramer, and the less said about betsy trotwood the better! if you want to see the real copperfield, watch the wonderful 1999 bbc adaptation. as for the screenplay writer, i think he read the cliff's notes!</td>
-      <td>negative</td>
-      <td>negative</td>
+      <td>highly enjoyable, very imaginative, and filmic fairytale all rolled into one, stardust tells the story of a young man living outside a fantasy world going inside it to retrieve a bit of a fallen star only to find the star is alive, young, and beautiful. a kingdom whose king is about to die has said king unleash a competition on his several sons to see who can retrieve a ruby first to be king whilst a trio of witches want the star to carve up and use to keep them young. these three plot threads weave intricately together throughout the entire picture blended with good acting, dazzling special effects, and some solid sentiment and humour as well. stardust is a fun film and has some fun performances from the likes of claire danes as the star ( i could gaze at her for quite some time ) to michelle pfeiffer ( i could gaze at her at full magical powers even longer ) playing the horrible witch to robert deniro playing a nancy - boy air pirate to perfection. charlie cox as the lead tristan is affable and credible and we get some very good work from a group of guys playing the sons out to be king who are constantly and consistently trying to kill off each other. mark strong, jason flemyng, and ruppert everett plays their roles well in both life and death ( loved this whole thread as well ). peter o'toole plays the dying killer daddy and watch for funny man ricky gervais who made me laugh more than anything in the entire film in his brief five minutes ( nice feet ). but the real power in the film is the novel by neil gaiman and the script made from his creative and fertile mind. stardust creates its own mythology and its own world and it works.</td>
+      <td>positive</td>
+      <td>positive</td>
     </tr>
   </tbody>
 </table>
@@ -395,7 +393,13 @@ You should probably TRAIN this model on a down-stream task to be able to use it 
 
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="&#10071;-Updates">&#10071; Updates<a class="anchor-link" href="#&#10071;-Updates"> </a></h2><p><strong>08/13/2020</strong></p>
+<h2 id="&#10071;-Updates">&#10071; Updates<a class="anchor-link" href="#&#10071;-Updates"> </a></h2><p><strong>08/20/2020</strong></p>
+<ul>
+<li>Updated everything to work latest version of fastai2 (tested against 0.0.30)</li>
+<li>Added batch-time padding, so that by default now, <a href="/blurr/data-core#HF_TokenizerTransform"><code>HF_TokenizerTransform</code></a> doesn't add any padding tokens and all huggingface inputs are padded simply to the max sequence length in each batch rather than to the max length (passed in and/or acceptable to the model).  This should create efficiencies across the board, from memory consumption to GPU utilization.  The old tried and true method of padding during tokenization requires you to pass in <code>padding='max_length</code> to <a href="/blurr/data-core#HF_TextBlock"><code>HF_TextBlock</code></a>.</li>
+<li>Removed code to remove fastai2 @patched summary methods which had previously conflicted with a couple of the huggingface transformers</li>
+</ul>
+<p><strong>08/13/2020</strong></p>
 <ul>
 <li>Updated everything to work latest transformers and fastai</li>
 <li>Reorganized code to bring it more inline with how huggingface separates out their "tasks".</li>

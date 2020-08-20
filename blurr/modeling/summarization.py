@@ -50,11 +50,11 @@ class HF_SummarizationModelCallback(HF_BaseModelCallback):
 
         self.do_setup = False
 
-    def begin_fit(self): self.setup()
+    def before_fit(self): self.setup()
 
 
     # --- batch begin/after phases ---
-    def begin_batch(self): self.hf_loss = None
+    def before_batch(self): self.hf_loss = None
 
     def after_pred(self):
         # the "labels" key will only be included in the input dictionary *IF* we are training with target labels,
@@ -83,7 +83,7 @@ class HF_SummarizationModelCallback(HF_BaseModelCallback):
 
 
     # --- validation begin/after phases ---
-    def begin_validate(self): self.generated_ids, self.refernce_ids = [], []
+    def before_validate(self): self.generated_ids, self.refernce_ids = [], []
 
     def after_validate(self):
         # are there rouge metrics to calculate?
