@@ -18,7 +18,7 @@ pip install -e ".[dev]"
 The initial release includes everything you need for sequence classification and question answering tasks.  Support for token classification and summarization are incoming. Please check the documentation for more thorough examples of how to use this package.
 
 The following two packages need to be installed for blurr to work:
-1. fastai2 (see http://dev.fast.ai/ for installation instructions)
+1. fastai2 (see http://docs.fast.ai/ for installation instructions)
 2. huggingface transformers (see https://huggingface.co/transformers/installation.html for details)
 
 ### Imports
@@ -26,13 +26,13 @@ The following two packages need to be installed for blurr to work:
 ```python
 import torch
 from transformers import *
-from fastai2.text.all import *
+from fastai.text.all import *
 
 from blurr.data.all import *
 from blurr.modeling.all import *
 ```
 
-### Get your data 💾
+### Get your data
 
 ```python
 path = untar_data(URLs.IMDB_SAMPLE)
@@ -41,7 +41,7 @@ model_path = Path('models')
 imdb_df = pd.read_csv(path/'texts.csv')
 ```
 
-### Get your 🤗 huggingface objects
+### Get your 🤗 objects
 
 ```python
 task = HF_TASKS_AUTO.SequenceClassification
@@ -57,7 +57,7 @@ hf_arch, hf_config, hf_tokenizer, hf_model = BLURR_MODEL_HELPER.get_hf_objects(p
     You should probably TRAIN this model on a down-stream task to be able to use it for predictions and inference.
 
 
-### Build your 🧱🧱🧱 DataBlock 🧱🧱🧱 and your DataLoaders
+### Build your Data 🧱 and your DataLoaders
 
 ```python
 # single input
@@ -91,14 +91,14 @@ dls.show_batch(hf_tokenizer=hf_tokenizer, max_n=2)
     </tr>
     <tr>
       <th>1</th>
-      <td>" national treasure " ( 2004 ) is a thoroughly misguided hodge - podge of plot entanglements that borrow from nearly every cloak and dagger government conspiracy cliche that has ever been written. the film stars nicholas cage as benjamin franklin gates ( how precious is that, i ask you? ) ; a seemingly normal fellow who, for no other reason than being of a lineage of like - minded misguided fortune hunters, decides to steal a'national treasure'that has been hidden by the united states founding fathers. after a bit of subtext and background that plays laughably ( unintentionally ) like indiana jones meets the patriot, the film degenerates into one misguided whimsy after another attempting to create a'stanley goodspeed'regurgitation of nicholas cage and launch the whole convoluted mess forward with a series of high octane, but disconnected misadventures. &lt; br / &gt; &lt; br / &gt; the relevancy and logic to having george washington and his motley crew of patriots burying a king's ransom someplace on native soil, and then, going through the meticulous plan of leaving clues scattered throughout u. s. currency art work, is something that director jon turteltaub never quite gets around to explaining. couldn't washington found better usage for such wealth during the start up of the country? hence, we are left with a mystery built on top of an enigma that is already on shaky ground by the time ben appoints himself the new custodian of this untold wealth. ben's intentions are noble if confusing. he's set on protecting the treasure. for who and when? your guess is as good as mine. &lt; br / &gt; &lt; br / &gt; but there are a few problems with ben's crusade. first up, his friend, ian holmes ( sean bean ) decides that he can't wait for ben to make up his mind about stealing the declaration of independence from the national archives ( oh, yeah brilliant idea! ). presumably, the back of that famous document holds the secret answer to the ultimate fortune. so ian tries to kill ben. the assassination attempt is, of course, unsuccessful, if overly melodramatic. it also affords ben the opportunity to pick up, and pick on, the very sultry curator of the archives, abigail chase ( diane kruger ). she thinks ben is clearly a nut at least at the beginning. but true to action / romance form</td>
+      <td>&lt; br / &gt; &lt; br / &gt; i saw this on the sci - fi channel. it came on right after the first one. for some reason this movie kept me interested. i don't know why, stop asking. &lt; br / &gt; &lt; br / &gt; - - - spoilers - - - okay... it was cheesy how this guy got involved with the making of the movie. in the first movie, he had a " reason " to kill people, but in this sequal, half of the killings / attempted killings were basicly for no reason. stanley killed the director due to creative differences, he captured the co - writer due to creative differences, but what was the deal with trying to kill off the cast? no cast, no movie. he wanted it to " look real when they died "? if this was supposed to be such a high budget movie, use the special effects, man. of course like the first one, the captured girl gets away, and stanley ends up getting messed up, and dissapears. woooooow ( sarcasm ). this movie had potential. and the saddest thing of all... the really sad part... i would watch a " cabin by the lake 3 ". only because i like judd nelson, and he's the only good part about this sequal.</td>
       <td>negative</td>
     </tr>
   </tbody>
 </table>
 
 
-### ... and train 🚂
+### ... and 🚂
 
 ```python
 #slow
@@ -132,24 +132,24 @@ learn.fit_one_cycle(3, lr_max=1e-3)
   <tbody>
     <tr>
       <td>0</td>
-      <td>0.644810</td>
-      <td>0.584691</td>
-      <td>0.655000</td>
-      <td>00:32</td>
+      <td>0.643160</td>
+      <td>0.432290</td>
+      <td>0.835000</td>
+      <td>00:30</td>
     </tr>
     <tr>
       <td>1</td>
-      <td>0.364105</td>
-      <td>0.297011</td>
-      <td>0.900000</td>
-      <td>00:32</td>
+      <td>0.331133</td>
+      <td>0.440774</td>
+      <td>0.850000</td>
+      <td>00:30</td>
     </tr>
     <tr>
       <td>2</td>
-      <td>0.261818</td>
-      <td>0.298283</td>
-      <td>0.880000</td>
-      <td>00:32</td>
+      <td>0.269965</td>
+      <td>0.315455</td>
+      <td>0.900000</td>
+      <td>00:31</td>
     </tr>
   </tbody>
 </table>
@@ -183,9 +183,9 @@ learn.show_results(hf_tokenizer=hf_tokenizer, max_n=2)
     </tr>
     <tr>
       <th>1</th>
-      <td>highly enjoyable, very imaginative, and filmic fairytale all rolled into one, stardust tells the story of a young man living outside a fantasy world going inside it to retrieve a bit of a fallen star only to find the star is alive, young, and beautiful. a kingdom whose king is about to die has said king unleash a competition on his several sons to see who can retrieve a ruby first to be king whilst a trio of witches want the star to carve up and use to keep them young. these three plot threads weave intricately together throughout the entire picture blended with good acting, dazzling special effects, and some solid sentiment and humour as well. stardust is a fun film and has some fun performances from the likes of claire danes as the star ( i could gaze at her for quite some time ) to michelle pfeiffer ( i could gaze at her at full magical powers even longer ) playing the horrible witch to robert deniro playing a nancy - boy air pirate to perfection. charlie cox as the lead tristan is affable and credible and we get some very good work from a group of guys playing the sons out to be king who are constantly and consistently trying to kill off each other. mark strong, jason flemyng, and ruppert everett plays their roles well in both life and death ( loved this whole thread as well ). peter o'toole plays the dying killer daddy and watch for funny man ricky gervais who made me laugh more than anything in the entire film in his brief five minutes ( nice feet ). but the real power in the film is the novel by neil gaiman and the script made from his creative and fertile mind. stardust creates its own mythology and its own world and it works.</td>
-      <td>positive</td>
-      <td>positive</td>
+      <td>first of all ; it's very dilettantish to try describe way of history only from positions of guns, germs and steel. the same tried to do marxists from economical positions. &lt; br / &gt; &lt; br / &gt; the reason of western success can't be just dumb luck, the advantages of domesticated plants and animals. we see, that all around the world any advantages and bonuses are complete useless if they aren't wisely managed. in the japan there isn't huge natural resources, but japan is one of the top world economies, the same situation in singapore, but in nigeria, country with rich oil resources, there are only middle - low success. both of this nations had and still have access to western technology and inventions, but why such gap? &lt; br / &gt; &lt; br / &gt; in the end of movie daimond declared, that it's very important to understand factors of guns, germs and steel, to understand. maybe the main factor of world's difference is not geography, but people ability to understand and use things? the mental ability to understand. and in this case geography is only subordinated.</td>
+      <td>negative</td>
+      <td>negative</td>
     </tr>
   </tbody>
 </table>
@@ -194,7 +194,7 @@ learn.show_results(hf_tokenizer=hf_tokenizer, max_n=2)
 ## ❗ Updates
 
 **08/20/2020** 
-* Updated everything to work latest version of fastai2 (tested against 0.0.30)
+* Updated everything to work latest version of fastai (tested against 2.0.0)
 * Added batch-time padding, so that by default now, `HF_TokenizerTransform` doesn't add any padding tokens and all huggingface inputs are padded simply to the max sequence length in each batch rather than to the max length (passed in and/or acceptable to the model).  This should create efficiencies across the board, from memory consumption to GPU utilization.  The old tried and true method of padding during tokenization requires you to pass in `padding='max_length` to `HF_TextBlock`.
 * Removed code to remove fastai2 @patched summary methods which had previously conflicted with a couple of the huggingface transformers
 

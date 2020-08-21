@@ -11,4 +11,4 @@ from .core import *
 
 import torch
 from transformers import *
-from fastai2.text.all import *
+from fastai.text.all import *

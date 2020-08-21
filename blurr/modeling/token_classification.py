@@ -5,7 +5,7 @@ __all__ = ['calculate_token_class_metrics', 'HF_TokenClassCallback']
 # Cell
 import ast, torch
 from transformers import *
-from fastai2.text.all import *
+from fastai.text.all import *
 
 from ..data.all import *
 from .core import *

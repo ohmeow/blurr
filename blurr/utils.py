@@ -9,7 +9,7 @@ from enum import Enum
 
 import torch
 from transformers import *
-from fastai2.text.all import *
+from fastai.text.all import *
 
 # Cell
 def str_to_class(classname):

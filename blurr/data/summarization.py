@@ -8,7 +8,7 @@ from functools import reduce
 
 import torch
 from transformers import *
-from fastai2.text.all import *
+from fastai.text.all import *
 
 from ..utils import *
 from .core import *

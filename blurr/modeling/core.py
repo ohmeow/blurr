@@ -6,8 +6,8 @@ __all__ = ['hf_splitter', 'HF_BaseModelWrapper', 'HF_BaseModelCallback']
 import torch, nlp
 from transformers import *
 
-from fastai2.text.all import *
-from fastai2.callback.hook import _print_shapes
+from fastai.text.all import *
+from fastai.callback.hook import _print_shapes
 
 from ..utils import *
 from ..data.core import *

@@ -11,7 +11,7 @@ from .core import *
 
 import torch
 from transformers import *
-from fastai2.text.all import *
+from fastai.text.all import *
 
 # Cell
 def pre_process_squad(row, hf_arch, hf_tokenizer):
