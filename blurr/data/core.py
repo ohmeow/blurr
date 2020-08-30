@@ -87,9 +87,12 @@ def pad_hf_inputs(samples, arch, hf_input_idxs=[0], pad_idx=0, pad_first=False):
                 else: tok_id = 0
 
                 if (pad_first):
-                    new_val = torch.cat((sample[hf_input_idx][key].new_full((max_len,), tok_id), sample[hf_input_idx][key]), dim=0)[-max_len:]
+                    new_val = torch.cat((sample[hf_input_idx][key].new_full((max_len,), tok_id),
+                                         sample[hf_input_idx][key]), dim=0)[-max_len:]
                 else:
-                    new_val = torch.cat((sample[hf_input_idx][key], sample[hf_input_idx][key].new_full((max_len,), tok_id)), dim=0)[:max_len]
+                    new_val = torch.cat((sample[hf_input_idx][key],
+                                         sample[hf_input_idx][key].new_full((max_len,), tok_id)), dim=0)[:max_len]
+
                 samples[idx][hf_input_idx][key] = new_val[:max_len]
 
     return samples
