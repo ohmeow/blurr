@@ -93,7 +93,12 @@ class HF_TokenClassCallback(HF_BaseModelCallback):
         for k in self.custom_metrics_dict.keys():
             self.custom_metrics_dict[k] = calculate_token_class_metrics(targs, preds, metric_key=k)
 
-        self.learn.token_classification_report = calculate_token_class_metrics(targs, preds, 'classification_report')
+        try:
+            self.learn.token_classification_report = calculate_token_class_metrics(targs,
+                                                                                   preds,
+                                                                                   'classification_report')
+        except ZeroDivisionError as err:
+            print(f'Couldn\'t calcualte classification report: {err}')
 
 
     # --- for ValueMetric metrics ---
@@ -109,11 +114,15 @@ def show_results(x:HF_TokenClassInput, y:HF_TokenTensorCategory, samples, outs, 
 
     res = L()
     for inp, trg, sample, pred in zip(x[0], y, samples, outs):
-        inp_trg_preds = [ (hf_tokenizer.ids_to_tokens[tok_id.item()], lbl_id.item(), pred_lbl)
-                         for tok_id, lbl_id, pred_lbl in zip(inp, trg, ast.literal_eval(pred[0]))
-                         if (tok_id not in hf_tokenizer.all_special_ids) and lbl_id != -100 ]
+        # recontstruct the string and split on space to get back your pre-tokenized list of tokens
+        toks = hf_tokenizer.convert_ids_to_tokens(inp, skip_special_tokens=True)
+        pretokenized_toks =  hf_tokenizer.convert_tokens_to_string(toks).split()
 
-        res.append([f'{[ (itp[0], lbl, itp[2]) for itp, lbl in zip(inp_trg_preds, ast.literal_eval(sample[1])) ]}'])
+        # get predictions for subtokens that aren't ignored (e.g. special toks and token parts)
+        pred_labels = [ pred_lbl for lbl_id, pred_lbl in zip(trg, ast.literal_eval(pred[0])) if lbl_id != -100 ]
+
+        trg_labels = ast.literal_eval(sample[1])
+        res.append([f'{[ (tok, trg, pred) for tok, pred, trg in zip(pretokenized_toks, pred_labels, trg_labels) ]}'])
 
     display_df(pd.DataFrame(res, columns=['token / target label / predicted label'])[:max_n])
     return ctxs
