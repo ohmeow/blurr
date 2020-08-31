@@ -107,7 +107,7 @@ nb_path: "nbs/01_data-core.ipynb"
 
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p><a href="/blurr/data-core#HF_TokenizerTransform"><code>HF_TokenizerTransform</code></a> was inspired by <a href="http://dev.fast.ai/tutorial.transformers">this article</a>.  It handles both the tokenization and numericalization traditionally split apart in the fastai text DataBlock API.  For huggingface tokenizers that require a prefix space, it will be included automatically.</p>
+<p><a href="/blurr/data-core.html#HF_TokenizerTransform"><code>HF_TokenizerTransform</code></a> was inspired by <a href="http://dev.fast.ai/tutorial.transformers">this article</a>.  It handles both the tokenization and numericalization traditionally split apart in the fastai text DataBlock API.  For huggingface tokenizers that require a prefix space, it will be included automatically.</p>
 <p>You can pass a string or list into this Transform, the later being for tasks that require two input sequneces (e.g. question answer tasks for example require a "context" and a "question" sequence).</p>
 <p>In order to make the tokenization/numericalization process more efficient, this transform has been updated to return a <code>transformers.tokenization_utils_base.BatchEncoding</code> dictionary with all the required transformer inputs (e.g. input_ids, attention_mask, etc...). Previously, it only returned the raw input_ids for <em>each</em> sequence which were then put together to come up with all the required inputs and padding in a <code>before_batch</code> transform.</p>
 
@@ -150,7 +150,7 @@ The argument must be an iterable if specified.</p>
 
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>A <a href="/blurr/data-core#HF_BaseInput"><code>HF_BaseInput</code></a> object is returned from the <code>decodes</code> method of <a href="/blurr/data-core#HF_BatchTransform"><code>HF_BatchTransform</code></a> as a mean to customize @typedispatched functions like <code>DataLoaders.show_batch</code> and <code>Learner.show_results</code>.  It encapsulates a list with <em>one</em> item, the input_ids for the sequence.</p>
+<p>A <a href="/blurr/data-core.html#HF_BaseInput"><code>HF_BaseInput</code></a> object is returned from the <code>decodes</code> method of <a href="/blurr/data-core.html#HF_BatchTransform"><code>HF_BatchTransform</code></a> as a mean to customize @typedispatched functions like <code>DataLoaders.show_batch</code> and <code>Learner.show_results</code>.  It encapsulates a list with <em>one</em> item, the input_ids for the sequence.</p>
 
 </div>
 </div>
@@ -173,7 +173,7 @@ The argument must be an iterable if specified.</p>
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h2 id="HF_BatchTransform" class="doc_header"><code>class</code> <code>HF_BatchTransform</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/data/core.py#L54" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>HF_BatchTransform</code>(<strong><code>hf_arch</code></strong>, <strong><code>hf_tokenizer</code></strong>, <strong><code>hf_input_return_type</code></strong>=<em><code>'HF_BaseInput'</code></em>, <strong>**<code>kwargs</code></strong>) :: <code>Transform</code></p>
+<h2 id="HF_BatchTransform" class="doc_header"><code>class</code> <code>HF_BatchTransform</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/data/core.py#L54" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>HF_BatchTransform</code>(<strong><code>hf_arch</code></strong>, <strong><code>hf_tokenizer</code></strong>, <strong><code>hf_input_return_type</code></strong>=<em><code>HF_BaseInput</code></em>, <strong>**<code>kwargs</code></strong>) :: <code>Transform</code></p>
 </blockquote>
 <p>Handles everything you need to assemble a mini-batch of inputs and targets, as well as decode
 HF_TokenizerTransform inputs</p>
@@ -208,10 +208,10 @@ HF_TokenizerTransform inputs</p>
 <div class="output_markdown rendered_html output_subarea ">
 <h4 id="pad_hf_inputs" class="doc_header"><code>pad_hf_inputs</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/data/core.py#L68" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>pad_hf_inputs</code>(<strong><code>samples</code></strong>, <strong><code>arch</code></strong>, <strong><code>hf_input_idxs</code></strong>=<em><code>[0]</code></em>, <strong><code>pad_idx</code></strong>=<em><code>0</code></em>, <strong><code>pad_first</code></strong>=<em><code>False</code></em>)</p>
 </blockquote>
-<p>Add this to your batch transforms if you are using dynamic padding with <a href="/blurr/data-core#HF_TokenizerTransform"><code>HF_TokenizerTransform</code></a>
+<p>Add this to your batch transforms if you are using dynamic padding with <a href="/blurr/data-core.html#HF_TokenizerTransform"><code>HF_TokenizerTransform</code></a>
 (e.g., padding is set to anything except 'max_length') to ensure all HF tensors are sized to longest input
 in the batch.</p>
-<p>Note: This is automatically included as necessary by <a href="/blurr/data-core#HF_TextBlock"><code>HF_TextBlock</code></a></p>
+<p>Note: This is automatically included as necessary by <a href="/blurr/data-core.html#HF_TextBlock"><code>HF_TextBlock</code></a></p>
 
 </div>
 
@@ -241,7 +241,7 @@ in the batch.</p>
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h2 id="HF_TextBlock" class="doc_header"><code>class</code> <code>HF_TextBlock</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/data/core.py#L98" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>HF_TextBlock</code>(<strong><code>hf_arch</code></strong>, <strong><code>hf_tokenizer</code></strong>, <strong><code>hf_tok_tfm</code></strong>=<em><code>None</code></em>, <strong><code>max_length</code></strong>=<em><code>512</code></em>, <strong><code>padding</code></strong>=<em><code>True</code></em>, <strong><code>truncation</code></strong>=<em><code>True</code></em>, <strong><code>is_pretokenized</code></strong>=<em><code>False</code></em>, <strong><code>hf_batch_tfm</code></strong>=<em><code>None</code></em>, <strong><code>hf_input_return_type</code></strong>=<em><code>'HF_BaseInput'</code></em>, <strong><code>hf_input_idxs</code></strong>=<em><code>[0]</code></em>, <strong><code>dl_type</code></strong>=<em><code>'SortedDL'</code></em>, <strong><code>tok_kwargs</code></strong>=<em><code>{}</code></em>, <strong><code>batch_kwargs</code></strong>=<em><code>{}</code></em>, <strong>**<code>kwargs</code></strong>) :: <code>TransformBlock</code></p>
+<h2 id="HF_TextBlock" class="doc_header"><code>class</code> <code>HF_TextBlock</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/data/core.py#L101" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>HF_TextBlock</code>(<strong><code>hf_arch</code></strong>, <strong><code>hf_tokenizer</code></strong>, <strong><code>hf_tok_tfm</code></strong>=<em><code>None</code></em>, <strong><code>max_length</code></strong>=<em><code>512</code></em>, <strong><code>padding</code></strong>=<em><code>True</code></em>, <strong><code>truncation</code></strong>=<em><code>True</code></em>, <strong><code>is_pretokenized</code></strong>=<em><code>False</code></em>, <strong><code>hf_batch_tfm</code></strong>=<em><code>None</code></em>, <strong><code>hf_input_return_type</code></strong>=<em><code>HF_BaseInput</code></em>, <strong><code>hf_input_idxs</code></strong>=<em><code>[0]</code></em>, <strong><code>dl_type</code></strong>=<em><code>SortedDL</code></em>, <strong><code>tok_kwargs</code></strong>=<em><code>{}</code></em>, <strong><code>batch_kwargs</code></strong>=<em><code>{}</code></em>, <strong>**<code>kwargs</code></strong>) :: <code>TransformBlock</code></p>
 </blockquote>
 <p>A basic wrapper that links defaults transforms for the data block API</p>
 
@@ -257,7 +257,7 @@ in the batch.</p>
 
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p><a href="/blurr/data-core#HF_TextBlock"><code>HF_TextBlock</code></a> has been dramatically simplified from it's predecessor.  It handles setting up your <a href="/blurr/data-core#HF_TokenizerTransform"><code>HF_TokenizerTransform</code></a> and <a href="/blurr/data-core#HF_BatchTransform"><code>HF_BatchTransform</code></a> transform regardless of data source (e.g., this will work with files, DataFrames, whatever).</p>
+<p><a href="/blurr/data-core.html#HF_TextBlock"><code>HF_TextBlock</code></a> has been dramatically simplified from it's predecessor.  It handles setting up your <a href="/blurr/data-core.html#HF_TokenizerTransform"><code>HF_TokenizerTransform</code></a> and <a href="/blurr/data-core.html#HF_BatchTransform"><code>HF_BatchTransform</code></a> transform regardless of data source (e.g., this will work with files, DataFrames, whatever).</p>
 
 </div>
 </div>
@@ -386,7 +386,7 @@ in the batch.</p>
 
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>There are a bunch of ways we can get at the four huggingface elements we need (e.g., architecture name, tokenizer, config, and model).  We can just create them directly, or we can use one of the helper methods available via <a href="/blurr/utils#BLURR_MODEL_HELPER"><code>BLURR_MODEL_HELPER</code></a>.</p>
+<p>There are a bunch of ways we can get at the four huggingface elements we need (e.g., architecture name, tokenizer, config, and model).  We can just create them directly, or we can use one of the helper methods available via <a href="/blurr/utils.html#BLURR_MODEL_HELPER"><code>BLURR_MODEL_HELPER</code></a>.</p>
 
 </div>
 </div>
@@ -496,7 +496,7 @@ in the batch.</p>
 
 
 <div class="output_text output_subarea output_execute_result">
-<pre>(2, 4, torch.Size([4, 273]), 4)</pre>
+<pre>(2, 4, torch.Size([4, 512]), 4)</pre>
 </div>
 
 </div>
@@ -584,8 +584,8 @@ in the batch.</p>
     </tr>
     <tr>
       <th>1</th>
-      <td>The only explanation I can muster as to why this film isn't widely distributed is because it hits too close to home for some. This movie was a genuine happy surprise, the satire is genius. This film turns the lights on in the dark that is organized religion and big media, and the roaches scurry for cover. Rent the DVD and watch it for yourself if you haven't yet, this film succeeds where many have failed (Dogma comes to mind) to poke it's nose under the tent, both by using humor and very clever analogies coupled with telling backdrops and locations. Can't comment in depth without revealing some significant spoilers, there are some surprises in this film which even the seasoned film buff will be caught off guard by.</td>
-      <td>positive</td>
+      <td>WARNING! This review will reveal the ending of the movie, "Scoop." If you don't want to know how the movie ends, don't read this review!&lt;br /&gt;&lt;br /&gt;"Scoop" is so bad you'll think "Annie Hall" was a fluke.&lt;br /&gt;&lt;br /&gt;It gets one star because you get to see Hugh Jackman's naked chest. That's the only thing "Scoop" has going for it.&lt;br /&gt;&lt;br /&gt;Woody Allen's misogyny, and his fixation on women young enough, at this point, to be his granddaughter, has crippled any ability to make movies he may have had at any point.&lt;br /&gt;&lt;br /&gt;The plot seems promising: a ghost, Ian McShane, directs a fluffy headed student, Scarlett Johansson, to investigate whether or not an English Lord, Hugh Jackman, is the notorious Tarot Card Killer of prostitutes. A magician, Woody Allen, helps the girl.&lt;br /&gt;&lt;br /&gt;Promising plot notwithstanding, the movie completely lacks charm, or humor, or atmosphere. It's an amazingly leaden, amateurish effort for someone who has made even one previous film, never mind dozens. Perhaps Allen has had a stroke that has gone unreported in the press.&lt;br /&gt;&lt;br /&gt;Much is made of the fact that unlike in his previous films, Woody Allen, now a septuagenarian, has FINALLY allowed a younger male lead to get the girl.&lt;br /&gt;&lt;br /&gt;Not so. In fact, the plot is constructed in such a way so that the girl gets no one.&lt;br /&gt;&lt;br /&gt;There is an early scene where Johansson, for no reason central to the movie, allows herself to be gotten drunk, and seduced, by a powerful, older director. "Seduced" is a euphemism for what happens. It's a "slam, bam, I've gotta go" kind of moment. It bears no relation to the plot whatsoever, and it cheapens Johansson in the viewer's eye. Why did Allen add that unnecessary scene to the movie? Because it shows a powerful director - like Allen - having sex with the female lead. Allen gets to have his cake and eat it, too.&lt;br /&gt;&lt;br /&gt;Johansson is not yet an actress. She doesn't know how to command the screen except by wearing a tight, low cut top. She imitates Allen in a couple of scenes, and that</td>
+      <td>negative</td>
     </tr>
   </tbody>
 </table>
@@ -691,27 +691,6 @@ in the batch.</p>
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="c1">#     tok = AutoTokenizer.from_pretrained(model_name)</span>
-<span class="c1">#     print(f&#39;=== {model_name} ===&#39;)</span>
-<span class="c1">#     print(f&#39;=== {tok.padding_side} ===&#39;)</span>
-<span class="c1">#     print(f&#39;=== {tok.pad_token_id} ===&#39;)</span>
-<span class="c1">#     print(tok([&#39;hi&#39;, &#39;hello everyone. its good to be here&#39;], [&#39;yo&#39;, &#39;yo&#39;], padding=&#39;max_length&#39;, max_length=128))</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-</div>
-    {% endraw %}
-
-    {% raw %}
-    
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-
-<div class="inner_cell">
-    <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">path</span> <span class="o">=</span> <span class="n">untar_data</span><span class="p">(</span><span class="n">URLs</span><span class="o">.</span><span class="n">IMDB_SAMPLE</span><span class="p">)</span>
 
 <span class="n">model_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="s1">&#39;models&#39;</span><span class="p">)</span>
@@ -734,8 +713,9 @@ in the batch.</p>
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="c1">#hide_output</span>
 <span class="n">task</span> <span class="o">=</span> <span class="n">HF_TASKS_AUTO</span><span class="o">.</span><span class="n">SequenceClassification</span>
-<span class="n">test_results</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="n">bsz</span> <span class="o">=</span> <span class="mi">2</span>
 
+<span class="n">test_results</span> <span class="o">=</span> <span class="p">[]</span>
 <span class="k">for</span> <span class="n">model_name</span> <span class="ow">in</span> <span class="n">pretrained_model_names</span><span class="p">:</span>
     <span class="n">error</span><span class="o">=</span><span class="kc">None</span>
     
@@ -745,22 +725,23 @@ in the batch.</p>
     
     <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;architecture:</span><span class="se">\t</span><span class="si">{</span><span class="n">hf_arch</span><span class="si">}</span><span class="se">\n</span><span class="s1">tokenizer:</span><span class="se">\t</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">hf_tokenizer</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
     
-    <span class="n">blocks</span> <span class="o">=</span> <span class="p">(</span><span class="n">HF_TextBlock</span><span class="p">(</span><span class="n">hf_arch</span><span class="o">=</span><span class="n">hf_arch</span><span class="p">,</span> <span class="n">hf_tokenizer</span><span class="o">=</span><span class="n">hf_tokenizer</span><span class="p">,</span> <span class="n">max_length</span><span class="o">=</span><span class="mi">128</span><span class="p">),</span> <span class="n">CategoryBlock</span><span class="p">)</span>
+    <span class="n">blocks</span> <span class="o">=</span> <span class="p">(</span><span class="n">HF_TextBlock</span><span class="p">(</span><span class="n">hf_arch</span><span class="o">=</span><span class="n">hf_arch</span><span class="p">,</span> <span class="n">hf_tokenizer</span><span class="o">=</span><span class="n">hf_tokenizer</span><span class="p">,</span> <span class="n">padding</span><span class="o">=</span><span class="s1">&#39;max_length&#39;</span><span class="p">,</span> <span class="n">max_length</span><span class="o">=</span><span class="mi">128</span><span class="p">),</span> 
+              <span class="n">CategoryBlock</span><span class="p">)</span>
 
     <span class="n">dblock</span> <span class="o">=</span> <span class="n">DataBlock</span><span class="p">(</span><span class="n">blocks</span><span class="o">=</span><span class="n">blocks</span><span class="p">,</span> 
                        <span class="n">get_x</span><span class="o">=</span><span class="n">ColReader</span><span class="p">(</span><span class="s1">&#39;text&#39;</span><span class="p">),</span> 
                        <span class="n">get_y</span><span class="o">=</span><span class="n">ColReader</span><span class="p">(</span><span class="s1">&#39;label&#39;</span><span class="p">),</span> 
                        <span class="n">splitter</span><span class="o">=</span><span class="n">ColSplitter</span><span class="p">(</span><span class="n">col</span><span class="o">=</span><span class="s1">&#39;is_valid&#39;</span><span class="p">))</span>
     
-    <span class="n">dls</span> <span class="o">=</span> <span class="n">dblock</span><span class="o">.</span><span class="n">dataloaders</span><span class="p">(</span><span class="n">imdb_df</span><span class="p">,</span> <span class="n">bs</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span> 
+    <span class="n">dls</span> <span class="o">=</span> <span class="n">dblock</span><span class="o">.</span><span class="n">dataloaders</span><span class="p">(</span><span class="n">imdb_df</span><span class="p">,</span> <span class="n">bs</span><span class="o">=</span><span class="n">bsz</span><span class="p">)</span> 
     <span class="n">b</span> <span class="o">=</span> <span class="n">dls</span><span class="o">.</span><span class="n">one_batch</span><span class="p">()</span>
     
     <span class="k">try</span><span class="p">:</span>
         <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;*** TESTING DataLoaders ***</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
         <span class="n">test_eq</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">b</span><span class="p">),</span> <span class="mi">2</span><span class="p">)</span>
-        <span class="n">test_eq</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">b</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;input_ids&#39;</span><span class="p">]),</span> <span class="mi">4</span><span class="p">)</span>
-        <span class="n">test_eq</span><span class="p">(</span><span class="n">b</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;input_ids&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Size</span><span class="p">([</span><span class="mi">4</span><span class="p">,</span> <span class="mi">128</span><span class="p">]))</span>
-        <span class="n">test_eq</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">b</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span> <span class="mi">4</span><span class="p">)</span>
+        <span class="n">test_eq</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">b</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;input_ids&#39;</span><span class="p">]),</span> <span class="n">bsz</span><span class="p">)</span>
+        <span class="n">test_eq</span><span class="p">(</span><span class="n">b</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;input_ids&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Size</span><span class="p">([</span><span class="n">bsz</span><span class="p">,</span> <span class="mi">128</span><span class="p">]))</span>
+        <span class="n">test_eq</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">b</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span> <span class="n">bsz</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="p">(</span><span class="nb">hasattr</span><span class="p">(</span><span class="n">hf_tokenizer</span><span class="p">,</span> <span class="s1">&#39;add_prefix_space&#39;</span><span class="p">)):</span>
             <span class="n">test_eq</span><span class="p">(</span><span class="n">dls</span><span class="o">.</span><span class="n">tfms</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;add_prefix_space&#39;</span><span class="p">],</span> <span class="kc">True</span><span class="p">)</span>
@@ -1330,7 +1311,7 @@ in the batch.</p>
 
 
 <div class="output_text output_subarea output_execute_result">
-<pre>(2, torch.Size([4, 170]), torch.Size([4, 7]))</pre>
+<pre>(2, torch.Size([4, 111]), torch.Size([4, 7]))</pre>
 </div>
 
 </div>
@@ -1373,12 +1354,12 @@ in the batch.</p>
   <tbody>
     <tr>
       <th>0</th>
-      <td>looking at it...trying to understand how this profound idiot is dominating this election...bottom line...it's because he pisses off the PC left, close enough.</td>
-      <td>identity_attack;sexual_explicit</td>
+      <td>However, you must agree that Dr. Whom is the better show then either, since it's from oversees and better-aged.</td>
+      <td></td>
     </tr>
     <tr>
       <th>1</th>
-      <td>It takes volunteers and some local 4 to put on events like these... do you realize how few volunteers there are who take on most of the community projects in Anchorage?  Everyone complaining might well think about volunteering themselves!  A few more volunteers in any local endeavor always makes a big difference in enjoyment, burdens and successes.</td>
+      <td>I see nothing wrong with taking the PFD and imposing a tax as a percentage of federal taxes.  I have lived here over 60 years and think we all owe Alaska something.  There are far too many takers.  Of course I am retired, but I am still willing to help this great state.</td>
       <td></td>
     </tr>
   </tbody>
