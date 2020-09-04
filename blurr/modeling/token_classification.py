@@ -33,7 +33,7 @@ class HF_TokenClassCallback(HF_BaseModelCallback):
     def __init__(self, tok_metrics=["accuracy", "precision", "recall", "f1"], **kwargs):
         self.run_before = Recorder
 
-        store_attr(self, 'tok_metrics, kwargs')
+        store_attr(self=self, names='tok_metrics, kwargs')
         self.custom_metrics_dict = { k:None for k in tok_metrics }
 
         self.do_setup = True

@@ -20,8 +20,8 @@ class HF_TokenizerTransform(ItemTransform):
         # gpt2, roberta, bart (and maybe others) tokenizers require a prefix space
         if (hasattr(hf_tokenizer, 'add_prefix_space')): kwargs['add_prefix_space'] = True
 
-        store_attr(self, 'hf_arch, hf_tokenizer, is_pretokenized, max_length, padding, truncation')
-        store_attr(self, 'kwargs')
+        store_attr(self=self, names='hf_arch, hf_tokenizer, is_pretokenized, max_length, padding, truncation')
+        store_attr(self=self, names='kwargs')
 
     def encodes(self, inp):
         """Supports passing in one or two input sequences, or a list[str] (the later is common for token
@@ -56,7 +56,7 @@ class HF_BatchTransform(Transform):
     HF_TokenizerTransform inputs
     """
     def __init__(self, hf_arch, hf_tokenizer, hf_input_return_type=HF_BaseInput, **kwargs):
-        store_attr(self, 'hf_arch, hf_tokenizer, hf_input_return_type, kwargs')
+        store_attr(self=self, names='hf_arch, hf_tokenizer, hf_input_return_type, kwargs')
 
     def encodes(self, samples): return samples
 
