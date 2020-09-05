@@ -110,7 +110,7 @@ def summarization_splitter(m, arch):
     """Custom param splitter for summarization models"""
     model = m.hf_model if (hasattr(m, 'hf_model')) else m
 
-    if (arch == 'bart'):
+    if arch in ['bart', 'pegasus']:
         embeds = nn.Sequential(
             model.model.shared,
             model.model.encoder.embed_positions,
@@ -156,6 +156,9 @@ def blurr_summarize(self:Learner, inp, **kwargs):
     gen_texts = self.model.hf_model.generate(input_ids, **text_gen_kwargs)
     outputs = [ hf_tokenizer.decode(txt, skip_special_tokens=True, clean_up_tokenization_spaces=False)
                for txt in gen_texts ]
+
+    if hf_textblock_tfm.hf_arch == 'pegasus':
+        outputs = [o.replace('<n>', ' ') for o in outputs]
 
     return outputs
 
