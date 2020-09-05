@@ -29,7 +29,7 @@ class HF_SummarizationModelCallback(HF_BaseModelCallback):
     def __init__(self, rouge_metrics=["rouge1", "rouge2", "rougeL"], text_gen_kwargs={}, **kwargs):
         self.run_before = Recorder
 
-        store_attr(self, 'rouge_metrics, text_gen_kwargs, kwargs')
+        store_attr(self=self, names='rouge_metrics, text_gen_kwargs, kwargs')
         self.custom_metrics_dict = { k:None for k in rouge_metrics }
 
         self.do_setup = True

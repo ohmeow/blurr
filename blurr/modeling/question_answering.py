@@ -24,7 +24,7 @@ class MultiTargetLoss(Module):
                  weights=[1, 1], reduction='mean'):
 
         loss_funcs = [ cls(reduction=reduction, **kwargs) for cls, kwargs in zip(loss_classes, loss_classes_kwargs) ]
-        store_attr(self, 'loss_funcs, weights')
+        store_attr(self=self, names='loss_funcs, weights')
         self._reduction = reduction
 
     # custom loss function must have either a reduction attribute or a reduction argument (like all fastai and
