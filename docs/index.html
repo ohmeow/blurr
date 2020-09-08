@@ -393,10 +393,15 @@ You should probably TRAIN this model on a down-stream task to be able to use it 
 
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="&#10071;-Updates">&#10071; Updates<a class="anchor-link" href="#&#10071;-Updates"> </a></h2><p><strong>08/20/2020</strong></p>
+<h2 id="&#10071;-Updates">&#10071; Updates<a class="anchor-link" href="#&#10071;-Updates"> </a></h2><p><strong>09/07/2020</strong></p>
+<ul>
+<li>Added tests for question/answer and summarization transformer models</li>
+<li>Updated summarization to support BART, T5, and Pegasus</li>
+</ul>
+<p><strong>08/20/2020</strong></p>
 <ul>
 <li>Updated everything to work latest version of fastai (tested against 2.0.0)</li>
-<li>Added batch-time padding, so that by default now, <a href="/blurr/data-core#HF_TokenizerTransform"><code>HF_TokenizerTransform</code></a> doesn't add any padding tokens and all huggingface inputs are padded simply to the max sequence length in each batch rather than to the max length (passed in and/or acceptable to the model).  This should create efficiencies across the board, from memory consumption to GPU utilization.  The old tried and true method of padding during tokenization requires you to pass in <code>padding='max_length</code> to <a href="/blurr/data-core#HF_TextBlock"><code>HF_TextBlock</code></a>.</li>
+<li>Added batch-time padding, so that by default now, <a href="/blurr/data-core.html#HF_TokenizerTransform"><code>HF_TokenizerTransform</code></a> doesn't add any padding tokens and all huggingface inputs are padded simply to the max sequence length in each batch rather than to the max length (passed in and/or acceptable to the model).  This should create efficiencies across the board, from memory consumption to GPU utilization.  The old tried and true method of padding during tokenization requires you to pass in <code>padding='max_length</code> to <a href="/blurr/data-core.html#HF_TextBlock"><code>HF_TextBlock</code></a>.</li>
 <li>Removed code to remove fastai2 @patched summary methods which had previously conflicted with a couple of the huggingface transformers</li>
 </ul>
 <p><strong>08/13/2020</strong></p>
@@ -411,7 +416,7 @@ You should probably TRAIN this model on a down-stream task to be able to use it 
 </ul>
 <p><strong>06/27/2020</strong></p>
 <ul>
-<li>Simplified the <a href="/blurr/utils#BLURR_MODEL_HELPER.get_hf_objects"><code>BLURR_MODEL_HELPER.get_hf_objects</code></a> method to support a wide range of options in terms of building the necessary huggingface objects (architecture, config, tokenizer, and model).  Also added <code>cache_dir</code> for saving pre-trained objects in a custom directory.</li>
+<li>Simplified the <a href="/blurr/utils.html#BLURR_MODEL_HELPER.get_hf_objects"><code>BLURR_MODEL_HELPER.get_hf_objects</code></a> method to support a wide range of options in terms of building the necessary huggingface objects (architecture, config, tokenizer, and model).  Also added <code>cache_dir</code> for saving pre-trained objects in a custom directory.</li>
 <li>Misc. renaming and cleanup that may break existing code (please see the docs/source if things blow up)</li>
 <li>Added missing required libraries to requirements.txt (e.g., nlp)</li>
 </ul>
@@ -422,16 +427,16 @@ You should probably TRAIN this model on a down-stream task to be able to use it 
 <p><strong>05/17/2020</strong></p>
 <ul>
 <li>Major code restructuring to make it easier to build out the library.</li>
-<li><a href="/blurr/data-core#HF_TokenizerTransform"><code>HF_TokenizerTransform</code></a> replaces <code>HF_Tokenizer</code>, handling the tokenization and numericalization in one place.  DataBlock code has been dramatically simplified.</li>
+<li><a href="/blurr/data-core.html#HF_TokenizerTransform"><code>HF_TokenizerTransform</code></a> replaces <code>HF_Tokenizer</code>, handling the tokenization and numericalization in one place.  DataBlock code has been dramatically simplified.</li>
 <li>Tokenization correctly handles huggingface tokenizers that require <code>add_prefix_space=True</code>.</li>
-<li><a href="/blurr/modeling-core#HF_BaseModelCallback"><code>HF_BaseModelCallback</code></a> and <a href="/blurr/modeling-core#HF_BaseModelCallback"><code>HF_BaseModelCallback</code></a> are required and work together in order to allow developers to tie into any callback friendly event exposed by fastai2 and also pass in named arguments to the huggingface models.</li>
+<li><a href="/blurr/modeling-core.html#HF_BaseModelCallback"><code>HF_BaseModelCallback</code></a> and <a href="/blurr/modeling-core.html#HF_BaseModelCallback"><code>HF_BaseModelCallback</code></a> are required and work together in order to allow developers to tie into any callback friendly event exposed by fastai2 and also pass in named arguments to the huggingface models.</li>
 <li><code>show_batch</code> and <code>show_results</code> have been updated for Question/Answer and Token Classification models to represent the data and results in a more easily intepretable manner than the defaults.</li>
 </ul>
 <p><strong>05/06/2020</strong></p>
 <ul>
 <li>Initial support for Token classification (e.g., NER) models now included</li>
 <li>Extended fastai's <code>Learner</code> object with a <code>predict_tokens</code> method used specifically in token classification</li>
-<li><a href="/blurr/modeling-core#HF_BaseModelCallback"><code>HF_BaseModelCallback</code></a> can be used (or extended) instead of the model wrapper to ensure your inputs into the huggingface model is correct (recommended). See docs for examples (and thanks to fastai's Sylvain for the suggestion!)</li>
+<li><a href="/blurr/modeling-core.html#HF_BaseModelCallback"><code>HF_BaseModelCallback</code></a> can be used (or extended) instead of the model wrapper to ensure your inputs into the huggingface model is correct (recommended). See docs for examples (and thanks to fastai's Sylvain for the suggestion!)</li>
 <li><code>HF_Tokenizer</code> can work with strings or a string representation of a list (the later helpful for token classification tasks)</li>
 <li><code>show_batch</code> and <code>show_results</code> methods have been updated to allow better control on how huggingface tokenized data is represented in those methods</li>
 </ul>

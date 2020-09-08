@@ -122,6 +122,16 @@ def summarization_splitter(m, arch):
         groups = L(embeds, model.model.encoder, model.model.decoder)
         return groups.map(params).filter(lambda el: len(el) > 0)
 
+    if arch in['t5']:
+        embeds = nn.Sequential(
+            model.shared,
+            model.encoder.embed_tokens,
+            model.decoder.embed_tokens
+        )
+
+        groups = L(embeds, model.encoder, model.decoder)
+        return groups.map(params).filter(lambda el: len(el) > 0)
+
     raise ValueError('Invalid architecture')
 
 # Cell
