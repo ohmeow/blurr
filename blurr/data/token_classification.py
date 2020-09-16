@@ -47,13 +47,20 @@ def HF_TokenCategoryBlock(vocab=None, ignore_token=None, ignore_token_id=None):
                                                        ignore_token_id=ignore_token_id))
 
 # Cell
-class HF_TokenClassInput(list): pass
+class HF_TokenClassInput(HF_BaseInput): pass
 
 # Cell
 class HF_TokenClassBatchTransform(HF_BatchTransform):
-    def __init__(self, hf_arch, hf_tokenizer, ignore_token_id=None, **kwargs):
-        super().__init__(hf_arch, hf_tokenizer, HF_TokenClassInput, **kwargs)
-        self.ignore_token_id = CrossEntropyLossFlat().ignore_index if ignore_token_id is None else ignore_token_id
+    def __init__(self, hf_arch, hf_tokenizer,
+                 ignore_token_id=CrossEntropyLossFlat().ignore_index,
+                 max_length=None, padding=True, truncation=True, is_pretokenized=True,
+                 n_tok_inps=1, hf_input_return_type=HF_TokenClassInput, tok_kwargs={}, **kwargs):
+
+        super().__init__(hf_arch, hf_tokenizer,
+                         max_length=max_length, padding=padding, truncation=truncation, is_pretokenized=is_pretokenized,
+                         n_tok_inps=n_tok_inps, hf_input_return_type=hf_input_return_type, tok_kwargs=tok_kwargs, **kwargs)
+
+        self.ignore_token_id = ignore_token_id
 
     def encodes(self, samples):
         samples = super().encodes(samples)
@@ -76,11 +83,11 @@ class HF_TokenClassBatchTransform(HF_BatchTransform):
 
 # Cell
 @typedispatch
-def show_batch(x:HF_TokenClassInput, y, samples, dataloaders=None, ctxs=None, max_n=6, **kwargs):
-    hf_tokenizer = dataloaders.valid.hf_tokenizer
+def show_batch(x:HF_TokenClassInput, y, samples, dataloaders, ctxs=None, max_n=6, **kwargs):
+    hf_tokenizer = dataloaders.before_batch[0].hf_tokenizer
 
     res = L()
-    for inp, trg, sample in zip(x[0], y, samples):
+    for inp, trg, sample in zip(x, y, samples):
         # recontstruct the string and split on space to get back your pre-tokenized list of tokens
         toks = hf_tokenizer.convert_ids_to_tokens(inp, skip_special_tokens=True)
         pretokenized_toks =  hf_tokenizer.convert_tokens_to_string(toks).split()

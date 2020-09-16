@@ -43,7 +43,7 @@ class HF_TokenClassCallback(HF_BaseModelCallback):
         if (not self.do_setup): return
 
         # grab the hf_tokenizer from the target's HF_TokenizerTransform (used for rouge metrics)
-        hf_textblock_tfm = self.dls.tfms[0]
+        hf_textblock_tfm = self.dls.before_batch[0]
         self.hf_tokenizer = hf_textblock_tfm.hf_tokenizer
         self.ignore_label_token_id = self.dls.tfms[1].ignore_token_id
         self.tok_special_symbols = list(self.hf_tokenizer.special_tokens_map.values())
@@ -106,14 +106,14 @@ class HF_TokenClassCallback(HF_BaseModelCallback):
 
 # Cell
 @typedispatch
-def show_results(x:HF_TokenClassInput, y:HF_TokenTensorCategory, samples, outs, learner=None,
+def show_results(x:HF_TokenClassInput, y:HF_TokenTensorCategory, samples, outs, learner,
                  ctxs=None, max_n=6, **kwargs):
     # grab tokenizer
-    hf_textblock_tfm = learner.dls.tfms[0]
+    hf_textblock_tfm = learner.dls.before_batch[0]
     hf_tokenizer = hf_textblock_tfm.hf_tokenizer
 
     res = L()
-    for inp, trg, sample, pred in zip(x[0], y, samples, outs):
+    for inp, trg, sample, pred in zip(x, y, samples, outs):
         # recontstruct the string and split on space to get back your pre-tokenized list of tokens
         toks = hf_tokenizer.convert_ids_to_tokens(inp, skip_special_tokens=True)
         pretokenized_toks =  hf_tokenizer.convert_tokens_to_string(toks).split()
@@ -136,9 +136,9 @@ def blurr_predict_tokens(self:Learner, inp, **kargs):
     pred_lbls, pred_lbl_ids, probs = self.blurr_predict(inp)
 
     # grab the huggingface tokenizer from the learner's dls.tfms
-    hf_textblock_tfm = self.dls.tfms[0]
+    hf_textblock_tfm = self.dls.before_batch[0]
     hf_tokenizer = hf_textblock_tfm.hf_tokenizer
-    tok_kwargs = hf_textblock_tfm.kwargs
+    tok_kwargs = hf_textblock_tfm.tok_kwargs
 
     # calculate the number of subtokens per raw/input token so that we can determine what predictions to
     # return

@@ -334,7 +334,7 @@ You should probably TRAIN this model on a down-stream task to be able to use it 
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">vocab</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">enumerate</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">max_seq_len</span><span class="p">)));</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">vocab</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">enumerate</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">max_seq_len</span><span class="p">)))</span>
 </pre></div>
 
     </div>
@@ -362,11 +362,8 @@ You should probably TRAIN this model on a down-stream task to be able to use it 
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h2 id="HF_QuestionAnswerInput" class="doc_header"><code>class</code> <code>HF_QuestionAnswerInput</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/data/question_answering.py#L46" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>HF_QuestionAnswerInput</code>(<strong><code>iterable</code></strong>=<em><code>()</code></em>) :: <code>list</code></p>
+<h2 id="HF_QuestionAnswerInput" class="doc_header"><code>class</code> <code>HF_QuestionAnswerInput</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/data/question_answering.py#L46" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>HF_QuestionAnswerInput</code>(<strong><code>x</code></strong>, <strong>**<code>kwargs</code></strong>) :: <a href="/blurr/data-core.html#HF_BaseInput"><code>HF_BaseInput</code></a></p>
 </blockquote>
-<p>Built-in mutable sequence.</p>
-<p>If no argument is given, the constructor creates a new empty list.
-The argument must be an iterable if specified.</p>
 
 </div>
 
@@ -403,10 +400,10 @@ The argument must be an iterable if specified.</p>
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h2 id="HF_QABatchTransform" class="doc_header"><code>class</code> <code>HF_QABatchTransform</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/data/question_answering.py#L49" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>HF_QABatchTransform</code>(<strong><code>hf_arch</code></strong>, <strong><code>hf_tokenizer</code></strong>, <strong>**<code>kwargs</code></strong>) :: <a href="/blurr/data-core.html#HF_BatchTransform"><code>HF_BatchTransform</code></a></p>
+<h2 id="HF_QABatchTransform" class="doc_header"><code>class</code> <code>HF_QABatchTransform</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/data/question_answering.py#L49" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>HF_QABatchTransform</code>(<strong><code>hf_arch</code></strong>, <strong><code>hf_tokenizer</code></strong>, <strong><code>max_length</code></strong>=<em><code>None</code></em>, <strong><code>padding</code></strong>=<em><code>True</code></em>, <strong><code>truncation</code></strong>=<em><code>True</code></em>, <strong><code>is_pretokenized</code></strong>=<em><code>False</code></em>, <strong><code>n_tok_inps</code></strong>=<em><code>1</code></em>, <strong><code>hf_input_return_type</code></strong>=<em><code>HF_QuestionAnswerInput</code></em>, <strong><code>tok_kwargs</code></strong>=<em><code>{}</code></em>, <strong>**<code>kwargs</code></strong>) :: <a href="/blurr/data-core.html#HF_BatchTransform"><code>HF_BatchTransform</code></a></p>
 </blockquote>
-<p>Handles everything you need to assemble a mini-batch of inputs and targets, as well as decode
-HF_TokenizerTransform inputs</p>
+<p>Handles everything you need to assemble a mini-batch of inputs and targets, as well as decode the dictionary produced
+as a byproduct of the tokenization process in the <code>encodes</code> method.</p>
 
 </div>
 
@@ -432,12 +429,11 @@ HF_TokenizerTransform inputs</p>
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">hf_batch_tfm</span> <span class="o">=</span> <span class="n">HF_QABatchTransform</span><span class="p">(</span><span class="n">hf_arch</span><span class="p">,</span> <span class="n">hf_tokenizer</span><span class="p">)</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">hf_batch_tfm</span> <span class="o">=</span> <span class="n">HF_QABatchTransform</span><span class="p">(</span><span class="n">hf_arch</span><span class="p">,</span> <span class="n">hf_tokenizer</span><span class="p">,</span> <span class="n">max_length</span><span class="o">=</span><span class="n">max_seq_len</span><span class="p">,</span> <span class="n">truncation</span><span class="o">=</span><span class="s1">&#39;only_second&#39;</span><span class="p">,</span> 
+                                   <span class="n">tok_kwargs</span><span class="o">=</span><span class="p">{</span> <span class="s1">&#39;return_special_tokens_mask&#39;</span><span class="p">:</span> <span class="kc">True</span> <span class="p">})</span>
 
 <span class="n">blocks</span> <span class="o">=</span> <span class="p">(</span>
-    <span class="n">HF_TextBlock</span><span class="p">(</span><span class="n">hf_arch</span><span class="p">,</span> <span class="n">hf_tokenizer</span><span class="p">,</span> <span class="n">max_length</span><span class="o">=</span><span class="n">max_seq_len</span><span class="p">,</span> <span class="n">truncation</span><span class="o">=</span><span class="s1">&#39;only_second&#39;</span><span class="p">,</span> 
-                 <span class="n">hf_batch_tfm</span><span class="o">=</span><span class="n">hf_batch_tfm</span><span class="p">,</span> 
-                 <span class="n">tok_kwargs</span><span class="o">=</span><span class="p">{</span> <span class="s1">&#39;return_special_tokens_mask&#39;</span><span class="p">:</span> <span class="kc">True</span> <span class="p">}),</span> 
+    <span class="n">HF_TextBlock</span><span class="p">(</span><span class="n">hf_arch</span><span class="p">,</span> <span class="n">hf_tokenizer</span><span class="p">,</span> <span class="n">hf_batch_tfm</span><span class="o">=</span><span class="n">hf_batch_tfm</span><span class="p">),</span> 
     <span class="n">CategoryBlock</span><span class="p">(</span><span class="n">vocab</span><span class="o">=</span><span class="n">vocab</span><span class="p">),</span>
     <span class="n">CategoryBlock</span><span class="p">(</span><span class="n">vocab</span><span class="o">=</span><span class="n">vocab</span><span class="p">)</span>
 <span class="p">)</span>
@@ -586,15 +582,15 @@ HF_TokenizerTransform inputs</p>
   <tbody>
     <tr>
       <th>0</th>
-      <td>Who did Bayonce's management go into business with in 2014? In October 2014, it was announced that Beyoncé with her management company Parkwood Entertainment would be partnering with London-based fashion retailer Topshop, in a new 50/50 split subsidiary business named Parkwood Topshop Athletic Ltd. The new division was created for Topshop to break into the activewear market, with an athletic, street wear brand being produced. "Creating a partnership with Beyoncé, one of the most hard-working and talented people in the world, who spends many hours of her life dancing, rehearsing and training is a unique opportunity</td>
-      <td>(40, 44)</td>
-      <td>fashion retailer Topshop</td>
+      <td>How many Grammy nominations does Beyonce have? Beyoncé has won 20 Grammy Awards, both as a solo artist and member of Destiny's Child, making her the second most honored female artist by the Grammys, behind Alison Krauss and the most nominated woman in Grammy Award history with 52 nominations. "Single Ladies (Put a Ring on It)" won Song of the Year in 2010 while "Say My Name" and "Crazy in Love" had previously won Best R&amp;B Song. Dangerously in Love, B'Day and I Am... Sasha Fierce have all won Best Contemporary R&amp;B Album. Beyon</td>
+      <td>(59, 61)</td>
+      <td>52 nominations</td>
     </tr>
     <tr>
       <th>1</th>
-      <td>Due to the numbers of expatriates of Poland after the uprising, what did it become to be known as? Chopin arrived in Paris in late September 1831; he would never return to Poland, thus becoming one of many expatriates of the Polish Great Emigration. In France he used the French versions of his given names, and after receiving French citizenship in 1835, he travelled on a French passport. However, Chopin remained close to his fellow Poles in exile as friends and confidants and he never felt fully comfortable speaking French. Chopin's biographer Adam Zamoyski writes that he never considered</td>
-      <td>(54, 58)</td>
-      <td>Polish Great Emigration</td>
+      <td>in September 2010, what career area did Beyonce start exploring? In September 2010, Beyoncé made her runway modelling debut at Tom Ford's Spring/Summer 2011 fashion show. She was named "World's Most Beautiful Woman" by People and the "Hottest Female Singer of All Time" by Complex in 2012. In January 2013, GQ placed her on its cover, featuring her atop its "100 Sexiest Women of the 21st Century" list. VH1 listed her at number 1 on its 100 Sexiest Artists list. Several wax figures of Beyoncé are found at Madame Tussauds Wax Muse</td>
+      <td>(25, 26)</td>
+      <td>modelling</td>
     </tr>
   </tbody>
 </table>

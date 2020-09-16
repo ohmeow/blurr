@@ -237,11 +237,8 @@ nb_path: "nbs/01e_data-summarization.ipynb"
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h2 id="HF_SummarizationInput" class="doc_header"><code>class</code> <code>HF_SummarizationInput</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/data/summarization.py#L17" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>HF_SummarizationInput</code>(<strong><code>iterable</code></strong>=<em><code>()</code></em>) :: <code>list</code></p>
+<h2 id="HF_SummarizationInput" class="doc_header"><code>class</code> <code>HF_SummarizationInput</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/data/summarization.py#L17" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>HF_SummarizationInput</code>(<strong><code>x</code></strong>, <strong>**<code>kwargs</code></strong>) :: <a href="/blurr/data-core.html#HF_BaseInput"><code>HF_BaseInput</code></a></p>
 </blockquote>
-<p>Built-in mutable sequence.</p>
-<p>If no argument is given, the constructor creates a new empty list.
-The argument must be an iterable if specified.</p>
 
 </div>
 
@@ -280,10 +277,10 @@ The argument must be an iterable if specified.</p>
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h2 id="HF_SummarizationBatchTransform" class="doc_header"><code>class</code> <code>HF_SummarizationBatchTransform</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/data/summarization.py#L20" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>HF_SummarizationBatchTransform</code>(<strong><code>hf_arch</code></strong>, <strong><code>hf_tokenizer</code></strong>, <strong>**<code>kwargs</code></strong>) :: <a href="/blurr/data-core.html#HF_BatchTransform"><code>HF_BatchTransform</code></a></p>
+<h2 id="HF_SummarizationBatchTransform" class="doc_header"><code>class</code> <code>HF_SummarizationBatchTransform</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/data/summarization.py#L20" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>HF_SummarizationBatchTransform</code>(<strong><code>hf_arch</code></strong>, <strong><code>hf_tokenizer</code></strong>, <strong><code>max_length</code></strong>=<em><code>None</code></em>, <strong><code>padding</code></strong>=<em><code>True</code></em>, <strong><code>truncation</code></strong>=<em><code>True</code></em>, <strong><code>is_pretokenized</code></strong>=<em><code>False</code></em>, <strong><code>n_tok_inps</code></strong>=<em><code>2</code></em>, <strong><code>hf_input_return_type</code></strong>=<em><code>HF_SummarizationInput</code></em>, <strong><code>tok_kwargs</code></strong>=<em><code>{}</code></em>, <strong>**<code>kwargs</code></strong>) :: <a href="/blurr/data-core.html#HF_BatchTransform"><code>HF_BatchTransform</code></a></p>
 </blockquote>
-<p>Handles everything you need to assemble a mini-batch of inputs and targets, as well as decode
-HF_TokenizerTransform inputs</p>
+<p>Handles everything you need to assemble a mini-batch of inputs and targets, as well as decode the dictionary produced
+as a byproduct of the tokenization process in the <code>encodes</code> method.</p>
 
 </div>
 
@@ -297,7 +294,7 @@ HF_TokenizerTransform inputs</p>
 
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>We had to override the <code>decodes</code> method above because, while both our inputs and targets are technically the same things, we update the later to consist of <em>only</em> the target input_ids so that methods like <code>Learner.show_results</code> work.  Nevertheless, because fastai remembers what they are, <a href="/blurr/data-core.html#HF_TokenizerTransform.decodes"><code>HF_TokenizerTransform.decodes</code></a> will be called for both and it works on a <code>list</code> of input_ids.</p>
+<p>We had to override the <code>decodes</code> method above because, while both our inputs and targets are technically the same things, we update the later to consist of <em>only</em> the target input_ids so that methods like <code>Learner.show_results</code> work.</p>
 
 </div>
 </div>
@@ -309,17 +306,8 @@ HF_TokenizerTransform inputs</p>
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">hf_batch_tfm</span> <span class="o">=</span> <span class="n">HF_SummarizationBatchTransform</span><span class="p">(</span><span class="n">hf_arch</span><span class="p">,</span> <span class="n">hf_tokenizer</span><span class="p">)</span>
-
-<span class="n">blocks</span> <span class="o">=</span> <span class="p">(</span> 
-    <span class="n">HF_TextBlock</span><span class="p">(</span><span class="n">hf_arch</span><span class="p">,</span> <span class="n">hf_tokenizer</span><span class="p">),</span> 
-    <span class="n">HF_TextBlock</span><span class="p">(</span><span class="n">hf_arch</span><span class="p">,</span> <span class="n">hf_tokenizer</span><span class="p">,</span> <span class="n">hf_batch_tfm</span><span class="o">=</span><span class="n">hf_batch_tfm</span><span class="p">,</span> <span class="n">max_length</span><span class="o">=</span><span class="mi">150</span><span class="p">,</span> <span class="n">hf_input_idxs</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">])</span>
-<span class="p">)</span>
-
-<span class="n">dblock</span> <span class="o">=</span> <span class="n">DataBlock</span><span class="p">(</span><span class="n">blocks</span><span class="o">=</span><span class="n">blocks</span><span class="p">,</span> 
-                   <span class="n">get_x</span><span class="o">=</span><span class="n">ColReader</span><span class="p">(</span><span class="s1">&#39;article&#39;</span><span class="p">),</span> 
-                   <span class="n">get_y</span><span class="o">=</span><span class="n">ColReader</span><span class="p">(</span><span class="s1">&#39;highlights&#39;</span><span class="p">),</span> 
-                   <span class="n">splitter</span><span class="o">=</span><span class="n">RandomSplitter</span><span class="p">())</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">blocks</span> <span class="o">=</span> <span class="p">(</span><span class="n">HF_TextBlock</span><span class="p">(</span><span class="n">hf_batch_tfm</span><span class="o">=</span><span class="n">HF_SummarizationBatchTransform</span><span class="p">(</span><span class="n">hf_arch</span><span class="p">,</span> <span class="n">hf_tokenizer</span><span class="p">)),</span> <span class="n">noop</span><span class="p">)</span>
+<span class="n">dblock</span> <span class="o">=</span> <span class="n">DataBlock</span><span class="p">(</span><span class="n">blocks</span><span class="o">=</span><span class="n">blocks</span><span class="p">,</span> <span class="n">get_x</span><span class="o">=</span><span class="n">ColReader</span><span class="p">(</span><span class="s1">&#39;article&#39;</span><span class="p">),</span> <span class="n">get_y</span><span class="o">=</span><span class="n">ColReader</span><span class="p">(</span><span class="s1">&#39;highlights&#39;</span><span class="p">),</span> <span class="n">splitter</span><span class="o">=</span><span class="n">RandomSplitter</span><span class="p">())</span>
 </pre></div>
 
     </div>
@@ -329,6 +317,13 @@ HF_TokenizerTransform inputs</p>
 </div>
     {% endraw %}
 
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Two lines!  Notice we pass in <code>noop</code> for our targets (e.g. our summaries) because the batch transform will take care of both out inputs and targets.</p>
+
+</div>
+</div>
+</div>
     {% raw %}
     
 <div class="cell border-box-sizing code_cell rendered">
@@ -402,7 +397,7 @@ HF_TokenizerTransform inputs</p>
 
 
 <div class="output_text output_subarea output_execute_result">
-<pre>(2, torch.Size([4, 512]), torch.Size([4, 71]))</pre>
+<pre>(2, torch.Size([4, 1024]), torch.Size([4, 79]))</pre>
 </div>
 
 </div>
@@ -446,19 +441,19 @@ HF_TokenizerTransform inputs</p>
     <tr style="text-align: right;">
       <th></th>
       <th>text</th>
-      <th>target</th>
+      <th>text_</th>
     </tr>
   </thead>
   <tbody>
     <tr>
       <th>0</th>
-      <td>(CNN) -- Standing outside a courthouse Sunday that the Libyan opposition is using for a base of operations in the town of Misrata, a witness described a sense of jubilation against a backdrop of blood stains and rocket fragments. "I'm standing in the middle of a... battlefield," the witness told CNN by phone from Misrata after a fierce fight between rebels and Libyan leader Moammar Gadhafi's forces. People were holding their hands up, singing, chanting and cheering, he said. "Everyone is hugging everyone." CNN is not identifying witnesses and sources for safety reasons. Videos posted on YouTube and thought to be out of Misrata showed damage to buildings and several shots of people celebrating around the opposition flag -- once being raised on a pole, and another time being waved by a man atop a charred vehicle that had a dead body inside. A doctor at Central Misrata Hospital said 42 people were killed in the fighting -- 17 from the opposition and 25 from the pro-Gadhafi forces. Among the dead was a 3-year-old child, killed from direct fire, the doctor said. At least 85 people were wounded, the doctor said. The fighting continued on the city's outskirts Sunday evening. The witness described the opposition's victory in central Misrata even as people some 200 kilometers (125 miles) west, at a pro-Gadhafi demonstration in Tripoli, insisted the government had taken back the coastal central Libyan city. After reports of the opposition successfully holding onto Misrata, east of Tripoli, Libyan state TV showed a graphic stating that "strict orders have been issued to the armed forces not to enter cities taken by terrorist gangs." On Sunday morning, pro-Gadhafi militias converged on Misrata from three different points, trying to retake control of the city, the witness said. He saw four tanks, though other witnesses told him there were a total of six. Using heavy artillery, the ground forces and tanks headed for the courthouse operations base. Tanks fired rockets at the building, and black smoke could be seen rising from it, he said. The opposition couldn't match the government's weaponry, but rebels took to the streets using what weapons they had, such as machine guns. And some simply picked up whatever they could find, with some resorting to sticks, he said. Speaking to CNN during the battle, he said, "People are willing to die for the cause," describing them as "fearless" and "amazing." Later, after the</td>
-      <td>NEW: Videos online show damage to buildings and waving of the opposition's flag.\nA doctor at a hospital in the city says 42 people were killed, 85 wounded.\nWitness in Misrata: "Everyone is hugging everyone" despite "blood everywhere"\nPro-Gadhafi demonstrators in Tripoli claimed the government had taken the city.</td>
+      <td>(CNN) -- Home to up to 10 percent of all known species, Mexico is recognized as one of the most biodiverse regions on the planet. The twin threats of climate change and human encroachment on natural environments are, however, threatening the existence of the country's rich wildlife. And there is a great deal to lose. In the United Nations Environment Program (UNEP) World Conservation Monitoring Centre's list of megadiverse countries Mexico ranks 11th. The list represents a group of 17 countries that harbor the majority of the Earth's species and are therefore considered extremely biodiverse. From its coral reefs in the Caribbean Sea to its tropical jungles in Chiapas and the Yucatan peninsula and its deserts and prairies in the north, Mexico boasts an incredibly rich variety of flora and fauna. Some 574 out of 717 reptile species found in Mexico -- the most in any country -- can only be encountered within its borders. It is home to 502 types of mammals, 290 species of birds, 1,150 varieties of birds and 26,000 classifications of plants. Pronatura, a non-profit organization that works to promote conservation and sustainable development in Mexico, has selected six species which it says symbolize the problems faced by the destruction of nature. "These are only some of the species which have</td>
+      <td>Mexico hosts to up to 10 percent of all known species on Earth. It is home to 502 types of mammals, 290 bird species and 26,000 types of plants. Human development and climate change</td>
     </tr>
     <tr>
       <th>1</th>
-      <td>I have an uncle who has always been a robust and healthy guy. He drank a glass of skim milk every day, bragged about how many pull-ups he was doing and fit into pants he was wearing 20 years before. He didn't take a single medication and retired early. Given that he had no medical problems and ran his own business, he opted to go several years without health insurance. Eventually, when he turned 65, he picked up Medicare. What happened next was a little strange. He fell off the wagon. He exercised only sporadically, and paid hardly any attention to what he was eating. One day, I saw him eat an entire bag of potato chips. He bemoaned the fact that he was forced to buy new, bigger pants, and he stopped drinking his milk. For him, becoming newly insured had nearly the opposite effect on him of what we doctors hope to achieve. He'd become unhealthier. In many ways, my uncle was demonstrating a concept known as the moral hazard. Two economists wrote about this exact scenario  in 2006. They found that many men, at the time they obtained Medicare, started behaving badly. Moral, or morale, hazard is a term largely used by economists to describe the actions of people more willing to take risks because they are insulated from the cost of their actions, in this case because of their recently obtained health insurance. In the case of these men, when they got Medicare, they took worse care of themselves; they actually exercised less. Among those who didn't visit the doctor after getting insurance, the effect was dramatic: Their overall physical activity dropped by 40%; they were 16% more likely to smoke cigarettes and 32% more likely to drink alcohol. Even if that seems extreme, it's still worth asking: Does health insurance make us healthier? The past five years have seen a tumultuous battle over Obamacare, or the Affordable Care Act, culminating in the bitter recriminations this fall over lost policies and the disastrous launch of the HealthCare.gov website. When I interviewed Health and Human Services Secretary Kathleen Sebelius at the end of October, she downplayed the concerns and seemed certain the site would be up and running by the end of November. The website may be working better now, but to me that's not the most important issue. In my mind, the real suspense comes from whether Obamacare will really make us a healthier America, even if it succeeds in its ambitions to dramatically expand coverage. A healthier America: That is the goal we should share as Americans</td>
-      <td>Sanjay Gupta: Moral hazard causes some to neglect health when they get health insurance.\nHe says Obamacare alone won't guarantee good health; personal habits must do that.\nHe says research shows 30 minutes of daily exercise cuts heart attack, stroke risk by a third.\nGupta: It's time to stop playing defense on your health; instead, start optimizing it yourself.</td>
+      <td>(CNN) -- It's a congested, sprawling transport hub surrounded by 1950s architecture and predominantly used by commuters or tourists to cross the city of Istanbul. But proposed changes to Taksim Square have seen it become the flashpoint for protests that have swept through Turkey in the past week, leaving thousands injured and focusing the world's attention on the government of Prime Minister Recep Tayyip Erdogan. Taksim has been no stranger to violence. In 1977, at least 34 protesters died during May Day clashes with police. May 1 rallies in the square were banned in 1980 and were only allowed to legally resume in 2010. On May Day this year, there were riots after city authorities again refused to grant trade unions and youth groups permission to demonstrate in Taksim, blaming construction work being carried out in the square. Professor Ersin Kalaycioglu, professor of political science at Istanbul's Sabanci University, said significantly, Taksim Square was also known as "republic square," because it was built by the Republic of Turkey's founding fathers to commemorate the war of liberation. "Taksim Square is connected to Istiklal Caddesi -- Independence Avenue -- and Cumhuriyet Caddesi -- the Avenue of the Republic. So there is a lot of symbolism that has</td>
+      <td>Taksim Square was where Istanbul's water was distributed -- Taksim means divide. The site is seen as symbolizing the seclar Turkish republic founded by Ataturk. Erdogan'</td>
     </tr>
   </tbody>
 </table>
@@ -565,6 +560,8 @@ HF_TokenizerTransform inputs</p>
 <div class=" highlight hl-ipython3"><pre><span></span><span class="c1">#hide_output</span>
 <span class="n">task</span> <span class="o">=</span> <span class="n">HF_TASKS_ALL</span><span class="o">.</span><span class="n">ConditionalGeneration</span>
 <span class="n">bsz</span> <span class="o">=</span> <span class="mi">2</span>
+<span class="n">seq_sz</span> <span class="o">=</span> <span class="mi">256</span>
+<span class="n">trg_seq_sz</span> <span class="o">=</span> <span class="mi">40</span>
 
 <span class="n">test_results</span> <span class="o">=</span> <span class="p">[]</span>
 <span class="k">for</span> <span class="n">model_name</span><span class="p">,</span> <span class="n">model_cls</span> <span class="ow">in</span> <span class="n">pretrained_model_names</span><span class="p">:</span>
@@ -572,18 +569,14 @@ HF_TokenizerTransform inputs</p>
     
     <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;=== </span><span class="si">{</span><span class="n">model_name</span><span class="si">}</span><span class="s1"> ===</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
     
-    <span class="n">hf_arch</span><span class="p">,</span> <span class="n">hf_config</span><span class="p">,</span> <span class="n">hf_tokenizer</span><span class="p">,</span> <span class="n">hf_model</span> <span class="o">=</span> <span class="n">BLURR_MODEL_HELPER</span><span class="o">.</span><span class="n">get_hf_objects</span><span class="p">(</span><span class="n">model_name</span><span class="p">,</span> 
-                                                                                   <span class="n">task</span><span class="o">=</span><span class="n">task</span><span class="p">,</span>
-                                                                                   <span class="n">model_cls</span><span class="o">=</span><span class="n">model_cls</span><span class="p">)</span>
-    
+    <span class="n">hf_arch</span><span class="p">,</span> <span class="n">hf_config</span><span class="p">,</span> <span class="n">hf_tokenizer</span><span class="p">,</span> <span class="n">hf_model</span> <span class="o">=</span> <span class="n">BLURR_MODEL_HELPER</span><span class="o">.</span><span class="n">get_hf_objects</span><span class="p">(</span><span class="n">model_name</span><span class="p">,</span> <span class="n">task</span><span class="o">=</span><span class="n">task</span><span class="p">,</span> <span class="n">model_cls</span><span class="o">=</span><span class="n">model_cls</span><span class="p">)</span>
     <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;architecture:</span><span class="se">\t</span><span class="si">{</span><span class="n">hf_arch</span><span class="si">}</span><span class="se">\n</span><span class="s1">tokenizer:</span><span class="se">\t</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">hf_tokenizer</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
     
-    <span class="n">hf_batch_tfm</span> <span class="o">=</span> <span class="n">HF_SummarizationBatchTransform</span><span class="p">(</span><span class="n">hf_arch</span><span class="p">,</span> <span class="n">hf_tokenizer</span><span class="p">)</span>
+    <span class="n">hf_batch_tfm</span> <span class="o">=</span> <span class="n">HF_SummarizationBatchTransform</span><span class="p">(</span><span class="n">hf_arch</span><span class="p">,</span> <span class="n">hf_tokenizer</span><span class="p">,</span> <span class="n">padding</span><span class="o">=</span><span class="s1">&#39;max_length&#39;</span><span class="p">,</span> <span class="n">max_length</span><span class="o">=</span><span class="p">[</span><span class="n">seq_sz</span><span class="p">,</span> <span class="n">trg_seq_sz</span><span class="p">])</span>
 
     <span class="n">blocks</span> <span class="o">=</span> <span class="p">(</span> 
-        <span class="n">HF_TextBlock</span><span class="p">(</span><span class="n">hf_arch</span><span class="p">,</span> <span class="n">hf_tokenizer</span><span class="p">,</span> <span class="n">padding</span><span class="o">=</span><span class="s1">&#39;max_length&#39;</span><span class="p">,</span> <span class="n">max_length</span><span class="o">=</span><span class="mi">256</span><span class="p">),</span> 
-        <span class="n">HF_TextBlock</span><span class="p">(</span><span class="n">hf_arch</span><span class="p">,</span> <span class="n">hf_tokenizer</span><span class="p">,</span> <span class="n">hf_batch_tfm</span><span class="o">=</span><span class="n">hf_batch_tfm</span><span class="p">,</span> <span class="n">padding</span><span class="o">=</span><span class="s1">&#39;max_length&#39;</span><span class="p">,</span> <span class="n">max_length</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> 
-                     <span class="n">hf_input_idxs</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">])</span>
+        <span class="n">HF_TextBlock</span><span class="p">(</span><span class="n">hf_arch</span><span class="p">,</span> <span class="n">hf_tokenizer</span><span class="p">,</span> <span class="n">hf_batch_tfm</span><span class="o">=</span><span class="n">hf_batch_tfm</span><span class="p">),</span> 
+        <span class="n">noop</span>
     <span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">add_t5_prefix</span><span class="p">(</span><span class="n">inp</span><span class="p">):</span> <span class="k">return</span> <span class="sa">f</span><span class="s1">&#39;summarize: </span><span class="si">{</span><span class="n">inp</span><span class="si">}</span><span class="s1">&#39;</span> <span class="k">if</span> <span class="p">(</span><span class="n">hf_arch</span> <span class="o">==</span> <span class="s1">&#39;t5&#39;</span><span class="p">)</span> <span class="k">else</span> <span class="n">inp</span>
@@ -600,12 +593,12 @@ HF_TokenizerTransform inputs</p>
         <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;*** TESTING DataLoaders ***</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
         <span class="n">test_eq</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">b</span><span class="p">),</span> <span class="mi">2</span><span class="p">)</span>
         <span class="n">test_eq</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">b</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;input_ids&#39;</span><span class="p">]),</span> <span class="n">bsz</span><span class="p">)</span>
-        <span class="n">test_eq</span><span class="p">(</span><span class="n">b</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;input_ids&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Size</span><span class="p">([</span><span class="n">bsz</span><span class="p">,</span> <span class="mi">256</span><span class="p">]))</span>
+        <span class="n">test_eq</span><span class="p">(</span><span class="n">b</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;input_ids&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Size</span><span class="p">([</span><span class="n">bsz</span><span class="p">,</span> <span class="n">seq_sz</span><span class="p">]))</span>
         <span class="n">test_eq</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">b</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span> <span class="n">bsz</span><span class="p">)</span>
-        <span class="n">test_eq</span><span class="p">(</span><span class="n">b</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Size</span><span class="p">([</span><span class="n">bsz</span><span class="p">,</span><span class="mi">50</span><span class="p">]))</span>
+        <span class="n">test_eq</span><span class="p">(</span><span class="n">b</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Size</span><span class="p">([</span><span class="n">bsz</span><span class="p">,</span> <span class="n">trg_seq_sz</span><span class="p">]))</span>
 
         <span class="k">if</span> <span class="p">(</span><span class="nb">hasattr</span><span class="p">(</span><span class="n">hf_tokenizer</span><span class="p">,</span> <span class="s1">&#39;add_prefix_space&#39;</span><span class="p">)):</span>
-            <span class="n">test_eq</span><span class="p">(</span><span class="n">dls</span><span class="o">.</span><span class="n">tfms</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;add_prefix_space&#39;</span><span class="p">],</span> <span class="kc">True</span><span class="p">)</span>
+            <span class="n">test_eq</span><span class="p">(</span><span class="n">dls</span><span class="o">.</span><span class="n">before_batch</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">tok_kwargs</span><span class="p">[</span><span class="s1">&#39;add_prefix_space&#39;</span><span class="p">],</span> <span class="kc">True</span><span class="p">)</span>
             
         <span class="n">test_results</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">hf_arch</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">hf_tokenizer</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="n">model_name</span><span class="p">,</span> <span class="s1">&#39;PASSED&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">))</span>
         <span class="n">dls</span><span class="o">.</span><span class="n">show_batch</span><span class="p">(</span><span class="n">dataloaders</span><span class="o">=</span><span class="n">dls</span><span class="p">,</span> <span class="n">max_n</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>

@@ -39,9 +39,9 @@ class HF_SummarizationModelCallback(HF_BaseModelCallback):
         if (not self.do_setup): return
 
         # grab the hf_tokenizer from the target's HF_TokenizerTransform (used for rouge metrics)
-        hf_textblock_tfm = self.learn.dls.tfms[-1]
+        hf_textblock_tfm = self.learn.dls.before_batch[0]
         self.hf_tokenizer = hf_textblock_tfm.hf_tokenizer
-        self.tok_kwargs = hf_textblock_tfm.kwargs
+        self.tok_kwargs = hf_textblock_tfm.tok_kwargs
 
         # add custom text generation specific metrics
         custom_metric_keys = self.custom_metrics_dict.keys()
@@ -152,9 +152,9 @@ def blurr_summarize(self:Learner, inp, **kwargs):
     text_gen_kwargs = { **text_gen_kwargs, **kwargs}
 
     # grab the huggingface tokenizer from the learner's dls.tfms
-    hf_textblock_tfm = self.dls.tfms[0]
+    hf_textblock_tfm = self.dls.before_batch[0]
     hf_tokenizer = hf_textblock_tfm.hf_tokenizer
-    tok_kwargs = hf_textblock_tfm.kwargs
+    tok_kwargs = hf_textblock_tfm.tok_kwargs
 
     if (isinstance(inp, str)):
         input_ids = hf_tokenizer.encode(inp, padding=True, truncation=True, return_tensors='pt', **tok_kwargs)
@@ -175,8 +175,13 @@ def blurr_summarize(self:Learner, inp, **kwargs):
 # Cell
 @typedispatch
 def show_results(x:HF_SummarizationInput, y, samples, outs, learner, ctxs=None, max_n=6, **kwargs):
-    gen_text_txts = learner.blurr_summarize(x[0])
-    res = L([ (sample[0], sample[1], gen_txt) for sample, gen_txt in zip(samples, gen_text_txts) ])
+    hf_tokenizer = learner.dls.before_batch[0].hf_tokenizer
+
+    gen_text_txts = learner.blurr_summarize(x)
+    res = L([
+        (hf_tokenizer.decode(s[0], skip_special_tokens=True),
+         hf_tokenizer.decode(s[1], skip_special_tokens=True),
+         gen_txt) for s, gen_txt in zip(samples, gen_text_txts) ])
 
     display_df(pd.DataFrame(res, columns=['text', 'target', 'prediction'])[:max_n])
     return ctxs

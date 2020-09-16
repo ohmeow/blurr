@@ -80,7 +80,8 @@ def blurr_summary(self:Learner):
 
 # Cell
 @typedispatch
-def show_results(x:HF_BaseInput, y, samples, outs, learner=None, ctxs=None, max_n=6, **kwargs):
+def show_results(x:HF_BaseInput, y, samples, outs, learner, ctxs=None, max_n=6, **kwargs):
+    kwargs['hf_tokenizer'] = learner.dls.before_batch[0].hf_tokenizer
 
     if ctxs is None: ctxs = get_empty_df(min(len(samples), max_n))
     ctxs = show_batch[object](x, y, samples, max_n=max_n, ctxs=ctxs, **kwargs)

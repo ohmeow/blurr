@@ -91,9 +91,8 @@ nb_path: "nbs/01_data-core.ipynb"
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h2 id="HF_TokenizerTransform" class="doc_header"><code>class</code> <code>HF_TokenizerTransform</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/data/core.py#L15" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>HF_TokenizerTransform</code>(<strong><code>hf_arch</code></strong>, <strong><code>hf_tokenizer</code></strong>, <strong><code>max_length</code></strong>=<em><code>None</code></em>, <strong><code>padding</code></strong>=<em><code>True</code></em>, <strong><code>truncation</code></strong>=<em><code>True</code></em>, <strong><code>is_pretokenized</code></strong>=<em><code>False</code></em>, <strong>**<code>kwargs</code></strong>) :: <code>ItemTransform</code></p>
+<h2 id="HF_BaseInput" class="doc_header"><code>class</code> <code>HF_BaseInput</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/data/core.py#L15" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>HF_BaseInput</code>(<strong><code>x</code></strong>, <strong>**<code>kwargs</code></strong>) :: <code>TensorBase</code></p>
 </blockquote>
-<p>huggingface friendly tokenization transform.</p>
 
 </div>
 
@@ -107,9 +106,7 @@ nb_path: "nbs/01_data-core.ipynb"
 
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p><a href="/blurr/data-core.html#HF_TokenizerTransform"><code>HF_TokenizerTransform</code></a> was inspired by <a href="http://dev.fast.ai/tutorial.transformers">this article</a>.  It handles both the tokenization and numericalization traditionally split apart in the fastai text DataBlock API.  For huggingface tokenizers that require a prefix space, it will be included automatically.</p>
-<p>You can pass a string or list into this Transform, the later being for tasks that require two input sequneces (e.g. question answer tasks for example require a "context" and a "question" sequence).</p>
-<p>In order to make the tokenization/numericalization process more efficient, this transform has been updated to return a <code>transformers.tokenization_utils_base.BatchEncoding</code> dictionary with all the required transformer inputs (e.g. input_ids, attention_mask, etc...). Previously, it only returned the raw input_ids for <em>each</em> sequence which were then put together to come up with all the required inputs and padding in a <code>before_batch</code> transform.</p>
+<p>A <a href="/blurr/data-core.html#HF_BaseInput"><code>HF_BaseInput</code></a> object is returned from the decodes method of <a href="/blurr/data-core.html#HF_BatchTransform"><code>HF_BatchTransform</code></a> as a mean to customize @typedispatched functions like DataLoaders.show_batch and Learner.show_results. It represents the "input_ids" of a huggingface sequence as a tensor with a <code>show</code> method that requires a huggingface tokenizer for proper display.</p>
 
 </div>
 </div>
@@ -132,11 +129,10 @@ nb_path: "nbs/01_data-core.ipynb"
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h2 id="HF_BaseInput" class="doc_header"><code>class</code> <code>HF_BaseInput</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/data/core.py#L51" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>HF_BaseInput</code>(<strong><code>iterable</code></strong>=<em><code>()</code></em>) :: <code>list</code></p>
+<h2 id="HF_BatchTransform" class="doc_header"><code>class</code> <code>HF_BatchTransform</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/data/core.py#L22" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>HF_BatchTransform</code>(<strong><code>hf_arch</code></strong>, <strong><code>hf_tokenizer</code></strong>, <strong><code>max_length</code></strong>=<em><code>None</code></em>, <strong><code>padding</code></strong>=<em><code>True</code></em>, <strong><code>truncation</code></strong>=<em><code>True</code></em>, <strong><code>is_pretokenized</code></strong>=<em><code>False</code></em>, <strong><code>n_tok_inps</code></strong>=<em><code>1</code></em>, <strong><code>hf_input_return_type</code></strong>=<em><code>HF_BaseInput</code></em>, <strong><code>tok_kwargs</code></strong>=<em><code>{}</code></em>, <strong>**<code>kwargs</code></strong>) :: <code>Transform</code></p>
 </blockquote>
-<p>Built-in mutable sequence.</p>
-<p>If no argument is given, the constructor creates a new empty list.
-The argument must be an iterable if specified.</p>
+<p>Handles everything you need to assemble a mini-batch of inputs and targets, as well as decode the dictionary produced
+as a byproduct of the tokenization process in the <code>encodes</code> method.</p>
 
 </div>
 
@@ -150,7 +146,9 @@ The argument must be an iterable if specified.</p>
 
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>A <a href="/blurr/data-core.html#HF_BaseInput"><code>HF_BaseInput</code></a> object is returned from the <code>decodes</code> method of <a href="/blurr/data-core.html#HF_BatchTransform"><code>HF_BatchTransform</code></a> as a mean to customize @typedispatched functions like <code>DataLoaders.show_batch</code> and <code>Learner.show_results</code>.  It encapsulates a list with <em>one</em> item, the input_ids for the sequence.</p>
+<p><a href="/blurr/data-core.html#HF_BatchTransform"><code>HF_BatchTransform</code></a> was inspired by this <a href="http://dev.fast.ai/tutorial.transformers">article</a>. It handles both the tokenization and numericalization traditionally split apart in the fastai text DataBlock API. For huggingface tokenizers that require a prefix space, it will be included automatically. In its current incarnation, <a href="/blurr/data-core.html#HF_BatchTransform"><code>HF_BatchTransform</code></a> can be used to tokenize multiple inputs (common in seq2seq models for tasks like summarization) and even apply different tokenizers and arguments to each.</p>
+<p>Inputs can come in as a string or a list of tokens, the later being for tasks like Named Entity Recognition (NER), where you want to predict the label of each token.</p>
+<p><strong>Note</strong>: The previous version of the library performed the tokenization/numericalization as a type transform when the raw data was read, and included a couple batch transforms to prepare the data for collation (e.g., to be made into a mini-batch). With this update, everything is done in a single batch transform.  Why?  Part of the inspiration had to do with the mechanics of the huggingrace tokenizer, in particular how by default it returns a collated mini-batch of data given a list of sequences. And where do we get a list of examples with fastai? In the batch transforms!  So I thought, hey, why not do everything dynamically at batch time?  And with a bit of tweaking, I got everything to work pretty well.  The result is less code, faster mini-batch creation, less RAM utilization and time spent tokenizing (really helps with very large datasets), and more flexibility.</p>
 
 </div>
 </div>
@@ -173,75 +171,7 @@ The argument must be an iterable if specified.</p>
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h2 id="HF_BatchTransform" class="doc_header"><code>class</code> <code>HF_BatchTransform</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/data/core.py#L54" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>HF_BatchTransform</code>(<strong><code>hf_arch</code></strong>, <strong><code>hf_tokenizer</code></strong>, <strong><code>hf_input_return_type</code></strong>=<em><code>HF_BaseInput</code></em>, <strong>**<code>kwargs</code></strong>) :: <code>Transform</code></p>
-</blockquote>
-<p>Handles everything you need to assemble a mini-batch of inputs and targets, as well as decode
-HF_TokenizerTransform inputs</p>
-
-</div>
-
-</div>
-
-</div>
-</div>
-
-</div>
-    {% endraw %}
-
-    {% raw %}
-    
-<div class="cell border-box-sizing code_cell rendered">
-
-</div>
-    {% endraw %}
-
-    {% raw %}
-    
-<div class="cell border-box-sizing code_cell rendered">
-
-<div class="output_wrapper">
-<div class="output">
-
-<div class="output_area">
-
-
-<div class="output_markdown rendered_html output_subarea ">
-<h4 id="pad_hf_inputs" class="doc_header"><code>pad_hf_inputs</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/data/core.py#L68" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>pad_hf_inputs</code>(<strong><code>samples</code></strong>, <strong><code>arch</code></strong>, <strong><code>hf_input_idxs</code></strong>=<em><code>[0]</code></em>, <strong><code>pad_idx</code></strong>=<em><code>0</code></em>, <strong><code>pad_first</code></strong>=<em><code>False</code></em>)</p>
-</blockquote>
-<p>Add this to your batch transforms if you are using dynamic padding with <a href="/blurr/data-core.html#HF_TokenizerTransform"><code>HF_TokenizerTransform</code></a>
-(e.g., padding is set to anything except 'max_length') to ensure all HF tensors are sized to longest input
-in the batch.</p>
-<p>Note: This is automatically included as necessary by <a href="/blurr/data-core.html#HF_TextBlock"><code>HF_TextBlock</code></a></p>
-
-</div>
-
-</div>
-
-</div>
-</div>
-
-</div>
-    {% endraw %}
-
-    {% raw %}
-    
-<div class="cell border-box-sizing code_cell rendered">
-
-</div>
-    {% endraw %}
-
-    {% raw %}
-    
-<div class="cell border-box-sizing code_cell rendered">
-
-<div class="output_wrapper">
-<div class="output">
-
-<div class="output_area">
-
-
-<div class="output_markdown rendered_html output_subarea ">
-<h2 id="HF_TextBlock" class="doc_header"><code>class</code> <code>HF_TextBlock</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/data/core.py#L101" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>HF_TextBlock</code>(<strong><code>hf_arch</code></strong>, <strong><code>hf_tokenizer</code></strong>, <strong><code>hf_tok_tfm</code></strong>=<em><code>None</code></em>, <strong><code>max_length</code></strong>=<em><code>512</code></em>, <strong><code>padding</code></strong>=<em><code>True</code></em>, <strong><code>truncation</code></strong>=<em><code>True</code></em>, <strong><code>is_pretokenized</code></strong>=<em><code>False</code></em>, <strong><code>hf_batch_tfm</code></strong>=<em><code>None</code></em>, <strong><code>hf_input_return_type</code></strong>=<em><code>HF_BaseInput</code></em>, <strong><code>hf_input_idxs</code></strong>=<em><code>[0]</code></em>, <strong><code>dl_type</code></strong>=<em><code>SortedDL</code></em>, <strong><code>tok_kwargs</code></strong>=<em><code>{}</code></em>, <strong><code>batch_kwargs</code></strong>=<em><code>{}</code></em>, <strong>**<code>kwargs</code></strong>) :: <code>TransformBlock</code></p>
+<h2 id="HF_TextBlock" class="doc_header"><code>class</code> <code>HF_TextBlock</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/data/core.py#L67" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>HF_TextBlock</code>(<strong><code>hf_arch</code></strong>=<em><code>None</code></em>, <strong><code>hf_tokenizer</code></strong>=<em><code>None</code></em>, <strong><code>hf_batch_tfm</code></strong>=<em><code>None</code></em>, <strong><code>max_length</code></strong>=<em><code>512</code></em>, <strong><code>padding</code></strong>=<em><code>True</code></em>, <strong><code>truncation</code></strong>=<em><code>True</code></em>, <strong><code>is_pretokenized</code></strong>=<em><code>False</code></em>, <strong><code>n_tok_inps</code></strong>=<em><code>1</code></em>, <strong><code>tok_kwargs</code></strong>=<em><code>{}</code></em>, <strong><code>hf_input_return_type</code></strong>=<em><code>HF_BaseInput</code></em>, <strong><code>dl_type</code></strong>=<em><code>SortedDL</code></em>, <strong><code>batch_kwargs</code></strong>=<em><code>{}</code></em>, <strong>**<code>kwargs</code></strong>) :: <code>TransformBlock</code></p>
 </blockquote>
 <p>A basic wrapper that links defaults transforms for the data block API</p>
 
@@ -257,7 +187,8 @@ in the batch.</p>
 
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p><a href="/blurr/data-core.html#HF_TextBlock"><code>HF_TextBlock</code></a> has been dramatically simplified from it's predecessor.  It handles setting up your <a href="/blurr/data-core.html#HF_TokenizerTransform"><code>HF_TokenizerTransform</code></a> and <a href="/blurr/data-core.html#HF_BatchTransform"><code>HF_BatchTransform</code></a> transform regardless of data source (e.g., this will work with files, DataFrames, whatever).</p>
+<p>A basic wrapper that links defaults transforms for the data block API</p>
+<p><a href="/blurr/data-core.html#HF_TextBlock"><code>HF_TextBlock</code></a> has been dramatically simplified from it's predecessor. It handles setting up your <a href="/blurr/data-core.html#HF_BatchTransform"><code>HF_BatchTransform</code></a> transform regardless of data source (e.g., this will work with files, DataFrames, whatever). For it to work, you must either pass in your own instance of a <a href="/blurr/data-core.html#HF_BatchTransform"><code>HF_BatchTransform</code></a> class or the huggingface architecture and tokenizer via the <code>hf_arch</code> and <code>hf_tokenizer</code> (the other args are optional).</p>
 
 </div>
 </div>
@@ -426,28 +357,7 @@ in the batch.</p>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">blocks</span> <span class="o">=</span> <span class="p">(</span><span class="n">HF_TextBlock</span><span class="p">(</span><span class="n">hf_arch</span><span class="o">=</span><span class="n">hf_arch</span><span class="p">,</span> <span class="n">hf_tokenizer</span><span class="o">=</span><span class="n">hf_tokenizer</span><span class="p">),</span> <span class="n">CategoryBlock</span><span class="p">)</span>
-
-<span class="n">dblock</span> <span class="o">=</span> <span class="n">DataBlock</span><span class="p">(</span><span class="n">blocks</span><span class="o">=</span><span class="n">blocks</span><span class="p">,</span> 
-                   <span class="n">get_x</span><span class="o">=</span><span class="n">ColReader</span><span class="p">(</span><span class="s1">&#39;text&#39;</span><span class="p">),</span> 
-                   <span class="n">get_y</span><span class="o">=</span><span class="n">ColReader</span><span class="p">(</span><span class="s1">&#39;label&#39;</span><span class="p">),</span> 
-                   <span class="n">splitter</span><span class="o">=</span><span class="n">ColSplitter</span><span class="p">(</span><span class="n">col</span><span class="o">=</span><span class="s1">&#39;is_valid&#39;</span><span class="p">))</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-</div>
-    {% endraw %}
-
-    {% raw %}
-    
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span> 
+<span class="n">dblock</span> <span class="o">=</span> <span class="n">DataBlock</span><span class="p">(</span><span class="n">blocks</span><span class="o">=</span><span class="n">blocks</span><span class="p">,</span> <span class="n">get_x</span><span class="o">=</span><span class="n">ColReader</span><span class="p">(</span><span class="s1">&#39;text&#39;</span><span class="p">),</span> <span class="n">get_y</span><span class="o">=</span><span class="n">ColReader</span><span class="p">(</span><span class="s1">&#39;label&#39;</span><span class="p">),</span> <span class="n">splitter</span><span class="o">=</span><span class="n">ColSplitter</span><span class="p">(</span><span class="n">col</span><span class="o">=</span><span class="s1">&#39;is_valid&#39;</span><span class="p">))</span>
 </pre></div>
 
     </div>
@@ -481,6 +391,23 @@ in the batch.</p>
 
 <div class="inner_cell">
     <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">b</span> <span class="o">=</span> <span class="n">dls</span><span class="o">.</span><span class="n">one_batch</span><span class="p">()</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    {% endraw %}
+
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">b</span> <span class="o">=</span> <span class="n">dls</span><span class="o">.</span><span class="n">one_batch</span><span class="p">();</span> <span class="nb">len</span><span class="p">(</span><span class="n">b</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">b</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;input_ids&#39;</span><span class="p">]),</span> <span class="n">b</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;input_ids&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">b</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> 
 </pre></div>
 
@@ -496,7 +423,7 @@ in the batch.</p>
 
 
 <div class="output_text output_subarea output_execute_result">
-<pre>(2, 4, torch.Size([4, 177]), 4)</pre>
+<pre>(2, 4, torch.Size([4, 512]), 4)</pre>
 </div>
 
 </div>
@@ -579,12 +506,12 @@ in the batch.</p>
   <tbody>
     <tr>
       <th>0</th>
-      <td>Un-bleeping-believable! Meg Ryan doesn't even look her usual pert lovable self in this, which normally makes me forgive her shallow ticky acting schtick. Hard to believe she was the producer on this dog. Plus Kevin Kline: what kind of suicide trip has his career been on? Whoosh... Banzai!!! Finally this was directed by the guy who did Big Chill? Must be a replay of Jonestown - hollywood style. Wooofff!</td>
+      <td>Raising Victor Vargas: A Review&lt;br /&gt;&lt;br /&gt;You know, Raising Victor Vargas is like sticking your hands into a big, steaming bowl of oatmeal. It's warm and gooey, but you're not sure if it feels right. Try as I might, no matter how warm and gooey Raising Victor Vargas became I was always aware that something didn't quite feel right. Victor Vargas suffers from a certain overconfidence on the director's part. Apparently, the director thought that the ethnic backdrop of a Latino family on the lower east side, and an idyllic storyline would make the film critic proof. He was right, but it didn't fool me. Raising Victor Vargas is the story about a seventeen-year old boy called, you guessed it, Victor Vargas (Victor Rasuk) who lives his teenage years chasing more skirt than the Rolling Stones could do in all the years they've toured. The movie starts off in `Ugly Fat' Donna's bedroom where Victor is sure to seduce her, but a cry from outside disrupts his plans when his best-friend Harold (Kevin Rivera) comes-a-looking for him. Caught in the attempt by Harold and his sister, Victor Vargas runs off for damage control. Yet even with the embarrassing implication that he's been boffing the homeliest girl in the neighborhood, nothing dissuades young Victor from going off on the hunt for more fresh meat. On a hot, New York City day they make way to the local public swimming pool where Victor's eyes catch a glimpse of the lovely young nymph Judy (Judy Marte), who's not just pretty, but a strong and independent too. The relationship that develops between Victor and Judy becomes the focus of the film. The story also focuses on Victor's family that is comprised of his grandmother or abuelita (Altagracia Guzman), his brother Nino (also played by real life brother to Victor, Silvestre Rasuk) and his sister Vicky (Krystal Rodriguez). The action follows Victor between scenes with Judy and scenes with his family. Victor tries to cope with being an oversexed pimp-daddy, his feelings for Judy and his grandmother's conservative Catholic upbringing.&lt;br /&gt;&lt;br /&gt;The problems that arise from Raising Victor Vargas are a few, but glaring errors. Throughout the film you get to know certain characters like Vicky, Nino, Grandma,</td>
       <td>negative</td>
     </tr>
     <tr>
       <th>1</th>
-      <td>Everyday we can watch a great number of film, soap... on tv. Sometimes a miracle happens. A great film, with real feelings, with great actors, with a great realisator-director. For me there are two films that everyone needs to see : the first is the Pacula? "Sophie's choice" with Meryl Streep. The second is "Journey of Hope". As human beings, we need to learn about humility, about love of the others, about acceptation of other civilisation, other way of living. We also have to struggle against racism and fascim. We must avoid judging, criticize; we only have to love our earth companion. This wonderful film, helps us reaching John (Lennon) his dream : Imagine all the people living live in peace. These two films are difficult to see : watch these, but sure you will be hurt, but better. Great film, great actors, terrible story, pain and cry guarantee, but also better understanding of the others. Enjoy it.</td>
+      <td>The year 2005 saw no fewer than 3 filmed productions of H. G. Wells' great novel, "War of the Worlds". This is perhaps the least well-known and very probably the best of them. No other version of WotW has ever attempted not only to present the story very much as Wells wrote it, but also to create the atmosphere of the time in which it was supposed to take place: the last year of the 19th Century, 1900  using Wells' original setting, in and near Woking, England.&lt;br /&gt;&lt;br /&gt;IMDb seems unfriendly to what they regard as "spoilers". That might apply with some films, where the ending might actually be a surprise, but with regard to one of the most famous novels in the world, it seems positively silly. I have no sympathy for people who have neglected to read one of the seminal works in English literature, so let's get right to the chase. The aliens are destroyed through catching an Earth disease, against which they have no immunity. If that's a spoiler, so be it; after a book and 3 other films (including the 1953 classic), you ought to know how this ends.&lt;br /&gt;&lt;br /&gt;This film, which follows Wells' plot in the main, is also very cleverly presented  in a way that might put many viewers off due to their ignorance of late 19th/early 20th Century photography. Although filmed in a widescreen aspect, the film goes to some lengths to give an impression of contemporaneity. The general coloration of skin and clothes display a sepia tint often found in old photographs (rather than black). Colors are often reminiscent of hand-tinting. At other times, colors are washed out. These variations are typical of early films, which didn't use standardized celluloid stock and therefore presented a good many changes in print quality, even going from black/white to sepia/white to blue/white to reddish/white and so on  as you'll see on occasion here. The special effects are deliberately retrograde, of a sort seen even as late as the 1920s  and yet the Martians and their machines are very much as Wells described them and have a more nearly realistic "feel". Some of effects are really awkward  such as the destruction of Big Ben. The acting is often more in the style of that period than ours. Some aspects of Victorian dress may appear odd, particularly the use of pomade or</td>
       <td>positive</td>
     </tr>
   </tbody>
@@ -639,6 +566,7 @@ in the batch.</p>
  transformers.modeling_flaubert.FlaubertForSequenceClassification,
  transformers.modeling_longformer.LongformerForSequenceClassification,
  transformers.modeling_mobilebert.MobileBertForSequenceClassification,
+ transformers.modeling_reformer.ReformerForSequenceClassification,
  transformers.modeling_roberta.RobertaForSequenceClassification,
  transformers.modeling_xlm.XLMForSequenceClassification,
  transformers.modeling_xlm_roberta.XLMRobertaForSequenceClassification,
@@ -714,19 +642,21 @@ in the batch.</p>
 <div class=" highlight hl-ipython3"><pre><span></span><span class="c1">#hide_output</span>
 <span class="n">task</span> <span class="o">=</span> <span class="n">HF_TASKS_AUTO</span><span class="o">.</span><span class="n">SequenceClassification</span>
 <span class="n">bsz</span> <span class="o">=</span> <span class="mi">2</span>
+<span class="n">seq_sz</span> <span class="o">=</span> <span class="mi">128</span>
 
 <span class="n">test_results</span> <span class="o">=</span> <span class="p">[]</span>
 <span class="k">for</span> <span class="n">model_name</span> <span class="ow">in</span> <span class="n">pretrained_model_names</span><span class="p">:</span>
     <span class="n">error</span><span class="o">=</span><span class="kc">None</span>
     
     <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;=== </span><span class="si">{</span><span class="n">model_name</span><span class="si">}</span><span class="s1"> ===</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
-    
-    <span class="n">hf_arch</span><span class="p">,</span> <span class="n">hf_config</span><span class="p">,</span> <span class="n">hf_tokenizer</span><span class="p">,</span> <span class="n">hf_model</span> <span class="o">=</span> <span class="n">BLURR_MODEL_HELPER</span><span class="o">.</span><span class="n">get_hf_objects</span><span class="p">(</span><span class="n">model_name</span><span class="p">,</span> <span class="n">task</span><span class="o">=</span><span class="n">task</span><span class="p">)</span>
-    
+
+    <span class="n">hf_arch</span><span class="p">,</span> <span class="n">hf_config</span><span class="p">,</span> <span class="n">hf_tokenizer</span><span class="p">,</span> <span class="n">hf_model</span> <span class="o">=</span> <span class="n">BLURR_MODEL_HELPER</span><span class="o">.</span><span class="n">get_hf_objects</span><span class="p">(</span><span class="n">model_name</span><span class="p">,</span> <span class="n">task</span><span class="o">=</span><span class="n">task</span><span class="p">)</span>    
     <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;architecture:</span><span class="se">\t</span><span class="si">{</span><span class="n">hf_arch</span><span class="si">}</span><span class="se">\n</span><span class="s1">tokenizer:</span><span class="se">\t</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">hf_tokenizer</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
     
-    <span class="n">blocks</span> <span class="o">=</span> <span class="p">(</span><span class="n">HF_TextBlock</span><span class="p">(</span><span class="n">hf_arch</span><span class="o">=</span><span class="n">hf_arch</span><span class="p">,</span> <span class="n">hf_tokenizer</span><span class="o">=</span><span class="n">hf_tokenizer</span><span class="p">,</span> <span class="n">padding</span><span class="o">=</span><span class="s1">&#39;max_length&#39;</span><span class="p">,</span> <span class="n">max_length</span><span class="o">=</span><span class="mi">128</span><span class="p">),</span> 
-              <span class="n">CategoryBlock</span><span class="p">)</span>
+    <span class="n">blocks</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="n">HF_TextBlock</span><span class="p">(</span><span class="n">hf_arch</span><span class="o">=</span><span class="n">hf_arch</span><span class="p">,</span> <span class="n">hf_tokenizer</span><span class="o">=</span><span class="n">hf_tokenizer</span><span class="p">,</span> <span class="n">padding</span><span class="o">=</span><span class="s1">&#39;max_length&#39;</span><span class="p">,</span> <span class="n">max_length</span><span class="o">=</span><span class="n">seq_sz</span><span class="p">),</span> 
+        <span class="n">CategoryBlock</span>
+    <span class="p">)</span>
 
     <span class="n">dblock</span> <span class="o">=</span> <span class="n">DataBlock</span><span class="p">(</span><span class="n">blocks</span><span class="o">=</span><span class="n">blocks</span><span class="p">,</span> 
                        <span class="n">get_x</span><span class="o">=</span><span class="n">ColReader</span><span class="p">(</span><span class="s1">&#39;text&#39;</span><span class="p">),</span> 
@@ -740,11 +670,11 @@ in the batch.</p>
         <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;*** TESTING DataLoaders ***</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
         <span class="n">test_eq</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">b</span><span class="p">),</span> <span class="mi">2</span><span class="p">)</span>
         <span class="n">test_eq</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">b</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;input_ids&#39;</span><span class="p">]),</span> <span class="n">bsz</span><span class="p">)</span>
-        <span class="n">test_eq</span><span class="p">(</span><span class="n">b</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;input_ids&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Size</span><span class="p">([</span><span class="n">bsz</span><span class="p">,</span> <span class="mi">128</span><span class="p">]))</span>
+        <span class="n">test_eq</span><span class="p">(</span><span class="n">b</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;input_ids&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Size</span><span class="p">([</span><span class="n">bsz</span><span class="p">,</span> <span class="n">seq_sz</span><span class="p">]))</span>
         <span class="n">test_eq</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">b</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span> <span class="n">bsz</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="p">(</span><span class="nb">hasattr</span><span class="p">(</span><span class="n">hf_tokenizer</span><span class="p">,</span> <span class="s1">&#39;add_prefix_space&#39;</span><span class="p">)):</span>
-            <span class="n">test_eq</span><span class="p">(</span><span class="n">dls</span><span class="o">.</span><span class="n">tfms</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;add_prefix_space&#39;</span><span class="p">],</span> <span class="kc">True</span><span class="p">)</span>
+            <span class="n">test_eq</span><span class="p">(</span><span class="n">dls</span><span class="o">.</span><span class="n">before_batch</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">tok_kwargs</span><span class="p">[</span><span class="s1">&#39;add_prefix_space&#39;</span><span class="p">],</span> <span class="kc">True</span><span class="p">)</span>
             
         <span class="n">test_results</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">hf_arch</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">hf_tokenizer</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="n">model_name</span><span class="p">,</span> <span class="s1">&#39;PASSED&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">))</span>
         <span class="n">dls</span><span class="o">.</span><span class="n">show_batch</span><span class="p">(</span><span class="n">dataloaders</span><span class="o">=</span><span class="n">dls</span><span class="p">,</span> <span class="n">max_n</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
@@ -1311,7 +1241,7 @@ in the batch.</p>
 
 
 <div class="output_text output_subarea output_execute_result">
-<pre>(2, torch.Size([4, 90]), torch.Size([4, 7]))</pre>
+<pre>(2, torch.Size([4, 391]), torch.Size([4, 7]))</pre>
 </div>
 
 </div>
@@ -1354,12 +1284,12 @@ in the batch.</p>
   <tbody>
     <tr>
       <th>0</th>
-      <td>Keeping it simple is a good principle to follow in so many areas.</td>
+      <td>Predatory patrol towing isn't a big subject, and there is no advocacy group that is paying any attention to it, but the City of Portland has completely backed off of enforcing state law where the towing predators are operating on private property, and this is Commissioner Novick's failure. He's in charge of towing.\n\nThe City has allowed Retriever Towing to operate in open violation of ADA for years at their NW Quimby lot, and there is absolutely no provision in city ordinance that takes into account when they tow a mobility-disabled person's vehicle.  Wheelchair or no wheelchair, the person has to get themselves to the tow yard (which does not have wheelchair access).\n\nLed by Senator Avel Gordly, the legislature enacted important new citizen protections against predatory towing effective January 1, 2008, but there is no effective way for Portlanders to learn what their rights are other than what the predatory towers themselves tell you. A description of the protections has never appeared on the City website. The version posted there has never been correct.\n\nIt is only in the past two years the the City began enforcing the signage requirements, and the City Towing Coordinator worked with the towers to pass the costs onto the citizens. $ 20 of every tow bill goes to the towers to "compensate" them for their signs, with no upper limit, and your $ 20 is likely to be paying for signs completely unrelated to the place your vehicle was towed from.\n\nPortland towers are allowed to operate in open violation of state law and the City's own statutes, providing towing services to property owners for free. That is specifically prohibited by state law and City ordinance.\n\nSenator Gordly's legislation was intended to protect people living in apartment complexes, generally low-income, minority populations, and they have no one standing up for them in City Hall. I hope you are that champion.</td>
       <td></td>
     </tr>
     <tr>
       <th>1</th>
-      <td>Oregon Live is reporting today that the City Council of Portland just approved an allocation of $30,000 to bus homeless people out of Portland.  That's one way to reduce the number of homeless people in the community that maybe Eugene should be looking at.  Even at $150 a ticket you could bus 200 people out with that kind of money.</td>
+      <td>Is it not in the best interest of the OLCC to help facilitate Maria &amp; Refuge in procuring a liquor lisence?\nI was at a private event at Refuge where alcohol was not sold. I was surprised this was the case. Instead, beer &amp; wine were offered at NO CHARGE. Refuge is a beautiful space &amp; a great addition to our city. I know Maria has been doing her best to get on top of this issue. Of course she is willing to comply but it sounds to me like the OLCC is doing a great job at hindering Marias efforts. It is disheartening &amp; extremely concerning to hear she was arrested under these circumstances. It appears to me she has been targeted. OLCC why don't you give her the support she needs to get her business up &amp; running instead of hindering the process. Maria has integrity &amp; has positively contributed to our community in many noteworthy ways. WW why don't you do an article on that? Better yet, investigate the OLCC &amp; see if you can come up with an\nThe pictures I see don't show any exchange of money.</td>
       <td></td>
     </tr>
   </tbody>

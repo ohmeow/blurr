@@ -43,12 +43,16 @@ def pre_process_squad(row, hf_arch, hf_tokenizer):
     return row
 
 # Cell
-class HF_QuestionAnswerInput(list): pass
+class HF_QuestionAnswerInput(HF_BaseInput): pass
 
 # Cell
 class HF_QABatchTransform(HF_BatchTransform):
-    def __init__(self, hf_arch, hf_tokenizer, **kwargs):
-        super().__init__(hf_arch, hf_tokenizer, HF_QuestionAnswerInput, **kwargs)
+    def __init__(self, hf_arch, hf_tokenizer, max_length=None, padding=True, truncation=True, is_pretokenized=False,
+                 n_tok_inps=1, hf_input_return_type=HF_QuestionAnswerInput, tok_kwargs={}, **kwargs):
+
+        super().__init__(hf_arch, hf_tokenizer,
+                         max_length=max_length, padding=padding, truncation=truncation, is_pretokenized=is_pretokenized,
+                         n_tok_inps=n_tok_inps, hf_input_return_type=hf_input_return_type, tok_kwargs=tok_kwargs, **kwargs)
 
     def encodes(self, samples):
         samples = super().encodes(samples)
@@ -62,12 +66,12 @@ class HF_QABatchTransform(HF_BatchTransform):
 
 # Cell
 @typedispatch
-def show_batch(x:HF_QuestionAnswerInput, y, samples, dataloaders=None, ctxs=None, max_n=6, **kwargs):
-    hf_tokenizer = dataloaders.valid.hf_tokenizer
+def show_batch(x:HF_QuestionAnswerInput, y, samples, dataloaders, ctxs=None, max_n=6, **kwargs):
+    hf_tokenizer = dataloaders.before_batch[0].hf_tokenizer
 
     res = L()
-    for sample, input_ids, start, end in zip(samples, x[0], *y):
-        txt = sample[0]
+    for sample, input_ids, start, end in zip(samples, x, *y):
+        txt = hf_tokenizer.decode(sample[0], skip_special_tokens=True)
         ans_toks = hf_tokenizer.convert_ids_to_tokens(input_ids, skip_special_tokens=False)[start:end]
         res.append((txt, (start.item(),end.item()), hf_tokenizer.convert_tokens_to_string(ans_toks)))
 
