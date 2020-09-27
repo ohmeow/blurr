@@ -151,7 +151,7 @@ def blurr_predict_tokens(self:Learner, inp, **kargs):
                        max_length=hf_textblock_tfm.max_length,
                        padding=hf_textblock_tfm.padding,
                        truncation=hf_textblock_tfm.truncation,
-                       is_pretokenized=hf_textblock_tfm.is_pretokenized,
+                       is_split_into_words=hf_textblock_tfm.is_split_into_words,
                        **tok_kwargs)
 
     special_toks_msk = L(res['special_tokens_mask'])

@@ -53,11 +53,11 @@ class HF_TokenClassInput(HF_BaseInput): pass
 class HF_TokenClassBatchTransform(HF_BatchTransform):
     def __init__(self, hf_arch, hf_tokenizer,
                  ignore_token_id=CrossEntropyLossFlat().ignore_index,
-                 max_length=None, padding=True, truncation=True, is_pretokenized=True,
+                 max_length=None, padding=True, truncation=True, is_split_into_words=True,
                  n_tok_inps=1, hf_input_return_type=HF_TokenClassInput, tok_kwargs={}, **kwargs):
 
         super().__init__(hf_arch, hf_tokenizer,
-                         max_length=max_length, padding=padding, truncation=truncation, is_pretokenized=is_pretokenized,
+                         max_length=max_length, padding=padding, truncation=truncation, is_split_into_words=is_split_into_words,
                          n_tok_inps=n_tok_inps, hf_input_return_type=hf_input_return_type, tok_kwargs=tok_kwargs, **kwargs)
 
         self.ignore_token_id = ignore_token_id

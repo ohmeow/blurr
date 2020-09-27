@@ -47,12 +47,15 @@ class HF_QuestionAnswerInput(HF_BaseInput): pass
 
 # Cell
 class HF_QABatchTransform(HF_BatchTransform):
-    def __init__(self, hf_arch, hf_tokenizer, max_length=None, padding=True, truncation=True, is_pretokenized=False,
-                 n_tok_inps=1, hf_input_return_type=HF_QuestionAnswerInput, tok_kwargs={}, **kwargs):
+    def __init__(self, hf_arch, hf_tokenizer, max_length=None, padding=True, truncation=True,
+                 is_split_into_words=False, n_tok_inps=1, hf_input_return_type=HF_QuestionAnswerInput,
+                 tok_kwargs={}, **kwargs):
 
         super().__init__(hf_arch, hf_tokenizer,
-                         max_length=max_length, padding=padding, truncation=truncation, is_pretokenized=is_pretokenized,
-                         n_tok_inps=n_tok_inps, hf_input_return_type=hf_input_return_type, tok_kwargs=tok_kwargs, **kwargs)
+                         max_length=max_length, padding=padding, truncation=truncation,
+                         is_split_into_words=is_split_into_words,
+                         n_tok_inps=n_tok_inps, hf_input_return_type=hf_input_return_type,
+                         tok_kwargs=tok_kwargs, **kwargs)
 
     def encodes(self, samples):
         samples = super().encodes(samples)

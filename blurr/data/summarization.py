@@ -18,11 +18,14 @@ class HF_SummarizationInput(HF_BaseInput): pass
 
 # Cell
 class HF_SummarizationBatchTransform(HF_BatchTransform):
-    def __init__(self, hf_arch, hf_tokenizer, max_length=None, padding=True, truncation=True, is_pretokenized=False,
-                 n_tok_inps=2, hf_input_return_type=HF_SummarizationInput, tok_kwargs={}, **kwargs):
+    def __init__(self, hf_arch, hf_tokenizer, max_length=None, padding=True, truncation=True,
+                 is_split_into_words=False, n_tok_inps=2, hf_input_return_type=HF_SummarizationInput,
+                 tok_kwargs={}, **kwargs):
 
-        super().__init__(hf_arch, hf_tokenizer, max_length=max_length, padding=padding, truncation=truncation, is_pretokenized=is_pretokenized,
-                         n_tok_inps=n_tok_inps, hf_input_return_type=hf_input_return_type, tok_kwargs=tok_kwargs.copy(), **kwargs)
+        super().__init__(hf_arch, hf_tokenizer, max_length=max_length, padding=padding, truncation=truncation,
+                         is_split_into_words=is_split_into_words, n_tok_inps=n_tok_inps,
+                         hf_input_return_type=hf_input_return_type,
+                         tok_kwargs=tok_kwargs.copy(), **kwargs)
 
     def encodes(self, samples):
         samples = super().encodes(samples)
@@ -49,6 +52,8 @@ class HF_SummarizationBatchTransform(HF_BatchTransform):
 def show_batch(x:HF_SummarizationInput, y, samples, dataloaders, ctxs=None, max_n=6, **kwargs):
     hf_tokenizer = dataloaders.before_batch[0].hf_tokenizer
 
-    res = L([ (hf_tokenizer.decode(s[0], skip_special_tokens=True), hf_tokenizer.decode(s[1], skip_special_tokens=True)) for s in samples ])
+    res = L([ (hf_tokenizer.decode(s[0], skip_special_tokens=True), hf_tokenizer.decode(s[1], skip_special_tokens=True))
+             for s in samples ])
+
     display_df(pd.DataFrame(res, columns=['text', 'target'])[:max_n])
     return ctxs
