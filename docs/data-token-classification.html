@@ -2,6 +2,7 @@
 
 title: data.token_classification
 
+
 keywords: fastai
 sidebar: home_sidebar
 
@@ -363,7 +364,7 @@ You should probably TRAIN this model on a down-stream task to be able to use it 
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h2 id="HF_TokenClassBatchTransform" class="doc_header"><code>class</code> <code>HF_TokenClassBatchTransform</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/data/token_classification.py#L53" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>HF_TokenClassBatchTransform</code>(<strong><code>hf_arch</code></strong>, <strong><code>hf_tokenizer</code></strong>, <strong><code>ignore_token_id</code></strong>=<em><code>-100</code></em>, <strong><code>max_length</code></strong>=<em><code>None</code></em>, <strong><code>padding</code></strong>=<em><code>True</code></em>, <strong><code>truncation</code></strong>=<em><code>True</code></em>, <strong><code>is_pretokenized</code></strong>=<em><code>True</code></em>, <strong><code>n_tok_inps</code></strong>=<em><code>1</code></em>, <strong><code>hf_input_return_type</code></strong>=<em><code>HF_TokenClassInput</code></em>, <strong><code>tok_kwargs</code></strong>=<em><code>{}</code></em>, <strong>**<code>kwargs</code></strong>) :: <a href="/blurr/data-core.html#HF_BatchTransform"><code>HF_BatchTransform</code></a></p>
+<h2 id="HF_TokenClassBatchTransform" class="doc_header"><code>class</code> <code>HF_TokenClassBatchTransform</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/data/token_classification.py#L53" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>HF_TokenClassBatchTransform</code>(<strong><code>hf_arch</code></strong>, <strong><code>hf_tokenizer</code></strong>, <strong><code>ignore_token_id</code></strong>=<em><code>-100</code></em>, <strong><code>max_length</code></strong>=<em><code>None</code></em>, <strong><code>padding</code></strong>=<em><code>True</code></em>, <strong><code>truncation</code></strong>=<em><code>True</code></em>, <strong><code>is_split_into_words</code></strong>=<em><code>True</code></em>, <strong><code>n_tok_inps</code></strong>=<em><code>1</code></em>, <strong><code>hf_input_return_type</code></strong>=<em><code>HF_TokenClassInput</code></em>, <strong><code>tok_kwargs</code></strong>=<em><code>{}</code></em>, <strong>**<code>kwargs</code></strong>) :: <a href="/blurr/data-core.html#HF_BatchTransform"><code>HF_BatchTransform</code></a></p>
 </blockquote>
 <p>Handles everything you need to assemble a mini-batch of inputs and targets, as well as decode the dictionary produced
 as a byproduct of the tokenization process in the <code>encodes</code> method.</p>
@@ -392,7 +393,7 @@ as a byproduct of the tokenization process in the <code>encodes</code> method.</
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">hf_batch_tfm</span> <span class="o">=</span> <span class="n">HF_TokenClassBatchTransform</span><span class="p">(</span><span class="n">hf_arch</span><span class="p">,</span> <span class="n">hf_tokenizer</span><span class="p">,</span> <span class="n">is_pretokenized</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">tok_kwargs</span><span class="o">=</span><span class="p">{</span> <span class="s1">&#39;return_special_tokens_mask&#39;</span><span class="p">:</span> <span class="kc">True</span> <span class="p">})</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">hf_batch_tfm</span> <span class="o">=</span> <span class="n">HF_TokenClassBatchTransform</span><span class="p">(</span><span class="n">hf_arch</span><span class="p">,</span> <span class="n">hf_tokenizer</span><span class="p">,</span> <span class="n">is_split_into_words</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">tok_kwargs</span><span class="o">=</span><span class="p">{</span> <span class="s1">&#39;return_special_tokens_mask&#39;</span><span class="p">:</span> <span class="kc">True</span> <span class="p">})</span>
 
 <span class="n">blocks</span> <span class="o">=</span> <span class="p">(</span>
     <span class="n">HF_TextBlock</span><span class="p">(</span><span class="n">hf_batch_tfm</span><span class="o">=</span><span class="n">hf_batch_tfm</span><span class="p">),</span> 
@@ -548,7 +549,7 @@ as a byproduct of the tokenization process in the <code>encodes</code> method.</
     </tr>
     <tr>
       <th>1</th>
-      <td>[('Scenes', 'B-OTH'), ('of', 'I-OTH'), ('a', 'I-OTH'), ('Sexual', 'I-OTH'), ('Nature', 'I-OTH'), ('(', 'O'), ('GB', 'O'), ('2006', 'O'), (')', 'O'), ('-', 'O'), ('Regie', 'O'), (':', 'O'), ('Ed', 'B-PER'), ('Blum', 'I-PER'), ('Shortbus', 'B-OTH'), ('(', 'O'), ('USA', 'B-LOC'), ('2006', 'O'), (')', 'O'), ('-', 'O'), ('Regie', 'O'), (':', 'O'), ('John', 'B-PER'), ('Cameron', 'I-PER'), ('Mitchell', 'I-PER'), (':', 'O'), ('Film', 'O'), ('über', 'O'), ('den', 'O'), ('gleichnamigen', 'B-LOCderiv'), ('New', 'I-LOCderiv'), ('Yorker', 'O'), ('Club', 'O'), (',', 'O'), ('der', 'O'), ('verschiedensten', 'O'), ('Paaren', 'O'), ('eine', 'O'), ('Plattform', 'O'), ('zur', 'O'), ('Aufarbeitung', 'O'), ('ihrer', 'O'), ('Probleme', 'O'), ('bietet', 'O')]</td>
+      <td>[('Zugang', 'O'), ('und', 'O'), ('Engagement', 'O'), (':', 'O'), ('das', 'O'), ('eigentlich', 'O'), ('Neue', 'O'), ('an', 'O'), ('der', 'O'), ('Netz', 'O'), ('(', 'O'), ('werk', 'O'), (')', 'O'), ('kunst', 'O'), (',', 'O'), ('in', 'O'), (':', 'O'), ('Medien', 'O'), ('Kunst', 'O'), ('Netz', 'O'), (',', 'O'), ('2004', 'O'), (',', 'O'), ('URL', 'B-PER'), (':', 'O'), ('*', 'B-PER'), ('Arns', 'O'), (',', 'O'), ('Inke', 'O'), (':', 'B-LOC'), ('Netzkulturen', 'O'), (',', 'O'), ('Hamburg', 'O'), ('(', 'O'), ('eva', 'O'), (')', 'O'), (',', 'O'), ('2002', 'O'), (',', 'O'), ('S', 'O'), ('.', 'B-PER'), ('46', 'I-PER'), ('und', 'O'), ('81', 'O'), ('*', 'O'), ('Armin', 'B-LOC'), ('Medosch', 'O')]</td>
     </tr>
   </tbody>
 </table>
@@ -599,6 +600,8 @@ as a byproduct of the tokenization process in the <code>encodes</code> method.</
  transformers.modeling_distilbert.DistilBertForTokenClassification,
  transformers.modeling_electra.ElectraForTokenClassification,
  transformers.modeling_flaubert.FlaubertForTokenClassification,
+ transformers.modeling_funnel.FunnelForTokenClassification,
+ transformers.modeling_layoutlm.LayoutLMForTokenClassification,
  transformers.modeling_longformer.LongformerForTokenClassification,
  transformers.modeling_mobilebert.MobileBertForTokenClassification,
  transformers.modeling_roberta.RobertaForTokenClassification,
@@ -666,7 +669,7 @@ as a byproduct of the tokenization process in the <code>encodes</code> method.</
     <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;architecture:</span><span class="se">\t</span><span class="si">{</span><span class="n">hf_arch</span><span class="si">}</span><span class="se">\n</span><span class="s1">tokenizer:</span><span class="se">\t</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">hf_tokenizer</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
     
     <span class="n">hf_batch_tfm</span> <span class="o">=</span> <span class="n">HF_TokenClassBatchTransform</span><span class="p">(</span><span class="n">hf_arch</span><span class="p">,</span> <span class="n">hf_tokenizer</span><span class="p">,</span> <span class="n">padding</span><span class="o">=</span><span class="s1">&#39;max_length&#39;</span><span class="p">,</span> <span class="n">max_length</span><span class="o">=</span><span class="n">seq_sz</span><span class="p">,</span> 
-                                               <span class="n">is_pretokenized</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">tok_kwargs</span><span class="o">=</span><span class="p">{</span> <span class="s1">&#39;return_special_tokens_mask&#39;</span><span class="p">:</span> <span class="kc">True</span> <span class="p">})</span>
+                                               <span class="n">is_split_into_words</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">tok_kwargs</span><span class="o">=</span><span class="p">{</span> <span class="s1">&#39;return_special_tokens_mask&#39;</span><span class="p">:</span> <span class="kc">True</span> <span class="p">})</span>
 
     <span class="n">blocks</span> <span class="o">=</span> <span class="p">(</span>
         <span class="n">HF_TextBlock</span><span class="p">(</span><span class="n">hf_arch</span><span class="p">,</span> <span class="n">hf_tokenizer</span><span class="p">,</span> <span class="n">hf_batch_tfm</span><span class="o">=</span><span class="n">hf_batch_tfm</span><span class="p">),</span> 
