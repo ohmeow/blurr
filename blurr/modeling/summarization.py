@@ -57,12 +57,9 @@ class HF_SummarizationModelCallback(HF_BaseModelCallback):
     def before_batch(self): self.hf_loss = None
 
     def after_pred(self):
-        # the "labels" key will only be included in the input dictionary *IF* we are training with target labels,
-        # in which case the first output of the model will be the loss
-        if ('labels' in self.xb[0]):
-            self.hf_loss, self.learn.pred = self.pred[0], self.pred[1]
-        else:
-            self.learn.pred = self.pred[0]
+        super().after_pred()
+        # if the "labels" are included, we are training with target labels in which case the loss is returned
+        if (self.learn.loss): self.hf_loss = self.learn.loss
 
     def after_loss(self):
         # if we already have the loss from the model, update the Learner's loss to be it

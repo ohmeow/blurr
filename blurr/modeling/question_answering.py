@@ -14,8 +14,10 @@ from .core import *
 
 # Cell
 class HF_QstAndAnsModelCallback(HF_BaseModelCallback):
-    """We need to return everything from the model for question/answer tasks"""
-    def after_pred(self): self.learn.pred = self.pred
+    """The prediction is a combination start/end logits"""
+    def after_pred(self):
+        super().after_pred()
+        self.learn.pred = (self.pred.start_logits, self.pred.end_logits)
 
 # Cell
 class MultiTargetLoss(Module):

@@ -26,8 +26,10 @@ def hf_splitter(m):
 
 # Cell
 class HF_BaseModelWrapper(Module):
-    def __init__(self, hf_model):
+    def __init__(self, hf_model, output_hidden_states=False, output_attentions=False):
         super().__init__()
+
+        store_attr(self=self, names='output_hidden_states, output_attentions')
         self.hf_model = hf_model.cuda() if torch.cuda.is_available() else hf_model
 
         n_fwd_args = self.hf_model.forward.__code__.co_argcount
@@ -37,11 +39,19 @@ class HF_BaseModelWrapper(Module):
         for k in list(x):
             if k not in self.hf_model_fwd_args: del x[k]
 
-        return self.hf_model(**x)
+        return self.hf_model(**x,
+                             output_hidden_states=self.output_hidden_states,
+                             output_attentions=self.output_hidden_states,
+                             return_dict=True)
 
 # Cell
 class HF_BaseModelCallback(Callback):
-    def after_pred(self): self.learn.pred = self.pred[0]
+    def after_pred(self):
+        model_outputs = self.pred
+        if ('loss' in model_outputs): self.learn.loss = model_outputs.loss
+        if ('logits' in model_outputs): self.learn.pred = model_outputs.logits
+        if ('hidden_states' in model_outputs): self.learn.blurr_hidden_states = model_outputs.hidden_states
+        if ('attentions' in model_outputs): self.learn.blurr_attentions = model_outputs.attentions
 
 # Cell
 def blurr_module_summary(learn, *xb):
