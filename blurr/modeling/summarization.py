@@ -54,17 +54,6 @@ class HF_SummarizationModelCallback(HF_BaseModelCallback):
 
 
     # --- batch begin/after phases ---
-    def before_batch(self): self.hf_loss = None
-
-    def after_pred(self):
-        super().after_pred()
-        # if the "labels" are included, we are training with target labels in which case the loss is returned
-        if (self.learn.loss): self.hf_loss = self.learn.loss
-
-    def after_loss(self):
-        # if we already have the loss from the model, update the Learner's loss to be it
-        if (self.hf_loss is not None): self.learn.loss = self.hf_loss
-
     def after_batch(self):
         if (self.training or self.learn.y is None): return
 

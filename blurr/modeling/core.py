@@ -46,12 +46,27 @@ class HF_BaseModelWrapper(Module):
 
 # Cell
 class HF_BaseModelCallback(Callback):
+
+    def before_batch(self): self.hf_loss = None
+
     def after_pred(self):
         model_outputs = self.pred
-        if ('loss' in model_outputs): self.learn.loss = model_outputs.loss
-        if ('logits' in model_outputs): self.learn.pred = model_outputs.logits
-        if ('hidden_states' in model_outputs): self.learn.blurr_hidden_states = model_outputs.hidden_states
-        if ('attentions' in model_outputs): self.learn.blurr_attentions = model_outputs.attentions
+        self.learn.blurr_model_outputs = {}
+
+        for k,v in model_outputs.items():
+            # if the "labels" are included, we are training with target labels in which case the loss is returned
+            if (k == 'loss'):
+                self.hf_loss = v
+            # the logits represent the prediction
+            elif (k == 'logits'):
+                self.learn.pred = v
+            # add any other things included in model_outputs as blurr_{model_output_key}
+            else:
+                self.learn.blurr_model_outputs[k] = v
+
+    def after_loss(self):
+        # if we already have the loss from the model, update the Learner's loss to be it
+        if (self.hf_loss is not None): self.learn.loss = self.hf_loss
 
 # Cell
 def blurr_module_summary(learn, *xb):
