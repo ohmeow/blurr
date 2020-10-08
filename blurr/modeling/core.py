@@ -26,10 +26,10 @@ def hf_splitter(m):
 
 # Cell
 class HF_BaseModelWrapper(Module):
-    def __init__(self, hf_model, output_hidden_states=False, output_attentions=False):
+    def __init__(self, hf_model, output_hidden_states=False, output_attentions=False, hf_model_kwargs={}):
         super().__init__()
 
-        store_attr(self=self, names='output_hidden_states, output_attentions')
+        store_attr(self=self, names='output_hidden_states, output_attentions, hf_model_kwargs')
         self.hf_model = hf_model.cuda() if torch.cuda.is_available() else hf_model
 
         n_fwd_args = self.hf_model.forward.__code__.co_argcount
@@ -42,7 +42,8 @@ class HF_BaseModelWrapper(Module):
         return self.hf_model(**x,
                              output_hidden_states=self.output_hidden_states,
                              output_attentions=self.output_hidden_states,
-                             return_dict=True)
+                             return_dict=True,
+                             **self.hf_model_kwargs)
 
 # Cell
 class HF_BaseModelCallback(Callback):
