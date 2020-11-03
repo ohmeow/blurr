@@ -12,6 +12,8 @@ from fastai.text.all import *
 from ..data.all import *
 from .core import *
 
+logging.set_verbosity_error()
+
 # Cell
 class HF_QstAndAnsModelCallback(HF_BaseModelCallback):
     """The prediction is a combination start/end logits"""

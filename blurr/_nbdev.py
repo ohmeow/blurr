@@ -49,7 +49,8 @@ modules = ["utils.py",
            "modeling/token_classification.py",
            "modeling/question_answering.py",
            "modeling/summarization.py",
-           "modeling/language_modeling.py"]
+           "modeling/language_modeling.py",
+           "examples/multilabel_classification.py"]
 
 doc_url = "https://ohmeow.github.io/blurr/"
 

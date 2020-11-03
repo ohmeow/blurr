@@ -6,11 +6,12 @@ __all__ = ['calculate_rouge', 'HF_SummarizationModelCallback', 'summarization_sp
 import ast, torch
 from transformers import *
 from fastai.text.all import *
+from rouge_score import rouge_scorer, scoring
 
 from ..data.all import *
 from .core import *
 
-from rouge_score import rouge_scorer, scoring
+logging.set_verbosity_error()
 
 # Cell
 def calculate_rouge(predicted_txts, reference_txts, rouge_keys=["rouge1", "rouge2", "rougeL"], use_stemmer=True):
@@ -145,7 +146,8 @@ def blurr_summarize(self:Learner, inp, **kwargs):
     if (isinstance(inp, str)):
         input_ids = hf_tokenizer.encode(inp, padding=True, truncation=True, return_tensors='pt', **tok_kwargs)
     else:
-        input_ids = inp
+        # note (10/30/2020): as of pytorch 1.7, this has to be a plain ol tensor (not a subclass of TensorBase)
+        input_ids = inp.as_subclass(Tensor)
 
     input_ids = input_ids.to(self.model.hf_model.device)
 
@@ -162,7 +164,6 @@ def blurr_summarize(self:Learner, inp, **kwargs):
 @typedispatch
 def show_results(x:HF_SummarizationInput, y, samples, outs, learner, ctxs=None, max_n=6, **kwargs):
     hf_tokenizer = learner.dls.before_batch[0].hf_tokenizer
-
     gen_text_txts = learner.blurr_summarize(x)
     res = L([
         (hf_tokenizer.decode(s[0], skip_special_tokens=True),

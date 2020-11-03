@@ -13,6 +13,8 @@ from fastai.text.all import *
 from ..utils import *
 from .core import *
 
+logging.set_verbosity_error()
+
 # Cell
 class HF_SummarizationInput(HF_BaseInput): pass
 

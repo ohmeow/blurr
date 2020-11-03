@@ -13,6 +13,8 @@ import torch
 from transformers import *
 from fastai.text.all import *
 
+logging.set_verbosity_error()
+
 # Cell
 def pre_process_squad(row, hf_arch, hf_tokenizer):
     context, qst, ans = row['context'], row['question'], row['answer_text']

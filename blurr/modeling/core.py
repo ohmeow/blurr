@@ -12,6 +12,8 @@ from fastai.callback.hook import _print_shapes
 from ..utils import *
 from ..data.core import *
 
+logging.set_verbosity_error()
+
 # Cell
 def hf_splitter(m):
     """Splits the huggingface model based on various model architecture conventions"""

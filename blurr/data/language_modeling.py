@@ -12,3 +12,5 @@ from .core import *
 import torch
 from transformers import *
 from fastai.text.all import *
+
+logging.set_verbosity_error()

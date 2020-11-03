@@ -11,6 +11,8 @@ import torch
 from transformers import *
 from fastai.text.all import *
 
+logging.set_verbosity_error()
+
 # Cell
 def str_to_class(classname):
     "converts string representation to class"

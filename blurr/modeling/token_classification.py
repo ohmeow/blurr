@@ -12,6 +12,8 @@ from .core import *
 
 from seqeval import metrics as seq_metrics
 
+logging.set_verbosity_error()
+
 # Cell
 def calculate_token_class_metrics(pred_toks, targ_toks, metric_key):
     if (metric_key == 'accuracy'): return seq_metrics.accuracy_score(targ_toks, pred_toks)
