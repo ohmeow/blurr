@@ -218,24 +218,6 @@ nb_path: "nbs/01b_data-question-answering.ipynb"
 </div>
 </div>
 
-<div class="output_wrapper">
-<div class="output">
-
-<div class="output_area">
-
-<div class="output_subarea output_stream output_stderr output_text">
-<pre>Some weights of the model checkpoint at roberta-base were not used when initializing RobertaForQuestionAnswering: [&#39;lm_head.bias&#39;, &#39;lm_head.dense.weight&#39;, &#39;lm_head.dense.bias&#39;, &#39;lm_head.layer_norm.weight&#39;, &#39;lm_head.layer_norm.bias&#39;, &#39;lm_head.decoder.weight&#39;]
-- This IS expected if you are initializing RobertaForQuestionAnswering from the checkpoint of a model trained on another task or with another architecture (e.g. initializing a BertForSequenceClassification model from a BertForPretraining model).
-- This IS NOT expected if you are initializing RobertaForQuestionAnswering from the checkpoint of a model that you expect to be exactly identical (initializing a BertForSequenceClassification model from a BertForSequenceClassification model).
-Some weights of RobertaForQuestionAnswering were not initialized from the model checkpoint at roberta-base and are newly initialized: [&#39;qa_outputs.weight&#39;, &#39;qa_outputs.bias&#39;]
-You should probably TRAIN this model on a down-stream task to be able to use it for predictions and inference.
-</pre>
-</div>
-</div>
-
-</div>
-</div>
-
 </div>
     {% endraw %}
 
@@ -257,7 +239,7 @@ You should probably TRAIN this model on a down-stream task to be able to use it 
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h4 id="pre_process_squad" class="doc_header"><code>pre_process_squad</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/data/question_answering.py#L17" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>pre_process_squad</code>(<strong><code>row</code></strong>, <strong><code>hf_arch</code></strong>, <strong><code>hf_tokenizer</code></strong>)</p>
+<h4 id="pre_process_squad" class="doc_header"><code>pre_process_squad</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/data/question_answering.py#L19" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>pre_process_squad</code>(<strong><code>row</code></strong>, <strong><code>hf_arch</code></strong>, <strong><code>hf_tokenizer</code></strong>)</p>
 </blockquote>
 
 </div>
@@ -363,7 +345,7 @@ You should probably TRAIN this model on a down-stream task to be able to use it 
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h2 id="HF_QuestionAnswerInput" class="doc_header"><code>class</code> <code>HF_QuestionAnswerInput</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/data/question_answering.py#L46" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>HF_QuestionAnswerInput</code>(<strong><code>x</code></strong>, <strong>**<code>kwargs</code></strong>) :: <a href="/blurr/data-core.html#HF_BaseInput"><code>HF_BaseInput</code></a></p>
+<h2 id="HF_QuestionAnswerInput" class="doc_header"><code>class</code> <code>HF_QuestionAnswerInput</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/data/question_answering.py#L48" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>HF_QuestionAnswerInput</code>(<strong><code>x</code></strong>, <strong>**<code>kwargs</code></strong>) :: <a href="/blurr/data-core.html#HF_BaseInput"><code>HF_BaseInput</code></a></p>
 </blockquote>
 
 </div>
@@ -401,7 +383,7 @@ You should probably TRAIN this model on a down-stream task to be able to use it 
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h2 id="HF_QABatchTransform" class="doc_header"><code>class</code> <code>HF_QABatchTransform</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/data/question_answering.py#L49" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>HF_QABatchTransform</code>(<strong><code>hf_arch</code></strong>, <strong><code>hf_tokenizer</code></strong>, <strong><code>max_length</code></strong>=<em><code>None</code></em>, <strong><code>padding</code></strong>=<em><code>True</code></em>, <strong><code>truncation</code></strong>=<em><code>True</code></em>, <strong><code>is_split_into_words</code></strong>=<em><code>False</code></em>, <strong><code>n_tok_inps</code></strong>=<em><code>1</code></em>, <strong><code>hf_input_return_type</code></strong>=<em><code>HF_QuestionAnswerInput</code></em>, <strong><code>tok_kwargs</code></strong>=<em><code>{}</code></em>, <strong>**<code>kwargs</code></strong>) :: <a href="/blurr/data-core.html#HF_BatchTransform"><code>HF_BatchTransform</code></a></p>
+<h2 id="HF_QABatchTransform" class="doc_header"><code>class</code> <code>HF_QABatchTransform</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/data/question_answering.py#L51" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>HF_QABatchTransform</code>(<strong><code>hf_arch</code></strong>, <strong><code>hf_tokenizer</code></strong>, <strong><code>max_length</code></strong>=<em><code>None</code></em>, <strong><code>padding</code></strong>=<em><code>True</code></em>, <strong><code>truncation</code></strong>=<em><code>True</code></em>, <strong><code>is_split_into_words</code></strong>=<em><code>False</code></em>, <strong><code>n_tok_inps</code></strong>=<em><code>1</code></em>, <strong><code>hf_input_return_type</code></strong>=<em><code>HF_QuestionAnswerInput</code></em>, <strong><code>tok_kwargs</code></strong>=<em><code>{}</code></em>, <strong>**<code>kwargs</code></strong>) :: <a href="/blurr/data-core.html#HF_BatchTransform"><code>HF_BatchTransform</code></a></p>
 </blockquote>
 <p>Handles everything you need to assemble a mini-batch of inputs and targets, as well as decode the dictionary produced
 as a byproduct of the tokenization process in the <code>encodes</code> method.</p>
@@ -525,7 +507,7 @@ as a byproduct of the tokenization process in the <code>encodes</code> method.</
 
 
 <div class="output_text output_subarea output_execute_result">
-<pre>(torch.Size([4, 128]), torch.Size([4, 128]), torch.Size([4]), torch.Size([4]))</pre>
+<pre>(torch.Size([4, 128]), torch.Size([4, 128]), (4,), (4,))</pre>
 </div>
 
 </div>
@@ -583,15 +565,15 @@ as a byproduct of the tokenization process in the <code>encodes</code> method.</
   <tbody>
     <tr>
       <th>0</th>
-      <td>Which rock band cited Beyonce on their third album? Beyoncé's work has influenced numerous artists including Adele, Ariana Grande, Lady Gaga, Bridgit Mendler, Rihanna, Kelly Rowland, Sam Smith, Meghan Trainor, Nicole Scherzinger, Rita Ora, Zendaya, Cheryl Cole, JoJo, Alexis Jordan, Jessica Sanchez, and Azealia Banks. American indie rock band White Rabbits also cited her an inspiration for their third album Milk Famous (2012), friend Gwyneth Paltrow studied Beyoncé at her live concerts while learning to become a musical performer for</td>
-      <td>(88, 91)</td>
-      <td>White Rabbits</td>
+      <td>Which organization received Beyoncé's entire Cadillac Records salary? Beyoncé further expanded her acting career, starring as blues singer Etta James in the 2008 musical biopic, Cadillac Records. Her performance in the film received praise from critics, and she garnered several nominations for her portrayal of James, including a Satellite Award nomination for Best Supporting Actress, and a NAACP Image Award nomination for Outstanding Supporting Actress. Beyoncé donated her entire salary from the film to Phoenix House, an organization of rehabilitation centers for heroin addicts around the country. On January 20, 2009, Beyoncé performed James' "At Last" at the First Couple</td>
+      <td>(92, 94)</td>
+      <td>Phoenix House</td>
     </tr>
     <tr>
       <th>1</th>
-      <td>Because of Beyoncé's physical shape, what slang term has been used to describe her? Beyoncé has been described as a having a wide-ranging sex appeal, with music journalist Touré writing that since the release of Dangerously in Love, she has "become a crossover sex symbol". Offstage Beyoncé says that while she likes to dress sexily, her onstage dress "is absolutely for the stage." Due to her curves and the term's catchiness, in the 2000s, the media often used the term "Bootylicious" (a portmanteau of the words booty and delicious</td>
-      <td>(0, 0)</td>
-      <td></td>
+      <td>Which parent of Beyonce's help co-write a book? According to Italian fashion designer Roberto Cavalli, Beyoncé uses different fashion styles to work with her music while performing. Her mother co-wrote a book, published in 2002, titled Destiny's Style an account of how fashion had an impact on the trio's success. The B'Day Anthology Video Album showed many instances of fashion-oriented footage, depicting classic to contemporary wardrobe styles. In 2007, Beyoncé was featured on the cover of the Sports Illustrated Swimsuit Issue, becoming the second African American woman after Tyra Banks, and People magazine recognized Beyon</td>
+      <td>(39, 41)</td>
+      <td>Her mother</td>
     </tr>
   </tbody>
 </table>
