@@ -51,10 +51,10 @@ class HF_SummarizationBatchTransform(HF_BatchTransform):
 
 # Cell
 @typedispatch
-def show_batch(x:HF_SummarizationInput, y, samples, dataloaders, ctxs=None, max_n=6, **kwargs):
+def show_batch(x:HF_SummarizationInput, y, samples, dataloaders, ctxs=None, max_n=6, input_trunc_at=None, target_trunc_at=None, **kwargs):
     hf_tokenizer = dataloaders.before_batch[0].hf_tokenizer
 
-    res = L([ (hf_tokenizer.decode(s[0], skip_special_tokens=True), hf_tokenizer.decode(s[1], skip_special_tokens=True))
+    res = L([ (hf_tokenizer.decode(s[0], skip_special_tokens=True)[:input_trunc_at], hf_tokenizer.decode(s[1], skip_special_tokens=True)[:target_trunc_at])
              for s in samples ])
 
     display_df(pd.DataFrame(res, columns=['text', 'target'])[:max_n])

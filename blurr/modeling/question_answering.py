@@ -63,14 +63,14 @@ class MultiTargetLoss(Module):
 # Cell
 @typedispatch
 def show_results(x:HF_QuestionAnswerInput, y, samples, outs, learner, skip_special_tokens=True,
-                 ctxs=None, max_n=6, **kwargs):
+                 ctxs=None, max_n=6, trunc_at=None, **kwargs):
     # grab tokenizer
     hf_textblock_tfm = learner.dls.before_batch[0]
     hf_tokenizer = hf_textblock_tfm.hf_tokenizer
 
     res = L()
     for sample, input_ids, start, end, pred in zip(samples, x, *y, outs):
-        txt = hf_tokenizer.decode(sample[0], skip_special_tokens=True)
+        txt = hf_tokenizer.decode(sample[0], skip_special_tokens=True)[:trunc_at]
         ans_toks = hf_tokenizer.convert_ids_to_tokens(input_ids, skip_special_tokens=False)[start:end]
         pred_ans_toks = hf_tokenizer.convert_ids_to_tokens(input_ids, skip_special_tokens=False)[int(pred[0]):int(pred[1])]
 

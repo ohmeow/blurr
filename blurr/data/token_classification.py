@@ -85,7 +85,7 @@ class HF_TokenClassBatchTransform(HF_BatchTransform):
 
 # Cell
 @typedispatch
-def show_batch(x:HF_TokenClassInput, y, samples, dataloaders, ctxs=None, max_n=6, **kwargs):
+def show_batch(x:HF_TokenClassInput, y, samples, dataloaders, ctxs=None, max_n=6, trunc_at=None, **kwargs):
     hf_tokenizer = dataloaders.before_batch[0].hf_tokenizer
 
     res = L()
@@ -94,7 +94,7 @@ def show_batch(x:HF_TokenClassInput, y, samples, dataloaders, ctxs=None, max_n=6
         toks = hf_tokenizer.convert_ids_to_tokens(inp, skip_special_tokens=True)
         pretokenized_toks =  hf_tokenizer.convert_tokens_to_string(toks).split()
 
-        res.append([f'{[ (tok, lbl) for tok, lbl in zip(pretokenized_toks, ast.literal_eval(sample[1])) ]}'])
+        res.append([f'{[ (tok, lbl) for idx, (tok, lbl) in enumerate(zip(pretokenized_toks, ast.literal_eval(sample[1]))) if (trunc_at is None or idx < trunc_at) ]}'])
 
     display_df(pd.DataFrame(res, columns=['token / target label'])[:max_n])
     return ctxs

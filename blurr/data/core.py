@@ -15,10 +15,11 @@ logging.set_verbosity_error()
 
 # Cell
 class HF_BaseInput(TensorBase):
-    def show(self, hf_tokenizer, ctx=None, **kwargs):
+    def show(self, hf_tokenizer, ctx=None, trunc_at=None, **kwargs):
         input_ids = filter(lambda el: el != hf_tokenizer.pad_token_id, self.cpu().numpy())
-        decoded_input = hf_tokenizer.decode(input_ids, skip_special_tokens=True)
-        return show_title(str(decoded_input), ctx=ctx, label='text')
+        decoded_input = str(hf_tokenizer.decode(input_ids, skip_special_tokens=True))[:trunc_at]
+
+        return show_title(decoded_input, ctx=ctx, label='text')
 
 # Cell
 class HF_BatchTransform(Transform):
@@ -95,8 +96,9 @@ class HF_TextBlock(TransformBlock):
 
 # Cell
 @typedispatch
-def show_batch(x:HF_BaseInput, y, samples, dataloaders, ctxs=None, max_n=6, **kwargs):
+def show_batch(x:HF_BaseInput, y, samples, dataloaders, ctxs=None, max_n=6, trunc_at=None, **kwargs):
     kwargs['hf_tokenizer'] = dataloaders.before_batch[0].hf_tokenizer
+    kwargs['trunc_at'] = trunc_at
 
     if ctxs is None: ctxs = get_empty_df(min(len(samples), max_n))
     ctxs = show_batch[object](x, y, samples, max_n=max_n, ctxs=ctxs, **kwargs)

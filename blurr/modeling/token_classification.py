@@ -109,7 +109,7 @@ class HF_TokenClassCallback(HF_BaseModelCallback):
 # Cell
 @typedispatch
 def show_results(x:HF_TokenClassInput, y:HF_TokenTensorCategory, samples, outs, learner,
-                 ctxs=None, max_n=6, **kwargs):
+                 ctxs=None, max_n=6, trunc_at=None, **kwargs):
     # grab tokenizer
     hf_textblock_tfm = learner.dls.before_batch[0]
     hf_tokenizer = hf_textblock_tfm.hf_tokenizer
@@ -124,7 +124,7 @@ def show_results(x:HF_TokenClassInput, y:HF_TokenTensorCategory, samples, outs, 
         pred_labels = [ pred_lbl for lbl_id, pred_lbl in zip(trg, ast.literal_eval(pred[0])) if lbl_id != -100 ]
 
         trg_labels = ast.literal_eval(sample[1])
-        res.append([f'{[ (tok, trg, pred) for tok, pred, trg in zip(pretokenized_toks, pred_labels, trg_labels) ]}'])
+        res.append([f'{[ (tok, trg, pred) for idx, (tok, pred, trg) in enumerate(zip(pretokenized_toks, pred_labels, trg_labels)) if (trunc_at is None or idx < trunc_at) ]}'])
 
     display_df(pd.DataFrame(res, columns=['token / target label / predicted label'])[:max_n])
     return ctxs

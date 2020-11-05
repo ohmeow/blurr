@@ -71,12 +71,13 @@ class HF_QABatchTransform(HF_BatchTransform):
 
 # Cell
 @typedispatch
-def show_batch(x:HF_QuestionAnswerInput, y, samples, dataloaders, ctxs=None, max_n=6, **kwargs):
+def show_batch(x:HF_QuestionAnswerInput, y, samples, dataloaders, ctxs=None, max_n=6, trunc_at=None, **kwargs):
     hf_tokenizer = dataloaders.before_batch[0].hf_tokenizer
 
     res = L()
     for sample, input_ids, start, end in zip(samples, x, *y):
-        txt = hf_tokenizer.decode(sample[0], skip_special_tokens=True)
+        txt = hf_tokenizer.decode(sample[0], skip_special_tokens=True)[:trunc_at]
+
         ans_toks = hf_tokenizer.convert_ids_to_tokens(input_ids, skip_special_tokens=False)[start:end]
         res.append((txt, (start.item(),end.item()), hf_tokenizer.convert_tokens_to_string(ans_toks)))
 

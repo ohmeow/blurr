@@ -162,13 +162,15 @@ def blurr_summarize(self:Learner, inp, **kwargs):
 
 # Cell
 @typedispatch
-def show_results(x:HF_SummarizationInput, y, samples, outs, learner, ctxs=None, max_n=6, **kwargs):
+def show_results(x:HF_SummarizationInput, y, samples, outs, learner, ctxs=None, max_n=6,
+                 input_trunc_at=None, target_trunc_at=None, **kwargs):
+
     hf_tokenizer = learner.dls.before_batch[0].hf_tokenizer
     gen_text_txts = learner.blurr_summarize(x)
     res = L([
-        (hf_tokenizer.decode(s[0], skip_special_tokens=True),
-         hf_tokenizer.decode(s[1], skip_special_tokens=True),
-         gen_txt) for s, gen_txt in zip(samples, gen_text_txts) ])
+        (hf_tokenizer.decode(s[0], skip_special_tokens=True)[:input_trunc_at],
+         hf_tokenizer.decode(s[1], skip_special_tokens=True)[:target_trunc_at],
+         gen_txt[:target_trunc_at]) for s, gen_txt in zip(samples, gen_text_txts) ])
 
     display_df(pd.DataFrame(res, columns=['text', 'target', 'prediction'])[:max_n])
     return ctxs
