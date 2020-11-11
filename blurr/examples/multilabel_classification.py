@@ -3,7 +3,7 @@
 __all__ = []
 
 # Cell
-import torch, nlp
+import torch, datasets
 from transformers import *
 
 from fastai.text.all import *

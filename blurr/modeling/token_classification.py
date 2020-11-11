@@ -7,7 +7,9 @@ import ast, torch
 from transformers import *
 from fastai.text.all import *
 
-from ..data.all import *
+from ..utils import *
+from ..data.core import *
+from ..data.token_classification import *
 from .core import *
 
 from seqeval import metrics as seq_metrics

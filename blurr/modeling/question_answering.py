@@ -9,7 +9,9 @@ import torch
 from transformers import *
 from fastai.text.all import *
 
-from ..data.all import *
+from ..utils import *
+from ..data.core import *
+from ..data.question_answering import *
 from .core import *
 
 logging.set_verbosity_error()

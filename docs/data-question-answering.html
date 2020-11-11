@@ -360,7 +360,7 @@ nb_path: "nbs/01b_data-question-answering.ipynb"
 
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>We'll return a <a href="/blurr/data-question-answering.html#HF_QuestionAnswerInput"><code>HF_QuestionAnswerInput</code></a> from our <a href="/blurr/data-core.html#HF_BatchTransform"><code>HF_BatchTransform</code></a> so that we can customize the show_batch/results methods for this task.</p>
+<p>We'll return a <a href="/blurr/data-question-answering.html#HF_QuestionAnswerInput"><code>HF_QuestionAnswerInput</code></a> from our <code>HF_BatchTransform</code> so that we can customize the show_batch/results methods for this task.</p>
 
 </div>
 </div>
@@ -383,7 +383,7 @@ nb_path: "nbs/01b_data-question-answering.ipynb"
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h2 id="HF_QABatchTransform" class="doc_header"><code>class</code> <code>HF_QABatchTransform</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/data/question_answering.py#L51" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>HF_QABatchTransform</code>(<strong><code>hf_arch</code></strong>, <strong><code>hf_tokenizer</code></strong>, <strong><code>max_length</code></strong>=<em><code>None</code></em>, <strong><code>padding</code></strong>=<em><code>True</code></em>, <strong><code>truncation</code></strong>=<em><code>True</code></em>, <strong><code>is_split_into_words</code></strong>=<em><code>False</code></em>, <strong><code>n_tok_inps</code></strong>=<em><code>1</code></em>, <strong><code>hf_input_return_type</code></strong>=<em><code>HF_QuestionAnswerInput</code></em>, <strong><code>tok_kwargs</code></strong>=<em><code>{}</code></em>, <strong>**<code>kwargs</code></strong>) :: <a href="/blurr/data-core.html#HF_BatchTransform"><code>HF_BatchTransform</code></a></p>
+<h2 id="HF_QABeforeBatchTransform" class="doc_header"><code>class</code> <code>HF_QABeforeBatchTransform</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/data/question_answering.py#L51" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>HF_QABeforeBatchTransform</code>(<strong><code>hf_arch</code></strong>, <strong><code>hf_tokenizer</code></strong>, <strong><code>max_length</code></strong>=<em><code>None</code></em>, <strong><code>padding</code></strong>=<em><code>True</code></em>, <strong><code>truncation</code></strong>=<em><code>True</code></em>, <strong><code>is_split_into_words</code></strong>=<em><code>False</code></em>, <strong><code>n_tok_inps</code></strong>=<em><code>1</code></em>, <strong><code>tok_kwargs</code></strong>=<em><code>{}</code></em>, <strong>**<code>kwargs</code></strong>) :: <a href="/blurr/data-core.html#HF_BeforeBatchTransform"><code>HF_BeforeBatchTransform</code></a></p>
 </blockquote>
 <p>Handles everything you need to assemble a mini-batch of inputs and targets, as well as decode the dictionary produced
 as a byproduct of the tokenization process in the <code>encodes</code> method.</p>
@@ -400,7 +400,7 @@ as a byproduct of the tokenization process in the <code>encodes</code> method.</
 
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>By overriding <a href="/blurr/data-core.html#HF_BatchTransform"><code>HF_BatchTransform</code></a> we can add other inputs to each example for this particular task.</p>
+<p>By overriding <code>HF_BatchTransform</code> we can add other inputs to each example for this particular task.</p>
 
 </div>
 </div>
@@ -412,11 +412,14 @@ as a byproduct of the tokenization process in the <code>encodes</code> method.</
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">hf_batch_tfm</span> <span class="o">=</span> <span class="n">HF_QABatchTransform</span><span class="p">(</span><span class="n">hf_arch</span><span class="p">,</span> <span class="n">hf_tokenizer</span><span class="p">,</span> <span class="n">max_length</span><span class="o">=</span><span class="n">max_seq_len</span><span class="p">,</span> <span class="n">truncation</span><span class="o">=</span><span class="s1">&#39;only_second&#39;</span><span class="p">,</span> 
-                                   <span class="n">tok_kwargs</span><span class="o">=</span><span class="p">{</span> <span class="s1">&#39;return_special_tokens_mask&#39;</span><span class="p">:</span> <span class="kc">True</span> <span class="p">})</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">before_batch_tfm</span> <span class="o">=</span> <span class="n">HF_QABeforeBatchTransform</span><span class="p">(</span><span class="n">hf_arch</span><span class="p">,</span> <span class="n">hf_tokenizer</span><span class="p">,</span> 
+                                             <span class="n">max_length</span><span class="o">=</span><span class="n">max_seq_len</span><span class="p">,</span> <span class="n">truncation</span><span class="o">=</span><span class="s1">&#39;only_second&#39;</span><span class="p">,</span> 
+                                             <span class="n">tok_kwargs</span><span class="o">=</span><span class="p">{</span> <span class="s1">&#39;return_special_tokens_mask&#39;</span><span class="p">:</span> <span class="kc">True</span> <span class="p">})</span>
 
 <span class="n">blocks</span> <span class="o">=</span> <span class="p">(</span>
-    <span class="n">HF_TextBlock</span><span class="p">(</span><span class="n">hf_arch</span><span class="p">,</span> <span class="n">hf_tokenizer</span><span class="p">,</span> <span class="n">hf_batch_tfm</span><span class="o">=</span><span class="n">hf_batch_tfm</span><span class="p">),</span> 
+    <span class="n">HF_TextBlock</span><span class="p">(</span><span class="n">hf_arch</span><span class="p">,</span> <span class="n">hf_tokenizer</span><span class="p">,</span> 
+                 <span class="n">before_batch_tfms</span><span class="o">=</span><span class="n">before_batch_tfm</span><span class="p">,</span> 
+                 <span class="n">input_return_type</span><span class="o">=</span><span class="n">HF_QuestionAnswerInput</span><span class="p">),</span> 
     <span class="n">CategoryBlock</span><span class="p">(</span><span class="n">vocab</span><span class="o">=</span><span class="n">vocab</span><span class="p">),</span>
     <span class="n">CategoryBlock</span><span class="p">(</span><span class="n">vocab</span><span class="o">=</span><span class="n">vocab</span><span class="p">)</span>
 <span class="p">)</span>
@@ -565,15 +568,15 @@ as a byproduct of the tokenization process in the <code>encodes</code> method.</
   <tbody>
     <tr>
       <th>0</th>
-      <td>"Charlie's Angels" featured which single from the band members? The remaining band members recorded "Independent Women Part I", which appeared on the soundtrack to the 2000 film, Charlie's Angels. It became their best-charting single, topping the U.S. Billboard Hot 100 chart for eleven consecutive weeks. In early 2001, while Destiny's Child was completing their third album, Beyoncé landed a major role in the MTV made-for-television film, Carmen: A Hip Hopera, starring alongside American actor M</td>
-      <td>(0, 0)</td>
-      <td></td>
+      <td>Hoe does she describe Oprah Winfrey? Beyoncé has stated that she is personally inspired by US First Lady Michelle Obama, saying "She proves you can do it all" and she has described Oprah Winfrey as "the definition of inspiration and a strong woman". She has also discussed how Jay Z is a continuing inspiration to her, both with what she describes as his lyrical genius and in the obstacles he has overcome in his life. Beyoncé has expressed admiration for the artist Jean-Michel Basquiat, posting i</td>
+      <td>(52, 55)</td>
+      <td>a strong woman</td>
     </tr>
     <tr>
       <th>1</th>
-      <td>What was the title of the added track in Love Songs? In January 2013, Destiny's Child released Love Songs, a compilation album of the romance-themed songs from their previous albums and a newly recorded track, "Nuclear". Beyoncé performed the American national anthem singing along with a pre-recorded track at President Obama's second inauguration in Washington, D.C. The following month, Beyoncé performed at the Super Bowl XLVII halftime show, held at the Mercedes-Benz Superdome in New Orleans.</td>
-      <td>(0, 0)</td>
-      <td></td>
+      <td>Which professor from Northeastern University wrote about how race correlates with these criticisms of Beyonce? Beyoncé's lighter skin color and costuming has drawn criticism from some in the African-American community. Emmett Price, a professor of music at Northeastern University, wrote in 2007, that he thinks race plays a role in many of these criticisms, saying white celebrities who dress similarly do not attract as many comments. In 2008, L'Oréal was accused of whitening her skin in their Fe</td>
+      <td>(42, 46)</td>
+      <td>Emmett Price</td>
     </tr>
   </tbody>
 </table>
