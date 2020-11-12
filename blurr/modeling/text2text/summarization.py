@@ -3,7 +3,7 @@
 __all__ = ['calculate_rouge', 'HF_SummarizationModelCallback', 'summarization_splitter']
 
 # Cell
-import ast, torch
+import ast, inspect, torch
 from transformers import *
 from fastai.text.all import *
 from rouge_score import rouge_scorer, scoring
@@ -31,10 +31,15 @@ def calculate_rouge(predicted_txts, reference_txts, rouge_keys=["rouge1", "rouge
 
 # Cell
 class HF_SummarizationModelCallback(HF_BaseModelCallback):
-    def __init__(self, rouge_metrics=["rouge1", "rouge2", "rougeL"], text_gen_kwargs={}, **kwargs):
+    def __init__(self, rouge_metrics=["rouge1", "rouge2", "rougeL"],
+                 ignore_token_id=CrossEntropyLossFlat().ignore_index,
+                 text_gen_kwargs={}, **kwargs):
+
+        super().__init__(**kwargs)
+
         self.run_before = Recorder
 
-        store_attr(self=self, names='rouge_metrics, text_gen_kwargs, kwargs')
+        store_attr(self=self, names='rouge_metrics, ignore_token_id, text_gen_kwargs, kwargs')
         self.custom_metrics_dict = { k:None for k in rouge_metrics }
 
         self.do_setup = True
@@ -69,9 +74,9 @@ class HF_SummarizationModelCallback(HF_BaseModelCallback):
                                                      use_cache=True,
                                                      **self.text_gen_kwargs)
 
-        self.generated_ids += gen_ids.tolist()
-        self.refernce_ids += self.yb[0].tolist()
 
+        self.generated_ids += gen_ids.tolist()
+        self.refernce_ids += [ seq[seq != self.ignore_token_id].tolist()  for seq in self.yb[0] ]
 
     # --- validation begin/after phases ---
     def before_validate(self): self.generated_ids, self.refernce_ids = [], []
@@ -163,12 +168,16 @@ def blurr_summarize(self:Learner, inp, **kwargs):
 def show_results(x:HF_SummarizationInput, y, samples, outs, learner, ctxs=None, max_n=6,
                  input_trunc_at=None, target_trunc_at=None, **kwargs):
 
-    hf_tokenizer = learner.dls.before_batch[0].hf_tokenizer
+    before_batch_tfm = learner.dls.before_batch[0]
+    hf_tokenizer = before_batch_tfm.hf_tokenizer
+    ignore_token_id = before_batch_tfm.ignore_token_id
+
     gen_text_txts = learner.blurr_summarize(x)
-    res = L([
-        (hf_tokenizer.decode(s[0], skip_special_tokens=True)[:input_trunc_at],
-         hf_tokenizer.decode(s[1], skip_special_tokens=True)[:target_trunc_at],
-         gen_txt[:target_trunc_at]) for s, gen_txt in zip(samples, gen_text_txts) ])
+    res = L([(
+        hf_tokenizer.decode(s[0], skip_special_tokens=True)[:input_trunc_at],
+        hf_tokenizer.decode(s[1][s[1] != ignore_token_id], skip_special_tokens=True)[:target_trunc_at],
+        gen_txt[:target_trunc_at]
+    ) for s, gen_txt in zip(samples, gen_text_txts) ])
 
     display_df(pd.DataFrame(res, columns=['text', 'target', 'prediction'])[:max_n])
     return ctxs
