@@ -115,6 +115,7 @@ def show_results(x:HF_TokenClassInput, y:HF_TokenTensorCategory, samples, outs, 
     # grab tokenizer
     hf_textblock_tfm = learner.dls.before_batch[0]
     hf_tokenizer = hf_textblock_tfm.hf_tokenizer
+    ignore_token_id = hf_textblock_tfm.ignore_token_id
 
     res = L()
     for inp, trg, sample, pred in zip(x, y, samples, outs):
@@ -123,7 +124,7 @@ def show_results(x:HF_TokenClassInput, y:HF_TokenTensorCategory, samples, outs, 
         pretokenized_toks =  hf_tokenizer.convert_tokens_to_string(toks).split()
 
         # get predictions for subtokens that aren't ignored (e.g. special toks and token parts)
-        pred_labels = [ pred_lbl for lbl_id, pred_lbl in zip(trg, ast.literal_eval(pred[0])) if lbl_id != -100 ]
+        pred_labels = [ pred_lbl for lbl_id, pred_lbl in zip(trg, ast.literal_eval(pred[0])) if lbl_id != -ignore_token_id ]
 
         trg_labels = ast.literal_eval(sample[1])
         res.append([f'{[ (tok, trg, pred) for idx, (tok, pred, trg) in enumerate(zip(pretokenized_toks, pred_labels, trg_labels)) if (trunc_at is None or idx < trunc_at) ]}'])

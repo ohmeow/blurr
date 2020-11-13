@@ -42,7 +42,7 @@ class HF_BaseModelWrapper(Module):
 
         return self.hf_model(**x,
                              output_hidden_states=self.output_hidden_states,
-                             output_attentions=self.output_hidden_states,
+                             output_attentions=self.output_attentions,
                              return_dict=True,
                              **self.hf_model_kwargs)
 

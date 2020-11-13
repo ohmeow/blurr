@@ -360,7 +360,7 @@ nb_path: "nbs/01b_data-question-answering.ipynb"
 
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>We'll return a <a href="/blurr/data-question-answering.html#HF_QuestionAnswerInput"><code>HF_QuestionAnswerInput</code></a> from our <code>HF_BatchTransform</code> so that we can customize the show_batch/results methods for this task.</p>
+<p>We'll return a <a href="/blurr/data-question-answering.html#HF_QuestionAnswerInput"><code>HF_QuestionAnswerInput</code></a> from our custom <a href="/blurr/data-core.html#HF_BeforeBatchTransform"><code>HF_BeforeBatchTransform</code></a> so that we can customize the show_batch/results methods for this task.</p>
 
 </div>
 </div>
@@ -400,7 +400,7 @@ as a byproduct of the tokenization process in the <code>encodes</code> method.</
 
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>By overriding <code>HF_BatchTransform</code> we can add other inputs to each example for this particular task.</p>
+<p>By overriding <a href="/blurr/data-core.html#HF_BeforeBatchTransform"><code>HF_BeforeBatchTransform</code></a> we can add other inputs to each example for this particular task.</p>
 
 </div>
 </div>
@@ -568,15 +568,15 @@ as a byproduct of the tokenization process in the <code>encodes</code> method.</
   <tbody>
     <tr>
       <th>0</th>
-      <td>Hoe does she describe Oprah Winfrey? Beyoncé has stated that she is personally inspired by US First Lady Michelle Obama, saying "She proves you can do it all" and she has described Oprah Winfrey as "the definition of inspiration and a strong woman". She has also discussed how Jay Z is a continuing inspiration to her, both with what she describes as his lyrical genius and in the obstacles he has overcome in his life. Beyoncé has expressed admiration for the artist Jean-Michel Basquiat, posting i</td>
-      <td>(52, 55)</td>
-      <td>a strong woman</td>
+      <td>Chopin was active during what era? Frédéric François Chopin (/ˈʃoʊpæn/; French pronunciation: ​[fʁe.de.ʁik fʁɑ̃.swa ʃɔ.pɛ̃]; 22 February or 1 March 1810 – 17 October 1849), born Fryderyk Franciszek Chopin,[n 1] was a Polish and French (by citizenship and birth of father) composer and a virtuoso pianist of the Romantic era, who wrote primarily for the solo piano.</td>
+      <td>(116, 118)</td>
+      <td>Romantic era</td>
     </tr>
     <tr>
       <th>1</th>
-      <td>Which professor from Northeastern University wrote about how race correlates with these criticisms of Beyonce? Beyoncé's lighter skin color and costuming has drawn criticism from some in the African-American community. Emmett Price, a professor of music at Northeastern University, wrote in 2007, that he thinks race plays a role in many of these criticisms, saying white celebrities who dress similarly do not attract as many comments. In 2008, L'Oréal was accused of whitening her skin in their Fe</td>
-      <td>(42, 46)</td>
-      <td>Emmett Price</td>
+      <td>Pepsi paid Beyonce how much in 2012 for her endorsement? Beyoncé has worked with Pepsi since 2002, and in 2004 appeared in a Gladiator-themed commercial with Britney Spears, Pink, and Enrique Iglesias. In 2012, Beyoncé signed a $50 million deal to endorse Pepsi. The Center for Science in the Public Interest (CSPINET) wrote Beyoncé an open letter asking her to reconsider the deal because of the unhealthiness of the product and to donate the proceeds to a medical organisation. Nevertheless, NetBa</td>
+      <td>(0, 0)</td>
+      <td></td>
     </tr>
   </tbody>
 </table>

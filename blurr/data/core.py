@@ -15,7 +15,6 @@ logging.set_verbosity_error()
 
 # Cell
 class HF_BaseInput(TensorBase):
-
     def show(self, hf_tokenizer, ctx=None, trunc_at=None, **kwargs):
         input_ids = filter(lambda el: el != hf_tokenizer.pad_token_id, self.cpu().numpy())
         decoded_input = str(hf_tokenizer.decode(input_ids, skip_special_tokens=True))[:trunc_at]

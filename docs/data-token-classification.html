@@ -170,6 +170,16 @@ nb_path: "nbs/01a_data-token-classification.ipynb"
 
 <div class="output_area">
 
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>
+
+
+</pre>
+</div>
+</div>
+
+<div class="output_area">
+
 
 
 <div class="output_text output_subarea output_execute_result">
@@ -259,7 +269,7 @@ nb_path: "nbs/01a_data-token-classification.ipynb"
 
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p><a href="/blurr/data-token-classification.html#HF_TokenCategorize"><code>HF_TokenCategorize</code></a> modifies the fastai <code>Categorize</code> transform in a couple of ways.  First, it allows your targets to consist of a <code>Category</code> <strong><em>per</em></strong> token, and second, it uses the idea of an <code>ignore_token</code> to mask subtokens that don't need a prediction.  For example, the target of special tokens (e.g., pad, cls, sep) are set to <code>ignore_token</code> as are subsequent sub-tokens of a given token should more than 1 sub-token make it up.</p>
+<p><a href="/blurr/data-token-classification.html#HF_TokenCategorize"><code>HF_TokenCategorize</code></a> modifies the fastai <code>Categorize</code> transform in a couple of ways.  First, it allows your targets to consist of a <code>Category</code> <strong><em>per</em></strong> token, and second, it uses the idea of an <code>ignore_token_id</code> to mask subtokens that don't need a prediction.  For example, the target of special tokens (e.g., pad, cls, sep) are set to <code>ignore_token_id</code> as are subsequent sub-tokens of a given token should more than 1 sub-token make it up.</p>
 
 </div>
 </div>
@@ -369,7 +379,7 @@ as a byproduct of the tokenization process in the <code>encodes</code> method.</
 
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p><code>HF_TokenClassBatchTransform</code> is used to turn any targets we don't want to include in the loss calcuation (e.g. padding, cls, sep, etc...).</p>
+<p><a href="/blurr/data-token-classification.html#HF_TokenClassBeforeBatchTransform"><code>HF_TokenClassBeforeBatchTransform</code></a> is used to exclude any of the target's tokens we don't want to include in the loss calcuation (e.g. padding, cls, sep, etc...).</p>
 
 </div>
 </div>
@@ -486,7 +496,7 @@ as a byproduct of the tokenization process in the <code>encodes</code> method.</
 
 
 <div class="output_text output_subarea output_execute_result">
-<pre>(2, torch.Size([4, 77]), torch.Size([4, 77]))</pre>
+<pre>(2, torch.Size([4, 76]), torch.Size([4, 76]))</pre>
 </div>
 
 </div>
@@ -539,7 +549,7 @@ as a byproduct of the tokenization process in the <code>encodes</code> method.</
     </tr>
     <tr>
       <th>1</th>
-      <td>[('Zugang', 'O'), ('und', 'O'), ('Engagement', 'O'), (':', 'O'), ('das', 'O'), ('eigentlich', 'O'), ('Neue', 'O'), ('an', 'O'), ('der', 'O'), ('Netz', 'O')]</td>
+      <td>[('Der', 'O'), ('28', 'O'), ('-', 'O'), ('Jährige', 'O'), ('und', 'O'), ('sein', 'O'), ('Team', 'O'), (',', 'O'), ('zu', 'O'), ('dem', 'B-PER')]</td>
     </tr>
   </tbody>
 </table>

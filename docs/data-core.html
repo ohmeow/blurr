@@ -107,7 +107,7 @@ nb_path: "nbs/01_data-core.ipynb"
 
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>A <a href="/blurr/data-core.html#HF_BaseInput"><code>HF_BaseInput</code></a> object is returned from the decodes method of <code>HF_BatchTransform</code> as a mean to customize @typedispatched functions like DataLoaders.show_batch and Learner.show_results. It represents the "input_ids" of a huggingface sequence as a tensor with a <code>show</code> method that requires a huggingface tokenizer for proper display.</p>
+<p>A <a href="/blurr/data-core.html#HF_BaseInput"><code>HF_BaseInput</code></a> object is returned from the decodes method of <a href="/blurr/data-core.html#HF_AfterBatchTransform"><code>HF_AfterBatchTransform</code></a> as a means to customize @typedispatched functions like <code>DataLoaders.show_batch</code> and <code>Learner.show_results</code>. It uses the "input_ids" of a huggingface object as the representative tensor for <code>show</code> methods</p>
 
 </div>
 </div>
@@ -130,7 +130,7 @@ nb_path: "nbs/01_data-core.ipynb"
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h2 id="HF_BeforeBatchTransform" class="doc_header"><code>class</code> <code>HF_BeforeBatchTransform</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/data/core.py#L26" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>HF_BeforeBatchTransform</code>(<strong><code>hf_arch</code></strong>, <strong><code>hf_tokenizer</code></strong>, <strong><code>max_length</code></strong>=<em><code>None</code></em>, <strong><code>padding</code></strong>=<em><code>True</code></em>, <strong><code>truncation</code></strong>=<em><code>True</code></em>, <strong><code>is_split_into_words</code></strong>=<em><code>False</code></em>, <strong><code>n_tok_inps</code></strong>=<em><code>1</code></em>, <strong><code>tok_kwargs</code></strong>=<em><code>{}</code></em>, <strong>**<code>kwargs</code></strong>) :: <code>Transform</code></p>
+<h2 id="HF_BeforeBatchTransform" class="doc_header"><code>class</code> <code>HF_BeforeBatchTransform</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/data/core.py#L25" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>HF_BeforeBatchTransform</code>(<strong><code>hf_arch</code></strong>, <strong><code>hf_tokenizer</code></strong>, <strong><code>max_length</code></strong>=<em><code>None</code></em>, <strong><code>padding</code></strong>=<em><code>True</code></em>, <strong><code>truncation</code></strong>=<em><code>True</code></em>, <strong><code>is_split_into_words</code></strong>=<em><code>False</code></em>, <strong><code>n_tok_inps</code></strong>=<em><code>1</code></em>, <strong><code>tok_kwargs</code></strong>=<em><code>{}</code></em>, <strong>**<code>kwargs</code></strong>) :: <code>Transform</code></p>
 </blockquote>
 <p>Handles everything you need to assemble a mini-batch of inputs and targets, as well as decode the dictionary produced
 as a byproduct of the tokenization process in the <code>encodes</code> method.</p>
@@ -145,6 +145,15 @@ as a byproduct of the tokenization process in the <code>encodes</code> method.</
 </div>
     {% endraw %}
 
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><a href="/blurr/data-core.html#HF_BeforeBatchTransform"><code>HF_BeforeBatchTransform</code></a> was inspired by this <a href="http://dev.fast.ai/tutorial.transformers">article</a>. It handles both the tokenization and numericalization traditionally split apart in the fastai text DataBlock API. For huggingface tokenizers that require a prefix space, it will be included automatically. In its current incarnation, <a href="/blurr/data-core.html#HF_BeforeBatchTransform"><code>HF_BeforeBatchTransform</code></a> can be used to tokenize multiple inputs (common in seq2seq models for tasks like summarization) and even apply different tokenizers and arguments to each.</p>
+<p>Inputs can come in as a string or a list of tokens, the later being for tasks like Named Entity Recognition (NER), where you want to predict the label of each token.</p>
+<p><strong>Notes re: on-the-fly batch-time tokenization</strong>: The previous version of the library performed the tokenization/numericalization as a type transform when the raw data was read, and included a couple batch transforms to prepare the data for collation (e.g., to be made into a mini-batch). With this update, everything is done in a single batch transform.  Why?  Part of the inspiration had to do with the mechanics of the huggingrace tokenizer, in particular how by default it returns a collated mini-batch of data given a list of sequences. And where do we get a list of examples with fastai? In the batch transforms!  So I thought, hey, why not do everything dynamically at batch time?  And with a bit of tweaking, I got everything to work pretty well.  The result is less code, faster mini-batch creation, less RAM utilization and time spent tokenizing (really helps with very large datasets), and more flexibility.</p>
+
+</div>
+</div>
+</div>
     {% raw %}
     
 <div class="cell border-box-sizing code_cell rendered">
@@ -163,7 +172,7 @@ as a byproduct of the tokenization process in the <code>encodes</code> method.</
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h2 id="HF_AfterBatchTransform" class="doc_header"><code>class</code> <code>HF_AfterBatchTransform</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/data/core.py#L72" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>HF_AfterBatchTransform</code>(<strong><code>hf_tokenizer</code></strong>, <strong><code>input_return_type</code></strong>=<em><code>HF_BaseInput</code></em>) :: <code>Transform</code></p>
+<h2 id="HF_AfterBatchTransform" class="doc_header"><code>class</code> <code>HF_AfterBatchTransform</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/data/core.py#L71" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>HF_AfterBatchTransform</code>(<strong><code>hf_tokenizer</code></strong>, <strong><code>input_return_type</code></strong>=<em><code>HF_BaseInput</code></em>) :: <code>Transform</code></p>
 </blockquote>
 <p>Delegates (<code>__call__</code>,<code>decode</code>,<code>setup</code>) to (<code>encodes</code>,<code>decodes</code>,<code>setups</code>) if <code>split_idx</code> matches</p>
 
@@ -179,9 +188,7 @@ as a byproduct of the tokenization process in the <code>encodes</code> method.</
 
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p><code>HF_BatchTransform</code> was inspired by this <a href="http://dev.fast.ai/tutorial.transformers">article</a>. It handles both the tokenization and numericalization traditionally split apart in the fastai text DataBlock API. For huggingface tokenizers that require a prefix space, it will be included automatically. In its current incarnation, <code>HF_BatchTransform</code> can be used to tokenize multiple inputs (common in seq2seq models for tasks like summarization) and even apply different tokenizers and arguments to each.</p>
-<p>Inputs can come in as a string or a list of tokens, the later being for tasks like Named Entity Recognition (NER), where you want to predict the label of each token.</p>
-<p><strong>Note</strong>: The previous version of the library performed the tokenization/numericalization as a type transform when the raw data was read, and included a couple batch transforms to prepare the data for collation (e.g., to be made into a mini-batch). With this update, everything is done in a single batch transform.  Why?  Part of the inspiration had to do with the mechanics of the huggingrace tokenizer, in particular how by default it returns a collated mini-batch of data given a list of sequences. And where do we get a list of examples with fastai? In the batch transforms!  So I thought, hey, why not do everything dynamically at batch time?  And with a bit of tweaking, I got everything to work pretty well.  The result is less code, faster mini-batch creation, less RAM utilization and time spent tokenizing (really helps with very large datasets), and more flexibility.</p>
+<p>With fastai 2.1.5, before batch transforms no longer have a <code>decodes</code> method ... and so, I've introduced a standard batch transform here, <a href="/blurr/data-core.html#HF_AfterBatchTransform"><code>HF_AfterBatchTransform</code></a>, that will do the decoding for us.</p>
 
 </div>
 </div>
@@ -204,7 +211,7 @@ as a byproduct of the tokenization process in the <code>encodes</code> method.</
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h2 id="HF_TextBlock" class="doc_header"><code>class</code> <code>HF_TextBlock</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/data/core.py#L83" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>HF_TextBlock</code>(<strong><code>hf_arch</code></strong>=<em><code>None</code></em>, <strong><code>hf_tokenizer</code></strong>=<em><code>None</code></em>, <strong><code>before_batch_tfms</code></strong>=<em><code>None</code></em>, <strong><code>after_batch_tfms</code></strong>=<em><code>None</code></em>, <strong><code>max_length</code></strong>=<em><code>512</code></em>, <strong><code>padding</code></strong>=<em><code>True</code></em>, <strong><code>truncation</code></strong>=<em><code>True</code></em>, <strong><code>is_split_into_words</code></strong>=<em><code>False</code></em>, <strong><code>n_tok_inps</code></strong>=<em><code>1</code></em>, <strong><code>tok_kwargs</code></strong>=<em><code>{}</code></em>, <strong><code>input_return_type</code></strong>=<em><code>HF_BaseInput</code></em>, <strong><code>dl_type</code></strong>=<em><code>SortedDL</code></em>, <strong><code>before_batch_kwargs</code></strong>=<em><code>{}</code></em>, <strong><code>after_batch_kwargs</code></strong>=<em><code>{}</code></em>, <strong>**<code>kwargs</code></strong>) :: <code>TransformBlock</code></p>
+<h2 id="HF_TextBlock" class="doc_header"><code>class</code> <code>HF_TextBlock</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/data/core.py#L82" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>HF_TextBlock</code>(<strong><code>hf_arch</code></strong>=<em><code>None</code></em>, <strong><code>hf_tokenizer</code></strong>=<em><code>None</code></em>, <strong><code>before_batch_tfms</code></strong>=<em><code>None</code></em>, <strong><code>after_batch_tfms</code></strong>=<em><code>None</code></em>, <strong><code>max_length</code></strong>=<em><code>512</code></em>, <strong><code>padding</code></strong>=<em><code>True</code></em>, <strong><code>truncation</code></strong>=<em><code>True</code></em>, <strong><code>is_split_into_words</code></strong>=<em><code>False</code></em>, <strong><code>n_tok_inps</code></strong>=<em><code>1</code></em>, <strong><code>tok_kwargs</code></strong>=<em><code>{}</code></em>, <strong><code>input_return_type</code></strong>=<em><code>HF_BaseInput</code></em>, <strong><code>dl_type</code></strong>=<em><code>SortedDL</code></em>, <strong><code>before_batch_kwargs</code></strong>=<em><code>{}</code></em>, <strong><code>after_batch_kwargs</code></strong>=<em><code>{}</code></em>, <strong>**<code>kwargs</code></strong>) :: <code>TransformBlock</code></p>
 </blockquote>
 <p>A basic wrapper that links defaults transforms for the data block API</p>
 
@@ -221,7 +228,7 @@ as a byproduct of the tokenization process in the <code>encodes</code> method.</
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <p>A basic wrapper that links defaults transforms for the data block API</p>
-<p><a href="/blurr/data-core.html#HF_TextBlock"><code>HF_TextBlock</code></a> has been dramatically simplified from it's predecessor. It handles setting up your <code>HF_BatchTransform</code> transform regardless of data source (e.g., this will work with files, DataFrames, whatever). For it to work, you must either pass in your own instance of a <code>HF_BatchTransform</code> class or the huggingface architecture and tokenizer via the <code>hf_arch</code> and <code>hf_tokenizer</code> (the other args are optional).</p>
+<p><a href="/blurr/data-core.html#HF_TextBlock"><code>HF_TextBlock</code></a> has been dramatically simplified from it's predecessor. It handles setting up your <a href="/blurr/data-core.html#HF_BeforeBatchTransform"><code>HF_BeforeBatchTransform</code></a> and <a href="/blurr/data-core.html#HF_AfterBatchTransform"><code>HF_AfterBatchTransform</code></a> transforms regardless of data source (e.g., this will work with files, DataFrames, whatever). You must either pass in your own instance of a <a href="/blurr/data-core.html#HF_BeforeBatchTransform"><code>HF_BeforeBatchTransform</code></a> class or the huggingface architecture and tokenizer via the <code>hf_arch</code> and <code>hf_tokenizer</code> (the other args are optional).</p>
 
 </div>
 </div>
@@ -548,8 +555,8 @@ as a byproduct of the tokenization process in the <code>encodes</code> method.</
     </tr>
     <tr>
       <th>1</th>
-      <td>THE SHOP AROUND THE CORNER is one of the sweetest and most feel-good romantic comedies ever made. There's just no getting around that, and it's hard to actually put one's feeling for this film into words. It's not one of those films that tries too hard, nor does it come up with the oddest possible scenarios to get the two protagonists together in the end. In fact, all its charm is innate, contained within the characters and the setting and the plot... which is highly believable to boot. It's ea</td>
-      <td>positive</td>
+      <td>Well, what can I say.&lt;br /&gt;&lt;br /&gt;"What the Bleep do we Know" has achieved the nearly impossible - leaving behind such masterpieces of the genre as "The Postman", "The Dungeon Master", "Merlin", and so fourth, it will go down in history as the single worst movie I have ever seen in its entirety. And that, ladies and gentlemen, is impressive indeed, for I have seen many a bad movie.&lt;br /&gt;&lt;br /&gt;This masterpiece of modern cinema consists of two interwoven parts, alternating between a silly and cont</td>
+      <td>negative</td>
     </tr>
   </tbody>
 </table>

@@ -184,7 +184,7 @@ nb_path: "nbs/00_utils.ipynb"
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h4 id="Singleton object at 0x7f1050dca910>" class="doc_header"><code>Singleton object at 0x7f1050dca910></code><a href="" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>Singleton object at 0x7f1050dca910></code>(<strong>*<code>args</code></strong>, <strong>**<code>kwargs</code></strong>)</p>
+<h4 id="Singleton object at 0x7fbfa4a70550>" class="doc_header"><code>Singleton object at 0x7fbfa4a70550></code><a href="" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>Singleton object at 0x7fbfa4a70550></code>(<strong>*<code>args</code></strong>, <strong>**<code>kwargs</code></strong>)</p>
 </blockquote>
 
 </div>
@@ -237,220 +237,20 @@ nb_path: "nbs/00_utils.ipynb"
 </div>
     {% endraw %}
 
-    {% raw %}
-    
-<div class="cell border-box-sizing code_cell rendered">
-
-<div class="output_wrapper">
-<div class="output">
-
-<div class="output_area">
-
-
-<div class="output_markdown rendered_html output_subarea ">
-<h4 id="ModelHelper.get_architectures" class="doc_header"><code>ModelHelper.get_architectures</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/utils.py#L82" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>ModelHelper.get_architectures</code>()</p>
-</blockquote>
-<p>Used to get all the architectures supported by your <code>Transformers</code> install</p>
-
-</div>
-
-</div>
-
-</div>
-</div>
-
-</div>
-    {% endraw %}
-
-    {% raw %}
-    
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">BLURR_MODEL_HELPER</span><span class="o">.</span><span class="n">get_architectures</span><span class="p">())</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-<div class="output_area">
-
-<div class="output_subarea output_stream output_stdout output_text">
-<pre>[&#39;albert&#39;, &#39;albert_fast&#39;, &#39;auto&#39;, &#39;bart&#39;, &#39;bart_fast&#39;, &#39;bert&#39;, &#39;bert_fast&#39;, &#39;bert_generation&#39;, &#39;bert_japanese&#39;, &#39;bertweet&#39;, &#39;blenderbot&#39;, &#39;camembert&#39;, &#39;camembert_fast&#39;, &#39;ctrl&#39;, &#39;deberta&#39;, &#39;distilbert&#39;, &#39;distilbert_fast&#39;, &#39;dpr&#39;, &#39;dpr_fast&#39;, &#39;electra&#39;, &#39;electra_fast&#39;, &#39;encoder_decoder&#39;, &#39;flaubert&#39;, &#39;fsmt&#39;, &#39;funnel&#39;, &#39;funnel_fast&#39;, &#39;gpt2&#39;, &#39;gpt2_fast&#39;, &#39;herbert&#39;, &#39;herbert_fast&#39;, &#39;layoutlm&#39;, &#39;layoutlm_fast&#39;, &#39;longformer&#39;, &#39;longformer_fast&#39;, &#39;lxmert&#39;, &#39;lxmert_fast&#39;, &#39;marian&#39;, &#39;mbart&#39;, &#39;mbart_fast&#39;, &#39;mmbt&#39;, &#39;mobilebert&#39;, &#39;mobilebert_fast&#39;, &#39;openai&#39;, &#39;openai_fast&#39;, &#39;pegasus&#39;, &#39;pegasus_fast&#39;, &#39;phobert&#39;, &#39;prophetnet&#39;, &#39;rag&#39;, &#39;reformer&#39;, &#39;reformer_fast&#39;, &#39;retribert&#39;, &#39;retribert_fast&#39;, &#39;roberta&#39;, &#39;roberta_fast&#39;, &#39;squeezebert&#39;, &#39;squeezebert_fast&#39;, &#39;t5&#39;, &#39;t5_fast&#39;, &#39;transfo_xl&#39;, &#39;utils_base&#39;, &#39;utils_fast&#39;, &#39;xlm&#39;, &#39;xlm_prophetnet&#39;, &#39;xlm_roberta&#39;, &#39;xlm_roberta_fast&#39;, &#39;xlnet&#39;, &#39;xlnet_fast&#39;]
-</pre>
-</div>
-</div>
-
-</div>
-</div>
-
-</div>
-    {% endraw %}
-
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>We'll also create an enum for downstream tasks</p>
+<p>Here's how you can get at the core huggingface objects you need to work with ...</p>
 
 </div>
 </div>
 </div>
-    {% raw %}
-    
-<div class="cell border-box-sizing code_cell rendered">
-
-</div>
-    {% endraw %}
-
-    {% raw %}
-    
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">L</span><span class="p">(</span><span class="n">HF_ARCHITECTURES</span><span class="p">))</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-<div class="output_area">
-
-<div class="output_subarea output_stream output_stdout output_text">
-<pre>[&lt;HF_ARCHITECTURES.albert: 1&gt;, &lt;HF_ARCHITECTURES.albert_fast: 2&gt;, &lt;HF_ARCHITECTURES.auto: 3&gt;, &lt;HF_ARCHITECTURES.bart: 4&gt;, &lt;HF_ARCHITECTURES.bart_fast: 5&gt;, &lt;HF_ARCHITECTURES.bert: 6&gt;, &lt;HF_ARCHITECTURES.bert_fast: 7&gt;, &lt;HF_ARCHITECTURES.bert_generation: 8&gt;, &lt;HF_ARCHITECTURES.bert_japanese: 9&gt;, &lt;HF_ARCHITECTURES.bertweet: 10&gt;, &lt;HF_ARCHITECTURES.blenderbot: 11&gt;, &lt;HF_ARCHITECTURES.camembert: 12&gt;, &lt;HF_ARCHITECTURES.camembert_fast: 13&gt;, &lt;HF_ARCHITECTURES.ctrl: 14&gt;, &lt;HF_ARCHITECTURES.deberta: 15&gt;, &lt;HF_ARCHITECTURES.distilbert: 16&gt;, &lt;HF_ARCHITECTURES.distilbert_fast: 17&gt;, &lt;HF_ARCHITECTURES.dpr: 18&gt;, &lt;HF_ARCHITECTURES.dpr_fast: 19&gt;, &lt;HF_ARCHITECTURES.electra: 20&gt;, &lt;HF_ARCHITECTURES.electra_fast: 21&gt;, &lt;HF_ARCHITECTURES.encoder_decoder: 22&gt;, &lt;HF_ARCHITECTURES.flaubert: 23&gt;, &lt;HF_ARCHITECTURES.fsmt: 24&gt;, &lt;HF_ARCHITECTURES.funnel: 25&gt;, &lt;HF_ARCHITECTURES.funnel_fast: 26&gt;, &lt;HF_ARCHITECTURES.gpt2: 27&gt;, &lt;HF_ARCHITECTURES.gpt2_fast: 28&gt;, &lt;HF_ARCHITECTURES.herbert: 29&gt;, &lt;HF_ARCHITECTURES.herbert_fast: 30&gt;, &lt;HF_ARCHITECTURES.layoutlm: 31&gt;, &lt;HF_ARCHITECTURES.layoutlm_fast: 32&gt;, &lt;HF_ARCHITECTURES.longformer: 33&gt;, &lt;HF_ARCHITECTURES.longformer_fast: 34&gt;, &lt;HF_ARCHITECTURES.lxmert: 35&gt;, &lt;HF_ARCHITECTURES.lxmert_fast: 36&gt;, &lt;HF_ARCHITECTURES.marian: 37&gt;, &lt;HF_ARCHITECTURES.mbart: 38&gt;, &lt;HF_ARCHITECTURES.mbart_fast: 39&gt;, &lt;HF_ARCHITECTURES.mmbt: 40&gt;, &lt;HF_ARCHITECTURES.mobilebert: 41&gt;, &lt;HF_ARCHITECTURES.mobilebert_fast: 42&gt;, &lt;HF_ARCHITECTURES.openai: 43&gt;, &lt;HF_ARCHITECTURES.openai_fast: 44&gt;, &lt;HF_ARCHITECTURES.pegasus: 45&gt;, &lt;HF_ARCHITECTURES.pegasus_fast: 46&gt;, &lt;HF_ARCHITECTURES.phobert: 47&gt;, &lt;HF_ARCHITECTURES.prophetnet: 48&gt;, &lt;HF_ARCHITECTURES.rag: 49&gt;, &lt;HF_ARCHITECTURES.reformer: 50&gt;, &lt;HF_ARCHITECTURES.reformer_fast: 51&gt;, &lt;HF_ARCHITECTURES.retribert: 52&gt;, &lt;HF_ARCHITECTURES.retribert_fast: 53&gt;, &lt;HF_ARCHITECTURES.roberta: 54&gt;, &lt;HF_ARCHITECTURES.roberta_fast: 55&gt;, &lt;HF_ARCHITECTURES.squeezebert: 56&gt;, &lt;HF_ARCHITECTURES.squeezebert_fast: 57&gt;, &lt;HF_ARCHITECTURES.t5: 58&gt;, &lt;HF_ARCHITECTURES.t5_fast: 59&gt;, &lt;HF_ARCHITECTURES.transfo_xl: 60&gt;, &lt;HF_ARCHITECTURES.utils_base: 61&gt;, &lt;HF_ARCHITECTURES.utils_fast: 62&gt;, &lt;HF_ARCHITECTURES.xlm: 63&gt;, &lt;HF_ARCHITECTURES.xlm_prophetnet: 64&gt;, &lt;HF_ARCHITECTURES.xlm_roberta: 65&gt;, &lt;HF_ARCHITECTURES.xlm_roberta_fast: 66&gt;, &lt;HF_ARCHITECTURES.xlnet: 67&gt;, &lt;HF_ARCHITECTURES.xlnet_fast: 68&gt;]
-</pre>
-</div>
-</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>... the <strong><em>task</em></strong></p>
 
 </div>
 </div>
-
 </div>
-    {% endraw %}
-
-    {% raw %}
-    
-<div class="cell border-box-sizing code_cell rendered">
-
-<div class="output_wrapper">
-<div class="output">
-
-<div class="output_area">
-
-
-<div class="output_markdown rendered_html output_subarea ">
-<h4 id="ModelHelper.get_config" class="doc_header"><code>ModelHelper.get_config</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/utils.py#L88" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>ModelHelper.get_config</code>(<strong><code>arch</code></strong>)</p>
-</blockquote>
-<p>Used the locate the name of the configuration class for a given architecture</p>
-
-</div>
-
-</div>
-
-</div>
-</div>
-
-</div>
-    {% endraw %}
-
-    {% raw %}
-    
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">BLURR_MODEL_HELPER</span><span class="o">.</span><span class="n">get_config</span><span class="p">(</span><span class="s1">&#39;bert&#39;</span><span class="p">))</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-<div class="output_area">
-
-<div class="output_subarea output_stream output_stdout output_text">
-<pre>&lt;class &#39;transformers.configuration_bert.BertConfig&#39;&gt;
-</pre>
-</div>
-</div>
-
-</div>
-</div>
-
-</div>
-    {% endraw %}
-
-    {% raw %}
-    
-<div class="cell border-box-sizing code_cell rendered">
-
-<div class="output_wrapper">
-<div class="output">
-
-<div class="output_area">
-
-
-<div class="output_markdown rendered_html output_subarea ">
-<h4 id="ModelHelper.get_tokenizers" class="doc_header"><code>ModelHelper.get_tokenizers</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/utils.py#L95" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>ModelHelper.get_tokenizers</code>(<strong><code>arch</code></strong>)</p>
-</blockquote>
-<p>Used to get the available huggingface tokenizers for a given architecture. Note: There may be
-multiple tokenizers and so this returns a list.</p>
-
-</div>
-
-</div>
-
-</div>
-</div>
-
-</div>
-    {% endraw %}
-
-    {% raw %}
-    
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">BLURR_MODEL_HELPER</span><span class="o">.</span><span class="n">get_tokenizers</span><span class="p">(</span><span class="s1">&#39;electra&#39;</span><span class="p">))</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-<div class="output_area">
-
-<div class="output_subarea output_stream output_stdout output_text">
-<pre>[&lt;class &#39;transformers.tokenization_electra.ElectraTokenizer&#39;&gt;]
-</pre>
-</div>
-</div>
-
-</div>
-</div>
-
-</div>
-    {% endraw %}
-
     {% raw %}
     
 <div class="cell border-box-sizing code_cell rendered">
@@ -515,11 +315,451 @@ question/answering, LM, etc....</p>
 
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>We'll create an enum for tasks as well, one for all tasks and another for tasks available via huggingface's <code>AutoModel</code> capabilities</p>
+<p>... the <strong><em>architecture</em></strong></p>
 
 </div>
 </div>
 </div>
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+<div class="output_markdown rendered_html output_subarea ">
+<h4 id="ModelHelper.get_architectures" class="doc_header"><code>ModelHelper.get_architectures</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/utils.py#L82" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>ModelHelper.get_architectures</code>()</p>
+</blockquote>
+<p>Used to get all the architectures supported by your <code>Transformers</code> install</p>
+
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    {% endraw %}
+
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">BLURR_MODEL_HELPER</span><span class="o">.</span><span class="n">get_architectures</span><span class="p">())</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>[&#39;albert&#39;, &#39;albert_fast&#39;, &#39;auto&#39;, &#39;bart&#39;, &#39;bart_fast&#39;, &#39;bert&#39;, &#39;bert_fast&#39;, &#39;bert_generation&#39;, &#39;bert_japanese&#39;, &#39;bertweet&#39;, &#39;blenderbot&#39;, &#39;camembert&#39;, &#39;camembert_fast&#39;, &#39;ctrl&#39;, &#39;deberta&#39;, &#39;distilbert&#39;, &#39;distilbert_fast&#39;, &#39;dpr&#39;, &#39;dpr_fast&#39;, &#39;electra&#39;, &#39;electra_fast&#39;, &#39;encoder_decoder&#39;, &#39;flaubert&#39;, &#39;fsmt&#39;, &#39;funnel&#39;, &#39;funnel_fast&#39;, &#39;gpt2&#39;, &#39;gpt2_fast&#39;, &#39;herbert&#39;, &#39;herbert_fast&#39;, &#39;layoutlm&#39;, &#39;layoutlm_fast&#39;, &#39;longformer&#39;, &#39;longformer_fast&#39;, &#39;lxmert&#39;, &#39;lxmert_fast&#39;, &#39;marian&#39;, &#39;mbart&#39;, &#39;mbart_fast&#39;, &#39;mmbt&#39;, &#39;mobilebert&#39;, &#39;mobilebert_fast&#39;, &#39;openai&#39;, &#39;openai_fast&#39;, &#39;pegasus&#39;, &#39;pegasus_fast&#39;, &#39;phobert&#39;, &#39;prophetnet&#39;, &#39;rag&#39;, &#39;reformer&#39;, &#39;reformer_fast&#39;, &#39;retribert&#39;, &#39;retribert_fast&#39;, &#39;roberta&#39;, &#39;roberta_fast&#39;, &#39;squeezebert&#39;, &#39;squeezebert_fast&#39;, &#39;t5&#39;, &#39;t5_fast&#39;, &#39;transfo_xl&#39;, &#39;utils_base&#39;, &#39;utils_fast&#39;, &#39;xlm&#39;, &#39;xlm_prophetnet&#39;, &#39;xlm_roberta&#39;, &#39;xlm_roberta_fast&#39;, &#39;xlnet&#39;, &#39;xlnet_fast&#39;]
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+    {% endraw %}
+
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+<div class="output_markdown rendered_html output_subarea ">
+<h4 id="ModelHelper.get_model_architecture" class="doc_header"><code>ModelHelper.get_model_architecture</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/utils.py#L133" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>ModelHelper.get_model_architecture</code>(<strong><code>model_name_or_enum</code></strong>)</p>
+</blockquote>
+<p>Get the architecture for a given model name / enum</p>
+
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    {% endraw %}
+
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">BLURR_MODEL_HELPER</span><span class="o">.</span><span class="n">get_model_architecture</span><span class="p">(</span><span class="s1">&#39;RobertaForSequenceClassification&#39;</span><span class="p">))</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>roberta
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+    {% endraw %}
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>... the <strong><em>config</em></strong> for that particular task and architecture</p>
+
+</div>
+</div>
+</div>
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+<div class="output_markdown rendered_html output_subarea ">
+<h4 id="ModelHelper.get_config" class="doc_header"><code>ModelHelper.get_config</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/utils.py#L88" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>ModelHelper.get_config</code>(<strong><code>arch</code></strong>)</p>
+</blockquote>
+<p>Used the locate the name of the configuration class for a given architecture</p>
+
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    {% endraw %}
+
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">BLURR_MODEL_HELPER</span><span class="o">.</span><span class="n">get_config</span><span class="p">(</span><span class="s1">&#39;bert&#39;</span><span class="p">))</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>&lt;class &#39;transformers.configuration_bert.BertConfig&#39;&gt;
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+    {% endraw %}
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>... the available <strong><em>tokenizers</em></strong> for that architecture</p>
+
+</div>
+</div>
+</div>
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+<div class="output_markdown rendered_html output_subarea ">
+<h4 id="ModelHelper.get_tokenizers" class="doc_header"><code>ModelHelper.get_tokenizers</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/utils.py#L95" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>ModelHelper.get_tokenizers</code>(<strong><code>arch</code></strong>)</p>
+</blockquote>
+<p>Used to get the available huggingface tokenizers for a given architecture. Note: There may be
+multiple tokenizers and so this returns a list.</p>
+
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    {% endraw %}
+
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">BLURR_MODEL_HELPER</span><span class="o">.</span><span class="n">get_tokenizers</span><span class="p">(</span><span class="s1">&#39;electra&#39;</span><span class="p">))</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>[&lt;class &#39;transformers.tokenization_electra.ElectraTokenizer&#39;&gt;]
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+    {% endraw %}
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>... and lastly the <strong><em>models</em></strong> (optionally for a given task and/or architecture)</p>
+
+</div>
+</div>
+</div>
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+<div class="output_markdown rendered_html output_subarea ">
+<h4 id="ModelHelper.get_models" class="doc_header"><code>ModelHelper.get_models</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/utils.py#L114" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>ModelHelper.get_models</code>(<strong><code>arch</code></strong>=<em><code>None</code></em>, <strong><code>task</code></strong>=<em><code>None</code></em>)</p>
+</blockquote>
+<p>The transformer models available for use (optional: by architecture | task)</p>
+
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    {% endraw %}
+
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">L</span><span class="p">(</span><span class="n">BLURR_MODEL_HELPER</span><span class="o">.</span><span class="n">get_models</span><span class="p">())[:</span><span class="mi">5</span><span class="p">])</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>[&lt;class &#39;transformers.modeling_transfo_xl.AdaptiveEmbedding&#39;&gt;, &lt;class &#39;transformers.modeling_albert.AlbertForMaskedLM&#39;&gt;, &lt;class &#39;transformers.modeling_albert.AlbertForMultipleChoice&#39;&gt;, &lt;class &#39;transformers.modeling_albert.AlbertForPreTraining&#39;&gt;, &lt;class &#39;transformers.modeling_albert.AlbertForQuestionAnswering&#39;&gt;]
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+    {% endraw %}
+
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">BLURR_MODEL_HELPER</span><span class="o">.</span><span class="n">get_models</span><span class="p">(</span><span class="n">arch</span><span class="o">=</span><span class="s1">&#39;bert&#39;</span><span class="p">)[:</span><span class="mi">5</span><span class="p">])</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>[&lt;class &#39;transformers.modeling_bert.BertForMaskedLM&#39;&gt;, &lt;class &#39;transformers.modeling_bert.BertForMultipleChoice&#39;&gt;, &lt;class &#39;transformers.modeling_bert.BertForNextSentencePrediction&#39;&gt;, &lt;class &#39;transformers.modeling_bert.BertForPreTraining&#39;&gt;, &lt;class &#39;transformers.modeling_bert.BertForQuestionAnswering&#39;&gt;]
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+    {% endraw %}
+
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">BLURR_MODEL_HELPER</span><span class="o">.</span><span class="n">get_models</span><span class="p">(</span><span class="n">task</span><span class="o">=</span><span class="s1">&#39;TokenClassification&#39;</span><span class="p">)[:</span><span class="mi">5</span><span class="p">])</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>[&lt;class &#39;transformers.modeling_albert.AlbertForTokenClassification&#39;&gt;, &lt;class &#39;transformers.modeling_auto.AutoModelForTokenClassification&#39;&gt;, &lt;class &#39;transformers.modeling_bert.BertForTokenClassification&#39;&gt;, &lt;class &#39;transformers.modeling_camembert.CamembertForTokenClassification&#39;&gt;, &lt;class &#39;transformers.modeling_distilbert.DistilBertForTokenClassification&#39;&gt;]
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+    {% endraw %}
+
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">BLURR_MODEL_HELPER</span><span class="o">.</span><span class="n">get_models</span><span class="p">(</span><span class="n">arch</span><span class="o">=</span><span class="s1">&#39;bert&#39;</span><span class="p">,</span> <span class="n">task</span><span class="o">=</span><span class="s1">&#39;TokenClassification&#39;</span><span class="p">))</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>[&lt;class &#39;transformers.modeling_bert.BertForTokenClassification&#39;&gt;]
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+    {% endraw %}
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Here we define some helpful enums to make it easier to get at the <em>architecture and task</em> you're looking for.</p>
+
+</div>
+</div>
+</div>
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+
+</div>
+    {% endraw %}
+
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">L</span><span class="p">(</span><span class="n">HF_ARCHITECTURES</span><span class="p">)[:</span><span class="mi">5</span><span class="p">])</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>[&lt;HF_ARCHITECTURES.albert: 1&gt;, &lt;HF_ARCHITECTURES.albert_fast: 2&gt;, &lt;HF_ARCHITECTURES.auto: 3&gt;, &lt;HF_ARCHITECTURES.bart: 4&gt;, &lt;HF_ARCHITECTURES.bart_fast: 5&gt;]
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+    {% endraw %}
+
     {% raw %}
     
 <div class="cell border-box-sizing code_cell rendered">
@@ -554,7 +794,7 @@ question/answering, LM, etc....</p>
 [&lt;HF_TASKS_ALL.CausalLM: 1&gt;, &lt;HF_TASKS_ALL.Classification: 2&gt;, &lt;HF_TASKS_ALL.ConditionalGeneration: 3&gt;, &lt;HF_TASKS_ALL.Generation: 4&gt;, &lt;HF_TASKS_ALL.LMHead: 5&gt;, &lt;HF_TASKS_ALL.LMHeadModel: 6&gt;, &lt;HF_TASKS_ALL.MaskedLM: 7&gt;, &lt;HF_TASKS_ALL.MultipleChoice: 8&gt;, &lt;HF_TASKS_ALL.NextSentencePrediction: 9&gt;, &lt;HF_TASKS_ALL.PreTraining: 10&gt;, &lt;HF_TASKS_ALL.QuestionAnswering: 11&gt;, &lt;HF_TASKS_ALL.QuestionAnsweringSimple: 12&gt;, &lt;HF_TASKS_ALL.Seq2SeqLM: 13&gt;, &lt;HF_TASKS_ALL.SequenceClassification: 14&gt;, &lt;HF_TASKS_ALL.TokenClassification: 15&gt;]
 
 --- auto only ---
-[&lt;HF_TASKS_AUTO.CausalLM: 1&gt;, &lt;HF_TASKS_AUTO.LMHead: 2&gt;, &lt;HF_TASKS_AUTO.MaskedLM: 3&gt;, &lt;HF_TASKS_AUTO.MultipleChoice: 4&gt;, &lt;HF_TASKS_AUTO.PreTraining: 5&gt;, &lt;HF_TASKS_AUTO.QuestionAnswering: 6&gt;, &lt;HF_TASKS_AUTO.Seq2SeqLM: 7&gt;, &lt;HF_TASKS_AUTO.SequenceClassification: 8&gt;, &lt;HF_TASKS_AUTO.TokenClassification: 9&gt;]
+[&lt;HF_TASKS_AUTO.CausalLM: 1&gt;, &lt;HF_TASKS_AUTO.LMHead: 2&gt;, &lt;HF_TASKS_AUTO.MaskedLM: 3&gt;, &lt;HF_TASKS_AUTO.MultipleChoice: 4&gt;, &lt;HF_TASKS_AUTO.NextSentencePrediction: 5&gt;, &lt;HF_TASKS_AUTO.PreTraining: 6&gt;, &lt;HF_TASKS_AUTO.QuestionAnswering: 7&gt;, &lt;HF_TASKS_AUTO.Seq2SeqLM: 8&gt;, &lt;HF_TASKS_AUTO.SequenceClassification: 9&gt;, &lt;HF_TASKS_AUTO.TokenClassification: 10&gt;]
 </pre>
 </div>
 </div>
@@ -598,155 +838,13 @@ question/answering, LM, etc....</p>
 </div>
     {% endraw %}
 
-    {% raw %}
-    
-<div class="cell border-box-sizing code_cell rendered">
-
-<div class="output_wrapper">
-<div class="output">
-
-<div class="output_area">
-
-
-<div class="output_markdown rendered_html output_subarea ">
-<h4 id="ModelHelper.get_models" class="doc_header"><code>ModelHelper.get_models</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/utils.py#L114" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>ModelHelper.get_models</code>(<strong><code>arch</code></strong>=<em><code>None</code></em>, <strong><code>task</code></strong>=<em><code>None</code></em>)</p>
-</blockquote>
-<p>The transformer models available for use (optional: by architecture | task)</p>
-
-</div>
-
-</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><a href="/blurr/utils.html#BLURR_MODEL_HELPER.get_classes_for_model"><code>BLURR_MODEL_HELPER.get_classes_for_model</code></a> can be used to get the config, tokenizer, and model <em>classes</em> you want</p>
 
 </div>
 </div>
-
 </div>
-    {% endraw %}
-
-    {% raw %}
-    
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">L</span><span class="p">(</span><span class="n">BLURR_MODEL_HELPER</span><span class="o">.</span><span class="n">get_models</span><span class="p">()))</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-<div class="output_area">
-
-<div class="output_subarea output_stream output_stdout output_text">
-<pre>[&lt;class &#39;transformers.modeling_transfo_xl.AdaptiveEmbedding&#39;&gt;, &lt;class &#39;transformers.modeling_albert.AlbertForMaskedLM&#39;&gt;, &lt;class &#39;transformers.modeling_albert.AlbertForMultipleChoice&#39;&gt;, &lt;class &#39;transformers.modeling_albert.AlbertForPreTraining&#39;&gt;, &lt;class &#39;transformers.modeling_albert.AlbertForQuestionAnswering&#39;&gt;, &lt;class &#39;transformers.modeling_albert.AlbertForSequenceClassification&#39;&gt;, &lt;class &#39;transformers.modeling_albert.AlbertForTokenClassification&#39;&gt;, &lt;class &#39;transformers.modeling_albert.AlbertModel&#39;&gt;, &lt;class &#39;transformers.modeling_albert.AlbertPreTrainedModel&#39;&gt;, &lt;class &#39;transformers.modeling_auto.AutoModel&#39;&gt;, &lt;class &#39;transformers.modeling_auto.AutoModelForCausalLM&#39;&gt;, &lt;class &#39;transformers.modeling_auto.AutoModelForMaskedLM&#39;&gt;, &lt;class &#39;transformers.modeling_auto.AutoModelForMultipleChoice&#39;&gt;, &lt;class &#39;transformers.modeling_auto.AutoModelForPreTraining&#39;&gt;, &lt;class &#39;transformers.modeling_auto.AutoModelForQuestionAnswering&#39;&gt;, &lt;class &#39;transformers.modeling_auto.AutoModelForSeq2SeqLM&#39;&gt;, &lt;class &#39;transformers.modeling_auto.AutoModelForSequenceClassification&#39;&gt;, &lt;class &#39;transformers.modeling_auto.AutoModelForTokenClassification&#39;&gt;, &lt;class &#39;transformers.modeling_auto.AutoModelWithLMHead&#39;&gt;, &lt;class &#39;transformers.modeling_bart.BartForConditionalGeneration&#39;&gt;, &lt;class &#39;transformers.modeling_bart.BartForQuestionAnswering&#39;&gt;, &lt;class &#39;transformers.modeling_bart.BartForSequenceClassification&#39;&gt;, &lt;class &#39;transformers.modeling_bart.BartModel&#39;&gt;, &lt;class &#39;transformers.modeling_bert.BertForMaskedLM&#39;&gt;, &lt;class &#39;transformers.modeling_bert.BertForMultipleChoice&#39;&gt;, &lt;class &#39;transformers.modeling_bert.BertForNextSentencePrediction&#39;&gt;, &lt;class &#39;transformers.modeling_bert.BertForPreTraining&#39;&gt;, &lt;class &#39;transformers.modeling_bert.BertForQuestionAnswering&#39;&gt;, &lt;class &#39;transformers.modeling_bert.BertForSequenceClassification&#39;&gt;, &lt;class &#39;transformers.modeling_bert.BertForTokenClassification&#39;&gt;, &lt;class &#39;transformers.modeling_bert_generation.BertGenerationDecoder&#39;&gt;, &lt;class &#39;transformers.modeling_bert_generation.BertGenerationEncoder&#39;&gt;, &lt;class &#39;transformers.modeling_bert.BertLMHeadModel&#39;&gt;, &lt;class &#39;transformers.modeling_bert.BertLayer&#39;&gt;, &lt;class &#39;transformers.modeling_bert.BertModel&#39;&gt;, &lt;class &#39;transformers.modeling_bert.BertPreTrainedModel&#39;&gt;, &lt;class &#39;transformers.modeling_blenderbot.BlenderbotForConditionalGeneration&#39;&gt;, &lt;class &#39;transformers.modeling_ctrl.CTRLLMHeadModel&#39;&gt;, &lt;class &#39;transformers.modeling_ctrl.CTRLModel&#39;&gt;, &lt;class &#39;transformers.modeling_ctrl.CTRLPreTrainedModel&#39;&gt;, &lt;class &#39;transformers.modeling_camembert.CamembertForCausalLM&#39;&gt;, &lt;class &#39;transformers.modeling_camembert.CamembertForMaskedLM&#39;&gt;, &lt;class &#39;transformers.modeling_camembert.CamembertForMultipleChoice&#39;&gt;, &lt;class &#39;transformers.modeling_camembert.CamembertForQuestionAnswering&#39;&gt;, &lt;class &#39;transformers.modeling_camembert.CamembertForSequenceClassification&#39;&gt;, &lt;class &#39;transformers.modeling_camembert.CamembertForTokenClassification&#39;&gt;, &lt;class &#39;transformers.modeling_camembert.CamembertModel&#39;&gt;, &lt;class &#39;transformers.modeling_utils.Conv1D&#39;&gt;, &lt;class &#39;transformers.modeling_dpr.DPRContextEncoder&#39;&gt;, &lt;class &#39;transformers.modeling_dpr.DPRPretrainedContextEncoder&#39;&gt;, &lt;class &#39;transformers.modeling_dpr.DPRPretrainedQuestionEncoder&#39;&gt;, &lt;class &#39;transformers.modeling_dpr.DPRPretrainedReader&#39;&gt;, &lt;class &#39;transformers.modeling_dpr.DPRQuestionEncoder&#39;&gt;, &lt;class &#39;transformers.modeling_dpr.DPRReader&#39;&gt;, &lt;class &#39;transformers.modeling_deberta.DebertaForSequenceClassification&#39;&gt;, &lt;class &#39;transformers.modeling_deberta.DebertaModel&#39;&gt;, &lt;class &#39;transformers.modeling_deberta.DebertaPreTrainedModel&#39;&gt;, &lt;class &#39;transformers.modeling_distilbert.DistilBertForMaskedLM&#39;&gt;, &lt;class &#39;transformers.modeling_distilbert.DistilBertForMultipleChoice&#39;&gt;, &lt;class &#39;transformers.modeling_distilbert.DistilBertForQuestionAnswering&#39;&gt;, &lt;class &#39;transformers.modeling_distilbert.DistilBertForSequenceClassification&#39;&gt;, &lt;class &#39;transformers.modeling_distilbert.DistilBertForTokenClassification&#39;&gt;, &lt;class &#39;transformers.modeling_distilbert.DistilBertModel&#39;&gt;, &lt;class &#39;transformers.modeling_distilbert.DistilBertPreTrainedModel&#39;&gt;, &lt;class &#39;transformers.modeling_electra.ElectraForMaskedLM&#39;&gt;, &lt;class &#39;transformers.modeling_electra.ElectraForMultipleChoice&#39;&gt;, &lt;class &#39;transformers.modeling_electra.ElectraForPreTraining&#39;&gt;, &lt;class &#39;transformers.modeling_electra.ElectraForQuestionAnswering&#39;&gt;, &lt;class &#39;transformers.modeling_electra.ElectraForSequenceClassification&#39;&gt;, &lt;class &#39;transformers.modeling_electra.ElectraForTokenClassification&#39;&gt;, &lt;class &#39;transformers.modeling_electra.ElectraModel&#39;&gt;, &lt;class &#39;transformers.modeling_electra.ElectraPreTrainedModel&#39;&gt;, &lt;class &#39;transformers.modeling_encoder_decoder.EncoderDecoderModel&#39;&gt;, &lt;class &#39;transformers.modeling_fsmt.FSMTForConditionalGeneration&#39;&gt;, &lt;class &#39;transformers.modeling_fsmt.FSMTModel&#39;&gt;, &lt;class &#39;transformers.modeling_flaubert.FlaubertForMultipleChoice&#39;&gt;, &lt;class &#39;transformers.modeling_flaubert.FlaubertForQuestionAnswering&#39;&gt;, &lt;class &#39;transformers.modeling_flaubert.FlaubertForQuestionAnsweringSimple&#39;&gt;, &lt;class &#39;transformers.modeling_flaubert.FlaubertForSequenceClassification&#39;&gt;, &lt;class &#39;transformers.modeling_flaubert.FlaubertForTokenClassification&#39;&gt;, &lt;class &#39;transformers.modeling_flaubert.FlaubertModel&#39;&gt;, &lt;class &#39;transformers.modeling_flaubert.FlaubertWithLMHeadModel&#39;&gt;, &lt;class &#39;transformers.modeling_funnel.FunnelBaseModel&#39;&gt;, &lt;class &#39;transformers.modeling_funnel.FunnelForMaskedLM&#39;&gt;, &lt;class &#39;transformers.modeling_funnel.FunnelForMultipleChoice&#39;&gt;, &lt;class &#39;transformers.modeling_funnel.FunnelForPreTraining&#39;&gt;, &lt;class &#39;transformers.modeling_funnel.FunnelForQuestionAnswering&#39;&gt;, &lt;class &#39;transformers.modeling_funnel.FunnelForSequenceClassification&#39;&gt;, &lt;class &#39;transformers.modeling_funnel.FunnelForTokenClassification&#39;&gt;, &lt;class &#39;transformers.modeling_funnel.FunnelModel&#39;&gt;, &lt;class &#39;transformers.modeling_gpt2.GPT2DoubleHeadsModel&#39;&gt;, &lt;class &#39;transformers.modeling_gpt2.GPT2ForSequenceClassification&#39;&gt;, &lt;class &#39;transformers.modeling_gpt2.GPT2LMHeadModel&#39;&gt;, &lt;class &#39;transformers.modeling_gpt2.GPT2Model&#39;&gt;, &lt;class &#39;transformers.modeling_gpt2.GPT2PreTrainedModel&#39;&gt;, &lt;class &#39;transformers.modeling_layoutlm.LayoutLMForMaskedLM&#39;&gt;, &lt;class &#39;transformers.modeling_layoutlm.LayoutLMForTokenClassification&#39;&gt;, &lt;class &#39;transformers.modeling_layoutlm.LayoutLMModel&#39;&gt;, &lt;class &#39;transformers.modeling_longformer.LongformerForMaskedLM&#39;&gt;, &lt;class &#39;transformers.modeling_longformer.LongformerForMultipleChoice&#39;&gt;, &lt;class &#39;transformers.modeling_longformer.LongformerForQuestionAnswering&#39;&gt;, &lt;class &#39;transformers.modeling_longformer.LongformerForSequenceClassification&#39;&gt;, &lt;class &#39;transformers.modeling_longformer.LongformerForTokenClassification&#39;&gt;, &lt;class &#39;transformers.modeling_longformer.LongformerModel&#39;&gt;, &lt;class &#39;transformers.modeling_longformer.LongformerSelfAttention&#39;&gt;, &lt;class &#39;transformers.modeling_lxmert.LxmertEncoder&#39;&gt;, &lt;class &#39;transformers.modeling_lxmert.LxmertForPreTraining&#39;&gt;, &lt;class &#39;transformers.modeling_lxmert.LxmertForQuestionAnswering&#39;&gt;, &lt;class &#39;transformers.modeling_lxmert.LxmertModel&#39;&gt;, &lt;class &#39;transformers.modeling_lxmert.LxmertPreTrainedModel&#39;&gt;, &lt;class &#39;transformers.modeling_lxmert.LxmertVisualFeatureEncoder&#39;&gt;, &lt;class &#39;transformers.modeling_lxmert.LxmertXLayer&#39;&gt;, &lt;class &#39;transformers.modeling_mbart.MBartForConditionalGeneration&#39;&gt;, &lt;class &#39;transformers.modeling_mmbt.MMBTForClassification&#39;&gt;, &lt;class &#39;transformers.modeling_mmbt.MMBTModel&#39;&gt;, &lt;class &#39;transformers.modeling_marian.MarianMTModel&#39;&gt;, &lt;class &#39;transformers.modeling_mobilebert.MobileBertForMaskedLM&#39;&gt;, &lt;class &#39;transformers.modeling_mobilebert.MobileBertForMultipleChoice&#39;&gt;, &lt;class &#39;transformers.modeling_mobilebert.MobileBertForNextSentencePrediction&#39;&gt;, &lt;class &#39;transformers.modeling_mobilebert.MobileBertForPreTraining&#39;&gt;, &lt;class &#39;transformers.modeling_mobilebert.MobileBertForQuestionAnswering&#39;&gt;, &lt;class &#39;transformers.modeling_mobilebert.MobileBertForSequenceClassification&#39;&gt;, &lt;class &#39;transformers.modeling_mobilebert.MobileBertForTokenClassification&#39;&gt;, &lt;class &#39;transformers.modeling_mobilebert.MobileBertLayer&#39;&gt;, &lt;class &#39;transformers.modeling_mobilebert.MobileBertModel&#39;&gt;, &lt;class &#39;transformers.modeling_mobilebert.MobileBertPreTrainedModel&#39;&gt;, &lt;class &#39;transformers.modeling_mmbt.ModalEmbeddings&#39;&gt;, &lt;class &#39;transformers.modeling_openai.OpenAIGPTDoubleHeadsModel&#39;&gt;, &lt;class &#39;transformers.modeling_openai.OpenAIGPTForSequenceClassification&#39;&gt;, &lt;class &#39;transformers.modeling_openai.OpenAIGPTLMHeadModel&#39;&gt;, &lt;class &#39;transformers.modeling_openai.OpenAIGPTModel&#39;&gt;, &lt;class &#39;transformers.modeling_openai.OpenAIGPTPreTrainedModel&#39;&gt;, &lt;class &#39;transformers.modeling_pegasus.PegasusForConditionalGeneration&#39;&gt;, &lt;class &#39;transformers.modeling_utils.PreTrainedModel&#39;&gt;, &lt;class &#39;transformers.modeling_bart.PretrainedBartModel&#39;&gt;, &lt;class &#39;transformers.modeling_fsmt.PretrainedFSMTModel&#39;&gt;, &lt;class &#39;transformers.modeling_prophetnet.ProphetNetDecoder&#39;&gt;, &lt;class &#39;transformers.modeling_prophetnet.ProphetNetEncoder&#39;&gt;, &lt;class &#39;transformers.modeling_prophetnet.ProphetNetForCausalLM&#39;&gt;, &lt;class &#39;transformers.modeling_prophetnet.ProphetNetForConditionalGeneration&#39;&gt;, &lt;class &#39;transformers.modeling_prophetnet.ProphetNetModel&#39;&gt;, &lt;class &#39;transformers.modeling_prophetnet.ProphetNetPreTrainedModel&#39;&gt;, &lt;class &#39;transformers.modeling_rag.RagModel&#39;&gt;, &lt;class &#39;transformers.modeling_rag.RagSequenceForGeneration&#39;&gt;, &lt;class &#39;transformers.modeling_rag.RagTokenForGeneration&#39;&gt;, &lt;class &#39;transformers.modeling_reformer.ReformerAttention&#39;&gt;, &lt;class &#39;transformers.modeling_reformer.ReformerForMaskedLM&#39;&gt;, &lt;class &#39;transformers.modeling_reformer.ReformerForQuestionAnswering&#39;&gt;, &lt;class &#39;transformers.modeling_reformer.ReformerForSequenceClassification&#39;&gt;, &lt;class &#39;transformers.modeling_reformer.ReformerLayer&#39;&gt;, &lt;class &#39;transformers.modeling_reformer.ReformerModel&#39;&gt;, &lt;class &#39;transformers.modeling_reformer.ReformerModelWithLMHead&#39;&gt;, &lt;class &#39;transformers.modeling_retribert.RetriBertModel&#39;&gt;, &lt;class &#39;transformers.modeling_retribert.RetriBertPreTrainedModel&#39;&gt;, &lt;class &#39;transformers.modeling_roberta.RobertaForCausalLM&#39;&gt;, &lt;class &#39;transformers.modeling_roberta.RobertaForMaskedLM&#39;&gt;, &lt;class &#39;transformers.modeling_roberta.RobertaForMultipleChoice&#39;&gt;, &lt;class &#39;transformers.modeling_roberta.RobertaForQuestionAnswering&#39;&gt;, &lt;class &#39;transformers.modeling_roberta.RobertaForSequenceClassification&#39;&gt;, &lt;class &#39;transformers.modeling_roberta.RobertaForTokenClassification&#39;&gt;, &lt;class &#39;transformers.modeling_roberta.RobertaModel&#39;&gt;, &lt;class &#39;transformers.modeling_squeezebert.SqueezeBertForMaskedLM&#39;&gt;, &lt;class &#39;transformers.modeling_squeezebert.SqueezeBertForMultipleChoice&#39;&gt;, &lt;class &#39;transformers.modeling_squeezebert.SqueezeBertForQuestionAnswering&#39;&gt;, &lt;class &#39;transformers.modeling_squeezebert.SqueezeBertForSequenceClassification&#39;&gt;, &lt;class &#39;transformers.modeling_squeezebert.SqueezeBertForTokenClassification&#39;&gt;, &lt;class &#39;transformers.modeling_squeezebert.SqueezeBertModel&#39;&gt;, &lt;class &#39;transformers.modeling_squeezebert.SqueezeBertModule&#39;&gt;, &lt;class &#39;transformers.modeling_squeezebert.SqueezeBertPreTrainedModel&#39;&gt;, &lt;class &#39;transformers.modeling_t5.T5ForConditionalGeneration&#39;&gt;, &lt;class &#39;transformers.modeling_t5.T5Model&#39;&gt;, &lt;class &#39;transformers.modeling_t5.T5PreTrainedModel&#39;&gt;, &lt;class &#39;transformers.modeling_transfo_xl.TransfoXLLMHeadModel&#39;&gt;, &lt;class &#39;transformers.modeling_transfo_xl.TransfoXLModel&#39;&gt;, &lt;class &#39;transformers.modeling_transfo_xl.TransfoXLPreTrainedModel&#39;&gt;, &lt;class &#39;transformers.modeling_xlm.XLMForMultipleChoice&#39;&gt;, &lt;class &#39;transformers.modeling_xlm.XLMForQuestionAnswering&#39;&gt;, &lt;class &#39;transformers.modeling_xlm.XLMForQuestionAnsweringSimple&#39;&gt;, &lt;class &#39;transformers.modeling_xlm.XLMForSequenceClassification&#39;&gt;, &lt;class &#39;transformers.modeling_xlm.XLMForTokenClassification&#39;&gt;, &lt;class &#39;transformers.modeling_xlm.XLMModel&#39;&gt;, &lt;class &#39;transformers.modeling_xlm.XLMPreTrainedModel&#39;&gt;, &lt;class &#39;transformers.modeling_xlm_prophetnet.XLMProphetNetDecoder&#39;&gt;, &lt;class &#39;transformers.modeling_xlm_prophetnet.XLMProphetNetEncoder&#39;&gt;, &lt;class &#39;transformers.modeling_xlm_prophetnet.XLMProphetNetForCausalLM&#39;&gt;, &lt;class &#39;transformers.modeling_xlm_prophetnet.XLMProphetNetForConditionalGeneration&#39;&gt;, &lt;class &#39;transformers.modeling_xlm_prophetnet.XLMProphetNetModel&#39;&gt;, &lt;class &#39;transformers.modeling_xlm_roberta.XLMRobertaForCausalLM&#39;&gt;, &lt;class &#39;transformers.modeling_xlm_roberta.XLMRobertaForMaskedLM&#39;&gt;, &lt;class &#39;transformers.modeling_xlm_roberta.XLMRobertaForMultipleChoice&#39;&gt;, &lt;class &#39;transformers.modeling_xlm_roberta.XLMRobertaForQuestionAnswering&#39;&gt;, &lt;class &#39;transformers.modeling_xlm_roberta.XLMRobertaForSequenceClassification&#39;&gt;, &lt;class &#39;transformers.modeling_xlm_roberta.XLMRobertaForTokenClassification&#39;&gt;, &lt;class &#39;transformers.modeling_xlm_roberta.XLMRobertaModel&#39;&gt;, &lt;class &#39;transformers.modeling_xlm.XLMWithLMHeadModel&#39;&gt;, &lt;class &#39;transformers.modeling_xlnet.XLNetForMultipleChoice&#39;&gt;, &lt;class &#39;transformers.modeling_xlnet.XLNetForQuestionAnswering&#39;&gt;, &lt;class &#39;transformers.modeling_xlnet.XLNetForQuestionAnsweringSimple&#39;&gt;, &lt;class &#39;transformers.modeling_xlnet.XLNetForSequenceClassification&#39;&gt;, &lt;class &#39;transformers.modeling_xlnet.XLNetForTokenClassification&#39;&gt;, &lt;class &#39;transformers.modeling_xlnet.XLNetLMHeadModel&#39;&gt;, &lt;class &#39;transformers.modeling_xlnet.XLNetModel&#39;&gt;, &lt;class &#39;transformers.modeling_xlnet.XLNetPreTrainedModel&#39;&gt;]
-</pre>
-</div>
-</div>
-
-</div>
-</div>
-
-</div>
-    {% endraw %}
-
-    {% raw %}
-    
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">BLURR_MODEL_HELPER</span><span class="o">.</span><span class="n">get_models</span><span class="p">(</span><span class="n">arch</span><span class="o">=</span><span class="s1">&#39;bert&#39;</span><span class="p">))</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-<div class="output_area">
-
-<div class="output_subarea output_stream output_stdout output_text">
-<pre>[&lt;class &#39;transformers.modeling_bert.BertForMaskedLM&#39;&gt;, &lt;class &#39;transformers.modeling_bert.BertForMultipleChoice&#39;&gt;, &lt;class &#39;transformers.modeling_bert.BertForNextSentencePrediction&#39;&gt;, &lt;class &#39;transformers.modeling_bert.BertForPreTraining&#39;&gt;, &lt;class &#39;transformers.modeling_bert.BertForQuestionAnswering&#39;&gt;, &lt;class &#39;transformers.modeling_bert.BertForSequenceClassification&#39;&gt;, &lt;class &#39;transformers.modeling_bert.BertForTokenClassification&#39;&gt;, &lt;class &#39;transformers.modeling_bert.BertLMHeadModel&#39;&gt;, &lt;class &#39;transformers.modeling_bert.BertLayer&#39;&gt;, &lt;class &#39;transformers.modeling_bert.BertModel&#39;&gt;, &lt;class &#39;transformers.modeling_bert.BertPreTrainedModel&#39;&gt;]
-</pre>
-</div>
-</div>
-
-</div>
-</div>
-
-</div>
-    {% endraw %}
-
-    {% raw %}
-    
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">BLURR_MODEL_HELPER</span><span class="o">.</span><span class="n">get_models</span><span class="p">(</span><span class="n">task</span><span class="o">=</span><span class="s1">&#39;TokenClassification&#39;</span><span class="p">))</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-<div class="output_area">
-
-<div class="output_subarea output_stream output_stdout output_text">
-<pre>[&lt;class &#39;transformers.modeling_albert.AlbertForTokenClassification&#39;&gt;, &lt;class &#39;transformers.modeling_auto.AutoModelForTokenClassification&#39;&gt;, &lt;class &#39;transformers.modeling_bert.BertForTokenClassification&#39;&gt;, &lt;class &#39;transformers.modeling_camembert.CamembertForTokenClassification&#39;&gt;, &lt;class &#39;transformers.modeling_distilbert.DistilBertForTokenClassification&#39;&gt;, &lt;class &#39;transformers.modeling_electra.ElectraForTokenClassification&#39;&gt;, &lt;class &#39;transformers.modeling_flaubert.FlaubertForTokenClassification&#39;&gt;, &lt;class &#39;transformers.modeling_funnel.FunnelForTokenClassification&#39;&gt;, &lt;class &#39;transformers.modeling_layoutlm.LayoutLMForTokenClassification&#39;&gt;, &lt;class &#39;transformers.modeling_longformer.LongformerForTokenClassification&#39;&gt;, &lt;class &#39;transformers.modeling_mobilebert.MobileBertForTokenClassification&#39;&gt;, &lt;class &#39;transformers.modeling_roberta.RobertaForTokenClassification&#39;&gt;, &lt;class &#39;transformers.modeling_squeezebert.SqueezeBertForTokenClassification&#39;&gt;, &lt;class &#39;transformers.modeling_xlm.XLMForTokenClassification&#39;&gt;, &lt;class &#39;transformers.modeling_xlm_roberta.XLMRobertaForTokenClassification&#39;&gt;, &lt;class &#39;transformers.modeling_xlnet.XLNetForTokenClassification&#39;&gt;]
-</pre>
-</div>
-</div>
-
-</div>
-</div>
-
-</div>
-    {% endraw %}
-
-    {% raw %}
-    
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">BLURR_MODEL_HELPER</span><span class="o">.</span><span class="n">get_models</span><span class="p">(</span><span class="n">arch</span><span class="o">=</span><span class="s1">&#39;bert&#39;</span><span class="p">,</span> <span class="n">task</span><span class="o">=</span><span class="s1">&#39;TokenClassification&#39;</span><span class="p">))</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-<div class="output_area">
-
-<div class="output_subarea output_stream output_stdout output_text">
-<pre>[&lt;class &#39;transformers.modeling_bert.BertForTokenClassification&#39;&gt;]
-</pre>
-</div>
-</div>
-
-</div>
-</div>
-
-</div>
-    {% endraw %}
-
     {% raw %}
     
 <div class="cell border-box-sizing code_cell rendered">
@@ -846,67 +944,9 @@ question/answering, LM, etc....</p>
 </div>
     {% endraw %}
 
-    {% raw %}
-    
-<div class="cell border-box-sizing code_cell rendered">
-
-<div class="output_wrapper">
-<div class="output">
-
-<div class="output_area">
-
-
-<div class="output_markdown rendered_html output_subarea ">
-<h4 id="ModelHelper.get_model_architecture" class="doc_header"><code>ModelHelper.get_model_architecture</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/utils.py#L133" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>ModelHelper.get_model_architecture</code>(<strong><code>model_name_or_enum</code></strong>)</p>
-</blockquote>
-<p>Get the architecture for a given model name / enum</p>
-
-</div>
-
-</div>
-
-</div>
-</div>
-
-</div>
-    {% endraw %}
-
-    {% raw %}
-    
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">BLURR_MODEL_HELPER</span><span class="o">.</span><span class="n">get_model_architecture</span><span class="p">(</span><span class="s1">&#39;RobertaForSequenceClassification&#39;</span><span class="p">)</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-<div class="output_area">
-
-
-
-<div class="output_text output_subarea output_execute_result">
-<pre>&#39;roberta&#39;</pre>
-</div>
-
-</div>
-
-</div>
-</div>
-
-</div>
-    {% endraw %}
-
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h3 id="Methods-for-loading-pre-trained-(configs,-tokenizer,-model)-hugginface-classes">Methods for loading pre-trained (configs, tokenizer, model) hugginface classes<a class="anchor-link" href="#Methods-for-loading-pre-trained-(configs,-tokenizer,-model)-hugginface-classes"> </a></h3>
+<h3 id="Methods-for-loading-pre-trained-(configs,-tokenizer,-model)-hugginface-objects">Methods for loading pre-trained (configs, tokenizer, model) hugginface objects<a class="anchor-link" href="#Methods-for-loading-pre-trained-(configs,-tokenizer,-model)-hugginface-objects"> </a></h3>
 </div>
 </div>
 </div>
@@ -947,7 +987,7 @@ related kwargs for each) to get as specific as you want w/r/t what huggingface o
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">arch</span><span class="p">,</span> <span class="n">config</span><span class="p">,</span> <span class="n">tokenizer</span><span class="p">,</span> <span class="n">model</span> <span class="o">=</span> <span class="n">BLURR_MODEL_HELPER</span><span class="o">.</span><span class="n">get_hf_objects</span><span class="p">(</span><span class="s2">&quot;bert-base-cased-finetuned-mrpc&quot;</span><span class="p">,</span>
-                                                                   <span class="n">task</span><span class="o">=</span><span class="n">HF_TASKS_AUTO</span><span class="o">.</span><span class="n">LMHead</span><span class="p">)</span>
+                                                                   <span class="n">task</span><span class="o">=</span><span class="n">HF_TASKS_AUTO</span><span class="o">.</span><span class="n">MaskedLM</span><span class="p">)</span>
 
 <span class="nb">print</span><span class="p">(</span><span class="n">arch</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">config</span><span class="p">))</span>
@@ -961,15 +1001,6 @@ related kwargs for each) to get as specific as you want w/r/t what huggingface o
 
 <div class="output_wrapper">
 <div class="output">
-
-<div class="output_area">
-
-<div class="output_subarea output_stream output_stderr output_text">
-<pre>/home/wgilliam/anaconda3/envs/blurr/lib/python3.7/site-packages/transformers/modeling_auto.py:825: FutureWarning: The class `AutoModelWithLMHead` is deprecated and will be removed in a future version. Please use `AutoModelForCausalLM` for causal language models, `AutoModelForMaskedLM` for masked language models and `AutoModelForSeq2SeqLM` for encoder-decoder models.
-  FutureWarning,
-</pre>
-</div>
-</div>
 
 <div class="output_area">
 

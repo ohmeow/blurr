@@ -222,7 +222,7 @@ nb_path: "nbs/01zc_data-text2text-summarization.ipynb"
 
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>We create a subclass of <code>HF_BatchTransform</code> for summarization tasks to add <code>decoder_input_ids</code> and <code>labels</code> to our inputs during training, which will in turn allow the huggingface model to calculate the loss for us.  See <a href="https://huggingface.co/transformers/model_doc/bart.html#transformers.BartModel.forward">here</a> for more information on these additional inputs are used in summarization and conversational training tasks.</p>
+<p>We create a subclass of <a href="/blurr/data-core.html#HF_BeforeBatchTransform"><code>HF_BeforeBatchTransform</code></a> for summarization tasks to add <code>decoder_input_ids</code> and <code>labels</code> to our inputs during training, which will in turn allow the huggingface model to calculate the loss for us.  See <a href="https://huggingface.co/transformers/glossary.html#labels">here</a> and <a href="https://huggingface.co/transformers/glossary.html#decoder-input-ids">here</a> for more information on these additional inputs used in summarization and conversational training tasks. How they should look for particular architectures can be found by looking at those model's <code>forward</code> function's docs (See <a href="https://huggingface.co/transformers/model_doc/bart.html#transformers.BartModel.forward">here</a> for BART for example)</p>
 <p>Note also that <code>labels</code> is simply target_ids shifted to the right by one since the task to is to predict the next token based on the current (and all previous) <code>decoder_input_ids</code>.</p>
 <p>And lastly, we also update our targets to just be the <code>input_ids</code> of our target sequence so that fastai's <code>Learner.show_results</code> works (again, almost all the fastai bits require returning a single tensor to work).</p>
 
@@ -278,7 +278,7 @@ nb_path: "nbs/01zc_data-text2text-summarization.ipynb"
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h2 id="HF_SummarizationBeforeBatchTransform" class="doc_header"><code>class</code> <code>HF_SummarizationBeforeBatchTransform</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/data/text2text/summarization.py#L23" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>HF_SummarizationBeforeBatchTransform</code>(<strong><code>hf_arch</code></strong>, <strong><code>hf_tokenizer</code></strong>, <strong><code>max_length</code></strong>=<em><code>None</code></em>, <strong><code>padding</code></strong>=<em><code>True</code></em>, <strong><code>truncation</code></strong>=<em><code>True</code></em>, <strong><code>is_split_into_words</code></strong>=<em><code>False</code></em>, <strong><code>n_tok_inps</code></strong>=<em><code>2</code></em>, <strong><code>tok_kwargs</code></strong>=<em><code>{}</code></em>, <strong>**<code>kwargs</code></strong>) :: <a href="/blurr/data-core.html#HF_BeforeBatchTransform"><code>HF_BeforeBatchTransform</code></a></p>
+<h2 id="HF_SummarizationBeforeBatchTransform" class="doc_header"><code>class</code> <code>HF_SummarizationBeforeBatchTransform</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/data/text2text/summarization.py#L23" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>HF_SummarizationBeforeBatchTransform</code>(<strong><code>hf_arch</code></strong>, <strong><code>hf_tokenizer</code></strong>, <strong><code>max_length</code></strong>=<em><code>None</code></em>, <strong><code>padding</code></strong>=<em><code>True</code></em>, <strong><code>truncation</code></strong>=<em><code>True</code></em>, <strong><code>is_split_into_words</code></strong>=<em><code>False</code></em>, <strong><code>n_tok_inps</code></strong>=<em><code>2</code></em>, <strong><code>ignore_token_id</code></strong>=<em><code>-100</code></em>, <strong><code>tok_kwargs</code></strong>=<em><code>{}</code></em>, <strong>**<code>kwargs</code></strong>) :: <a href="/blurr/data-core.html#HF_BeforeBatchTransform"><code>HF_BeforeBatchTransform</code></a></p>
 </blockquote>
 <p>Handles everything you need to assemble a mini-batch of inputs and targets, as well as decode the dictionary produced
 as a byproduct of the tokenization process in the <code>encodes</code> method.</p>
@@ -293,13 +293,6 @@ as a byproduct of the tokenization process in the <code>encodes</code> method.</
 </div>
     {% endraw %}
 
-<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<p>We had to override the <code>decodes</code> method above because, while both our inputs and targets are technically the same things, we update the later to consist of <em>only</em> the target input_ids so that methods like <code>Learner.show_results</code> work.</p>
-
-</div>
-</div>
-</div>
     {% raw %}
     
 <div class="cell border-box-sizing code_cell rendered">
@@ -403,7 +396,44 @@ as a byproduct of the tokenization process in the <code>encodes</code> method.</
 
 
 <div class="output_text output_subarea output_execute_result">
-<pre>(2, torch.Size([4, 1024]), torch.Size([4, 78]))</pre>
+<pre>(2, torch.Size([4, 1024]), torch.Size([4, 68]))</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    {% endraw %}
+
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">t</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">randn</span><span class="p">((</span><span class="mi">3</span><span class="p">,</span><span class="mi">3</span><span class="p">));</span>
+
+<span class="n">F</span><span class="o">.</span><span class="n">pad</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">pad</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span> <span class="n">value</span><span class="o">=</span><span class="mi">1</span><span class="p">)[:,:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>tensor([[ 1.0000, -1.4273, -0.1617],
+        [ 1.0000, -0.0583, -1.5524],
+        [ 1.0000,  0.8595,  0.9492]])</pre>
 </div>
 
 </div>
@@ -458,8 +488,8 @@ as a byproduct of the tokenization process in the <code>encodes</code> method.</
     </tr>
     <tr>
       <th>1</th>
-      <td>Some U.S. officials this year are expected to get smartphones capable of handling classified government documents over cellular networks, according to people involved in the project. The phones will run a modified version of Google's Android software, which is being developed as part of an initiative that spans multiple federal agencies and government contractors, these people said. The smartphones are first being deployed to U.S. soldiers, people familiar with the project said. Later, federal agencies are expected to get phones for sending and receiving government cables while away from their offices, sources said. Eventually, local governments and corporations could give workers phones with similar software. The Army has been testing touchscreen devices at U.S. bases for nearly two years, said Michael McCarthy, a director for the Army's Brigade Modernization Command, in a phone interview. About 40 phones were sent to fighters overseas a year ago, and the Army plans to ship 50 more p</td>
-      <td>Government, military officials to get Android phones capable of sharing secret documents.\nThe phones will run a modified version of Google's Android software, sources say.\nContractor: Google "more cooperative" than Apple working with government on p</td>
+      <td>I have an uncle who has always been a robust and healthy guy. He drank a glass of skim milk every day, bragged about how many pull-ups he was doing and fit into pants he was wearing 20 years before. He didn't take a single medication and retired early. Given that he had no medical problems and ran his own business, he opted to go several years without health insurance. Eventually, when he turned 65, he picked up Medicare. What happened next was a little strange. He fell off the wagon. He exercised only sporadically, and paid hardly any attention to what he was eating. One day, I saw him eat an entire bag of potato chips. He bemoaned the fact that he was forced to buy new, bigger pants, and he stopped drinking his milk. For him, becoming newly insured had nearly the opposite effect on him of what we doctors hope to achieve. He'd become unhealthier. In many ways, my uncle was demonstrating a concept known as the moral hazard. Two economists wrote about this exact scenario  in 2006. They</td>
+      <td>Sanjay Gupta: Moral hazard causes some to neglect health when they get health insurance.\nHe says Obamacare alone won't guarantee good health; personal habits must do that.\nHe says research shows 30 minutes of daily exercise cuts heart attack, stroke</td>
     </tr>
   </tbody>
 </table>
@@ -606,7 +636,7 @@ as a byproduct of the tokenization process in the <code>encodes</code> method.</
         <span class="n">test_eq</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">b</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;input_ids&#39;</span><span class="p">]),</span> <span class="n">bsz</span><span class="p">)</span>
         <span class="n">test_eq</span><span class="p">(</span><span class="n">b</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;input_ids&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Size</span><span class="p">([</span><span class="n">bsz</span><span class="p">,</span> <span class="n">seq_sz</span><span class="p">]))</span>
         <span class="n">test_eq</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">b</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span> <span class="n">bsz</span><span class="p">)</span>
-        <span class="n">test_eq</span><span class="p">(</span><span class="n">b</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Size</span><span class="p">([</span><span class="n">bsz</span><span class="p">,</span> <span class="n">trg_seq_sz</span><span class="p">]))</span>
+        <span class="n">test_eq</span><span class="p">(</span><span class="n">b</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Size</span><span class="p">([</span><span class="n">bsz</span><span class="p">,</span> <span class="n">trg_seq_sz</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]))</span>
 
         <span class="k">if</span> <span class="p">(</span><span class="nb">hasattr</span><span class="p">(</span><span class="n">hf_tokenizer</span><span class="p">,</span> <span class="s1">&#39;add_prefix_space&#39;</span><span class="p">)):</span>
             <span class="n">test_eq</span><span class="p">(</span><span class="n">dls</span><span class="o">.</span><span class="n">before_batch</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">tok_kwargs</span><span class="p">[</span><span class="s1">&#39;add_prefix_space&#39;</span><span class="p">],</span> <span class="kc">True</span><span class="p">)</span>

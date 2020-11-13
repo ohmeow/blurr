@@ -298,7 +298,7 @@ nb_path: "nbs/02zc_modeling-text2text-summarization.ipynb"
 
 
 <div class="output_text output_subarea output_execute_result">
-<pre>(2, torch.Size([2, 256]), torch.Size([2, 79]))</pre>
+<pre>(2, torch.Size([2, 256]), torch.Size([2, 68]))</pre>
 </div>
 
 </div>
@@ -346,8 +346,8 @@ nb_path: "nbs/02zc_modeling-text2text-summarization.ipynb"
     </tr>
     <tr>
       <th>1</th>
-      <td>(CNN Student News) -- March 23, 2010. Download PDF maps related to today's show:. • Haiti • China. Transcript. THIS IS A RUSH TRANSCRIPT. THIS COPY MAY NOT BE IN ITS FINAL FORM AND MAY BE UPDATED. CARL AZUZ, CNN STUDENT NEWS ANCHOR: Happy birthday, Roger Bannister -- first man to run the mile in less than four minutes. In more than twice that time, you'll be up to speed on today's headlines. I'm Carl Azuz. First Up: Health Care. AZUZ: First up, it's the biggest expansion of the United States health care system in more than forty years. And by a vote of 219-212, the U.S. House of Representatives passed a health care reform bill late Sunday night. This is the same bill that the Senate passed last December. This means that when President Obama signs it, it's law. The House also passed a set of changes to the Senate bill. We're gonna get back to that in just a second. But first, you know this health care issue has been controversial. We want you to check out some of the reaction to last night's vote. REP. NANCY</td>
-      <td>Find out what comes next after the passage of a health care reform bill.\nLearn about a proposal that would change how student loans are funded.\nFollow the steps that led to a showdown between China and Google.\nUse the Daily Discussion to help students understand today's featured news stories.</td>
+      <td>Washington (CNN) -- Few answers have emerged to the myriad questions about the Boston Marathon bombing and its aftermath, but that didn't stop political leaders from clashing about what happened and why it did on Sunday talk shows. Republican members of Congress played up a possible connection to global terrorists and said the lone surviving suspect should be designated an enemy combatant to allow unfettered questioning and unlimited detention. Democratic legislators called for handling the 19-year-old suspect as a crime suspect rather than a war enemy, allowing the U.S. citizen the right to legal representation under federal law that could impose the death penalty. A closer look at their statements and arguments showed how politicians blend facts, conjecture and spin to push their side's agenda while countering arguments from across the aisle. The facts so far tell a still-convoluted story. Tamerlan and Dzhokhar Tsarnaev, brothers of northern Caucasus origin who had lived in the United States for years, allegedly set off two bombs near the finish line of Monday's Boston Marathon, killing three people and injuring more than 170. Graham: 'Ball was dropped' in probe of Tamerlan. After the FBI released video footage and photos of the pair on Thursday, they allegedly shot to death a university police officer and</td>
+      <td>Partisan posturing emerges over Boston bombings on Sunday talk shows.\nDespite little evidence, Republicans hint of possible international terror ties.\nDemocrats argue against designating the suspect an enemy combatant.\nAuthors of immigration reform reject conservative calls to put off the issue.</td>
     </tr>
   </tbody>
 </table>
@@ -424,7 +424,7 @@ nb_path: "nbs/02zc_modeling-text2text-summarization.ipynb"
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h2 id="HF_SummarizationModelCallback" class="doc_header"><code>class</code> <code>HF_SummarizationModelCallback</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/modeling/text2text/summarization.py#L33" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>HF_SummarizationModelCallback</code>(<strong><code>rouge_metrics</code></strong>=<em><code>['rouge1', 'rouge2', 'rougeL']</code></em>, <strong><code>text_gen_kwargs</code></strong>=<em><code>{}</code></em>, <strong>**<code>kwargs</code></strong>) :: <a href="/blurr/modeling-core.html#HF_BaseModelCallback"><code>HF_BaseModelCallback</code></a></p>
+<h2 id="HF_SummarizationModelCallback" class="doc_header"><code>class</code> <code>HF_SummarizationModelCallback</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/modeling/text2text/summarization.py#L33" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>HF_SummarizationModelCallback</code>(<strong><code>rouge_metrics</code></strong>=<em><code>['rouge1', 'rouge2', 'rougeL']</code></em>, <strong><code>ignore_token_id</code></strong>=<em><code>-100</code></em>, <strong><code>text_gen_kwargs</code></strong>=<em><code>{}</code></em>, <strong>**<code>kwargs</code></strong>) :: <a href="/blurr/modeling-core.html#HF_BaseModelCallback"><code>HF_BaseModelCallback</code></a></p>
 </blockquote>
 <p>Basic class handling tweaks of the training loop by changing a <code>Learner</code> in various events</p>
 
@@ -463,7 +463,7 @@ nb_path: "nbs/02zc_modeling-text2text-summarization.ipynb"
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h4 id="summarization_splitter" class="doc_header"><code>summarization_splitter</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/modeling/text2text/summarization.py#L100" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>summarization_splitter</code>(<strong><code>m</code></strong>, <strong><code>arch</code></strong>)</p>
+<h4 id="summarization_splitter" class="doc_header"><code>summarization_splitter</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/modeling/text2text/summarization.py#L105" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>summarization_splitter</code>(<strong><code>m</code></strong>, <strong><code>arch</code></strong>)</p>
 </blockquote>
 <p>Custom param splitter for summarization models</p>
 
@@ -523,15 +523,57 @@ nb_path: "nbs/02zc_modeling-text2text-summarization.ipynb"
 
 <div class="inner_cell">
     <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">generate_func_args</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">inspect</span><span class="o">.</span><span class="n">signature</span><span class="p">(</span><span class="n">hf_model</span><span class="o">.</span><span class="n">generate</span><span class="p">)</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+<span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">text_gen_kwargs</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">k</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">generate_func_args</span><span class="p">:</span> <span class="k">del</span> <span class="n">text_gen_kwargs</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
+        
+<span class="n">text_gen_kwargs</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>{&#39;early_stopping&#39;: True,
+ &#39;length_penalty&#39;: 2.0,
+ &#39;max_length&#39;: 130,
+ &#39;min_length&#39;: 30,
+ &#39;no_repeat_ngram_size&#39;: 3,
+ &#39;num_beams&#39;: 4}</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    {% endraw %}
+
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">model</span> <span class="o">=</span> <span class="n">HF_BaseModelWrapper</span><span class="p">(</span><span class="n">hf_model</span><span class="p">)</span>
 <span class="n">model_cb</span> <span class="o">=</span> <span class="n">HF_SummarizationModelCallback</span><span class="p">(</span><span class="n">text_gen_kwargs</span><span class="o">=</span><span class="n">text_gen_kwargs</span><span class="p">)</span>
 
 <span class="n">learn</span> <span class="o">=</span> <span class="n">Learner</span><span class="p">(</span><span class="n">dls</span><span class="p">,</span> 
                 <span class="n">model</span><span class="p">,</span>
                 <span class="n">opt_func</span><span class="o">=</span><span class="n">partial</span><span class="p">(</span><span class="n">Adam</span><span class="p">),</span>
-                <span class="n">loss_func</span><span class="o">=</span><span class="n">HF_PreCalculatedLoss</span><span class="p">(),</span>
+                <span class="n">loss_func</span><span class="o">=</span><span class="n">CrossEntropyLossFlat</span><span class="p">(),</span> <span class="c1">#HF_PreCalculatedLoss()</span>
                 <span class="n">cbs</span><span class="o">=</span><span class="p">[</span><span class="n">model_cb</span><span class="p">],</span>
-                <span class="n">splitter</span><span class="o">=</span><span class="n">partial</span><span class="p">(</span><span class="n">summarization_splitter</span><span class="p">,</span> <span class="n">arch</span><span class="o">=</span><span class="n">hf_arch</span><span class="p">))</span><span class="c1">#.to_fp16()</span>
+                <span class="n">splitter</span><span class="o">=</span><span class="n">partial</span><span class="p">(</span><span class="n">summarization_splitter</span><span class="p">,</span> <span class="n">arch</span><span class="o">=</span><span class="n">hf_arch</span><span class="p">))</span> <span class="c1">#.to_native_fp16() #.to_fp16()</span>
 
 <span class="n">learn</span><span class="o">.</span><span class="n">create_opt</span><span class="p">()</span> 
 <span class="n">learn</span><span class="o">.</span><span class="n">freeze</span><span class="p">()</span>
@@ -568,11 +610,28 @@ nb_path: "nbs/02zc_modeling-text2text-summarization.ipynb"
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># preds = learn.model(b[0])</span>
-<span class="c1"># len(preds),preds[0], preds[1].shape</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">b</span> <span class="o">=</span> <span class="n">dls</span><span class="o">.</span><span class="n">one_batch</span><span class="p">()</span>
+<span class="n">preds</span> <span class="o">=</span> <span class="n">learn</span><span class="o">.</span><span class="n">model</span><span class="p">(</span><span class="n">b</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+<span class="nb">len</span><span class="p">(</span><span class="n">preds</span><span class="p">),</span><span class="n">preds</span><span class="p">[</span><span class="s1">&#39;loss&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">preds</span><span class="p">[</span><span class="s1">&#39;logits&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span>
 </pre></div>
 
     </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>(3, torch.Size([]), torch.Size([2, 77, 50264]))</pre>
+</div>
+
+</div>
+
 </div>
 </div>
 
@@ -601,7 +660,7 @@ nb_path: "nbs/02zc_modeling-text2text-summarization.ipynb"
 
 
 <div class="output_text output_subarea output_execute_result">
-<pre>(2, 4, torch.Size([2, 256]), 2, torch.Size([2, 79]))</pre>
+<pre>(2, 4, torch.Size([2, 256]), 2, torch.Size([2, 77]))</pre>
 </div>
 
 </div>
@@ -674,7 +733,7 @@ nb_path: "nbs/02zc_modeling-text2text-summarization.ipynb"
 
 
 <div class="output_text output_subarea output_execute_result">
-<pre>SuggestedLRs(lr_min=4.786300996784121e-05, lr_steep=5.754399353463668e-06)</pre>
+<pre>SuggestedLRs(lr_min=0.00010000000474974513, lr_steep=2.0892961401841603e-05)</pre>
 </div>
 
 </div>
@@ -684,7 +743,7 @@ nb_path: "nbs/02zc_modeling-text2text-summarization.ipynb"
 
 
 <div class="output_png output_subarea ">
-<img src="data:image/png;base64,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
+<img src="data:image/png;base64,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
 "
 >
 </div>
@@ -733,12 +792,12 @@ nb_path: "nbs/02zc_modeling-text2text-summarization.ipynb"
   <tbody>
     <tr>
       <td>0</td>
-      <td>1.899378</td>
-      <td>1.734464</td>
-      <td>0.395470</td>
-      <td>0.178187</td>
-      <td>0.266091</td>
-      <td>03:52</td>
+      <td>1.912652</td>
+      <td>1.809375</td>
+      <td>0.375766</td>
+      <td>0.157390</td>
+      <td>0.255853</td>
+      <td>03:46</td>
     </tr>
   </tbody>
 </table>
@@ -779,7 +838,7 @@ nb_path: "nbs/02zc_modeling-text2text-summarization.ipynb"
 <span class="s2">meters (yards) from the casino, Gill said. There were about 600 people in the casino at the time of the robbery. </span>
 <span class="s2">There were no serious injuries, although one guest on the Casino floor was kicked in the head by one of the </span>
 <span class="s2">robbers when he moved, the police officer said. Swiss authorities are working closely with French authorities, </span>
-<span class="s2">Gill said. The robbers spoke French and drove vehicles with French license plates. CNN&#39;s Andreena Narayan </span>
+<span class="s2">Gill said. The robbers spoke French and drove vehicles with French lRicense plates. CNN&#39;s Andreena Narayan </span>
 <span class="s2">contributed to this report.</span>
 <span class="s2">&quot;&quot;&quot;</span>
 </pre></div>
@@ -821,7 +880,7 @@ nb_path: "nbs/02zc_modeling-text2text-summarization.ipynb"
 <div class="output_area">
 
 <div class="output_subarea output_stream output_stdout output_text">
-<pre> 10 10About 10 men armed with pistols and small machine guns raided a casino in Switzerland and made off
+<pre> 10 10About 10 men robbed with pistols and machine machine guns raid a casino in Switzerland and made off
 </pre>
 </div>
 </div>
@@ -848,16 +907,21 @@ nb_path: "nbs/02zc_modeling-text2text-summarization.ipynb"
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">b</span> <span class="o">=</span> <span class="n">dls</span><span class="o">.</span><span class="n">valid</span><span class="o">.</span><span class="n">one_batch</span><span class="p">()</span>
 
+<span class="n">b_before_batch_tfm</span> <span class="o">=</span> <span class="n">dls</span><span class="o">.</span><span class="n">before_batch</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">b_hf_tokenizer</span> <span class="o">=</span> <span class="n">before_batch_tfm</span><span class="o">.</span><span class="n">hf_tokenizer</span>
+<span class="n">b_ignore_token_id</span> <span class="o">=</span> <span class="n">before_batch_tfm</span><span class="o">.</span><span class="n">ignore_token_id</span>
+
 <span class="n">test_input_ids</span> <span class="o">=</span> <span class="n">b</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;input_ids&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">learn</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">hf_model</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
 <span class="n">test_trg_ids</span> <span class="o">=</span> <span class="n">b</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">learn</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">hf_model</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
+<span class="n">test_trg_ids</span> <span class="o">=</span> <span class="p">[</span> <span class="n">trg</span><span class="p">[</span><span class="n">trg</span> <span class="o">!=</span> <span class="n">b_ignore_token_id</span><span class="p">]</span> <span class="k">for</span> <span class="n">trg</span> <span class="ow">in</span> <span class="n">test_trg_ids</span> <span class="p">]</span>
 
 <span class="n">gen_text</span> <span class="o">=</span> <span class="n">learn</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">hf_model</span><span class="o">.</span><span class="n">generate</span><span class="p">(</span><span class="n">test_input_ids</span><span class="p">,</span> <span class="n">num_beams</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">max_length</span><span class="o">=</span><span class="mi">130</span><span class="p">,</span> <span class="n">min_length</span><span class="o">=</span><span class="mi">30</span><span class="p">)</span>
 
 <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;=== Target ===&#39;</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">hf_tokenizer</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="n">test_trg_ids</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">skip_special_tokens</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">clean_up_tokenization_spaces</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="si">}</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">b_hf_tokenizer</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="n">test_trg_ids</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">skip_special_tokens</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">clean_up_tokenization_spaces</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="si">}</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
 
 <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;=== Prediction ===&#39;</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">hf_tokenizer</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="n">gen_text</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">skip_special_tokens</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">clean_up_tokenization_spaces</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">b_hf_tokenizer</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="n">gen_text</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">skip_special_tokens</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">clean_up_tokenization_spaces</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
 </pre></div>
 
     </div>
@@ -880,7 +944,7 @@ The Golden Eagle is under threat in spite of being the country&#39;s national sy
  Climate change and human encroachment on natural environments threaten Mexico&#39;s rich wildlife.
 Mexico is home to 502 types of mammals, 290 species of birds, 1,150 varieties of birds and 26,000 classifications of plants.
 Some 574 out of 717 reptile species found in Mexico -- the most in any country -- can only be encountered within its borders.
-Pronatura, a non-profit organization, has selected six species which it says symbolize the problems faced by the country.
+Pronatura, a non-profit organization, has selected six species it says symbolize the problems faced by the country.
 </pre>
 </div>
 </div>
@@ -916,7 +980,7 @@ Pronatura, a non-profit organization, has selected six species which it says sym
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h4 id="Learner.blurr_summarize" class="doc_header"><code>Learner.blurr_summarize</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/modeling/text2text/summarization.py#L129" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>Learner.blurr_summarize</code>(<strong><code>inp</code></strong>, <strong>**<code>kwargs</code></strong>)</p>
+<h4 id="Learner.blurr_summarize" class="doc_header"><code>Learner.blurr_summarize</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/modeling/text2text/summarization.py#L134" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>Learner.blurr_summarize</code>(<strong><code>inp</code></strong>, <strong>**<code>kwargs</code></strong>)</p>
 </blockquote>
 <p>Uses the built-in <code>generate</code> method to generate the text
 (see <a href="https://huggingface.co/transformers/main_classes/model.html#transformers.PreTrainedModel.generate">here</a>
@@ -956,21 +1020,24 @@ for a list of arguments you can pass in)</p>
 
 <div class="output_subarea output_stream output_stdout output_text">
 <pre>=== Prediction 1 ===
- 10 men armed with pistols and small machine guns raided a casino in Switzerland and made off with several hundred thousand Swiss francs .
+ Robbers made off with several hundred thousand Swiss francs in the early hours of Sunday morning, police say .
 The men, dressed in black clothes and black ski masks, split into two groups during the raid on the Grand Casino Basel .
-One group tried to break into the casino&#39;s vault on the lower level but could not get in .
-As the thieves were leaving the casino, a woman driving by unknowingly blocked the gunmen&#39;s vehicles .
+There were no serious injuries, although one guest was kicked in the head by one of the robbers when he moved, police officer says .
+A woman driving by unknowingly blocked the robbers&#39; vehicles and was beaten to death .
+Swiss authorities are working closely with French authorities, police chief says .
 
 === Prediction 2 ===
- 10 men armed with pistols and small machine guns raided a casino in Switzerland and made off with several hundred thousand Swiss francs .
+ Robbers made off with several hundred thousand Swiss francs in the early hours of Sunday morning, police say .
 The men, dressed in black clothes and black ski masks, split into two groups during the raid on the Grand Casino Basel .
-One group tried to break into the casino&#39;s vault on the lower level but could not get in, police say .
-As the thieves were leaving the casino, a woman driving by unknowingly blocked their vehicles .
+There were no serious injuries, although one guest was kicked in the head by one of the robbers when he moved, police officer says .
+A woman driving by unknowingly blocked the robbers&#39; vehicles and was beaten to death .
+Swiss authorities are working closely with French authorities, an officer says.
 
 === Prediction 3 ===
- 10 men armed with pistols and small machine guns raided a casino in Switzerland and made off with several hundred thousand Swiss francs .
+ Robbers made off with several hundred thousand Swiss francs in the early hours of Sunday morning, police say .
 The men, dressed in black clothes and black ski masks, split into two groups during the raid on the Grand Casino Basel .
-One group tried to break into the casino&#39;s vault on the lower level but could not get in, police say .
+There were no serious injuries, although one guest was kicked in the head by one of the robbers when he moved, police officer says .
+A woman driving by unknowingly blocked the robbers&#39; vehicles and was beaten to death .
 
 </pre>
 </div>
@@ -1044,9 +1111,9 @@ One group tried to break into the casino&#39;s vault on the lower level but coul
     </tr>
     <tr>
       <th>1</th>
-      <td>Michael Zehaf-Bibeau, the 32-year-old gunman who attacked the Canadian Parliament and killed a soldier last week, had a familiar profile. It is that of a young man alienated from mainstream society, with few friends, without a steady job, drifting from one place to another -- often with a history of petty crime and drug abuse. Then comes the conversion to or rediscovery of Islam, and the adoption of a jihadist mindset, fed by media and online coverage of the West's involvement in wars in Iraq a</td>
-      <td>Like many "lone wolf" terrorists, Ottawa gunman was alienated drifter who converted to Islam.\nConversion to militant Islam is often about seeking identity, purpose or adventure.\nSome countries have tried "de-radicalization" programs to help prevent</td>
-      <td>Michael Zehaf-Bibeau, the 32-year-old gunman who attacked the Canadian Parliament and killed a soldier last week, had a familiar profile .\nWhether these young men acting alone should be better described as "lone-wolf" terrorists or deranged criminal</td>
+      <td>(CNN Student News) -- Parents and Teachers: Watch with your students or record "Gary + Tony Have a Baby" when it airs on CNN on Thursday, June 24 at 8 p.m. ET. By recording the documentary, you agree that you will use the program for educational viewing purposes for a one-year period only. No other rights of any kind or nature whatsoever are granted, including, without limitation, any rights to sell, publish, distribute, post online or distribute in any other medium or forum, or use for any com</td>
+      <td>"Gary + Tony Have a Baby" is a documentary that follows the journey of a gay couple as they attempt to become parents.\nParents and educators can use this guide to initiate discussion with students about the documentary.</td>
+      <td>"Gary + Tony Have a Baby" is a documentary that follows the journey of a gay couple as they attempt to become parents .\nWe recommend that you preview this program and determine whether it is appropriate before showing it to students .\nBy recording t</td>
     </tr>
   </tbody>
 </table>
@@ -1106,7 +1173,7 @@ One group tried to break into the casino&#39;s vault on the lower level but coul
 
 
 <div class="output_text output_subarea output_execute_result">
-<pre>[&#34; 10 men armed with pistols and small machine guns raided a casino in Switzerland and made off with several hundred thousand Swiss francs .\nThe men, dressed in black clothes and black ski masks, split into two groups during the raid on the Grand Casino Basel .\nOne group tried to break into the casino&#39;s vault on the lower level but could not get in .\nAs the thieves were leaving the casino, a woman driving by unknowingly blocked the gunmen&#39;s vehicles .&#34;]</pre>
+<pre>[&#34; Robbers made off with several hundred thousand Swiss francs in the early hours of Sunday morning, police say .\nThe men, dressed in black clothes and black ski masks, split into two groups during the raid on the Grand Casino Basel .\nThere were no serious injuries, although one guest was kicked in the head by one of the robbers when he moved, police officer says .\nA woman driving by unknowingly blocked the robbers&#39; vehicles and was beaten to death .\nSwiss authorities are working closely with French authorities, police chief says .&#34;]</pre>
 </div>
 
 </div>
@@ -1270,6 +1337,12 @@ One group tried to break into the casino&#39;s vault on the lower level but coul
             <span class="o">**</span><span class="p">{</span><span class="s1">&#39;max_length&#39;</span><span class="p">:</span> <span class="mi">30</span><span class="p">,</span> <span class="s1">&#39;min_length&#39;</span><span class="p">:</span> <span class="mi">10</span><span class="p">}</span> 
         <span class="p">}</span>
     
+    <span class="c1"># not all &quot;summarization&quot; parameters are for the model.generate method ... remove them here</span>
+    <span class="n">generate_func_args</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">inspect</span><span class="o">.</span><span class="n">signature</span><span class="p">(</span><span class="n">hf_model</span><span class="o">.</span><span class="n">generate</span><span class="p">)</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+    <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">text_gen_kwargs</span><span class="o">.</span><span class="n">copy</span><span class="p">():</span>
+        <span class="k">if</span> <span class="n">k</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">generate_func_args</span><span class="p">:</span> <span class="k">del</span> <span class="n">text_gen_kwargs</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
+    
+    
     <span class="n">model</span> <span class="o">=</span> <span class="n">HF_BaseModelWrapper</span><span class="p">(</span><span class="n">hf_model</span><span class="p">)</span>
     <span class="n">model_cb</span> <span class="o">=</span> <span class="n">HF_SummarizationModelCallback</span><span class="p">(</span><span class="n">text_gen_kwargs</span><span class="o">=</span><span class="n">text_gen_kwargs</span><span class="p">)</span>
 
@@ -1278,7 +1351,7 @@ One group tried to break into the casino&#39;s vault on the lower level but coul
                     <span class="n">opt_func</span><span class="o">=</span><span class="n">ranger</span><span class="p">,</span>
                     <span class="n">loss_func</span><span class="o">=</span><span class="n">HF_PreCalculatedLoss</span><span class="p">(),</span>
                     <span class="n">cbs</span><span class="o">=</span><span class="p">[</span><span class="n">model_cb</span><span class="p">],</span>
-                    <span class="n">splitter</span><span class="o">=</span><span class="n">partial</span><span class="p">(</span><span class="n">summarization_splitter</span><span class="p">,</span> <span class="n">arch</span><span class="o">=</span><span class="n">hf_arch</span><span class="p">))</span><span class="c1">#.to_fp16()</span>
+                    <span class="n">splitter</span><span class="o">=</span><span class="n">partial</span><span class="p">(</span><span class="n">summarization_splitter</span><span class="p">,</span> <span class="n">arch</span><span class="o">=</span><span class="n">hf_arch</span><span class="p">))</span>
 
     <span class="n">learn</span><span class="o">.</span><span class="n">create_opt</span><span class="p">()</span> 
     <span class="n">learn</span><span class="o">.</span><span class="n">freeze</span><span class="p">()</span>

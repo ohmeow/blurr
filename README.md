@@ -84,7 +84,7 @@ dls.show_batch(dataloaders=dls, max_n=2)
     </tr>
     <tr>
       <th>1</th>
-      <td>this film sat on my tivo for weeks before i watched it. i dreaded a self - indulgent yuppie flick about relationships gone bad. i was wrong ; this was an engrossing excursion into the screwed - up libidos of new yorkers. &lt; br / &gt; &lt; br / &gt; the format is the same as max ophuls'" la ronde, " based on a play by arthur schnitzler, who is given an " inspired by " credit. it starts from one person, a prostitute, standing on a street corner in brooklyn. she is picked up by a home contractor, who has sex with her on the hood of a car, but can't come. he refuses to pay her. when he's off peeing, she answers his cell phone and takes a message. she runs away with his keys. &lt; br / &gt; &lt; br / &gt; then the story switches to the contractor, who pays a professional call on a rich, bored new york woman, who plays with him until he is aroused, then she pulls away. she tells him how desperate and unhappy she is ; he tells her how beautiful she is, and lucky. as he is leaving, she asks if he would have sex with her. she sits on top of him, bounces up and down. this time he comes, the he leaves. &lt; br / &gt; &lt; br / &gt; the woman and her husband throw a dinner party for their trendy friends. hubby ( robert ) is talking business, wife ( ellen ) is bored, and switches the subject to sex, and how often men and women think about it. husband switches conversation to desert. later, after the guests leave, ellen tries to entice robert into sex. robert wants none of it, and puts on a jazz record. ellen turns on the radio ; robert turns up the music ; ellen turns on the tv ; robert turns on another tv. cacophony ensues. ellen goes up on the roof, robert joins her. ellen confesses that she needs to experience more men, men other than robert. robert says that he too needs to experience men. &lt; br / &gt; &lt; br / &gt; we next follow robert as he visits an artist, martin, played by steve buscemi. i wish buscemi could have more roles like this, where he is a sexy, smart, totally desirable guy. robert praises martin's work, much more than it deserves, promises to get it into a show</td>
+      <td>the shop around the corner is one of the sweetest and most feel - good romantic comedies ever made. there's just no getting around that, and it's hard to actually put one's feeling for this film into words. it's not one of those films that tries too hard, nor does it come up with the oddest possible scenarios to get the two protagonists together in the end. in fact, all its charm is innate, contained within the characters and the setting and the plot... which is highly believable to boot. it's easy to think that such a love story, as beautiful as any other ever told, * could * happen to you... a feeling you don't often get from other romantic comedies, however sweet and heart - warming they may be. &lt; br / &gt; &lt; br / &gt; alfred kralik ( james stewart ) and clara novak ( margaret sullavan ) don't have the most auspicious of first meetings when she arrives in the shop ( matuschek &amp; co. ) he's been working in for the past nine years, asking for a job. they clash from the very beginning, mostly over a cigarette box that plays music when it's opened - - he thinks it's a ludicrous idea ; she makes one big sell of it and gets hired. their bickering takes them through the next six months, even as they both ( unconsciously, of course! ) fall in love with each other when they share their souls and minds in letters passed through po box 237. this would be a pretty thin plotline to base an entire film on, except that the shop around the corner is expertly fleshed - out with a brilliant supporting cast made up of entirely engaging characters, from the fatherly but lonely hugo matuschek ( frank morgan ) himself, who learns that his shop really is his home ; pirovitch ( felix bressart ), kralik's sidekick and friend who always skitters out of the room when faced with the possibility of being asked for his honest opinion ; smarmy pimp - du - jour vadas ( joseph schildkraut ) who ultimately gets his comeuppance from a gloriously righteous kralik ; and ambitious errand boy pepi katona ( william tracy ) who wants nothing more than to be promoted to the position of clerk for matuschek &amp; co. the unpretentious love story between '</td>
       <td>positive</td>
     </tr>
   </tbody>
@@ -125,23 +125,23 @@ learn.fit_one_cycle(3, lr_max=1e-3)
   <tbody>
     <tr>
       <td>0</td>
-      <td>0.702850</td>
-      <td>0.579601</td>
-      <td>0.795000</td>
-      <td>00:22</td>
+      <td>0.569009</td>
+      <td>0.500203</td>
+      <td>0.775000</td>
+      <td>00:21</td>
     </tr>
     <tr>
       <td>1</td>
-      <td>0.406739</td>
-      <td>0.303066</td>
-      <td>0.905000</td>
-      <td>00:22</td>
+      <td>0.382186</td>
+      <td>0.325603</td>
+      <td>0.865000</td>
+      <td>00:21</td>
     </tr>
     <tr>
       <td>2</td>
-      <td>0.250252</td>
-      <td>0.284983</td>
-      <td>0.910000</td>
+      <td>0.266904</td>
+      <td>0.299557</td>
+      <td>0.900000</td>
       <td>00:22</td>
     </tr>
   </tbody>
@@ -185,6 +185,10 @@ learn.show_results(learner=learn, max_n=2)
 
 
 ## ❗ Updates
+
+**11/12/2020** 
+* Updated documentation
+* Updated model callbacks to support mixed precision training regardless of whether you are calculating the loss yourself or letting huggingface do it for you.
 
 **11/10/2020** 
 * Major update just about everywhere to facilitate a breaking change in fastai's treatment of `before_batch` transforms.
