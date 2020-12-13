@@ -52,8 +52,8 @@ class ModelHelper():
             self._df[f'module_part_{i}'] = module_parts_df[i]
 
         # using module part 1, break up the functional area and arch into separate cols
-        module_part_1_df = self._df.module_part_1.str.split("_", n = 1, expand = True)
-        self._df[['functional_area', 'arch']] = module_part_1_df
+        module_part_3_df = self._df.module_part_3.str.split("_", n = 1, expand = True)
+        self._df[['functional_area', 'arch']] = module_part_3_df
 
         # if functional area = modeling, pull out the task it is built for
         model_type_df = self._df[(self._df.functional_area == 'modeling')].class_name.str.split('For', n=1, expand=True)
@@ -151,6 +151,10 @@ class ModelHelper():
             config = AutoConfig.from_pretrained(pretrained_model_name_or_path, cache_dir=cache_dir, **config_kwargs)
 
         # tokenizer
+        # gpt2, roberta, bart (and maybe others) tokenizers require a prefix space
+        if (any(s in pretrained_model_name_or_path for s in ['gpt2', 'roberta', 'bart', 'longformer'])):
+            tokenizer_kwargs = { **{'add_prefix_space': True}, **tokenizer_kwargs }
+
         if (tokenizer_cls is None):
             tokenizer = AutoTokenizer.from_pretrained(pretrained_model_name_or_path,
                                                       cache_dir=cache_dir,

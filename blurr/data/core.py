@@ -16,7 +16,7 @@ logging.set_verbosity_error()
 # Cell
 class HF_BaseInput(TensorBase):
     def show(self, hf_tokenizer, ctx=None, trunc_at=None, **kwargs):
-        input_ids = filter(lambda el: el != hf_tokenizer.pad_token_id, self.cpu().numpy())
+        input_ids = self.cpu().numpy()
         decoded_input = str(hf_tokenizer.decode(input_ids, skip_special_tokens=True))[:trunc_at]
 
         return show_title(decoded_input, ctx=ctx, label='text')
@@ -28,9 +28,6 @@ class HF_BeforeBatchTransform(Transform):
     """
     def __init__(self, hf_arch, hf_tokenizer, max_length=None, padding=True, truncation=True,
                  is_split_into_words=False, n_tok_inps=1, tok_kwargs={}, **kwargs):
-
-         # gpt2, roberta, bart (and maybe others) tokenizers require a prefix space
-        if (hasattr(hf_tokenizer, 'add_prefix_space')): tok_kwargs['add_prefix_space'] = True
 
         store_attr(self=self, names='hf_arch, hf_tokenizer, max_length, padding, truncation, is_split_into_words')
         store_attr(self=self, names='n_tok_inps, tok_kwargs, kwargs')

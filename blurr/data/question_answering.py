@@ -20,7 +20,6 @@ def pre_process_squad(row, hf_arch, hf_tokenizer):
     context, qst, ans = row['context'], row['question'], row['answer_text']
 
     tok_kwargs = {}
-    if (hasattr(hf_tokenizer, 'add_prefix_space')): tok_kwargs['add_prefix_space'] = True
 
     if(hf_tokenizer.padding_side == 'right'):
         tok_input = hf_tokenizer.convert_ids_to_tokens(hf_tokenizer.encode(qst, context, **tok_kwargs))

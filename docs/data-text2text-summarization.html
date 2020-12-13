@@ -207,9 +207,9 @@ nb_path: "nbs/01zc_data-text2text-summarization.ipynb"
 
 <div class="output_text output_subarea output_execute_result">
 <pre>(&#39;bart&#39;,
- transformers.tokenization_bart.BartTokenizer,
- transformers.configuration_bart.BartConfig,
- transformers.modeling_bart.BartForConditionalGeneration)</pre>
+ transformers.models.bart.tokenization_bart_fast.BartTokenizerFast,
+ transformers.models.bart.configuration_bart.BartConfig,
+ transformers.models.bart.modeling_bart.BartForConditionalGeneration)</pre>
 </div>
 
 </div>
@@ -229,13 +229,6 @@ nb_path: "nbs/01zc_data-text2text-summarization.ipynb"
 </div>
 </div>
 </div>
-    {% raw %}
-    
-<div class="cell border-box-sizing code_cell rendered">
-
-</div>
-    {% endraw %}
-
     {% raw %}
     
 <div class="cell border-box-sizing code_cell rendered">
@@ -289,6 +282,13 @@ as a byproduct of the tokenization process in the <code>encodes</code> method.</
 
 </div>
 </div>
+
+</div>
+    {% endraw %}
+
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
 
 </div>
     {% endraw %}
@@ -396,7 +396,7 @@ as a byproduct of the tokenization process in the <code>encodes</code> method.</
 
 
 <div class="output_text output_subarea output_execute_result">
-<pre>(2, torch.Size([4, 1024]), torch.Size([4, 68]))</pre>
+<pre>(2, torch.Size([4, 1024]), torch.Size([4, 78]))</pre>
 </div>
 
 </div>
@@ -431,9 +431,9 @@ as a byproduct of the tokenization process in the <code>encodes</code> method.</
 
 
 <div class="output_text output_subarea output_execute_result">
-<pre>tensor([[ 1.0000, -1.4273, -0.1617],
-        [ 1.0000, -0.0583, -1.5524],
-        [ 1.0000,  0.8595,  0.9492]])</pre>
+<pre>tensor([[ 1.0000,  1.2162, -1.3936],
+        [ 1.0000,  0.3981, -1.5165],
+        [ 1.0000, -1.7347,  2.1353]])</pre>
 </div>
 
 </div>
@@ -488,8 +488,8 @@ as a byproduct of the tokenization process in the <code>encodes</code> method.</
     </tr>
     <tr>
       <th>1</th>
-      <td>I have an uncle who has always been a robust and healthy guy. He drank a glass of skim milk every day, bragged about how many pull-ups he was doing and fit into pants he was wearing 20 years before. He didn't take a single medication and retired early. Given that he had no medical problems and ran his own business, he opted to go several years without health insurance. Eventually, when he turned 65, he picked up Medicare. What happened next was a little strange. He fell off the wagon. He exercised only sporadically, and paid hardly any attention to what he was eating. One day, I saw him eat an entire bag of potato chips. He bemoaned the fact that he was forced to buy new, bigger pants, and he stopped drinking his milk. For him, becoming newly insured had nearly the opposite effect on him of what we doctors hope to achieve. He'd become unhealthier. In many ways, my uncle was demonstrating a concept known as the moral hazard. Two economists wrote about this exact scenario  in 2006. They</td>
-      <td>Sanjay Gupta: Moral hazard causes some to neglect health when they get health insurance.\nHe says Obamacare alone won't guarantee good health; personal habits must do that.\nHe says research shows 30 minutes of daily exercise cuts heart attack, stroke</td>
+      <td>(CNN) -- It's a congested, sprawling transport hub surrounded by 1950s architecture and predominantly used by commuters or tourists to cross the city of Istanbul. But proposed changes to Taksim Square have seen it become the flashpoint for protests that have swept through Turkey in the past week, leaving thousands injured and focusing the world's attention on the government of Prime Minister Recep Tayyip Erdogan. Taksim has been no stranger to violence. In 1977, at least 34 protesters died during May Day clashes with police. May 1 rallies in the square were banned in 1980 and were only allowed to legally resume in 2010. On May Day this year, there were riots after city authorities again refused to grant trade unions and youth groups permission to demonstrate in Taksim, blaming construction work being carried out in the square. Professor Ersin Kalaycioglu, professor of political science at Istanbul's Sabanci University, said significantly, Taksim Square was also known as "republic squa</td>
+      <td>Taksim Square was where Istanbul's water was distributed -- Taksim means divide.\nThe site is seen as symbolizing the seclar Turkish republic founded by Ataturk.\nErdogan's government's plans to alter Taksim's Gezi Park prompted protests.\nThe police's</td>
     </tr>
   </tbody>
 </table>
@@ -533,14 +533,15 @@ as a byproduct of the tokenization process in the <code>encodes</code> method.</
 
 
 <div class="output_text output_subarea output_execute_result">
-<pre>[transformers.modeling_bart.BartForConditionalGeneration,
- transformers.modeling_blenderbot.BlenderbotForConditionalGeneration,
- transformers.modeling_fsmt.FSMTForConditionalGeneration,
- transformers.modeling_mbart.MBartForConditionalGeneration,
- transformers.modeling_pegasus.PegasusForConditionalGeneration,
- transformers.modeling_prophetnet.ProphetNetForConditionalGeneration,
- transformers.modeling_t5.T5ForConditionalGeneration,
- transformers.modeling_xlm_prophetnet.XLMProphetNetForConditionalGeneration]</pre>
+<pre>[transformers.models.bart.modeling_bart.BartForConditionalGeneration,
+ transformers.models.blenderbot.modeling_blenderbot.BlenderbotForConditionalGeneration,
+ transformers.models.fsmt.modeling_fsmt.FSMTForConditionalGeneration,
+ transformers.models.mbart.modeling_mbart.MBartForConditionalGeneration,
+ transformers.models.mt5.modeling_mt5.MT5ForConditionalGeneration,
+ transformers.models.pegasus.modeling_pegasus.PegasusForConditionalGeneration,
+ transformers.models.prophetnet.modeling_prophetnet.ProphetNetForConditionalGeneration,
+ transformers.models.t5.modeling_t5.T5ForConditionalGeneration,
+ transformers.models.xlm_prophetnet.modeling_xlm_prophetnet.XLMProphetNetForConditionalGeneration]</pre>
 </div>
 
 </div>
@@ -639,7 +640,7 @@ as a byproduct of the tokenization process in the <code>encodes</code> method.</
         <span class="n">test_eq</span><span class="p">(</span><span class="n">b</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Size</span><span class="p">([</span><span class="n">bsz</span><span class="p">,</span> <span class="n">trg_seq_sz</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]))</span>
 
         <span class="k">if</span> <span class="p">(</span><span class="nb">hasattr</span><span class="p">(</span><span class="n">hf_tokenizer</span><span class="p">,</span> <span class="s1">&#39;add_prefix_space&#39;</span><span class="p">)):</span>
-            <span class="n">test_eq</span><span class="p">(</span><span class="n">dls</span><span class="o">.</span><span class="n">before_batch</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">tok_kwargs</span><span class="p">[</span><span class="s1">&#39;add_prefix_space&#39;</span><span class="p">],</span> <span class="kc">True</span><span class="p">)</span>
+             <span class="n">test_eq</span><span class="p">(</span><span class="n">hf_tokenizer</span><span class="o">.</span><span class="n">add_prefix_space</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
             
         <span class="n">test_results</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">hf_arch</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">hf_tokenizer</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="n">model_name</span><span class="p">,</span> <span class="s1">&#39;PASSED&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">))</span>
         <span class="n">dls</span><span class="o">.</span><span class="n">show_batch</span><span class="p">(</span><span class="n">dataloaders</span><span class="o">=</span><span class="n">dls</span><span class="p">,</span> <span class="n">max_n</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">input_trunc_at</span><span class="o">=</span><span class="mi">1000</span><span class="p">)</span>
@@ -658,58 +659,6 @@ as a byproduct of the tokenization process in the <code>encodes</code> method.</
     {% raw %}
     
 <div class="cell border-box-sizing code_cell rendered">
-
-<div class="output_wrapper">
-<div class="output">
-
-<div class="output_area">
-
-
-<div class="output_html rendered_html output_subarea ">
-<table border="1" class="dataframe">
-  <thead>
-    <tr style="text-align: right;">
-      <th></th>
-      <th>arch</th>
-      <th>tokenizer</th>
-      <th>model_name</th>
-      <th>result</th>
-      <th>error</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th>0</th>
-      <td>bart</td>
-      <td>BartTokenizer</td>
-      <td>facebook/bart-base</td>
-      <td>PASSED</td>
-      <td></td>
-    </tr>
-    <tr>
-      <th>1</th>
-      <td>t5</td>
-      <td>T5Tokenizer</td>
-      <td>t5-small</td>
-      <td>PASSED</td>
-      <td></td>
-    </tr>
-    <tr>
-      <th>2</th>
-      <td>pegasus</td>
-      <td>PegasusTokenizer</td>
-      <td>google/pegasus-cnn_dailymail</td>
-      <td>PASSED</td>
-      <td></td>
-    </tr>
-  </tbody>
-</table>
-</div>
-
-</div>
-
-</div>
-</div>
 
 </div>
     {% endraw %}

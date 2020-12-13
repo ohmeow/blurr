@@ -5,7 +5,7 @@ __all__ = ['HF_Text2TextAfterBatchTransform', 'HF_Text2TextBlock']
 # Cell
 from functools import reduce
 
-import torch, nlp,pdb
+import torch
 from transformers import *
 from fastai.text.all import *
 

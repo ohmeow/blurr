@@ -78,13 +78,6 @@ nb_path: "nbs/01_data-core.ipynb"
     
 <div class="cell border-box-sizing code_cell rendered">
 
-</div>
-    {% endraw %}
-
-    {% raw %}
-    
-<div class="cell border-box-sizing code_cell rendered">
-
 <div class="output_wrapper">
 <div class="output">
 
@@ -105,13 +98,6 @@ nb_path: "nbs/01_data-core.ipynb"
 </div>
     {% endraw %}
 
-<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<p>A <a href="/blurr/data-core.html#HF_BaseInput"><code>HF_BaseInput</code></a> object is returned from the decodes method of <a href="/blurr/data-core.html#HF_AfterBatchTransform"><code>HF_AfterBatchTransform</code></a> as a means to customize @typedispatched functions like <code>DataLoaders.show_batch</code> and <code>Learner.show_results</code>. It uses the "input_ids" of a huggingface object as the representative tensor for <code>show</code> methods</p>
-
-</div>
-</div>
-</div>
     {% raw %}
     
 <div class="cell border-box-sizing code_cell rendered">
@@ -119,6 +105,13 @@ nb_path: "nbs/01_data-core.ipynb"
 </div>
     {% endraw %}
 
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>A <a href="/blurr/data-core.html#HF_BaseInput"><code>HF_BaseInput</code></a> object is returned from the decodes method of <a href="/blurr/data-core.html#HF_AfterBatchTransform"><code>HF_AfterBatchTransform</code></a> as a means to customize @typedispatched functions like <code>DataLoaders.show_batch</code> and <code>Learner.show_results</code>. It uses the "input_ids" of a huggingface object as the representative tensor for <code>show</code> methods</p>
+
+</div>
+</div>
+</div>
     {% raw %}
     
 <div class="cell border-box-sizing code_cell rendered">
@@ -145,6 +138,13 @@ as a byproduct of the tokenization process in the <code>encodes</code> method.</
 </div>
     {% endraw %}
 
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+
+</div>
+    {% endraw %}
+
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <p><a href="/blurr/data-core.html#HF_BeforeBatchTransform"><code>HF_BeforeBatchTransform</code></a> was inspired by this <a href="http://dev.fast.ai/tutorial.transformers">article</a>. It handles both the tokenization and numericalization traditionally split apart in the fastai text DataBlock API. For huggingface tokenizers that require a prefix space, it will be included automatically. In its current incarnation, <a href="/blurr/data-core.html#HF_BeforeBatchTransform"><code>HF_BeforeBatchTransform</code></a> can be used to tokenize multiple inputs (common in seq2seq models for tasks like summarization) and even apply different tokenizers and arguments to each.</p>
@@ -158,13 +158,6 @@ as a byproduct of the tokenization process in the <code>encodes</code> method.</
     
 <div class="cell border-box-sizing code_cell rendered">
 
-</div>
-    {% endraw %}
-
-    {% raw %}
-    
-<div class="cell border-box-sizing code_cell rendered">
-
 <div class="output_wrapper">
 <div class="output">
 
@@ -172,7 +165,7 @@ as a byproduct of the tokenization process in the <code>encodes</code> method.</
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h2 id="HF_AfterBatchTransform" class="doc_header"><code>class</code> <code>HF_AfterBatchTransform</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/data/core.py#L71" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>HF_AfterBatchTransform</code>(<strong><code>hf_tokenizer</code></strong>, <strong><code>input_return_type</code></strong>=<em><code>HF_BaseInput</code></em>) :: <code>Transform</code></p>
+<h2 id="HF_AfterBatchTransform" class="doc_header"><code>class</code> <code>HF_AfterBatchTransform</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/data/core.py#L68" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>HF_AfterBatchTransform</code>(<strong><code>hf_tokenizer</code></strong>, <strong><code>input_return_type</code></strong>=<em><code>HF_BaseInput</code></em>) :: <code>Transform</code></p>
 </blockquote>
 <p>Delegates (<code>__call__</code>,<code>decode</code>,<code>setup</code>) to (<code>encodes</code>,<code>decodes</code>,<code>setups</code>) if <code>split_idx</code> matches</p>
 
@@ -182,6 +175,13 @@ as a byproduct of the tokenization process in the <code>encodes</code> method.</
 
 </div>
 </div>
+
+</div>
+    {% endraw %}
+
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
 
 </div>
     {% endraw %}
@@ -197,13 +197,6 @@ as a byproduct of the tokenization process in the <code>encodes</code> method.</
     
 <div class="cell border-box-sizing code_cell rendered">
 
-</div>
-    {% endraw %}
-
-    {% raw %}
-    
-<div class="cell border-box-sizing code_cell rendered">
-
 <div class="output_wrapper">
 <div class="output">
 
@@ -211,7 +204,7 @@ as a byproduct of the tokenization process in the <code>encodes</code> method.</
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h2 id="HF_TextBlock" class="doc_header"><code>class</code> <code>HF_TextBlock</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/data/core.py#L82" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>HF_TextBlock</code>(<strong><code>hf_arch</code></strong>=<em><code>None</code></em>, <strong><code>hf_tokenizer</code></strong>=<em><code>None</code></em>, <strong><code>before_batch_tfms</code></strong>=<em><code>None</code></em>, <strong><code>after_batch_tfms</code></strong>=<em><code>None</code></em>, <strong><code>max_length</code></strong>=<em><code>512</code></em>, <strong><code>padding</code></strong>=<em><code>True</code></em>, <strong><code>truncation</code></strong>=<em><code>True</code></em>, <strong><code>is_split_into_words</code></strong>=<em><code>False</code></em>, <strong><code>n_tok_inps</code></strong>=<em><code>1</code></em>, <strong><code>tok_kwargs</code></strong>=<em><code>{}</code></em>, <strong><code>input_return_type</code></strong>=<em><code>HF_BaseInput</code></em>, <strong><code>dl_type</code></strong>=<em><code>SortedDL</code></em>, <strong><code>before_batch_kwargs</code></strong>=<em><code>{}</code></em>, <strong><code>after_batch_kwargs</code></strong>=<em><code>{}</code></em>, <strong>**<code>kwargs</code></strong>) :: <code>TransformBlock</code></p>
+<h2 id="HF_TextBlock" class="doc_header"><code>class</code> <code>HF_TextBlock</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/data/core.py#L79" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>HF_TextBlock</code>(<strong><code>hf_arch</code></strong>=<em><code>None</code></em>, <strong><code>hf_tokenizer</code></strong>=<em><code>None</code></em>, <strong><code>before_batch_tfms</code></strong>=<em><code>None</code></em>, <strong><code>after_batch_tfms</code></strong>=<em><code>None</code></em>, <strong><code>max_length</code></strong>=<em><code>512</code></em>, <strong><code>padding</code></strong>=<em><code>True</code></em>, <strong><code>truncation</code></strong>=<em><code>True</code></em>, <strong><code>is_split_into_words</code></strong>=<em><code>False</code></em>, <strong><code>n_tok_inps</code></strong>=<em><code>1</code></em>, <strong><code>tok_kwargs</code></strong>=<em><code>{}</code></em>, <strong><code>input_return_type</code></strong>=<em><code>HF_BaseInput</code></em>, <strong><code>dl_type</code></strong>=<em><code>SortedDL</code></em>, <strong><code>before_batch_kwargs</code></strong>=<em><code>{}</code></em>, <strong><code>after_batch_kwargs</code></strong>=<em><code>{}</code></em>, <strong>**<code>kwargs</code></strong>) :: <code>TransformBlock</code></p>
 </blockquote>
 <p>A basic wrapper that links defaults transforms for the data block API</p>
 
@@ -221,6 +214,13 @@ as a byproduct of the tokenization process in the <code>encodes</code> method.</
 
 </div>
 </div>
+
+</div>
+    {% endraw %}
+
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
 
 </div>
     {% endraw %}
@@ -525,6 +525,39 @@ as a byproduct of the tokenization process in the <code>encodes</code> method.</
 
 <div class="inner_cell">
     <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="nb">list</span><span class="p">(</span><span class="nb">filter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span> <span class="o">%</span> <span class="mi">2</span> <span class="o">==</span> <span class="mi">0</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">45</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">50</span><span class="p">])))</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>[10, 6, 50]</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    {% endraw %}
+
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">dls</span><span class="o">.</span><span class="n">show_batch</span><span class="p">(</span><span class="n">dataloaders</span><span class="o">=</span><span class="n">dls</span><span class="p">,</span> <span class="n">max_n</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">trunc_at</span><span class="o">=</span><span class="mi">500</span><span class="p">)</span>
 </pre></div>
 
@@ -555,7 +588,7 @@ as a byproduct of the tokenization process in the <code>encodes</code> method.</
     </tr>
     <tr>
       <th>1</th>
-      <td>Well, what can I say.&lt;br /&gt;&lt;br /&gt;"What the Bleep do we Know" has achieved the nearly impossible - leaving behind such masterpieces of the genre as "The Postman", "The Dungeon Master", "Merlin", and so fourth, it will go down in history as the single worst movie I have ever seen in its entirety. And that, ladies and gentlemen, is impressive indeed, for I have seen many a bad movie.&lt;br /&gt;&lt;br /&gt;This masterpiece of modern cinema consists of two interwoven parts, alternating between a silly and cont</td>
+      <td>Now that Che(2008) has finished its relatively short Australian cinema run (extremely limited release:1 screen in Sydney, after 6wks), I can guiltlessly join both hosts of "At The Movies" in taking Steven Soderbergh to task.&lt;br /&gt;&lt;br /&gt;It's usually satisfying to watch a film director change his style/subject, but Soderbergh's most recent stinker, The Girlfriend Experience(2009), was also missing a story, so narrative (and editing?) seem to suddenly be Soderbergh's main challenge. Strange, after</td>
       <td>negative</td>
     </tr>
   </tbody>
@@ -600,26 +633,26 @@ as a byproduct of the tokenization process in the <code>encodes</code> method.</
 
 
 <div class="output_text output_subarea output_execute_result">
-<pre>[transformers.modeling_albert.AlbertForSequenceClassification,
- transformers.modeling_auto.AutoModelForSequenceClassification,
- transformers.modeling_bart.BartForSequenceClassification,
- transformers.modeling_bert.BertForSequenceClassification,
- transformers.modeling_camembert.CamembertForSequenceClassification,
- transformers.modeling_deberta.DebertaForSequenceClassification,
- transformers.modeling_distilbert.DistilBertForSequenceClassification,
- transformers.modeling_electra.ElectraForSequenceClassification,
- transformers.modeling_flaubert.FlaubertForSequenceClassification,
- transformers.modeling_funnel.FunnelForSequenceClassification,
- transformers.modeling_gpt2.GPT2ForSequenceClassification,
- transformers.modeling_longformer.LongformerForSequenceClassification,
- transformers.modeling_mobilebert.MobileBertForSequenceClassification,
- transformers.modeling_openai.OpenAIGPTForSequenceClassification,
- transformers.modeling_reformer.ReformerForSequenceClassification,
- transformers.modeling_roberta.RobertaForSequenceClassification,
- transformers.modeling_squeezebert.SqueezeBertForSequenceClassification,
- transformers.modeling_xlm.XLMForSequenceClassification,
- transformers.modeling_xlm_roberta.XLMRobertaForSequenceClassification,
- transformers.modeling_xlnet.XLNetForSequenceClassification]</pre>
+<pre>[transformers.models.albert.modeling_albert.AlbertForSequenceClassification,
+ transformers.models.auto.modeling_auto.AutoModelForSequenceClassification,
+ transformers.models.bart.modeling_bart.BartForSequenceClassification,
+ transformers.models.bert.modeling_bert.BertForSequenceClassification,
+ transformers.models.camembert.modeling_camembert.CamembertForSequenceClassification,
+ transformers.models.deberta.modeling_deberta.DebertaForSequenceClassification,
+ transformers.models.distilbert.modeling_distilbert.DistilBertForSequenceClassification,
+ transformers.models.electra.modeling_electra.ElectraForSequenceClassification,
+ transformers.models.flaubert.modeling_flaubert.FlaubertForSequenceClassification,
+ transformers.models.funnel.modeling_funnel.FunnelForSequenceClassification,
+ transformers.models.gpt2.modeling_gpt2.GPT2ForSequenceClassification,
+ transformers.models.longformer.modeling_longformer.LongformerForSequenceClassification,
+ transformers.models.mobilebert.modeling_mobilebert.MobileBertForSequenceClassification,
+ transformers.models.openai.modeling_openai.OpenAIGPTForSequenceClassification,
+ transformers.models.reformer.modeling_reformer.ReformerForSequenceClassification,
+ transformers.models.roberta.modeling_roberta.RobertaForSequenceClassification,
+ transformers.models.squeezebert.modeling_squeezebert.SqueezeBertForSequenceClassification,
+ transformers.models.xlm.modeling_xlm.XLMForSequenceClassification,
+ transformers.models.xlm_roberta.modeling_xlm_roberta.XLMRobertaForSequenceClassification,
+ transformers.models.xlnet.modeling_xlnet.XLNetForSequenceClassification]</pre>
 </div>
 
 </div>
@@ -723,7 +756,7 @@ as a byproduct of the tokenization process in the <code>encodes</code> method.</
         <span class="n">test_eq</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">b</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span> <span class="n">bsz</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="p">(</span><span class="nb">hasattr</span><span class="p">(</span><span class="n">hf_tokenizer</span><span class="p">,</span> <span class="s1">&#39;add_prefix_space&#39;</span><span class="p">)):</span>
-            <span class="n">test_eq</span><span class="p">(</span><span class="n">dls</span><span class="o">.</span><span class="n">before_batch</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">tok_kwargs</span><span class="p">[</span><span class="s1">&#39;add_prefix_space&#39;</span><span class="p">],</span> <span class="kc">True</span><span class="p">)</span>
+            <span class="n">test_eq</span><span class="p">(</span><span class="n">hf_tokenizer</span><span class="o">.</span><span class="n">add_prefix_space</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
             
         <span class="n">test_results</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">hf_arch</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">hf_tokenizer</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="n">model_name</span><span class="p">,</span> <span class="s1">&#39;PASSED&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">))</span>
         <span class="n">dls</span><span class="o">.</span><span class="n">show_batch</span><span class="p">(</span><span class="n">dataloaders</span><span class="o">=</span><span class="n">dls</span><span class="p">,</span> <span class="n">max_n</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">trunc_at</span><span class="o">=</span><span class="mi">250</span><span class="p">)</span>
@@ -765,7 +798,7 @@ as a byproduct of the tokenization process in the <code>encodes</code> method.</
     <tr>
       <th>0</th>
       <td>albert</td>
-      <td>AlbertTokenizer</td>
+      <td>AlbertTokenizerFast</td>
       <td>albert-base-v1</td>
       <td>PASSED</td>
       <td></td>
@@ -773,7 +806,7 @@ as a byproduct of the tokenization process in the <code>encodes</code> method.</
     <tr>
       <th>1</th>
       <td>bart</td>
-      <td>BartTokenizer</td>
+      <td>BartTokenizerFast</td>
       <td>facebook/bart-base</td>
       <td>PASSED</td>
       <td></td>
@@ -781,7 +814,7 @@ as a byproduct of the tokenization process in the <code>encodes</code> method.</
     <tr>
       <th>2</th>
       <td>bert</td>
-      <td>BertTokenizer</td>
+      <td>BertTokenizerFast</td>
       <td>bert-base-uncased</td>
       <td>PASSED</td>
       <td></td>
@@ -789,7 +822,7 @@ as a byproduct of the tokenization process in the <code>encodes</code> method.</
     <tr>
       <th>3</th>
       <td>camembert</td>
-      <td>CamembertTokenizer</td>
+      <td>CamembertTokenizerFast</td>
       <td>camembert-base</td>
       <td>PASSED</td>
       <td></td>
@@ -797,7 +830,7 @@ as a byproduct of the tokenization process in the <code>encodes</code> method.</
     <tr>
       <th>4</th>
       <td>distilbert</td>
-      <td>DistilBertTokenizer</td>
+      <td>DistilBertTokenizerFast</td>
       <td>distilbert-base-uncased</td>
       <td>PASSED</td>
       <td></td>
@@ -805,7 +838,7 @@ as a byproduct of the tokenization process in the <code>encodes</code> method.</
     <tr>
       <th>5</th>
       <td>electra</td>
-      <td>ElectraTokenizer</td>
+      <td>ElectraTokenizerFast</td>
       <td>monologg/electra-small-finetuned-imdb</td>
       <td>PASSED</td>
       <td></td>
@@ -821,7 +854,7 @@ as a byproduct of the tokenization process in the <code>encodes</code> method.</
     <tr>
       <th>7</th>
       <td>longformer</td>
-      <td>LongformerTokenizer</td>
+      <td>LongformerTokenizerFast</td>
       <td>allenai/longformer-base-4096</td>
       <td>PASSED</td>
       <td></td>
@@ -829,7 +862,7 @@ as a byproduct of the tokenization process in the <code>encodes</code> method.</
     <tr>
       <th>8</th>
       <td>mobilebert</td>
-      <td>MobileBertTokenizer</td>
+      <td>MobileBertTokenizerFast</td>
       <td>google/mobilebert-uncased</td>
       <td>PASSED</td>
       <td></td>
@@ -837,7 +870,7 @@ as a byproduct of the tokenization process in the <code>encodes</code> method.</
     <tr>
       <th>9</th>
       <td>roberta</td>
-      <td>RobertaTokenizer</td>
+      <td>RobertaTokenizerFast</td>
       <td>roberta-base</td>
       <td>PASSED</td>
       <td></td>
@@ -853,7 +886,7 @@ as a byproduct of the tokenization process in the <code>encodes</code> method.</
     <tr>
       <th>11</th>
       <td>xlm_roberta</td>
-      <td>XLMRobertaTokenizer</td>
+      <td>XLMRobertaTokenizerFast</td>
       <td>xlm-roberta-base</td>
       <td>PASSED</td>
       <td></td>
@@ -861,7 +894,7 @@ as a byproduct of the tokenization process in the <code>encodes</code> method.</
     <tr>
       <th>12</th>
       <td>xlnet</td>
-      <td>XLNetTokenizer</td>
+      <td>XLNetTokenizerFast</td>
       <td>xlnet-base-cased</td>
       <td>PASSED</td>
       <td></td>

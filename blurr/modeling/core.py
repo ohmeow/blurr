@@ -79,21 +79,31 @@ class HF_BaseModelCallback(Callback):
 # Cell
 def blurr_module_summary(learn, *xb):
     "Print a summary of `model` using `xb`"
+    #Individual parameters wrapped in ParameterModule aren't called through the hooks in `layer_info`,
+    #  thus are not counted inside the summary
+    #TODO: find a way to have them counted in param number somehow
     infos = layer_info(learn, *xb)
-    n,bs = 64,find_bs(xb)
+    n,bs = 76,find_bs(xb)
     inp_sz = _print_shapes(apply(lambda x:x.shape,  xb[0]['input_ids']), bs)
-    res = f"{learn.model.__class__.__name__} (Input shape: {inp_sz})\n"
+    res = f"{type(learn.model).__name__} (Input shape: {inp_sz})\n"
     res += "=" * n + "\n"
     res += f"{'Layer (type)':<20} {'Output Shape':<20} {'Param #':<10} {'Trainable':<10}\n"
-    res += "=" * n + "\n"
-    ps,trn_ps = 0,0
+    res += "=" * n
+    ps,trn_ps,j = 0,0,0
     infos = [o for o in infos if o is not None] #see comment in previous cell
-    for typ,np,trn,sz in infos:
+    prev_sz = None
+    for typ,np,trn,sz,chnged in infos:
         if sz is None: continue
-        ps += np
-        if trn: trn_ps += np
-        res += f"{typ:<20} {_print_shapes(sz, bs)[:19]:<20} {np:<10,} {str(trn):<10}\n"
-        res += "_" * n + "\n"
+        if j == 0:
+            res += f'\n{"":<20} {_print_shapes(sz, bs)[:19]:<20}' # to avoid a double line at the top
+        if not chnged and not prev_sz == sz and j > 0: res += "\n" + "_" * n + "\n" + f'{"":<20} {_print_shapes(sz, bs)[:19]:<20}'
+        j = 1
+        res += f"\n{typ:<20} {'':<20} {np:<10} {str(trn):<10}"
+        if np is not '':
+            ps += np
+            if trn: trn_ps += np
+        prev_sz = sz
+    res += "\n" + "_" * n + "\n"
     res += f"\nTotal params: {ps:,}\n"
     res += f"Total trainable params: {trn_ps:,}\n"
     res += f"Total non-trainable params: {ps - trn_ps:,}\n\n"
