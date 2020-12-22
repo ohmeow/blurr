@@ -133,47 +133,67 @@ def show_results(x:HF_TokenClassInput, y:HF_TokenTensorCategory, samples, outs, 
     return ctxs
 
 # Cell
-@patch
-def blurr_predict_tokens(self:Learner, inp, **kargs):
-    """Remove all the unnecessary predicted tokens after calling `Learner.predict`, so that you only
-    get the predicted labels, label ids, and probabilities for what you passed into it in addition to the input
+def _blurr_predict_tokens(predict_func, items, hf_textblock_tfm):
+    """Remove all the unnecessary predicted tokens after calling `Learner.blurr_predict` or `blurrONNX.predict.
+    Aligns the predicted labels, label ids, and probabilities with what you passed in excluding subword tokens
     """
-    pred_lbls, pred_lbl_ids, probs = self.blurr_predict(inp)
-
     # grab the huggingface tokenizer from the learner's dls.tfms
-    hf_textblock_tfm = self.dls.before_batch[0]
     hf_tokenizer = hf_textblock_tfm.hf_tokenizer
     tok_kwargs = hf_textblock_tfm.tok_kwargs
 
-    # calculate the number of subtokens per raw/input token so that we can determine what predictions to
-    # return
-    subtoks_per_raw_tok = [ (entity, len(hf_tokenizer.tokenize(str(entity)))) for entity in inp ]
+    if (isinstance(items[0], str)): items = [items]
 
-    # very similar to what HF_BatchTransform does with the exception that we are also grabbing
-    # the `special_tokens_mask` to help with getting rid or irelevant predicts for any special tokens
-    # (e.g., [CLS], [SEP], etc...)
-    res = hf_tokenizer(inp, None,
-                       max_length=hf_textblock_tfm.max_length,
-                       padding=hf_textblock_tfm.padding,
-                       truncation=hf_textblock_tfm.truncation,
-                       is_split_into_words=hf_textblock_tfm.is_split_into_words,
-                       **tok_kwargs)
+    outs = []
+    for inp, res in zip(items, predict_func(items)):
+        # blurr_predict returns a list for each, we only doing one at a time so git first element of each
+        pred_lbls, pred_lbl_ids, probs = res[0][0], res[1][0], res[2][0]
 
-    special_toks_msk = L(res['special_tokens_mask'])
-    actual_tok_idxs = special_toks_msk.argwhere(lambda el: el != 1)
+        # calculate the number of subtokens per raw/input token so that we can determine what predictions to
+        # return
+        subtoks_per_raw_tok = [ (entity, len(hf_tokenizer.tokenize(str(entity)))) for entity in inp ]
 
-    # using the indexes to the actual tokens, get that info from the results returned above
-    pred_lbls_list = ast.literal_eval(pred_lbls)
-    actual_pred_lbls = L(pred_lbls_list)[actual_tok_idxs]
-    actual_pred_lbl_ids = pred_lbl_ids[actual_tok_idxs]
-    actual_probs = probs[actual_tok_idxs]
+        # very similar to what HF_BatchTransform does with the exception that we are also grabbing
+        # the `special_tokens_mask` to help with getting rid or irelevant predicts for any special tokens
+        # (e.g., [CLS], [SEP], etc...)
+        res = hf_tokenizer(inp, None,
+                           max_length=hf_textblock_tfm.max_length,
+                           padding=hf_textblock_tfm.padding,
+                           truncation=hf_textblock_tfm.truncation,
+                           is_split_into_words=hf_textblock_tfm.is_split_into_words,
+                           **tok_kwargs)
 
-    # now, because a raw token can be mapped to multiple subtokens, we need to build a list of indexes composed
-    # of the *first* subtoken used to represent each raw token (that is where the prediction is)
-    offset = 0
-    raw_trg_idxs = []
-    for idx, (raw_tok, sub_tok_count) in enumerate(subtoks_per_raw_tok):
-        raw_trg_idxs.append(idx+offset)
-        offset += sub_tok_count-1 if (sub_tok_count > 1) else 0
+        special_toks_msk = L(res['special_tokens_mask'])
+        actual_tok_idxs = special_toks_msk.argwhere(lambda el: el != 1)
 
-    return inp, actual_pred_lbls[raw_trg_idxs], actual_pred_lbl_ids[raw_trg_idxs], actual_probs[raw_trg_idxs]
+        # using the indexes to the actual tokens, get that info from the results returned above
+        pred_lbls_list = ast.literal_eval(pred_lbls)
+        actual_pred_lbls = L(pred_lbls_list)[actual_tok_idxs]
+        actual_pred_lbl_ids = pred_lbl_ids[actual_tok_idxs]
+        actual_probs = probs[actual_tok_idxs]
+
+        # now, because a raw token can be mapped to multiple subtokens, we need to build a list of indexes composed
+        # of the *first* subtoken used to represent each raw token (that is where the prediction is)
+        offset = 0
+        raw_trg_idxs = []
+        for idx, (raw_tok, sub_tok_count) in enumerate(subtoks_per_raw_tok):
+            raw_trg_idxs.append(idx+offset)
+            offset += sub_tok_count-1 if (sub_tok_count > 1) else 0
+
+        outs.append((inp,
+                     actual_pred_lbls[raw_trg_idxs],
+                     actual_pred_lbl_ids[raw_trg_idxs],
+                     actual_probs[raw_trg_idxs]))
+
+    return outs
+
+# Cell
+@patch
+def blurr_predict_tokens(self:Learner, items, **kargs):
+    hf_textblock_tfm = self.dls.before_batch[0]
+    return _blurr_predict_tokens(self.blurr_predict, items, hf_textblock_tfm)
+
+# Cell
+@patch
+def predict_tokens(self:blurrONNX, items, **kargs):
+    hf_textblock_tfm = self.dls.before_batch[0]
+    return _blurr_predict_tokens(self.predict, items, hf_textblock_tfm)

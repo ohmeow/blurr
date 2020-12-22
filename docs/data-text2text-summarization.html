@@ -396,44 +396,7 @@ as a byproduct of the tokenization process in the <code>encodes</code> method.</
 
 
 <div class="output_text output_subarea output_execute_result">
-<pre>(2, torch.Size([4, 1024]), torch.Size([4, 78]))</pre>
-</div>
-
-</div>
-
-</div>
-</div>
-
-</div>
-    {% endraw %}
-
-    {% raw %}
-    
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">t</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">randn</span><span class="p">((</span><span class="mi">3</span><span class="p">,</span><span class="mi">3</span><span class="p">));</span>
-
-<span class="n">F</span><span class="o">.</span><span class="n">pad</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">pad</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span> <span class="n">value</span><span class="o">=</span><span class="mi">1</span><span class="p">)[:,:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-<div class="output_area">
-
-
-
-<div class="output_text output_subarea output_execute_result">
-<pre>tensor([[ 1.0000,  1.2162, -1.3936],
-        [ 1.0000,  0.3981, -1.5165],
-        [ 1.0000, -1.7347,  2.1353]])</pre>
+<pre>(2, torch.Size([4, 1024]), torch.Size([4, 68]))</pre>
 </div>
 
 </div>
@@ -488,8 +451,8 @@ as a byproduct of the tokenization process in the <code>encodes</code> method.</
     </tr>
     <tr>
       <th>1</th>
-      <td>(CNN) -- It's a congested, sprawling transport hub surrounded by 1950s architecture and predominantly used by commuters or tourists to cross the city of Istanbul. But proposed changes to Taksim Square have seen it become the flashpoint for protests that have swept through Turkey in the past week, leaving thousands injured and focusing the world's attention on the government of Prime Minister Recep Tayyip Erdogan. Taksim has been no stranger to violence. In 1977, at least 34 protesters died during May Day clashes with police. May 1 rallies in the square were banned in 1980 and were only allowed to legally resume in 2010. On May Day this year, there were riots after city authorities again refused to grant trade unions and youth groups permission to demonstrate in Taksim, blaming construction work being carried out in the square. Professor Ersin Kalaycioglu, professor of political science at Istanbul's Sabanci University, said significantly, Taksim Square was also known as "republic squa</td>
-      <td>Taksim Square was where Istanbul's water was distributed -- Taksim means divide.\nThe site is seen as symbolizing the seclar Turkish republic founded by Ataturk.\nErdogan's government's plans to alter Taksim's Gezi Park prompted protests.\nThe police's</td>
+      <td>(CNN) -- To Disney or not to Disney? For many travelers, especially those with children, it's not even a question they ask. They already know the answer. "Yes." To these visitors, Disney is Mickey Mouse, princesses, magic and fun. It's happy memories of childhood brought back to life in your children, a clean place where the rides are safe and the Disney characters are always happy to pose for pictures with your kids. That's Deb Koma, who visited once as a child and walked back into the Magic Kingdom in the mid-1990s with her young son. "It was so perfect, everybody was so happy, everything was so maintained," said Koma, who now works for the AllEars.net, an unofficial Disney planning and fan site. "You were in a perfect fantasy world. That, and my little boy loved it." But for other vacationers, Disney inspires a firm "no." To those travelers, Disney is merely a commercial machine built to sell tickets, overpriced toys and a stereotype of girls as princesses. They may remember visiti</td>
+      <td>Disney represents magical stories and fun family to fans.\nSome parents delight in their children's wonder during a first visit to Disney.\nSome critics think the company encourages kids to buy too much stuff.\nOthers worry the princess culture limits</td>
     </tr>
   </tbody>
 </table>
@@ -613,7 +576,9 @@ as a byproduct of the tokenization process in the <code>encodes</code> method.</
     <span class="n">hf_arch</span><span class="p">,</span> <span class="n">hf_config</span><span class="p">,</span> <span class="n">hf_tokenizer</span><span class="p">,</span> <span class="n">hf_model</span> <span class="o">=</span> <span class="n">BLURR_MODEL_HELPER</span><span class="o">.</span><span class="n">get_hf_objects</span><span class="p">(</span><span class="n">model_name</span><span class="p">,</span> 
                                                                                    <span class="n">task</span><span class="o">=</span><span class="n">task</span><span class="p">,</span> 
                                                                                    <span class="n">model_cls</span><span class="o">=</span><span class="n">model_cls</span><span class="p">)</span>
+    
     <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;architecture:</span><span class="se">\t</span><span class="si">{</span><span class="n">hf_arch</span><span class="si">}</span><span class="se">\n</span><span class="s1">tokenizer:</span><span class="se">\t</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">hf_tokenizer</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+    
     
     <span class="n">before_batch_tfm</span> <span class="o">=</span> <span class="n">HF_SummarizationBeforeBatchTransform</span><span class="p">(</span><span class="n">hf_arch</span><span class="p">,</span> <span class="n">hf_tokenizer</span><span class="p">,</span> 
                                                             <span class="n">padding</span><span class="o">=</span><span class="s1">&#39;max_length&#39;</span><span class="p">,</span> 
@@ -659,6 +624,58 @@ as a byproduct of the tokenization process in the <code>encodes</code> method.</
     {% raw %}
     
 <div class="cell border-box-sizing code_cell rendered">
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+<div class="output_html rendered_html output_subarea ">
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>arch</th>
+      <th>tokenizer</th>
+      <th>model_name</th>
+      <th>result</th>
+      <th>error</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>bart</td>
+      <td>BartTokenizerFast</td>
+      <td>facebook/bart-base</td>
+      <td>PASSED</td>
+      <td></td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>t5</td>
+      <td>T5TokenizerFast</td>
+      <td>t5-small</td>
+      <td>PASSED</td>
+      <td></td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>pegasus</td>
+      <td>PegasusTokenizerFast</td>
+      <td>google/pegasus-cnn_dailymail</td>
+      <td>PASSED</td>
+      <td></td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+</div>
+
+</div>
+</div>
 
 </div>
     {% endraw %}
