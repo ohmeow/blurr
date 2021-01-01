@@ -125,7 +125,9 @@ def blurr_summary(self:Learner):
 # Cell
 @typedispatch
 def show_results(x:HF_BaseInput, y, samples, outs, learner, ctxs=None, max_n=6, trunc_at=None, **kwargs):
-    kwargs['hf_tokenizer'] = learner.dls.before_batch[0].hf_tokenizer
+    #grab tokenizer and trunc_at to pass into HF_BaseInput.show
+    hf_before_batch_tfm = get_blurr_tfm(learner.dls.before_batch)
+    kwargs['hf_tokenizer'] = hf_before_batch_tfm.hf_tokenizer
     kwargs['trunc_at'] = trunc_at
 
     if ctxs is None: ctxs = get_empty_df(min(len(samples), max_n))
@@ -144,7 +146,9 @@ def show_results(x:HF_BaseInput, y, samples, outs, learner, ctxs=None, max_n=6, 
 # Cell
 @patch
 def blurr_predict(self:Learner, items, rm_type_tfms=None):
-    is_split_str = self.dls.before_batch[0].is_split_into_words and isinstance(items[0], str)
+    hf_before_batch_tfm = get_blurr_tfm(self.dls.before_batch)
+
+    is_split_str = hf_before_batch_tfm.is_split_into_words and isinstance(items[0], str)
     is_df = isinstance(items, pd.DataFrame)
 
     if (not is_df and (is_split_str or not is_listy(items))): items = [items]

@@ -376,10 +376,10 @@ nb_path: "nbs/01b_data-question-answering.ipynb"
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h2 id="HF_QABeforeBatchTransform" class="doc_header"><code>class</code> <code>HF_QABeforeBatchTransform</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/data/question_answering.py#L50" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>HF_QABeforeBatchTransform</code>(<strong><code>hf_arch</code></strong>, <strong><code>hf_tokenizer</code></strong>, <strong><code>max_length</code></strong>=<em><code>None</code></em>, <strong><code>padding</code></strong>=<em><code>True</code></em>, <strong><code>truncation</code></strong>=<em><code>True</code></em>, <strong><code>is_split_into_words</code></strong>=<em><code>False</code></em>, <strong><code>n_tok_inps</code></strong>=<em><code>1</code></em>, <strong><code>tok_kwargs</code></strong>=<em><code>{}</code></em>, <strong>**<code>kwargs</code></strong>) :: <a href="/blurr/data-core.html#HF_BeforeBatchTransform"><code>HF_BeforeBatchTransform</code></a></p>
+<h2 id="HF_QABeforeBatchTransform" class="doc_header"><code>class</code> <code>HF_QABeforeBatchTransform</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/data/question_answering.py#L50" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>HF_QABeforeBatchTransform</code>(<strong><code>hf_arch</code></strong>, <strong><code>hf_config</code></strong>, <strong><code>hf_tokenizer</code></strong>, <strong><code>hf_model</code></strong>, <strong><code>max_length</code></strong>=<em><code>None</code></em>, <strong><code>padding</code></strong>=<em><code>True</code></em>, <strong><code>truncation</code></strong>=<em><code>True</code></em>, <strong><code>is_split_into_words</code></strong>=<em><code>False</code></em>, <strong><code>tok_kwargs</code></strong>=<em><code>{}</code></em>, <strong>**<code>kwargs</code></strong>) :: <a href="/blurr/data-core.html#HF_BeforeBatchTransform"><code>HF_BeforeBatchTransform</code></a></p>
 </blockquote>
-<p>Handles everything you need to assemble a mini-batch of inputs and targets, as well as decode the dictionary produced
-as a byproduct of the tokenization process in the <code>encodes</code> method.</p>
+<p>Handles everything you need to assemble a mini-batch of inputs and targets, as well as
+decode the dictionary produced as a byproduct of the tokenization process in the <code>encodes</code> method.</p>
 
 </div>
 
@@ -412,14 +412,12 @@ as a byproduct of the tokenization process in the <code>encodes</code> method.</
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">before_batch_tfm</span> <span class="o">=</span> <span class="n">HF_QABeforeBatchTransform</span><span class="p">(</span><span class="n">hf_arch</span><span class="p">,</span> <span class="n">hf_tokenizer</span><span class="p">,</span> 
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">before_batch_tfm</span> <span class="o">=</span> <span class="n">HF_QABeforeBatchTransform</span><span class="p">(</span><span class="n">hf_arch</span><span class="p">,</span> <span class="n">hf_config</span><span class="p">,</span> <span class="n">hf_tokenizer</span><span class="p">,</span> <span class="n">hf_model</span><span class="p">,</span>
                                              <span class="n">max_length</span><span class="o">=</span><span class="n">max_seq_len</span><span class="p">,</span> <span class="n">truncation</span><span class="o">=</span><span class="s1">&#39;only_second&#39;</span><span class="p">,</span> 
                                              <span class="n">tok_kwargs</span><span class="o">=</span><span class="p">{</span> <span class="s1">&#39;return_special_tokens_mask&#39;</span><span class="p">:</span> <span class="kc">True</span> <span class="p">})</span>
 
 <span class="n">blocks</span> <span class="o">=</span> <span class="p">(</span>
-    <span class="n">HF_TextBlock</span><span class="p">(</span><span class="n">hf_arch</span><span class="p">,</span> <span class="n">hf_tokenizer</span><span class="p">,</span> 
-                 <span class="n">before_batch_tfms</span><span class="o">=</span><span class="n">before_batch_tfm</span><span class="p">,</span> 
-                 <span class="n">input_return_type</span><span class="o">=</span><span class="n">HF_QuestionAnswerInput</span><span class="p">),</span> 
+    <span class="n">HF_TextBlock</span><span class="p">(</span><span class="n">before_batch_tfm</span><span class="o">=</span><span class="n">before_batch_tfm</span><span class="p">,</span> <span class="n">input_return_type</span><span class="o">=</span><span class="n">HF_QuestionAnswerInput</span><span class="p">),</span> 
     <span class="n">CategoryBlock</span><span class="p">(</span><span class="n">vocab</span><span class="o">=</span><span class="n">vocab</span><span class="p">),</span>
     <span class="n">CategoryBlock</span><span class="p">(</span><span class="n">vocab</span><span class="o">=</span><span class="n">vocab</span><span class="p">)</span>
 <span class="p">)</span>
@@ -568,15 +566,15 @@ as a byproduct of the tokenization process in the <code>encodes</code> method.</
   <tbody>
     <tr>
       <th>0</th>
-      <td>What large amount did the movie "Goldmember" gross? In July 2002, Beyoncé continued her acting career playing Foxxy Cleopatra alongside Mike Myers in the comedy film, Austin Powers in Goldmember, which spent its first weekend atop the US box office and grossed $73 million. Beyoncé released "Work It Out" as the lead single from its soundtrack album which entered the top ten in the UK, Norway, and Belgium. In 2003, Beyoncé starred opposite Cuba Gooding, Jr., in the musical comedy The Fighting Tem</td>
-      <td>(0, 0)</td>
-      <td></td>
+      <td>When was Beyonce's forth album released? Her fourth studio album 4 was released on June 28, 2011 in the US. 4 sold 310,000 copies in its first week and debuted atop the Billboard 200 chart, giving Beyoncé her fourth consecutive number-one album in the US. The album was preceded by two of its singles "Run the World (Girls)" and "Best Thing I Never Had", which both attained moderate success. The fourth single "Love on Top" was a commercial success in the US. 4 also produced four other singles; "P</td>
+      <td>(20, 24)</td>
+      <td>June 28, 2011</td>
     </tr>
     <tr>
       <th>1</th>
-      <td>What was the named of the song  dedicated to the child? On January 7, 2012, Beyoncé gave birth to a daughter, Blue Ivy Carter, at Lenox Hill Hospital in New York under heavy security. Two days later, Jay Z released "Glory", a song dedicated to their child, on his website Lifeandtimes.com. The song detailed the couple's pregnancy struggles, including a miscarriage Beyoncé suffered before becoming pregnant with Blue Ivy. Blue Ivy's cries are included at the end of the song, and she was officially</td>
-      <td>(0, 0)</td>
-      <td></td>
+      <td>Of the individuals that became intimate with Frédéric during their stay at the family apartments, which two became part of Frédéric's social environment in Paris? Four boarders at his parents' apartments became Chopin's intimates: Tytus Woyciechowski, Jan Nepomucen Białobłocki, Jan Matuszyński and Julian Fontana; the latter two would become part of his Paris milieu. He was friendly with members of Warsaw's young artistic and intellectual world, including Fontana, Józef Bohdan Zales</td>
+      <td>(77, 88)</td>
+      <td>Jan Matuszyński and Julian Fontana</td>
     </tr>
   </tbody>
 </table>

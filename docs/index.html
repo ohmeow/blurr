@@ -90,6 +90,21 @@ pip install -e ".[dev]"</code></pre>
 </div>
 </div>
 
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stderr output_text">
+<pre>[nltk_data] Downloading package wordnet to /home/wgilliam/nltk_data...
+[nltk_data]   Package wordnet is already up-to-date!
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
 </div>
     {% endraw %}
 
@@ -158,11 +173,8 @@ pip install -e ".[dev]"</code></pre>
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">blocks</span> <span class="o">=</span> <span class="p">(</span><span class="n">HF_TextBlock</span><span class="p">(</span><span class="n">hf_arch</span><span class="o">=</span><span class="n">hf_arch</span><span class="p">,</span> <span class="n">hf_tokenizer</span><span class="o">=</span><span class="n">hf_tokenizer</span><span class="p">),</span> <span class="n">CategoryBlock</span><span class="p">)</span>
-
-<span class="n">dblock</span> <span class="o">=</span> <span class="n">DataBlock</span><span class="p">(</span><span class="n">blocks</span><span class="o">=</span><span class="n">blocks</span><span class="p">,</span> 
-                   <span class="n">get_x</span><span class="o">=</span><span class="n">ColReader</span><span class="p">(</span><span class="s1">&#39;text&#39;</span><span class="p">),</span> <span class="n">get_y</span><span class="o">=</span><span class="n">ColReader</span><span class="p">(</span><span class="s1">&#39;label&#39;</span><span class="p">),</span> 
-                   <span class="n">splitter</span><span class="o">=</span><span class="n">ColSplitter</span><span class="p">(</span><span class="n">col</span><span class="o">=</span><span class="s1">&#39;is_valid&#39;</span><span class="p">))</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">blocks</span> <span class="o">=</span> <span class="p">(</span><span class="n">HF_TextBlock</span><span class="p">(</span><span class="n">hf_arch</span><span class="p">,</span> <span class="n">hf_config</span><span class="p">,</span> <span class="n">hf_tokenizer</span><span class="p">,</span> <span class="n">hf_model</span><span class="p">),</span> <span class="n">CategoryBlock</span><span class="p">)</span>
+<span class="n">dblock</span> <span class="o">=</span> <span class="n">DataBlock</span><span class="p">(</span><span class="n">blocks</span><span class="o">=</span><span class="n">blocks</span><span class="p">,</span>  <span class="n">get_x</span><span class="o">=</span><span class="n">ColReader</span><span class="p">(</span><span class="s1">&#39;text&#39;</span><span class="p">),</span> <span class="n">get_y</span><span class="o">=</span><span class="n">ColReader</span><span class="p">(</span><span class="s1">&#39;label&#39;</span><span class="p">),</span> <span class="n">splitter</span><span class="o">=</span><span class="n">ColSplitter</span><span class="p">())</span>
 
 <span class="n">dls</span> <span class="o">=</span> <span class="n">dblock</span><span class="o">.</span><span class="n">dataloaders</span><span class="p">(</span><span class="n">imdb_df</span><span class="p">,</span> <span class="n">bs</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
 </pre></div>
@@ -211,8 +223,8 @@ pip install -e ".[dev]"</code></pre>
     </tr>
     <tr>
       <th>1</th>
-      <td>well, what can i say. &lt; br / &gt; &lt; br / &gt; " what the bleep do we know " has achieved the nearly impossible - leaving behind such masterpieces of the genre as " the postman ", " the dungeon master ", " merlin ", and so fourth, it will go down in history as the single worst movie i have ever seen in its entirety. and that, ladies and gentlemen, is impressive indeed, for i have seen many a bad movie. &lt; br / &gt; &lt; br / &gt; this masterpiece of modern cinema consists of two interwoven parts, alternating between a silly and contrived plot about an extremely annoying photographer, abandoned by her husband and forced to take anti - depressants to survive, and a bunch of talking heads going on about how quantum physics supposedly justifies their new - agy pseudo - philosophy. basically, if you start your day off meditating to the likes of enya and kenny g, this movie is for you. if you have a sense of humor, a crowd of people who know how to have fun, and a sizable portion of good weed, then this movie is for you as well. otherwise, stay away. take my word for it. &lt; br / &gt; &lt; br / &gt; the first thing that struck me about " what the bleep do you know " is that is seemed to be edited and put together by the same kinds of people that shoot cheap weddings on camera, complete with pink heart effects, computer - generated sparkles across the screen, and other assorted silliness. who let these people anywhere near a theatrical release is a mystery to me. i guess this is what too much kenny g does to you. the movie was permeated with cheesy gci, the likes that you or i can produce on our own computer via over - the - counter video editing software, but never would, because it's just way too ridiculous. &lt; br / &gt; &lt; br / &gt; the script was _ obviously _ written by someone with no writing experience whatsoever. not only were all the characters and conversations cumbersome and contrived beyond belief, but the " writers " felt like they had to shove every relevant piece of information, or rather disinformation, which is what most of this movie was all about, all the way down your throat. well, given the target audience, that may not have been too bad of an idea. the main character, for example, spends half the movie popping pills.</td>
-      <td>negative</td>
+      <td>the shop around the corner is one of the sweetest and most feel - good romantic comedies ever made. there's just no getting around that, and it's hard to actually put one's feeling for this film into words. it's not one of those films that tries too hard, nor does it come up with the oddest possible scenarios to get the two protagonists together in the end. in fact, all its charm is innate, contained within the characters and the setting and the plot... which is highly believable to boot. it's easy to think that such a love story, as beautiful as any other ever told, * could * happen to you... a feeling you don't often get from other romantic comedies, however sweet and heart - warming they may be. &lt; br / &gt; &lt; br / &gt; alfred kralik ( james stewart ) and clara novak ( margaret sullavan ) don't have the most auspicious of first meetings when she arrives in the shop ( matuschek &amp; co. ) he's been working in for the past nine years, asking for a job. they clash from the very beginning, mostly over a cigarette box that plays music when it's opened - - he thinks it's a ludicrous idea ; she makes one big sell of it and gets hired. their bickering takes them through the next six months, even as they both ( unconsciously, of course! ) fall in love with each other when they share their souls and minds in letters passed through po box 237. this would be a pretty thin plotline to base an entire film on, except that the shop around the corner is expertly fleshed - out with a brilliant supporting cast made up of entirely engaging characters, from the fatherly but lonely hugo matuschek ( frank morgan ) himself, who learns that his shop really is his home ; pirovitch ( felix bressart ), kralik's sidekick and friend who always skitters out of the room when faced with the possibility of being asked for his honest opinion ; smarmy pimp - du - jour vadas ( joseph schildkraut ) who ultimately gets his comeuppance from a gloriously righteous kralik ; and ambitious errand boy pepi katona ( william tracy ) who wants nothing more than to be promoted to the position of clerk for matuschek &amp; co. the unpretentious love story between '</td>
+      <td>positive</td>
     </tr>
   </tbody>
 </table>
@@ -279,23 +291,23 @@ pip install -e ".[dev]"</code></pre>
   <tbody>
     <tr>
       <td>0</td>
-      <td>0.623366</td>
-      <td>0.672314</td>
-      <td>0.590000</td>
+      <td>0.594212</td>
+      <td>0.448775</td>
+      <td>0.820000</td>
       <td>00:21</td>
     </tr>
     <tr>
       <td>1</td>
-      <td>0.372804</td>
-      <td>0.442448</td>
-      <td>0.815000</td>
+      <td>0.375231</td>
+      <td>0.282043</td>
+      <td>0.900000</td>
       <td>00:22</td>
     </tr>
     <tr>
       <td>2</td>
-      <td>0.290806</td>
-      <td>0.303394</td>
-      <td>0.895000</td>
+      <td>0.295174</td>
+      <td>0.293845</td>
+      <td>0.905000</td>
       <td>00:21</td>
     </tr>
   </tbody>
@@ -376,7 +388,20 @@ pip install -e ".[dev]"</code></pre>
 
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="&#10071;-Updates">&#10071; Updates<a class="anchor-link" href="#&#10071;-Updates"> </a></h2><p><strong>12/20/2020</strong></p>
+<h2 id="&#10071;-Updates">&#10071; Updates<a class="anchor-link" href="#&#10071;-Updates"> </a></h2><p><strong>12/31/2020</strong></p>
+<p><strong><em>The "Goodbye 2020" release with lots of goodies for blurr users:</em></strong></p>
+<ul>
+<li>Updated the Seq2Seq models to use some of the latest huggingface bits like <code>tokenizer.prepare_seq2seq_batch</code>.</li>
+<li>Separated out the Seq2Seq and Token Classification metrics into metrics-specific callbacks for a better separation of concerns. As a best practice, you should now <em>only</em> use them as <code>fit_one_cycle</code>, etc.. callbacks rather than attach them to your <code>Learner</code>.</li>
+<li><strong>NEW</strong>: Translation are now available in blurr, joining causal language modeling and summarization in our core Seq2Seq stack</li>
+<li><strong>NEW</strong>: Integration of huggingface's Seq2Seq metrics (rouge, bertscore, meteor, bleu, and sacrebleu). Plenty of info on how to set this up in the docs.</li>
+<li><strong>NEW</strong>: Added <a href="/blurr/data-seq2seq-core.html#default_text_gen_kwargs"><code>default_text_gen_kwargs</code></a>, a method that given a huggingface config, model, and task (optional), will return the default/recommended kwargs for any text generation models.</li>
+<li>A lot of code cleanup (e.g., refactored naming and removal of redundant code into classes/methods)</li>
+<li><strong>More model support</strong> and <strong>more tests</strong> across the board!  Check out the docs for more info</li>
+<li>Misc. validation improvements and bug fixes.</li>
+</ul>
+<p>As I'm sure there is plenty I can do to make this library better, please don't hesitate to join in and help the effort by submitting PRs, pointing out problems with my code, or letting me know what and how I can improve things generally. Some models, like mbart and mt5 for example, aren't giving good results and I'd love to get any and all feedback from the community on how to resolve such issues ... so hit me up, I promise I won't bit :)</p>
+<p><strong>12/20/2020</strong></p>
 <ul>
 <li>Updated <a href="/blurr/modeling-core.html#Learner.blurr_predict"><code>Learner.blurr_predict</code></a> and <a href="/blurr/modeling-token-classification.html#Learner.blurr_predict_tokens"><code>Learner.blurr_predict_tokens</code></a> to support single or multiple items</li>
 <li>Added ONNX support for sequence classification, token classification, and question/answering tasks. <a href="/blurr/modeling-core.html#blurrONNX"><code>blurrONNX</code></a> provides ONNX friendly variants of <a href="/blurr/modeling-core.html#Learner.blurr_predict"><code>Learner.blurr_predict</code></a> and <a href="/blurr/modeling-token-classification.html#Learner.blurr_predict_tokens"><code>Learner.blurr_predict_tokens</code></a> in the form of <a href="/blurr/modeling-core.html#blurrONNX.predict"><code>blurrONNX.predict</code></a> and <a href="/blurr/modeling-token-classification.html#blurrONNX.predict_tokens"><code>blurrONNX.predict_tokens</code></a> respectively.  Like their Learner equivalents, these methods support single or multiple items for inferece.  See the docs/code for examples and speed gains you get with ONNX.</li>

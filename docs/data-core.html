@@ -123,10 +123,10 @@ nb_path: "nbs/01_data-core.ipynb"
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h2 id="HF_BeforeBatchTransform" class="doc_header"><code>class</code> <code>HF_BeforeBatchTransform</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/data/core.py#L25" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>HF_BeforeBatchTransform</code>(<strong><code>hf_arch</code></strong>, <strong><code>hf_tokenizer</code></strong>, <strong><code>max_length</code></strong>=<em><code>None</code></em>, <strong><code>padding</code></strong>=<em><code>True</code></em>, <strong><code>truncation</code></strong>=<em><code>True</code></em>, <strong><code>is_split_into_words</code></strong>=<em><code>False</code></em>, <strong><code>n_tok_inps</code></strong>=<em><code>1</code></em>, <strong><code>tok_kwargs</code></strong>=<em><code>{}</code></em>, <strong>**<code>kwargs</code></strong>) :: <code>Transform</code></p>
+<h2 id="HF_BeforeBatchTransform" class="doc_header"><code>class</code> <code>HF_BeforeBatchTransform</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/data/core.py#L26" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>HF_BeforeBatchTransform</code>(<strong><code>hf_arch</code></strong>, <strong><code>hf_config</code></strong>, <strong><code>hf_tokenizer</code></strong>, <strong><code>hf_model</code></strong>, <strong><code>max_length</code></strong>=<em><code>None</code></em>, <strong><code>padding</code></strong>=<em><code>True</code></em>, <strong><code>truncation</code></strong>=<em><code>True</code></em>, <strong><code>is_split_into_words</code></strong>=<em><code>False</code></em>, <strong><code>tok_kwargs</code></strong>=<em><code>{}</code></em>, <strong>**<code>kwargs</code></strong>) :: <code>Transform</code></p>
 </blockquote>
-<p>Handles everything you need to assemble a mini-batch of inputs and targets, as well as decode the dictionary produced
-as a byproduct of the tokenization process in the <code>encodes</code> method.</p>
+<p>Handles everything you need to assemble a mini-batch of inputs and targets, as well as
+decode the dictionary produced as a byproduct of the tokenization process in the <code>encodes</code> method.</p>
 
 </div>
 
@@ -165,7 +165,7 @@ as a byproduct of the tokenization process in the <code>encodes</code> method.</
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h2 id="HF_AfterBatchTransform" class="doc_header"><code>class</code> <code>HF_AfterBatchTransform</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/data/core.py#L68" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>HF_AfterBatchTransform</code>(<strong><code>hf_tokenizer</code></strong>, <strong><code>input_return_type</code></strong>=<em><code>HF_BaseInput</code></em>) :: <code>Transform</code></p>
+<h2 id="HF_AfterBatchTransform" class="doc_header"><code>class</code> <code>HF_AfterBatchTransform</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/data/core.py#L64" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>HF_AfterBatchTransform</code>(<strong><code>hf_tokenizer</code></strong>, <strong><code>input_return_type</code></strong>=<em><code>HF_BaseInput</code></em>) :: <code>Transform</code></p>
 </blockquote>
 <p>Delegates (<code>__call__</code>,<code>decode</code>,<code>setup</code>) to (<code>encodes</code>,<code>decodes</code>,<code>setups</code>) if <code>split_idx</code> matches</p>
 
@@ -204,7 +204,7 @@ as a byproduct of the tokenization process in the <code>encodes</code> method.</
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h2 id="HF_TextBlock" class="doc_header"><code>class</code> <code>HF_TextBlock</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/data/core.py#L79" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>HF_TextBlock</code>(<strong><code>hf_arch</code></strong>=<em><code>None</code></em>, <strong><code>hf_tokenizer</code></strong>=<em><code>None</code></em>, <strong><code>before_batch_tfms</code></strong>=<em><code>None</code></em>, <strong><code>after_batch_tfms</code></strong>=<em><code>None</code></em>, <strong><code>max_length</code></strong>=<em><code>512</code></em>, <strong><code>padding</code></strong>=<em><code>True</code></em>, <strong><code>truncation</code></strong>=<em><code>True</code></em>, <strong><code>is_split_into_words</code></strong>=<em><code>False</code></em>, <strong><code>n_tok_inps</code></strong>=<em><code>1</code></em>, <strong><code>tok_kwargs</code></strong>=<em><code>{}</code></em>, <strong><code>input_return_type</code></strong>=<em><code>HF_BaseInput</code></em>, <strong><code>dl_type</code></strong>=<em><code>SortedDL</code></em>, <strong><code>before_batch_kwargs</code></strong>=<em><code>{}</code></em>, <strong><code>after_batch_kwargs</code></strong>=<em><code>{}</code></em>, <strong>**<code>kwargs</code></strong>) :: <code>TransformBlock</code></p>
+<h2 id="HF_TextBlock" class="doc_header"><code>class</code> <code>HF_TextBlock</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/data/core.py#L75" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>HF_TextBlock</code>(<strong><code>hf_arch</code></strong>=<em><code>None</code></em>, <strong><code>hf_config</code></strong>=<em><code>None</code></em>, <strong><code>hf_tokenizer</code></strong>=<em><code>None</code></em>, <strong><code>hf_model</code></strong>=<em><code>None</code></em>, <strong><code>before_batch_tfm</code></strong>=<em><code>None</code></em>, <strong><code>after_batch_tfm</code></strong>=<em><code>None</code></em>, <strong><code>max_length</code></strong>=<em><code>None</code></em>, <strong><code>padding</code></strong>=<em><code>True</code></em>, <strong><code>truncation</code></strong>=<em><code>True</code></em>, <strong><code>is_split_into_words</code></strong>=<em><code>False</code></em>, <strong><code>input_return_type</code></strong>=<em><code>HF_BaseInput</code></em>, <strong><code>dl_type</code></strong>=<em><code>SortedDL</code></em>, <strong><code>before_batch_kwargs</code></strong>=<em><code>{}</code></em>, <strong><code>after_batch_kwargs</code></strong>=<em><code>{}</code></em>, <strong><code>tok_kwargs</code></strong>=<em><code>{}</code></em>, <strong>**<code>kwargs</code></strong>) :: <code>TransformBlock</code></p>
 </blockquote>
 <p>A basic wrapper that links defaults transforms for the data block API</p>
 
@@ -233,6 +233,37 @@ as a byproduct of the tokenization process in the <code>encodes</code> method.</
 </div>
 </div>
 </div>
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+<div class="output_markdown rendered_html output_subarea ">
+<h4 id="get_blurr_tfm" class="doc_header"><code>get_blurr_tfm</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/data/core.py#L112" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>get_blurr_tfm</code>(<strong><code>tfms_list</code></strong>, <strong><code>tfm_class</code></strong>=<em><code>HF_BeforeBatchTransform</code></em>)</p>
+</blockquote>
+
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    {% endraw %}
+
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+
+</div>
+    {% endraw %}
+
     {% raw %}
     
 <div class="cell border-box-sizing code_cell rendered">
@@ -396,12 +427,8 @@ as a byproduct of the tokenization process in the <code>encodes</code> method.</
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">blocks</span> <span class="o">=</span> <span class="p">(</span><span class="n">HF_TextBlock</span><span class="p">(</span><span class="n">hf_arch</span><span class="o">=</span><span class="n">hf_arch</span><span class="p">,</span> <span class="n">hf_tokenizer</span><span class="o">=</span><span class="n">hf_tokenizer</span><span class="p">),</span> <span class="n">CategoryBlock</span><span class="p">)</span>
-
-<span class="n">dblock</span> <span class="o">=</span> <span class="n">DataBlock</span><span class="p">(</span><span class="n">blocks</span><span class="o">=</span><span class="n">blocks</span><span class="p">,</span> 
-                   <span class="n">get_x</span><span class="o">=</span><span class="n">ColReader</span><span class="p">(</span><span class="s1">&#39;text&#39;</span><span class="p">),</span> 
-                   <span class="n">get_y</span><span class="o">=</span><span class="n">ColReader</span><span class="p">(</span><span class="s1">&#39;label&#39;</span><span class="p">),</span> 
-                   <span class="n">splitter</span><span class="o">=</span><span class="n">ColSplitter</span><span class="p">(</span><span class="n">col</span><span class="o">=</span><span class="s1">&#39;is_valid&#39;</span><span class="p">))</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">blocks</span> <span class="o">=</span> <span class="p">(</span><span class="n">HF_TextBlock</span><span class="p">(</span><span class="n">hf_arch</span><span class="p">,</span> <span class="n">hf_config</span><span class="p">,</span> <span class="n">hf_tokenizer</span><span class="p">,</span> <span class="n">hf_model</span><span class="p">),</span> <span class="n">CategoryBlock</span><span class="p">)</span>
+<span class="n">dblock</span> <span class="o">=</span> <span class="n">DataBlock</span><span class="p">(</span><span class="n">blocks</span><span class="o">=</span><span class="n">blocks</span><span class="p">,</span> <span class="n">get_x</span><span class="o">=</span><span class="n">ColReader</span><span class="p">(</span><span class="s1">&#39;text&#39;</span><span class="p">),</span> <span class="n">get_y</span><span class="o">=</span><span class="n">ColReader</span><span class="p">(</span><span class="s1">&#39;label&#39;</span><span class="p">),</span> <span class="n">splitter</span><span class="o">=</span><span class="n">ColSplitter</span><span class="p">())</span>
 </pre></div>
 
     </div>
@@ -525,39 +552,6 @@ as a byproduct of the tokenization process in the <code>encodes</code> method.</
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="nb">list</span><span class="p">(</span><span class="nb">filter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span> <span class="o">%</span> <span class="mi">2</span> <span class="o">==</span> <span class="mi">0</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">45</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">50</span><span class="p">])))</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-<div class="output_area">
-
-
-
-<div class="output_text output_subarea output_execute_result">
-<pre>[10, 6, 50]</pre>
-</div>
-
-</div>
-
-</div>
-</div>
-
-</div>
-    {% endraw %}
-
-    {% raw %}
-    
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-
-<div class="inner_cell">
-    <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">dls</span><span class="o">.</span><span class="n">show_batch</span><span class="p">(</span><span class="n">dataloaders</span><span class="o">=</span><span class="n">dls</span><span class="p">,</span> <span class="n">max_n</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">trunc_at</span><span class="o">=</span><span class="mi">500</span><span class="p">)</span>
 </pre></div>
 
@@ -588,8 +582,8 @@ as a byproduct of the tokenization process in the <code>encodes</code> method.</
     </tr>
     <tr>
       <th>1</th>
-      <td>Now that Che(2008) has finished its relatively short Australian cinema run (extremely limited release:1 screen in Sydney, after 6wks), I can guiltlessly join both hosts of "At The Movies" in taking Steven Soderbergh to task.&lt;br /&gt;&lt;br /&gt;It's usually satisfying to watch a film director change his style/subject, but Soderbergh's most recent stinker, The Girlfriend Experience(2009), was also missing a story, so narrative (and editing?) seem to suddenly be Soderbergh's main challenge. Strange, after</td>
-      <td>negative</td>
+      <td>THE SHOP AROUND THE CORNER is one of the sweetest and most feel-good romantic comedies ever made. There's just no getting around that, and it's hard to actually put one's feeling for this film into words. It's not one of those films that tries too hard, nor does it come up with the oddest possible scenarios to get the two protagonists together in the end. In fact, all its charm is innate, contained within the characters and the setting and the plot... which is highly believable to boot. It's ea</td>
+      <td>positive</td>
     </tr>
   </tbody>
 </table>
@@ -637,6 +631,7 @@ as a byproduct of the tokenization process in the <code>encodes</code> method.</
  transformers.models.auto.modeling_auto.AutoModelForSequenceClassification,
  transformers.models.bart.modeling_bart.BartForSequenceClassification,
  transformers.models.bert.modeling_bert.BertForSequenceClassification,
+ transformers.models.ctrl.modeling_ctrl.CTRLForSequenceClassification,
  transformers.models.camembert.modeling_camembert.CamembertForSequenceClassification,
  transformers.models.deberta.modeling_deberta.DebertaForSequenceClassification,
  transformers.models.distilbert.modeling_distilbert.DistilBertForSequenceClassification,
@@ -645,11 +640,31 @@ as a byproduct of the tokenization process in the <code>encodes</code> method.</
  transformers.models.funnel.modeling_funnel.FunnelForSequenceClassification,
  transformers.models.gpt2.modeling_gpt2.GPT2ForSequenceClassification,
  transformers.models.longformer.modeling_longformer.LongformerForSequenceClassification,
+ transformers.models.mpnet.modeling_mpnet.MPNetForSequenceClassification,
  transformers.models.mobilebert.modeling_mobilebert.MobileBertForSequenceClassification,
  transformers.models.openai.modeling_openai.OpenAIGPTForSequenceClassification,
  transformers.models.reformer.modeling_reformer.ReformerForSequenceClassification,
  transformers.models.roberta.modeling_roberta.RobertaForSequenceClassification,
  transformers.models.squeezebert.modeling_squeezebert.SqueezeBertForSequenceClassification,
+ transformers.models.albert.modeling_tf_albert.TFAlbertForSequenceClassification,
+ transformers.models.auto.modeling_tf_auto.TFAutoModelForSequenceClassification,
+ transformers.models.bert.modeling_tf_bert.TFBertForSequenceClassification,
+ transformers.models.camembert.modeling_tf_camembert.TFCamembertForSequenceClassification,
+ transformers.models.distilbert.modeling_tf_distilbert.TFDistilBertForSequenceClassification,
+ transformers.models.electra.modeling_tf_electra.TFElectraForSequenceClassification,
+ transformers.models.flaubert.modeling_tf_flaubert.TFFlaubertForSequenceClassification,
+ transformers.models.funnel.modeling_tf_funnel.TFFunnelForSequenceClassification,
+ transformers.models.gpt2.modeling_tf_gpt2.TFGPT2ForSequenceClassification,
+ transformers.models.longformer.modeling_tf_longformer.TFLongformerForSequenceClassification,
+ transformers.models.mpnet.modeling_tf_mpnet.TFMPNetForSequenceClassification,
+ transformers.models.mobilebert.modeling_tf_mobilebert.TFMobileBertForSequenceClassification,
+ transformers.models.openai.modeling_tf_openai.TFOpenAIGPTForSequenceClassification,
+ transformers.models.roberta.modeling_tf_roberta.TFRobertaForSequenceClassification,
+ transformers.models.xlm.modeling_tf_xlm.TFXLMForSequenceClassification,
+ transformers.models.xlm_roberta.modeling_tf_xlm_roberta.TFXLMRobertaForSequenceClassification,
+ transformers.models.xlnet.modeling_tf_xlnet.TFXLNetForSequenceClassification,
+ transformers.models.tapas.modeling_tapas.TapasForSequenceClassification,
+ transformers.models.transfo_xl.modeling_transfo_xl.TransfoXLForSequenceClassification,
  transformers.models.xlm.modeling_xlm.XLMForSequenceClassification,
  transformers.models.xlm_roberta.modeling_xlm_roberta.XLMRobertaForSequenceClassification,
  transformers.models.xlnet.modeling_xlnet.XLNetForSequenceClassification]</pre>
@@ -736,15 +751,11 @@ as a byproduct of the tokenization process in the <code>encodes</code> method.</
     <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;architecture:</span><span class="se">\t</span><span class="si">{</span><span class="n">hf_arch</span><span class="si">}</span><span class="se">\n</span><span class="s1">tokenizer:</span><span class="se">\t</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">hf_tokenizer</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
     
     <span class="n">blocks</span> <span class="o">=</span> <span class="p">(</span>
-        <span class="n">HF_TextBlock</span><span class="p">(</span><span class="n">hf_arch</span><span class="o">=</span><span class="n">hf_arch</span><span class="p">,</span> <span class="n">hf_tokenizer</span><span class="o">=</span><span class="n">hf_tokenizer</span><span class="p">,</span> <span class="n">padding</span><span class="o">=</span><span class="s1">&#39;max_length&#39;</span><span class="p">,</span> <span class="n">max_length</span><span class="o">=</span><span class="n">seq_sz</span><span class="p">),</span> 
+        <span class="n">HF_TextBlock</span><span class="p">(</span><span class="n">hf_arch</span><span class="p">,</span> <span class="n">hf_config</span><span class="p">,</span> <span class="n">hf_tokenizer</span><span class="p">,</span> <span class="n">hf_model</span><span class="p">,</span> <span class="n">padding</span><span class="o">=</span><span class="s1">&#39;max_length&#39;</span><span class="p">,</span> <span class="n">max_length</span><span class="o">=</span><span class="n">seq_sz</span><span class="p">),</span> 
         <span class="n">CategoryBlock</span>
     <span class="p">)</span>
 
-    <span class="n">dblock</span> <span class="o">=</span> <span class="n">DataBlock</span><span class="p">(</span><span class="n">blocks</span><span class="o">=</span><span class="n">blocks</span><span class="p">,</span> 
-                       <span class="n">get_x</span><span class="o">=</span><span class="n">ColReader</span><span class="p">(</span><span class="s1">&#39;text&#39;</span><span class="p">),</span> 
-                       <span class="n">get_y</span><span class="o">=</span><span class="n">ColReader</span><span class="p">(</span><span class="s1">&#39;label&#39;</span><span class="p">),</span> 
-                       <span class="n">splitter</span><span class="o">=</span><span class="n">ColSplitter</span><span class="p">(</span><span class="n">col</span><span class="o">=</span><span class="s1">&#39;is_valid&#39;</span><span class="p">))</span>
-    
+    <span class="n">dblock</span> <span class="o">=</span> <span class="n">DataBlock</span><span class="p">(</span><span class="n">blocks</span><span class="o">=</span><span class="n">blocks</span><span class="p">,</span> <span class="n">get_x</span><span class="o">=</span><span class="n">ColReader</span><span class="p">(</span><span class="s1">&#39;text&#39;</span><span class="p">),</span> <span class="n">get_y</span><span class="o">=</span><span class="n">ColReader</span><span class="p">(</span><span class="s1">&#39;label&#39;</span><span class="p">),</span> <span class="n">splitter</span><span class="o">=</span><span class="n">ColSplitter</span><span class="p">())</span>
     <span class="n">dls</span> <span class="o">=</span> <span class="n">dblock</span><span class="o">.</span><span class="n">dataloaders</span><span class="p">(</span><span class="n">imdb_df</span><span class="p">,</span> <span class="n">bs</span><span class="o">=</span><span class="n">bsz</span><span class="p">)</span> 
     <span class="n">b</span> <span class="o">=</span> <span class="n">dls</span><span class="o">.</span><span class="n">one_batch</span><span class="p">()</span>
     

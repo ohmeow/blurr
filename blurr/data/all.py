@@ -2,6 +2,7 @@ from ..utils import *
 from .core import *
 from .question_answering import *
 from .token_classification import *
-from .text2text.core import *
-from .text2text.language_modeling import *
-from .text2text.summarization import *
+from .seq2seq.core import *
+from .seq2seq.language_modeling import *
+from .seq2seq.summarization import *
+from .seq2seq.translation import *
