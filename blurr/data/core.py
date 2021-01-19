@@ -110,7 +110,7 @@ class HF_TextBlock(TransformBlock):
 
 # Cell
 def get_blurr_tfm(tfms_list, tfm_class=HF_BeforeBatchTransform):
-    return next(filter(lambda el: isinstance(el, tfm_class), tfms_list), None)
+    return next(filter(lambda el: issubclass(type(el), tfm_class), tfms_list), None)
 
 # Cell
 @typedispatch

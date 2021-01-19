@@ -193,9 +193,3 @@ def _blurr_predict_tokens(predict_func, items, hf_before_batch_tfm):
 def blurr_predict_tokens(self:Learner, items, **kargs):
     hf_before_batch_tfm = get_blurr_tfm(self.dls.before_batch)
     return _blurr_predict_tokens(self.blurr_predict, items, hf_before_batch_tfm)
-
-# Cell
-@patch
-def predict_tokens(self:blurrONNX, items, **kargs):
-    hf_before_batch_tfm = get_blurr_tfm(self.dls.before_batch)
-    return _blurr_predict_tokens(self.predict, items, hf_before_batch_tfm)

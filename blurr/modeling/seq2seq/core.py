@@ -22,12 +22,13 @@ nltk.download('wordnet')
 logging.set_verbosity_error()
 
 # Cell
+import pdb
 class HF_Seq2SeqMetricsCallback(Callback):
     def __init__(self, custom_metrics=None, ignore_token_id=CrossEntropyLossFlat().ignore_index,
                  text_gen_kwargs={}, **kwargs):
 
         super().__init__(**kwargs)
-        self.run_before = Recorder
+        self.order = Recorder.order-1
 
         store_attr(self=self, names='custom_metrics, ignore_token_id, text_gen_kwargs, kwargs')
         self.custom_metric_funcs, self.custom_metric_vals = {}, {}
@@ -153,7 +154,7 @@ def seq2seq_splitter(m, arch):
     """Custom param splitter for summarization models"""
     model = m.hf_model if (hasattr(m, 'hf_model')) else m
 
-    if arch in ['bart', 'blenderbot', 'fsmt', 'marian', 'mbart', 'pegasus']:
+    if arch in ['bart', 'blenderbot', 'blenderbot_small', 'fsmt', 'marian', 'mbart', 'pegasus']:
         embeds_modules = [
             model.model.encoder.embed_positions,
             model.model.encoder.embed_tokens,
@@ -164,6 +165,18 @@ def seq2seq_splitter(m, arch):
 
         embeds = nn.Sequential(*embeds_modules)
         groups = L(embeds, model.model.encoder, model.model.decoder)
+        return groups.map(params).filter(lambda el: len(el) > 0)
+
+    if arch in['led']:
+        embeds_modules = [
+            model.led.encoder.embed_positions,
+            model.led.encoder.embed_tokens,
+            model.led.decoder.embed_positions,
+            model.led.decoder.embed_tokens
+        ]
+
+        embeds = nn.Sequential(*embeds_modules)
+        groups = L(embeds, model.led.encoder, model.led.decoder)
         return groups.map(params).filter(lambda el: len(el) > 0)
 
     if arch in['mt5', 't5']:
