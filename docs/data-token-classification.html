@@ -208,6 +208,7 @@ nb_path: "nbs/01a_data-token-classification.ipynb"
 <div class="output_markdown rendered_html output_subarea ">
 <h2 id="HF_TokenTensorCategory" class="doc_header"><code>class</code> <code>HF_TokenTensorCategory</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/data/token_classification.py#L20" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>HF_TokenTensorCategory</code>(<strong><code>x</code></strong>, <strong>**<code>kwargs</code></strong>) :: <code>TensorBase</code></p>
 </blockquote>
+<p>A <code>Tensor</code> which support subclass pickling, and maintains metadata when casting or after methods</p>
 
 </div>
 
@@ -317,6 +318,7 @@ nb_path: "nbs/01a_data-token-classification.ipynb"
 <div class="output_markdown rendered_html output_subarea ">
 <h2 id="HF_TokenClassInput" class="doc_header"><code>class</code> <code>HF_TokenClassInput</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/data/token_classification.py#L52" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>HF_TokenClassInput</code>(<strong><code>x</code></strong>, <strong>**<code>kwargs</code></strong>) :: <a href="/blurr/data-core.html#HF_BaseInput"><code>HF_BaseInput</code></a></p>
 </blockquote>
+<p>A <code>Tensor</code> which support subclass pickling, and maintains metadata when casting or after methods</p>
 
 </div>
 
@@ -484,7 +486,7 @@ decode the dictionary produced as a byproduct of the tokenization process in the
 
 
 <div class="output_text output_subarea output_execute_result">
-<pre>(2, torch.Size([4, 98]), torch.Size([4, 98]))</pre>
+<pre>(2, torch.Size([4, 100]), torch.Size([4, 100]))</pre>
 </div>
 
 </div>
@@ -537,7 +539,7 @@ decode the dictionary produced as a byproduct of the tokenization process in the
     </tr>
     <tr>
       <th>1</th>
-      <td>[('NEWSru.ua', 'B-OTH'), ('/', 'O'), (':', 'O'), ('Политисполком', 'B-OTH'), ('СПУ', 'I-OTH'), ('отказал', 'I-OTH'), ('Морозу', 'I-OTH'), ('в', 'I-OTH'), ('отставке', 'I-OTH'), ('Die', 'O')]</td>
+      <td>[('Außerdem', 'O'), ('befindet', 'O'), ('sich', 'O'), ('im', 'O'), ('Nordwesten', 'O'), ('der', 'O'), ('Stadt', 'O'), ('(', 'O'), ('auf', 'O'), ('dem', 'O')]</td>
     </tr>
   </tbody>
 </table>
@@ -566,7 +568,8 @@ decode the dictionary produced as a byproduct of the tokenization process in the
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">BLURR_MODEL_HELPER</span><span class="o">.</span><span class="n">get_models</span><span class="p">(</span><span class="n">task</span><span class="o">=</span><span class="s1">&#39;TokenClassification&#39;</span><span class="p">)</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="p">[</span> <span class="n">model_type</span> <span class="k">for</span> <span class="n">model_type</span> <span class="ow">in</span> <span class="n">BLURR_MODEL_HELPER</span><span class="o">.</span><span class="n">get_models</span><span class="p">(</span><span class="n">task</span><span class="o">=</span><span class="s1">&#39;TokenClassification&#39;</span><span class="p">)</span> 
+ <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="n">model_type</span><span class="o">.</span><span class="vm">__name__</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;TF&#39;</span><span class="p">))</span> <span class="p">]</span>
 </pre></div>
 
     </div>
@@ -595,21 +598,6 @@ decode the dictionary produced as a byproduct of the tokenization process in the
  transformers.models.mobilebert.modeling_mobilebert.MobileBertForTokenClassification,
  transformers.models.roberta.modeling_roberta.RobertaForTokenClassification,
  transformers.models.squeezebert.modeling_squeezebert.SqueezeBertForTokenClassification,
- transformers.models.albert.modeling_tf_albert.TFAlbertForTokenClassification,
- transformers.models.auto.modeling_tf_auto.TFAutoModelForTokenClassification,
- transformers.models.bert.modeling_tf_bert.TFBertForTokenClassification,
- transformers.models.camembert.modeling_tf_camembert.TFCamembertForTokenClassification,
- transformers.models.distilbert.modeling_tf_distilbert.TFDistilBertForTokenClassification,
- transformers.models.electra.modeling_tf_electra.TFElectraForTokenClassification,
- transformers.models.flaubert.modeling_tf_flaubert.TFFlaubertForTokenClassification,
- transformers.models.funnel.modeling_tf_funnel.TFFunnelForTokenClassification,
- transformers.models.longformer.modeling_tf_longformer.TFLongformerForTokenClassification,
- transformers.models.mpnet.modeling_tf_mpnet.TFMPNetForTokenClassification,
- transformers.models.mobilebert.modeling_tf_mobilebert.TFMobileBertForTokenClassification,
- transformers.models.roberta.modeling_tf_roberta.TFRobertaForTokenClassification,
- transformers.models.xlm.modeling_tf_xlm.TFXLMForTokenClassification,
- transformers.models.xlm_roberta.modeling_tf_xlm_roberta.TFXLMRobertaForTokenClassification,
- transformers.models.xlnet.modeling_tf_xlnet.TFXLNetForTokenClassification,
  transformers.models.xlm.modeling_xlm.XLMForTokenClassification,
  transformers.models.xlm_roberta.modeling_xlm_roberta.XLMRobertaForTokenClassification,
  transformers.models.xlnet.modeling_xlnet.XLNetForTokenClassification]</pre>
@@ -636,9 +624,13 @@ decode the dictionary produced as a byproduct of the tokenization process in the
     <span class="s1">&#39;camembert-base&#39;</span><span class="p">,</span>
     <span class="s1">&#39;distilbert-base-uncased&#39;</span><span class="p">,</span>
     <span class="s1">&#39;monologg/electra-small-finetuned-imdb&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;flaubert/flaubert_small_cased&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;huggingface/funnel-small-base&#39;</span><span class="p">,</span>
     <span class="s1">&#39;allenai/longformer-base-4096&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;microsoft/mpnet-base&#39;</span><span class="p">,</span>
     <span class="s1">&#39;google/mobilebert-uncased&#39;</span><span class="p">,</span>
     <span class="s1">&#39;roberta-base&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;squeezebert/squeezebert-uncased&#39;</span><span class="p">,</span>
     <span class="s1">&#39;xlm-mlm-en-2048&#39;</span><span class="p">,</span>
     <span class="s1">&#39;xlm-roberta-base&#39;</span><span class="p">,</span>
     <span class="s1">&#39;xlnet-base-cased&#39;</span>
@@ -672,6 +664,12 @@ decode the dictionary produced as a byproduct of the tokenization process in the
     
     <span class="n">hf_arch</span><span class="p">,</span> <span class="n">hf_config</span><span class="p">,</span> <span class="n">hf_tokenizer</span><span class="p">,</span> <span class="n">hf_model</span> <span class="o">=</span> <span class="n">BLURR_MODEL_HELPER</span><span class="o">.</span><span class="n">get_hf_objects</span><span class="p">(</span><span class="n">model_name</span><span class="p">,</span> <span class="n">task</span><span class="o">=</span><span class="n">task</span><span class="p">)</span>
     <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;architecture:</span><span class="se">\t</span><span class="si">{</span><span class="n">hf_arch</span><span class="si">}</span><span class="se">\n</span><span class="s1">tokenizer:</span><span class="se">\t</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">hf_tokenizer</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+    
+    <span class="c1"># not all architectures include a native pad_token (e.g., gpt2, ctrl, etc...), so we add one here</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">hf_tokenizer</span><span class="o">.</span><span class="n">pad_token</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">):</span> 
+        <span class="n">hf_tokenizer</span><span class="o">.</span><span class="n">add_special_tokens</span><span class="p">({</span><span class="s1">&#39;pad_token&#39;</span><span class="p">:</span> <span class="s1">&#39;&lt;pad&gt;&#39;</span><span class="p">})</span>  
+        <span class="n">hf_config</span><span class="o">.</span><span class="n">pad_token_id</span> <span class="o">=</span> <span class="n">hf_tokenizer</span><span class="o">.</span><span class="n">get_vocab</span><span class="p">()[</span><span class="s1">&#39;&lt;pad&gt;&#39;</span><span class="p">]</span>
+        <span class="n">hf_model</span><span class="o">.</span><span class="n">resize_token_embeddings</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">hf_tokenizer</span><span class="p">))</span>   
     
     <span class="n">before_batch_tfm</span> <span class="o">=</span> <span class="n">HF_TokenClassBeforeBatchTransform</span><span class="p">(</span><span class="n">hf_arch</span><span class="p">,</span> <span class="n">hf_config</span><span class="p">,</span> <span class="n">hf_tokenizer</span><span class="p">,</span> <span class="n">hf_model</span><span class="p">,</span>
                                                          <span class="n">padding</span><span class="o">=</span><span class="s1">&#39;max_length&#39;</span><span class="p">,</span> 
@@ -782,6 +780,22 @@ decode the dictionary produced as a byproduct of the tokenization process in the
     </tr>
     <tr>
       <th>5</th>
+      <td>flaubert</td>
+      <td>FlaubertTokenizer</td>
+      <td>flaubert/flaubert_small_cased</td>
+      <td>PASSED</td>
+      <td></td>
+    </tr>
+    <tr>
+      <th>6</th>
+      <td>funnel</td>
+      <td>FunnelTokenizerFast</td>
+      <td>huggingface/funnel-small-base</td>
+      <td>PASSED</td>
+      <td></td>
+    </tr>
+    <tr>
+      <th>7</th>
       <td>longformer</td>
       <td>LongformerTokenizerFast</td>
       <td>allenai/longformer-base-4096</td>
@@ -789,7 +803,15 @@ decode the dictionary produced as a byproduct of the tokenization process in the
       <td></td>
     </tr>
     <tr>
-      <th>6</th>
+      <th>8</th>
+      <td>mpnet</td>
+      <td>MPNetTokenizerFast</td>
+      <td>microsoft/mpnet-base</td>
+      <td>PASSED</td>
+      <td></td>
+    </tr>
+    <tr>
+      <th>9</th>
       <td>mobilebert</td>
       <td>MobileBertTokenizerFast</td>
       <td>google/mobilebert-uncased</td>
@@ -797,7 +819,7 @@ decode the dictionary produced as a byproduct of the tokenization process in the
       <td></td>
     </tr>
     <tr>
-      <th>7</th>
+      <th>10</th>
       <td>roberta</td>
       <td>RobertaTokenizerFast</td>
       <td>roberta-base</td>
@@ -805,7 +827,15 @@ decode the dictionary produced as a byproduct of the tokenization process in the
       <td></td>
     </tr>
     <tr>
-      <th>8</th>
+      <th>11</th>
+      <td>squeezebert</td>
+      <td>SqueezeBertTokenizerFast</td>
+      <td>squeezebert/squeezebert-uncased</td>
+      <td>PASSED</td>
+      <td></td>
+    </tr>
+    <tr>
+      <th>12</th>
       <td>xlm</td>
       <td>XLMTokenizer</td>
       <td>xlm-mlm-en-2048</td>
@@ -813,7 +843,7 @@ decode the dictionary produced as a byproduct of the tokenization process in the
       <td></td>
     </tr>
     <tr>
-      <th>9</th>
+      <th>13</th>
       <td>xlm_roberta</td>
       <td>XLMRobertaTokenizerFast</td>
       <td>xlm-roberta-base</td>
@@ -821,7 +851,7 @@ decode the dictionary produced as a byproduct of the tokenization process in the
       <td></td>
     </tr>
     <tr>
-      <th>10</th>
+      <th>14</th>
       <td>xlnet</td>
       <td>XLNetTokenizerFast</td>
       <td>xlnet-base-cased</td>

@@ -363,7 +363,7 @@ nb_path: "nbs/01zd_data-seq2seq-translation.ipynb"
 
 
 <div class="output_text output_subarea output_execute_result">
-<pre>(2, torch.Size([4, 483]), torch.Size([4, 132]))</pre>
+<pre>(2, torch.Size([4, 483]), torch.Size([4, 124]))</pre>
 </div>
 
 </div>
@@ -411,8 +411,8 @@ nb_path: "nbs/01zd_data-seq2seq-translation.ipynb"
     </tr>
     <tr>
       <th>1</th>
-      <td>Dienlich sind in diesem Zusammenhang die heute und hier diskutierte Mitteilung der Kommission und natürlich der Bericht von Herrn Viceconte - zu dem ich ihn beglückwünsche -, der 34 Schlußfolgerungen enthält, von denen ich die 15 Anträge an die Komm</td>
-      <td>This report contains 34 conclusions, including 15 calls to the Commission to adopt specific measures and actions without forgetting the environmental dimension and cultural protection, particularly in outermost and island regions. It also contains f</td>
+      <td>Herr Präsident, ich danke Herrn Sylla dafür, daß er die beiden genannten Änderungsanträge zurückgezogen hat, möchte ihn aber fragen, ob er nicht meint, daß in Änderungsantrag 54 der Teil des ersten Satzes, der nicht verändert wurde und der auf Engli</td>
+      <td>But I wanted to ask him whether he does not think the same problem could arise with the part of the first sentence of Amendment 54 that has not been changed and which, in the English version I have before me, reads: "stresses that the EU must collec</td>
     </tr>
   </tbody>
 </table>
@@ -441,7 +441,8 @@ nb_path: "nbs/01zd_data-seq2seq-translation.ipynb"
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">BLURR_MODEL_HELPER</span><span class="o">.</span><span class="n">get_models</span><span class="p">(</span><span class="n">task</span><span class="o">=</span><span class="s1">&#39;ConditionalGeneration&#39;</span><span class="p">)</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="p">[</span> <span class="n">model_type</span> <span class="k">for</span> <span class="n">model_type</span> <span class="ow">in</span> <span class="n">BLURR_MODEL_HELPER</span><span class="o">.</span><span class="n">get_models</span><span class="p">(</span><span class="n">task</span><span class="o">=</span><span class="s1">&#39;ConditionalGeneration&#39;</span><span class="p">)</span> 
+ <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="n">model_type</span><span class="o">.</span><span class="vm">__name__</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;TF&#39;</span><span class="p">))</span> <span class="p">]</span>
 </pre></div>
 
     </div>
@@ -458,18 +459,14 @@ nb_path: "nbs/01zd_data-seq2seq-translation.ipynb"
 <div class="output_text output_subarea output_execute_result">
 <pre>[transformers.models.bart.modeling_bart.BartForConditionalGeneration,
  transformers.models.blenderbot.modeling_blenderbot.BlenderbotForConditionalGeneration,
+ transformers.models.blenderbot_small.modeling_blenderbot_small.BlenderbotSmallForConditionalGeneration,
  transformers.models.fsmt.modeling_fsmt.FSMTForConditionalGeneration,
+ transformers.models.led.modeling_led.LEDForConditionalGeneration,
  transformers.models.mbart.modeling_mbart.MBartForConditionalGeneration,
  transformers.models.mt5.modeling_mt5.MT5ForConditionalGeneration,
  transformers.models.pegasus.modeling_pegasus.PegasusForConditionalGeneration,
  transformers.models.prophetnet.modeling_prophetnet.ProphetNetForConditionalGeneration,
  transformers.models.t5.modeling_t5.T5ForConditionalGeneration,
- transformers.models.bart.modeling_tf_bart.TFBartForConditionalGeneration,
- transformers.models.blenderbot.modeling_tf_blenderbot.TFBlenderbotForConditionalGeneration,
- transformers.models.mbart.modeling_tf_mbart.TFMBartForConditionalGeneration,
- transformers.models.mt5.modeling_tf_mt5.TFMT5ForConditionalGeneration,
- transformers.models.pegasus.modeling_tf_pegasus.TFPegasusForConditionalGeneration,
- transformers.models.t5.modeling_tf_t5.TFT5ForConditionalGeneration,
  transformers.models.xlm_prophetnet.modeling_xlm_prophetnet.XLMProphetNetForConditionalGeneration]</pre>
 </div>
 
@@ -545,6 +542,11 @@ nb_path: "nbs/01zd_data-seq2seq-translation.ipynb"
     <span class="n">hf_arch</span><span class="p">,</span> <span class="n">hf_config</span><span class="p">,</span> <span class="n">hf_tokenizer</span><span class="p">,</span> <span class="n">hf_model</span> <span class="o">=</span> <span class="n">BLURR_MODEL_HELPER</span><span class="o">.</span><span class="n">get_hf_objects</span><span class="p">(</span><span class="n">model_name</span><span class="p">,</span> <span class="n">task</span><span class="o">=</span><span class="n">task</span><span class="p">)</span>
     <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;architecture:</span><span class="se">\t</span><span class="si">{</span><span class="n">hf_arch</span><span class="si">}</span><span class="se">\n</span><span class="s1">tokenizer:</span><span class="se">\t</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">hf_tokenizer</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
     
+    <span class="c1"># not all architectures include a native pad_token (e.g., gpt2, ctrl, etc...), so we add one here</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">hf_tokenizer</span><span class="o">.</span><span class="n">pad_token</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">):</span> 
+        <span class="n">hf_tokenizer</span><span class="o">.</span><span class="n">add_special_tokens</span><span class="p">({</span><span class="s1">&#39;pad_token&#39;</span><span class="p">:</span> <span class="s1">&#39;&lt;pad&gt;&#39;</span><span class="p">})</span>  
+        <span class="n">hf_config</span><span class="o">.</span><span class="n">pad_token_id</span> <span class="o">=</span> <span class="n">hf_tokenizer</span><span class="o">.</span><span class="n">get_vocab</span><span class="p">()[</span><span class="s1">&#39;&lt;pad&gt;&#39;</span><span class="p">]</span>
+        <span class="n">hf_model</span><span class="o">.</span><span class="n">resize_token_embeddings</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">hf_tokenizer</span><span class="p">))</span> 
     
     <span class="n">before_batch_tfm</span> <span class="o">=</span> <span class="n">HF_Seq2SeqBeforeBatchTransform</span><span class="p">(</span><span class="n">hf_arch</span><span class="p">,</span> <span class="n">hf_config</span><span class="p">,</span> <span class="n">hf_tokenizer</span><span class="p">,</span> <span class="n">hf_model</span><span class="p">,</span>
                                                       <span class="n">padding</span><span class="o">=</span><span class="s1">&#39;max_length&#39;</span><span class="p">,</span> 

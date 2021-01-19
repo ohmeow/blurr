@@ -339,7 +339,7 @@ nb_path: "nbs/01zc_data-seq2seq-summarization.ipynb"
 
 
 <div class="output_text output_subarea output_execute_result">
-<pre>(2, torch.Size([4, 1024]), torch.Size([4, 84]), torch.Size([4, 84]))</pre>
+<pre>(2, torch.Size([4, 1024]), torch.Size([4, 79]), torch.Size([4, 79]))</pre>
 </div>
 
 </div>
@@ -382,13 +382,13 @@ nb_path: "nbs/01zc_data-seq2seq-summarization.ipynb"
   <tbody>
     <tr>
       <th>0</th>
-      <td>(CNN) -- Home to up to 10 percent of all known species, Mexico is recognized as one of the most biodiverse regions on the planet. The twin threats of climate change and human encroachment on natural environments are, however, threatening the existence of the country's rich wildlife. And there is a great deal to lose. In the United Nations Environment Program (UNEP) World Conservation Monitoring Centre's list of megadiverse countries Mexico ranks 11th. The list represents a group of 17 countries that harbor the majority of the Earth's species and are therefore considered extremely biodiverse. From its coral reefs in the Caribbean Sea to its tropical jungles in Chiapas and the Yucatan peninsula and its deserts and prairies in the north, Mexico boasts an incredibly rich variety of flora and fauna. Some 574 out of 717 reptile species found in Mexico -- the most in any country -- can only be encountered within its borders. It is home to 502 types of mammals, 290 species of birds, 1,150 var</td>
-      <td>Mexico hosts to up to 10 percent of all known species on Earth.\nIt is home to 502 types of mammals, 290 bird species and 26,000 types of plants.\nHuman development and climate change is placing a big strain on its biodiversity.\nThe Golden Eagle is un</td>
+      <td>Dan Condon believes in recycling. Just not when it comes to his hotel towels. Condon composts when he's at home in Boulder, Colorado. He eats local, organic and fair-trade food and drives a Honda CR-Z hybrid sports car. You might call him green. Except he's not so green when he travels for his work at an education nonprofit and stays in a hotel, which happens about 10 weeks per year. There, he uses a new towel every day. And don't try to bribe him with a drink or dessert coupon to get him to reuse the same one. "I could care less about rewards for environmentally conscious behavior unless it's miles," Condon wrote in an e-mail. If hotels can't convince a hybrid-driving recycling enthusiast like Condon to go green while traveling, how can they possibly convince everyone else? 9 glamorous movie-star hotels. That's the problem of hotels trying to "green" your hotel stay. After guests have paid a pretty penny for a night at the inn, even the most environmental guests may want to treat the</td>
+      <td>Hotel guests who "go green" are happier with their stay.\nIncreasing water and energy costs are pushing hotels to cut costs wherever they can.\nMany hotels find that guests don't mind using the same towels and sheets every night.\nTripAdvisor will be a</td>
     </tr>
     <tr>
       <th>1</th>
-      <td>(CNN) -- Two weeks. Two gut-wrenching, frustrating, mysterious weeks. That's how long it's been since 227 passengers and 12 crew members boarded Malaysia Airlines Flight 370, destined for Beijing. A routine trip, it seemed, to catch up relatives in time for the weekend, start on a work assignment or just get away. Where they got to, still unknown. An exhaustive search -- covering a mind-boggling 2.97 million square miles, which is nearly the size of the continental United States -- has yielded some clues, but no proof of where the Boeing 777 is or definitively what happened to it. The latest, most notable lead revolved around two large objects detected by satellite Sunday floating on waters over 1,400 miles off of Australia's west coast. The first of several Australian military planes, as well as two long-range commercial jets, resumed their search Saturday morning to find any trace of the objects, amid some skepticism that they or ships in the area ever will and, if they do, that wha</td>
-      <td>NEW: Planes depart Australia to resume their search for airplane debris.\nNEW: Official: Passengers' relatives are moved to a different Kuala Lumpur hotel.\nObjects seen on satellite spark intensive search in southern Indian Ocean.\nU.S. officials: Fil</td>
+      <td>(CNN Student News) -- October 27, 2009. Downloadable Maps. Download PDF maps related to today's show:  • Afghanistan &amp; Pakistan • Los Angeles &amp; San Diego • Ft. Jackson, South Carolina. Transcript. THIS IS A RUSH TRANSCRIPT. THIS COPY MAY NOT BE IN ITS FINAL FORM AND MAY BE UPDATED. NATISHA LANCE, CNN STUDENT NEWS ANCHOR: A member of the military is making history. We'll explain how in today's edition of CNN Student News. Hi, everyone. Carl Azuz is off this week. I'm Natisha Lance. First Up: Afghan Crashes. LANCE: First up, Pakistan and Afghanistan. The countries share a border, and they also share a common problem: threats from militant groups and terrorists like the Taliban and al Qaeda. It's an issue facing both nations' governments, and one that the U.S. government is concerned about as well. That's why President Obama has been holding a series of meetings with some of his advisers. They're reviewing the U.S. strategy in Afghanistan and Pakistan. Samantha Hayes has the latest on th</td>
+      <td>Consider U.S. efforts to offer Afghan citizens an alternative to the Taliban.\nHear how a proposed health care bill addresses the issue of the public option.\nMeet a soldier who is making history at the U.S. Army Drill Sergeant School.\nUse the Daily D</td>
     </tr>
   </tbody>
 </table>
@@ -417,7 +417,8 @@ nb_path: "nbs/01zc_data-seq2seq-summarization.ipynb"
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">BLURR_MODEL_HELPER</span><span class="o">.</span><span class="n">get_models</span><span class="p">(</span><span class="n">task</span><span class="o">=</span><span class="s1">&#39;ConditionalGeneration&#39;</span><span class="p">)</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="p">[</span> <span class="n">model_type</span> <span class="k">for</span> <span class="n">model_type</span> <span class="ow">in</span> <span class="n">BLURR_MODEL_HELPER</span><span class="o">.</span><span class="n">get_models</span><span class="p">(</span><span class="n">task</span><span class="o">=</span><span class="s1">&#39;ConditionalGeneration&#39;</span><span class="p">)</span> 
+ <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="n">model_type</span><span class="o">.</span><span class="vm">__name__</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;TF&#39;</span><span class="p">))</span> <span class="p">]</span>
 </pre></div>
 
     </div>
@@ -434,18 +435,14 @@ nb_path: "nbs/01zc_data-seq2seq-summarization.ipynb"
 <div class="output_text output_subarea output_execute_result">
 <pre>[transformers.models.bart.modeling_bart.BartForConditionalGeneration,
  transformers.models.blenderbot.modeling_blenderbot.BlenderbotForConditionalGeneration,
+ transformers.models.blenderbot_small.modeling_blenderbot_small.BlenderbotSmallForConditionalGeneration,
  transformers.models.fsmt.modeling_fsmt.FSMTForConditionalGeneration,
+ transformers.models.led.modeling_led.LEDForConditionalGeneration,
  transformers.models.mbart.modeling_mbart.MBartForConditionalGeneration,
  transformers.models.mt5.modeling_mt5.MT5ForConditionalGeneration,
  transformers.models.pegasus.modeling_pegasus.PegasusForConditionalGeneration,
  transformers.models.prophetnet.modeling_prophetnet.ProphetNetForConditionalGeneration,
  transformers.models.t5.modeling_t5.T5ForConditionalGeneration,
- transformers.models.bart.modeling_tf_bart.TFBartForConditionalGeneration,
- transformers.models.blenderbot.modeling_tf_blenderbot.TFBlenderbotForConditionalGeneration,
- transformers.models.mbart.modeling_tf_mbart.TFMBartForConditionalGeneration,
- transformers.models.mt5.modeling_tf_mt5.TFMT5ForConditionalGeneration,
- transformers.models.pegasus.modeling_tf_pegasus.TFPegasusForConditionalGeneration,
- transformers.models.t5.modeling_tf_t5.TFT5ForConditionalGeneration,
  transformers.models.xlm_prophetnet.modeling_xlm_prophetnet.XLMProphetNetForConditionalGeneration]</pre>
 </div>
 
@@ -466,9 +463,8 @@ nb_path: "nbs/01zc_data-seq2seq-summarization.ipynb"
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">pretrained_model_names</span> <span class="o">=</span> <span class="p">[</span>
     <span class="s1">&#39;facebook/bart-base&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;facebook/blenderbot-90M&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;facebook/wmt19-de-en&#39;</span><span class="p">,</span>                      <span class="c1"># FSMT</span>
-    <span class="s1">&#39;sshleifer/tiny-mbart&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;facebook/blenderbot_small-90M&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;allenai/led-base-16384&#39;</span><span class="p">,</span>
     <span class="s1">&#39;google/mt5-small&#39;</span><span class="p">,</span>
     <span class="s1">&#39;google/pegasus-cnn_dailymail&#39;</span><span class="p">,</span>
     <span class="s1">&#39;t5-small&#39;</span><span class="p">,</span> 
@@ -524,6 +520,12 @@ nb_path: "nbs/01zc_data-seq2seq-summarization.ipynb"
     <span class="n">hf_arch</span><span class="p">,</span> <span class="n">hf_config</span><span class="p">,</span> <span class="n">hf_tokenizer</span><span class="p">,</span> <span class="n">hf_model</span> <span class="o">=</span> <span class="n">BLURR_MODEL_HELPER</span><span class="o">.</span><span class="n">get_hf_objects</span><span class="p">(</span><span class="n">model_name</span><span class="p">,</span> <span class="n">task</span><span class="o">=</span><span class="n">task</span><span class="p">)</span>
     <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;architecture:</span><span class="se">\t</span><span class="si">{</span><span class="n">hf_arch</span><span class="si">}</span><span class="se">\n</span><span class="s1">tokenizer:</span><span class="se">\t</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">hf_tokenizer</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
     
+    <span class="c1"># not all architectures include a native pad_token (e.g., gpt2, ctrl, etc...), so we add one here</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">hf_tokenizer</span><span class="o">.</span><span class="n">pad_token</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">):</span> 
+        <span class="n">hf_tokenizer</span><span class="o">.</span><span class="n">add_special_tokens</span><span class="p">({</span><span class="s1">&#39;pad_token&#39;</span><span class="p">:</span> <span class="s1">&#39;&lt;pad&gt;&#39;</span><span class="p">})</span>  
+        <span class="n">hf_config</span><span class="o">.</span><span class="n">pad_token_id</span> <span class="o">=</span> <span class="n">hf_tokenizer</span><span class="o">.</span><span class="n">get_vocab</span><span class="p">()[</span><span class="s1">&#39;&lt;pad&gt;&#39;</span><span class="p">]</span>
+        <span class="n">hf_model</span><span class="o">.</span><span class="n">resize_token_embeddings</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">hf_tokenizer</span><span class="p">))</span>   
+    
     <span class="n">before_batch_tfm</span> <span class="o">=</span> <span class="n">HF_Seq2SeqBeforeBatchTransform</span><span class="p">(</span><span class="n">hf_arch</span><span class="p">,</span> <span class="n">hf_config</span><span class="p">,</span> <span class="n">hf_tokenizer</span><span class="p">,</span> <span class="n">hf_model</span><span class="p">,</span>
                                                       <span class="n">padding</span><span class="o">=</span><span class="s1">&#39;max_length&#39;</span><span class="p">,</span> 
                                                       <span class="n">max_length</span><span class="o">=</span><span class="n">seq_sz</span><span class="p">,</span> 
@@ -548,7 +550,7 @@ nb_path: "nbs/01zc_data-seq2seq-summarization.ipynb"
         <span class="n">test_eq</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">b</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span> <span class="n">bsz</span><span class="p">)</span>
         <span class="n">test_eq</span><span class="p">(</span><span class="n">b</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Size</span><span class="p">([</span><span class="n">bsz</span><span class="p">,</span> <span class="n">trg_seq_sz</span><span class="p">]))</span>
 
-        <span class="k">if</span> <span class="p">(</span><span class="nb">hasattr</span><span class="p">(</span><span class="n">hf_tokenizer</span><span class="p">,</span> <span class="s1">&#39;add_prefix_space&#39;</span><span class="p">)):</span>
+        <span class="k">if</span> <span class="p">(</span><span class="nb">hasattr</span><span class="p">(</span><span class="n">hf_tokenizer</span><span class="p">,</span> <span class="s1">&#39;add_prefix_space&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">hf_arch</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;led&#39;</span><span class="p">]):</span>
              <span class="n">test_eq</span><span class="p">(</span><span class="n">hf_tokenizer</span><span class="o">.</span><span class="n">add_prefix_space</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
             
         <span class="n">test_results</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">hf_arch</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">hf_tokenizer</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="n">model_name</span><span class="p">,</span> <span class="s1">&#39;PASSED&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">))</span>
@@ -598,30 +600,22 @@ nb_path: "nbs/01zc_data-seq2seq-summarization.ipynb"
     </tr>
     <tr>
       <th>1</th>
-      <td>blenderbot</td>
+      <td>blenderbot_small</td>
       <td>BlenderbotSmallTokenizer</td>
-      <td>facebook/blenderbot-90M</td>
+      <td>facebook/blenderbot_small-90M</td>
       <td>PASSED</td>
       <td></td>
     </tr>
     <tr>
       <th>2</th>
-      <td>fsmt</td>
-      <td>FSMTTokenizer</td>
-      <td>facebook/wmt19-de-en</td>
+      <td>led</td>
+      <td>LEDTokenizerFast</td>
+      <td>allenai/led-base-16384</td>
       <td>PASSED</td>
       <td></td>
     </tr>
     <tr>
       <th>3</th>
-      <td>mbart</td>
-      <td>MBartTokenizerFast</td>
-      <td>sshleifer/tiny-mbart</td>
-      <td>PASSED</td>
-      <td></td>
-    </tr>
-    <tr>
-      <th>4</th>
       <td>mt5</td>
       <td>T5TokenizerFast</td>
       <td>google/mt5-small</td>
@@ -629,7 +623,7 @@ nb_path: "nbs/01zc_data-seq2seq-summarization.ipynb"
       <td></td>
     </tr>
     <tr>
-      <th>5</th>
+      <th>4</th>
       <td>pegasus</td>
       <td>PegasusTokenizerFast</td>
       <td>google/pegasus-cnn_dailymail</td>
@@ -637,7 +631,7 @@ nb_path: "nbs/01zc_data-seq2seq-summarization.ipynb"
       <td></td>
     </tr>
     <tr>
-      <th>6</th>
+      <th>5</th>
       <td>t5</td>
       <td>T5TokenizerFast</td>
       <td>t5-small</td>
@@ -645,7 +639,7 @@ nb_path: "nbs/01zc_data-seq2seq-summarization.ipynb"
       <td></td>
     </tr>
     <tr>
-      <th>7</th>
+      <th>6</th>
       <td>prophetnet</td>
       <td>ProphetNetTokenizer</td>
       <td>microsoft/prophetnet-large-uncased</td>
@@ -653,7 +647,7 @@ nb_path: "nbs/01zc_data-seq2seq-summarization.ipynb"
       <td></td>
     </tr>
     <tr>
-      <th>8</th>
+      <th>7</th>
       <td>xlm_prophetnet</td>
       <td>XLMProphetNetTokenizer</td>
       <td>microsoft/xprophetnet-large-wiki100-cased</td>

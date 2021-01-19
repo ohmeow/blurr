@@ -85,8 +85,8 @@ dls.show_batch(dataloaders=dls, max_n=2)
     </tr>
     <tr>
       <th>1</th>
-      <td>the shop around the corner is one of the sweetest and most feel - good romantic comedies ever made. there's just no getting around that, and it's hard to actually put one's feeling for this film into words. it's not one of those films that tries too hard, nor does it come up with the oddest possible scenarios to get the two protagonists together in the end. in fact, all its charm is innate, contained within the characters and the setting and the plot... which is highly believable to boot. it's easy to think that such a love story, as beautiful as any other ever told, * could * happen to you... a feeling you don't often get from other romantic comedies, however sweet and heart - warming they may be. &lt; br / &gt; &lt; br / &gt; alfred kralik ( james stewart ) and clara novak ( margaret sullavan ) don't have the most auspicious of first meetings when she arrives in the shop ( matuschek &amp; co. ) he's been working in for the past nine years, asking for a job. they clash from the very beginning, mostly over a cigarette box that plays music when it's opened - - he thinks it's a ludicrous idea ; she makes one big sell of it and gets hired. their bickering takes them through the next six months, even as they both ( unconsciously, of course! ) fall in love with each other when they share their souls and minds in letters passed through po box 237. this would be a pretty thin plotline to base an entire film on, except that the shop around the corner is expertly fleshed - out with a brilliant supporting cast made up of entirely engaging characters, from the fatherly but lonely hugo matuschek ( frank morgan ) himself, who learns that his shop really is his home ; pirovitch ( felix bressart ), kralik's sidekick and friend who always skitters out of the room when faced with the possibility of being asked for his honest opinion ; smarmy pimp - du - jour vadas ( joseph schildkraut ) who ultimately gets his comeuppance from a gloriously righteous kralik ; and ambitious errand boy pepi katona ( william tracy ) who wants nothing more than to be promoted to the position of clerk for matuschek &amp; co. the unpretentious love story between '</td>
-      <td>positive</td>
+      <td>i really wanted to love this show. i truly, honestly did. &lt; br / &gt; &lt; br / &gt; for the first time, gay viewers get their own version of the " the bachelor ". with the help of his obligatory " hag " andra, james, a good looking, well - to - do thirty - something has the chance of love with 15 suitors ( or " mates " as they are referred to in the show ). the only problem is half of them are straight and james doesn't know this. if james picks a gay one, they get a trip to new zealand, and if he picks a straight one, straight guy gets $ 25, 000. how can this not be fun?! take my hand, lets stroll : &lt; br / &gt; &lt; br / &gt; the most glaring problem with this show is the bachelor himself. james is your typical young and successful gay guy with a nice smile and body, the one you'd probably give two glances towards at your local bar before grazing for greener pastures. why they chose to cast james as the leading man is beyond me. god knows there's so many other hotter and vivacious homosexual men out there dying to be on tv. &lt; br / &gt; &lt; br / &gt; aside from his rather average physical appearance, james is about as interesting and exciting as a piece of chalk. even as such, he has this arrogant, smugly condescending aura about him. however, if james were standing up against a blank, white wall he'd meld right into in it. i honestly can't recall a single interesting or noteworthy thing james said during the course of the show. he is that boring and forgettable. in fact, one of the mates flat out advised him he wasn't feeling a connection. i thought that was the best part of the show. also, james speaks with an excruciatingly annoying lilt. sound feminine or sound masculine, but don't * * * * ing segue tones in the middle of sentences... so painful to sit through. i hated him so much all throughout the show i kept thinking, " please choose a straight guy and humiliate yourself and your unfortunate looking hag " &lt; br / &gt; &lt; br / &gt; then we have the suitors. a remarkably bland bunch of men who don't seem to care either way what is happening. equally vapid, they seem to be indistinguishable from one guy to the next except,</td>
+      <td>negative</td>
     </tr>
   </tbody>
 </table>
@@ -126,24 +126,24 @@ learn.fit_one_cycle(3, lr_max=1e-3)
   <tbody>
     <tr>
       <td>0</td>
-      <td>0.594212</td>
-      <td>0.448775</td>
-      <td>0.820000</td>
-      <td>00:21</td>
+      <td>0.649641</td>
+      <td>0.768956</td>
+      <td>0.585000</td>
+      <td>00:22</td>
     </tr>
     <tr>
       <td>1</td>
-      <td>0.375231</td>
-      <td>0.282043</td>
-      <td>0.900000</td>
+      <td>0.385529</td>
+      <td>0.295318</td>
+      <td>0.895000</td>
       <td>00:22</td>
     </tr>
     <tr>
       <td>2</td>
-      <td>0.295174</td>
-      <td>0.293845</td>
-      <td>0.905000</td>
-      <td>00:21</td>
+      <td>0.318808</td>
+      <td>0.284280</td>
+      <td>0.885000</td>
+      <td>00:22</td>
     </tr>
   </tbody>
 </table>
