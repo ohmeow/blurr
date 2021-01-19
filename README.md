@@ -23,7 +23,7 @@ The following two packages need to be installed for blurr to work:
 
 ### Imports
 
-```python
+```
 import torch
 from transformers import *
 from fastai.text.all import *
@@ -38,7 +38,7 @@ from blurr.modeling.all import *
 
 ### Get your data
 
-```python
+```
 path = untar_data(URLs.IMDB_SAMPLE)
 
 model_path = Path('models')
@@ -47,7 +47,7 @@ imdb_df = pd.read_csv(path/'texts.csv')
 
 ### Get your 🤗 objects
 
-```python
+```
 task = HF_TASKS_AUTO.SequenceClassification
 
 pretrained_model_name = "bert-base-uncased"
@@ -56,7 +56,7 @@ hf_arch, hf_config, hf_tokenizer, hf_model = BLURR_MODEL_HELPER.get_hf_objects(p
 
 ### Build your Data 🧱 and your DataLoaders
 
-```python
+```
 # single input
 blocks = (HF_TextBlock(hf_arch, hf_config, hf_tokenizer, hf_model), CategoryBlock)
 dblock = DataBlock(blocks=blocks,  get_x=ColReader('text'), get_y=ColReader('label'), splitter=ColSplitter())
@@ -64,7 +64,7 @@ dblock = DataBlock(blocks=blocks,  get_x=ColReader('text'), get_y=ColReader('lab
 dls = dblock.dataloaders(imdb_df, bs=4)
 ```
 
-```python
+```
 dls.show_batch(dataloaders=dls, max_n=2)
 ```
 
@@ -94,7 +94,7 @@ dls.show_batch(dataloaders=dls, max_n=2)
 
 ### ... and 🚂
 
-```python
+```
 #slow
 model = HF_BaseModelWrapper(hf_model)
 
@@ -149,7 +149,7 @@ learn.fit_one_cycle(3, lr_max=1e-3)
 </table>
 
 
-```python
+```
 #slow
 learn.show_results(learner=learn, max_n=2)
 ```
