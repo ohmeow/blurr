@@ -22,7 +22,6 @@ nltk.download('wordnet')
 logging.set_verbosity_error()
 
 # Cell
-import pdb
 class HF_Seq2SeqMetricsCallback(Callback):
     def __init__(self, custom_metrics=None, ignore_token_id=CrossEntropyLossFlat().ignore_index,
                  text_gen_kwargs={}, **kwargs):
@@ -137,7 +136,7 @@ class HF_Seq2SeqMetricsCallback(Callback):
             if (metric_name == 'bertscore'):
                 for score_key, score in res.items():
                     if (f'{metric_name}_{score_key}' not in self.custom_metric_vals): continue
-                    self.custom_metric_vals[f'{metric_name}_{score_key}'] = score.mean().item()
+                    self.custom_metric_vals[f'{metric_name}_{score_key}'] = np.array(score).mean().item()
             elif (is_listy(return_val)):
                 for score_key, score in res.items():
                     if (f'{metric_name}_{score_key}' not in self.custom_metric_vals): continue
