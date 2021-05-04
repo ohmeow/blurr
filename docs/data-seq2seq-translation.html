@@ -232,10 +232,9 @@ nb_path: "nbs/01zd_data-seq2seq-translation.ipynb"
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">pretrained_model_name</span> <span class="o">=</span> <span class="s2">&quot;facebook/bart-large-cnn&quot;</span>
-<span class="n">task</span> <span class="o">=</span> <span class="n">HF_TASKS_AUTO</span><span class="o">.</span><span class="n">Seq2SeqLM</span>
+<span class="n">model_cls</span> <span class="o">=</span> <span class="n">AutoModelForSeq2SeqLM</span>
 
-<span class="n">hf_arch</span><span class="p">,</span> <span class="n">hf_config</span><span class="p">,</span> <span class="n">hf_tokenizer</span><span class="p">,</span> <span class="n">hf_model</span> <span class="o">=</span> <span class="n">BLURR_MODEL_HELPER</span><span class="o">.</span><span class="n">get_hf_objects</span><span class="p">(</span><span class="n">pretrained_model_name</span><span class="p">,</span> <span class="n">task</span><span class="o">=</span><span class="n">task</span><span class="p">)</span>
-
+<span class="n">hf_arch</span><span class="p">,</span> <span class="n">hf_config</span><span class="p">,</span> <span class="n">hf_tokenizer</span><span class="p">,</span> <span class="n">hf_model</span> <span class="o">=</span> <span class="n">BLURR</span><span class="o">.</span><span class="n">get_hf_objects</span><span class="p">(</span><span class="n">pretrained_model_name</span><span class="p">,</span> <span class="n">model_cls</span><span class="o">=</span><span class="n">model_cls</span><span class="p">)</span>
 <span class="n">hf_arch</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">hf_tokenizer</span><span class="p">),</span> <span class="nb">type</span><span class="p">(</span><span class="n">hf_config</span><span class="p">),</span> <span class="nb">type</span><span class="p">(</span><span class="n">hf_model</span><span class="p">)</span>
 </pre></div>
 
@@ -363,7 +362,7 @@ nb_path: "nbs/01zd_data-seq2seq-translation.ipynb"
 
 
 <div class="output_text output_subarea output_execute_result">
-<pre>(2, torch.Size([4, 421]), torch.Size([4, 133]))</pre>
+<pre>(2, torch.Size([4, 483]), torch.Size([4, 150]))</pre>
 </div>
 
 </div>
@@ -406,13 +405,13 @@ nb_path: "nbs/01zd_data-seq2seq-translation.ipynb"
   <tbody>
     <tr>
       <th>0</th>
-      <td>Hierzu haben wir einige Änderungsanträge eingereicht, die das Parlament hoffentlich übernehmen wird: Erstens sollte der ehemaligen jugoslawischen Republik Mazedonien eine völlige Zollbefreiung für ihre Ausfuhren in die Europäische Union sowie ein Au</td>
-      <td>First, the former Yugoslav Republic of Macedonia should be offered a customs tariff equal to zero for their exports to the European Union and compensation for the progressive reduction of customs duties applied by Macedonia to European products, on</td>
+      <td>Was nun die Ergebnisse der Verhandlungen über die Anwendung der Artikel 3, 4, 5, 6 und 12 des Interimsabkommens bezüglich Warenhandel, öffentlicher Aufträge, Wettbewerb, Konsultationsmechanismen bei Fragen des geistigen Eigentums und Beilegung von S</td>
+      <td>Although for certain sectors there may be flaws - I am thinking specifically of the textiles sector, where the rules of origin issue causes great concern - the effects will be beneficial for both the European Union and Mexico. For the European Union</td>
     </tr>
     <tr>
       <th>1</th>
-      <td>Abschließend möchte ich in Übereinstimmung mit unserem Standpunkt, daß dieser Vorschlag der Kommission mehr eine Änderung als eine Klarstellung ist und diese Änderung darüber hinaus Basiskonzepte berührt, auch unsere Auffassung unterstreichen, daß,</td>
-      <td>Finally, I would also like to stress that, consistent with our opinion that the Commission proposal is more an amendment than a clarification and that, moreover, it affects basic concepts, instead of using the procedures under Article 2(2) of Counci</td>
+      <td>Bei einer ernsthaften Einwanderungspolitik dürfen diese Erwägungen nicht außer acht gelassen werden, denn angesichts einer solchen demographischen und demnächst wirtschaftlichen Katastrophe bedarf es liberaler, nichtrestriktiver, den wirtschaftliche</td>
+      <td>Any meaningful migration policy cannot fail to take these considerations into account, for this demographic holocaust, soon to become an economic disaster, calls for proposals for migration policies which are liberal, antiprotectionist and geared to</td>
     </tr>
   </tbody>
 </table>
@@ -441,7 +440,7 @@ nb_path: "nbs/01zd_data-seq2seq-translation.ipynb"
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="p">[</span> <span class="n">model_type</span> <span class="k">for</span> <span class="n">model_type</span> <span class="ow">in</span> <span class="n">BLURR_MODEL_HELPER</span><span class="o">.</span><span class="n">get_models</span><span class="p">(</span><span class="n">task</span><span class="o">=</span><span class="s1">&#39;ConditionalGeneration&#39;</span><span class="p">)</span> 
+<div class=" highlight hl-ipython3"><pre><span></span><span class="p">[</span> <span class="n">model_type</span> <span class="k">for</span> <span class="n">model_type</span> <span class="ow">in</span> <span class="n">BLURR</span><span class="o">.</span><span class="n">get_models</span><span class="p">(</span><span class="n">task</span><span class="o">=</span><span class="s1">&#39;ConditionalGeneration&#39;</span><span class="p">)</span> 
  <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="n">model_type</span><span class="o">.</span><span class="vm">__name__</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;TF&#39;</span><span class="p">))</span> <span class="p">]</span>
 </pre></div>
 
@@ -462,10 +461,12 @@ nb_path: "nbs/01zd_data-seq2seq-translation.ipynb"
  transformers.models.blenderbot_small.modeling_blenderbot_small.BlenderbotSmallForConditionalGeneration,
  transformers.models.fsmt.modeling_fsmt.FSMTForConditionalGeneration,
  transformers.models.led.modeling_led.LEDForConditionalGeneration,
+ transformers.models.m2m_100.modeling_m2m_100.M2M100ForConditionalGeneration,
  transformers.models.mbart.modeling_mbart.MBartForConditionalGeneration,
  transformers.models.mt5.modeling_mt5.MT5ForConditionalGeneration,
  transformers.models.pegasus.modeling_pegasus.PegasusForConditionalGeneration,
  transformers.models.prophetnet.modeling_prophetnet.ProphetNetForConditionalGeneration,
+ transformers.models.speech_to_text.modeling_speech_to_text.Speech2TextForConditionalGeneration,
  transformers.models.t5.modeling_t5.T5ForConditionalGeneration,
  transformers.models.xlm_prophetnet.modeling_xlm_prophetnet.XLMProphetNetForConditionalGeneration]</pre>
 </div>
@@ -528,7 +529,7 @@ nb_path: "nbs/01zd_data-seq2seq-translation.ipynb"
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="c1">#hide_output</span>
-<span class="n">task</span> <span class="o">=</span> <span class="n">HF_TASKS_AUTO</span><span class="o">.</span><span class="n">Seq2SeqLM</span>
+<span class="n">model_cls</span> <span class="o">=</span> <span class="n">AutoModelForSeq2SeqLM</span>
 <span class="n">bsz</span> <span class="o">=</span> <span class="mi">2</span>
 <span class="n">seq_sz</span> <span class="o">=</span> <span class="mi">128</span>
 <span class="n">trg_seq_sz</span> <span class="o">=</span> <span class="mi">128</span>
@@ -539,7 +540,7 @@ nb_path: "nbs/01zd_data-seq2seq-translation.ipynb"
     
     <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;=== </span><span class="si">{</span><span class="n">model_name</span><span class="si">}</span><span class="s1"> ===</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
     
-    <span class="n">hf_arch</span><span class="p">,</span> <span class="n">hf_config</span><span class="p">,</span> <span class="n">hf_tokenizer</span><span class="p">,</span> <span class="n">hf_model</span> <span class="o">=</span> <span class="n">BLURR_MODEL_HELPER</span><span class="o">.</span><span class="n">get_hf_objects</span><span class="p">(</span><span class="n">model_name</span><span class="p">,</span> <span class="n">task</span><span class="o">=</span><span class="n">task</span><span class="p">)</span>
+    <span class="n">hf_arch</span><span class="p">,</span> <span class="n">hf_config</span><span class="p">,</span> <span class="n">hf_tokenizer</span><span class="p">,</span> <span class="n">hf_model</span> <span class="o">=</span> <span class="n">BLURR</span><span class="o">.</span><span class="n">get_hf_objects</span><span class="p">(</span><span class="n">model_name</span><span class="p">,</span> <span class="n">model_cls</span><span class="o">=</span><span class="n">model_cls</span><span class="p">)</span>
     <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;architecture:</span><span class="se">\t</span><span class="si">{</span><span class="n">hf_arch</span><span class="si">}</span><span class="se">\n</span><span class="s1">tokenizer:</span><span class="se">\t</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">hf_tokenizer</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
     
     <span class="c1"># not all architectures include a native pad_token (e.g., gpt2, ctrl, etc...), so we add one here</span>
@@ -633,30 +634,6 @@ nb_path: "nbs/01zd_data-seq2seq-translation.ipynb"
       <td>marian</td>
       <td>MarianTokenizer</td>
       <td>Helsinki-NLP/opus-mt-de-en</td>
-      <td>PASSED</td>
-      <td></td>
-    </tr>
-    <tr>
-      <th>3</th>
-      <td>mbart</td>
-      <td>MBartTokenizerFast</td>
-      <td>sshleifer/tiny-mbart</td>
-      <td>PASSED</td>
-      <td></td>
-    </tr>
-    <tr>
-      <th>4</th>
-      <td>mt5</td>
-      <td>T5TokenizerFast</td>
-      <td>google/mt5-small</td>
-      <td>PASSED</td>
-      <td></td>
-    </tr>
-    <tr>
-      <th>5</th>
-      <td>t5</td>
-      <td>T5TokenizerFast</td>
-      <td>t5-small</td>
       <td>PASSED</td>
       <td></td>
     </tr>

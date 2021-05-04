@@ -389,7 +389,7 @@ decode the dictionary produced as a byproduct of the tokenization process in the
 
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>There are a bunch of ways we can get at the four huggingface elements we need (e.g., architecture name, tokenizer, config, and model).  We can just create them directly, or we can use one of the helper methods available via <a href="/blurr/utils.html#BLURR_MODEL_HELPER"><code>BLURR_MODEL_HELPER</code></a>.</p>
+<p>There are a bunch of ways we can get at the four huggingface elements we need (e.g., architecture name, tokenizer, config, and model).  We can just create them directly, or we can use one of the helper methods available via <a href="/blurr/utils.html#BLURR"><code>BLURR</code></a>.</p>
 
 </div>
 </div>
@@ -401,10 +401,10 @@ decode the dictionary produced as a byproduct of the tokenization process in the
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">task</span> <span class="o">=</span> <span class="n">HF_TASKS_AUTO</span><span class="o">.</span><span class="n">SequenceClassification</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">model_cls</span> <span class="o">=</span> <span class="n">AutoModelForSequenceClassification</span>
 
 <span class="n">pretrained_model_name</span> <span class="o">=</span> <span class="s2">&quot;roberta-base&quot;</span> <span class="c1"># &quot;distilbert-base-uncased&quot; &quot;bert-base-uncased&quot;</span>
-<span class="n">hf_arch</span><span class="p">,</span> <span class="n">hf_config</span><span class="p">,</span> <span class="n">hf_tokenizer</span><span class="p">,</span> <span class="n">hf_model</span> <span class="o">=</span> <span class="n">BLURR_MODEL_HELPER</span><span class="o">.</span><span class="n">get_hf_objects</span><span class="p">(</span><span class="n">pretrained_model_name</span><span class="p">,</span> <span class="n">task</span><span class="o">=</span><span class="n">task</span><span class="p">)</span>
+<span class="n">hf_arch</span><span class="p">,</span> <span class="n">hf_config</span><span class="p">,</span> <span class="n">hf_tokenizer</span><span class="p">,</span> <span class="n">hf_model</span> <span class="o">=</span> <span class="n">BLURR</span><span class="o">.</span><span class="n">get_hf_objects</span><span class="p">(</span><span class="n">pretrained_model_name</span><span class="p">,</span> <span class="n">model_cls</span><span class="o">=</span><span class="n">model_cls</span><span class="p">)</span>
 </pre></div>
 
     </div>
@@ -583,8 +583,8 @@ decode the dictionary produced as a byproduct of the tokenization process in the
     </tr>
     <tr>
       <th>1</th>
-      <td>Well, what can I say.&lt;br /&gt;&lt;br /&gt;"What the Bleep do we Know" has achieved the nearly impossible - leaving behind such masterpieces of the genre as "The Postman", "The Dungeon Master", "Merlin", and so fourth, it will go down in history as the single worst movie I have ever seen in its entirety. And that, ladies and gentlemen, is impressive indeed, for I have seen many a bad movie.&lt;br /&gt;&lt;br /&gt;This masterpiece of modern cinema consists of two interwoven parts, alternating between a silly and cont</td>
-      <td>negative</td>
+      <td>Many neglect that this isn't just a classic due to the fact that it's the first 3D game, or even the first shoot-'em-up. It's also one of the first stealth games, one of the only(and definitely the first) truly claustrophobic games, and just a pretty well-rounded gaming experience in general. With graphics that are terribly dated today, the game thrusts you into the role of B.J.(don't even *think* I'm going to attempt spelling his last name!), an American P.O.W. caught in an underground bunker.</td>
+      <td>positive</td>
     </tr>
   </tbody>
 </table>
@@ -613,7 +613,7 @@ decode the dictionary produced as a byproduct of the tokenization process in the
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="p">[</span> <span class="n">model_type</span> <span class="k">for</span> <span class="n">model_type</span> <span class="ow">in</span> <span class="n">BLURR_MODEL_HELPER</span><span class="o">.</span><span class="n">get_models</span><span class="p">(</span><span class="n">task</span><span class="o">=</span><span class="s1">&#39;SequenceClassification&#39;</span><span class="p">)</span> 
+<div class=" highlight hl-ipython3"><pre><span></span><span class="p">[</span> <span class="n">model_type</span> <span class="k">for</span> <span class="n">model_type</span> <span class="ow">in</span> <span class="n">BLURR</span><span class="o">.</span><span class="n">get_models</span><span class="p">(</span><span class="n">task</span><span class="o">=</span><span class="s1">&#39;SequenceClassification&#39;</span><span class="p">)</span> 
  <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="n">model_type</span><span class="o">.</span><span class="vm">__name__</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;TF&#39;</span><span class="p">))</span> <span class="p">]</span>
 </pre></div>
 
@@ -630,18 +630,20 @@ decode the dictionary produced as a byproduct of the tokenization process in the
 
 <div class="output_text output_subarea output_execute_result">
 <pre>[transformers.models.albert.modeling_albert.AlbertForSequenceClassification,
- transformers.models.auto.modeling_auto.AutoModelForSequenceClassification,
  transformers.models.bart.modeling_bart.BartForSequenceClassification,
  transformers.models.bert.modeling_bert.BertForSequenceClassification,
+ transformers.models.big_bird.modeling_big_bird.BigBirdForSequenceClassification,
  transformers.models.ctrl.modeling_ctrl.CTRLForSequenceClassification,
  transformers.models.camembert.modeling_camembert.CamembertForSequenceClassification,
  transformers.models.convbert.modeling_convbert.ConvBertForSequenceClassification,
  transformers.models.deberta.modeling_deberta.DebertaForSequenceClassification,
+ transformers.models.deberta_v2.modeling_deberta_v2.DebertaV2ForSequenceClassification,
  transformers.models.distilbert.modeling_distilbert.DistilBertForSequenceClassification,
  transformers.models.electra.modeling_electra.ElectraForSequenceClassification,
  transformers.models.flaubert.modeling_flaubert.FlaubertForSequenceClassification,
  transformers.models.funnel.modeling_funnel.FunnelForSequenceClassification,
  transformers.models.gpt2.modeling_gpt2.GPT2ForSequenceClassification,
+ transformers.models.ibert.modeling_ibert.IBertForSequenceClassification,
  transformers.models.led.modeling_led.LEDForSequenceClassification,
  transformers.models.layoutlm.modeling_layoutlm.LayoutLMForSequenceClassification,
  transformers.models.longformer.modeling_longformer.LongformerForSequenceClassification,
@@ -738,7 +740,7 @@ decode the dictionary produced as a byproduct of the tokenization process in the
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="c1">#hide_output</span>
-<span class="n">task</span> <span class="o">=</span> <span class="n">HF_TASKS_AUTO</span><span class="o">.</span><span class="n">SequenceClassification</span>
+<span class="n">model_cls</span> <span class="o">=</span> <span class="n">AutoModelForSequenceClassification</span>
 <span class="n">bsz</span> <span class="o">=</span> <span class="mi">2</span>
 <span class="n">seq_sz</span> <span class="o">=</span> <span class="mi">128</span>
 
@@ -748,7 +750,7 @@ decode the dictionary produced as a byproduct of the tokenization process in the
     
     <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;=== </span><span class="si">{</span><span class="n">model_name</span><span class="si">}</span><span class="s1"> ===</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
 
-    <span class="n">hf_arch</span><span class="p">,</span> <span class="n">hf_config</span><span class="p">,</span> <span class="n">hf_tokenizer</span><span class="p">,</span> <span class="n">hf_model</span> <span class="o">=</span> <span class="n">BLURR_MODEL_HELPER</span><span class="o">.</span><span class="n">get_hf_objects</span><span class="p">(</span><span class="n">model_name</span><span class="p">,</span> <span class="n">task</span><span class="o">=</span><span class="n">task</span><span class="p">)</span>    
+    <span class="n">hf_arch</span><span class="p">,</span> <span class="n">hf_config</span><span class="p">,</span> <span class="n">hf_tokenizer</span><span class="p">,</span> <span class="n">hf_model</span> <span class="o">=</span> <span class="n">BLURR</span><span class="o">.</span><span class="n">get_hf_objects</span><span class="p">(</span><span class="n">model_name</span><span class="p">,</span> <span class="n">model_cls</span><span class="o">=</span><span class="n">model_cls</span><span class="p">)</span>    
     <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;architecture:</span><span class="se">\t</span><span class="si">{</span><span class="n">hf_arch</span><span class="si">}</span><span class="se">\n</span><span class="s1">tokenizer:</span><span class="se">\t</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">hf_tokenizer</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
     
     <span class="c1"># not all architectures include a native pad_token (e.g., gpt2, ctrl, etc...), so we add one here</span>
@@ -858,8 +860,8 @@ decode the dictionary produced as a byproduct of the tokenization process in the
       <td>deberta</td>
       <td>DebertaTokenizer</td>
       <td>microsoft/deberta-base</td>
-      <td>PASSED</td>
-      <td></td>
+      <td>FAILED</td>
+      <td>==:\nFalse\nTrue</td>
     </tr>
     <tr>
       <th>6</th>

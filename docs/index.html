@@ -90,21 +90,6 @@ pip install -e ".[dev]"</code></pre>
 </div>
 </div>
 
-<div class="output_wrapper">
-<div class="output">
-
-<div class="output_area">
-
-<div class="output_subarea output_stream output_stderr output_text">
-<pre>[nltk_data] Downloading package wordnet to /home/wgilliam/nltk_data...
-[nltk_data]   Package wordnet is already up-to-date!
-</pre>
-</div>
-</div>
-
-</div>
-</div>
-
 </div>
     {% endraw %}
 
@@ -147,10 +132,10 @@ pip install -e ".[dev]"</code></pre>
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">task</span> <span class="o">=</span> <span class="n">HF_TASKS_AUTO</span><span class="o">.</span><span class="n">SequenceClassification</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">model_cls</span> <span class="o">=</span> <span class="n">AutoModelForSequenceClassification</span>
 
 <span class="n">pretrained_model_name</span> <span class="o">=</span> <span class="s2">&quot;bert-base-uncased&quot;</span>
-<span class="n">hf_arch</span><span class="p">,</span> <span class="n">hf_config</span><span class="p">,</span> <span class="n">hf_tokenizer</span><span class="p">,</span> <span class="n">hf_model</span> <span class="o">=</span> <span class="n">BLURR_MODEL_HELPER</span><span class="o">.</span><span class="n">get_hf_objects</span><span class="p">(</span><span class="n">pretrained_model_name</span><span class="p">,</span>  <span class="n">task</span><span class="o">=</span><span class="n">task</span><span class="p">)</span>
+<span class="n">hf_arch</span><span class="p">,</span> <span class="n">hf_config</span><span class="p">,</span> <span class="n">hf_tokenizer</span><span class="p">,</span> <span class="n">hf_model</span> <span class="o">=</span> <span class="n">BLURR</span><span class="o">.</span><span class="n">get_hf_objects</span><span class="p">(</span><span class="n">pretrained_model_name</span><span class="p">,</span> <span class="n">model_cls</span><span class="o">=</span><span class="n">model_cls</span><span class="p">)</span>
 </pre></div>
 
     </div>
@@ -223,8 +208,8 @@ pip install -e ".[dev]"</code></pre>
     </tr>
     <tr>
       <th>1</th>
-      <td>i really wanted to love this show. i truly, honestly did. &lt; br / &gt; &lt; br / &gt; for the first time, gay viewers get their own version of the " the bachelor ". with the help of his obligatory " hag " andra, james, a good looking, well - to - do thirty - something has the chance of love with 15 suitors ( or " mates " as they are referred to in the show ). the only problem is half of them are straight and james doesn't know this. if james picks a gay one, they get a trip to new zealand, and if he picks a straight one, straight guy gets $ 25, 000. how can this not be fun?! take my hand, lets stroll : &lt; br / &gt; &lt; br / &gt; the most glaring problem with this show is the bachelor himself. james is your typical young and successful gay guy with a nice smile and body, the one you'd probably give two glances towards at your local bar before grazing for greener pastures. why they chose to cast james as the leading man is beyond me. god knows there's so many other hotter and vivacious homosexual men out there dying to be on tv. &lt; br / &gt; &lt; br / &gt; aside from his rather average physical appearance, james is about as interesting and exciting as a piece of chalk. even as such, he has this arrogant, smugly condescending aura about him. however, if james were standing up against a blank, white wall he'd meld right into in it. i honestly can't recall a single interesting or noteworthy thing james said during the course of the show. he is that boring and forgettable. in fact, one of the mates flat out advised him he wasn't feeling a connection. i thought that was the best part of the show. also, james speaks with an excruciatingly annoying lilt. sound feminine or sound masculine, but don't * * * * ing segue tones in the middle of sentences... so painful to sit through. i hated him so much all throughout the show i kept thinking, " please choose a straight guy and humiliate yourself and your unfortunate looking hag " &lt; br / &gt; &lt; br / &gt; then we have the suitors. a remarkably bland bunch of men who don't seem to care either way what is happening. equally vapid, they seem to be indistinguishable from one guy to the next except,</td>
-      <td>negative</td>
+      <td>the year 2005 saw no fewer than 3 filmed productions of h. g. wells'great novel, " war of the worlds ". this is perhaps the least well - known and very probably the best of them. no other version of wotw has ever attempted not only to present the story very much as wells wrote it, but also to create the atmosphere of the time in which it was supposed to take place : the last year of the 19th century, 1900 using wells'original setting, in and near woking, england. &lt; br / &gt; &lt; br / &gt; imdb seems unfriendly to what they regard as " spoilers ". that might apply with some films, where the ending might actually be a surprise, but with regard to one of the most famous novels in the world, it seems positively silly. i have no sympathy for people who have neglected to read one of the seminal works in english literature, so let's get right to the chase. the aliens are destroyed through catching an earth disease, against which they have no immunity. if that's a spoiler, so be it ; after a book and 3 other films ( including the 1953 classic ), you ought to know how this ends. &lt; br / &gt; &lt; br / &gt; this film, which follows wells'plot in the main, is also very cleverly presented in a way that might put many viewers off due to their ignorance of late 19th / early 20th century photography. although filmed in a widescreen aspect, the film goes to some lengths to give an impression of contemporaneity. the general coloration of skin and clothes display a sepia tint often found in old photographs ( rather than black ). colors are often reminiscent of hand - tinting. at other times, colors are washed out. these variations are typical of early films, which didn't use standardized celluloid stock and therefore presented a good many changes in print quality, even going from black / white to sepia / white to blue / white to reddish / white and so on as you'll see on occasion here. the special effects are deliberately retrograde, of a sort seen even as late as the 1920s and yet the martians and their machines are very much as wells described them and have a more nearly realistic " feel ". some of effects are really awkward such as the destruction of big ben. the acting is often more in the style of that period than ours. some aspects of victorian dress may appear odd, particularly the use of pomade</td>
+      <td>positive</td>
     </tr>
   </tbody>
 </table>
@@ -261,7 +246,6 @@ pip install -e ".[dev]"</code></pre>
                 <span class="n">cbs</span><span class="o">=</span><span class="p">[</span><span class="n">HF_BaseModelCallback</span><span class="p">],</span>
                 <span class="n">splitter</span><span class="o">=</span><span class="n">hf_splitter</span><span class="p">)</span>
 
-<span class="n">learn</span><span class="o">.</span><span class="n">create_opt</span><span class="p">()</span> 
 <span class="n">learn</span><span class="o">.</span><span class="n">freeze</span><span class="p">()</span>
 
 <span class="n">learn</span><span class="o">.</span><span class="n">fit_one_cycle</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="n">lr_max</span><span class="o">=</span><span class="mf">1e-3</span><span class="p">)</span>
@@ -291,24 +275,24 @@ pip install -e ".[dev]"</code></pre>
   <tbody>
     <tr>
       <td>0</td>
-      <td>0.649641</td>
-      <td>0.768956</td>
-      <td>0.585000</td>
-      <td>00:22</td>
+      <td>0.626491</td>
+      <td>0.555838</td>
+      <td>0.805000</td>
+      <td>00:21</td>
     </tr>
     <tr>
       <td>1</td>
-      <td>0.385529</td>
-      <td>0.295318</td>
-      <td>0.895000</td>
-      <td>00:22</td>
+      <td>0.361657</td>
+      <td>0.305116</td>
+      <td>0.885000</td>
+      <td>00:21</td>
     </tr>
     <tr>
       <td>2</td>
-      <td>0.318808</td>
-      <td>0.284280</td>
-      <td>0.885000</td>
-      <td>00:22</td>
+      <td>0.279382</td>
+      <td>0.302756</td>
+      <td>0.880000</td>
+      <td>00:21</td>
     </tr>
   </tbody>
 </table>
@@ -388,7 +372,23 @@ pip install -e ".[dev]"</code></pre>
 
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="&#10071;-Updates">&#10071; Updates<a class="anchor-link" href="#&#10071;-Updates"> </a></h2><p><strong>12/31/2020</strong></p>
+<h2 id="&#10071;-Updates">&#10071; Updates<a class="anchor-link" href="#&#10071;-Updates"> </a></h2><p><strong>05/04/2020</strong></p>
+<p><strong><em>The "May the Fourth be with you" release:</em></strong></p>
+<ul>
+<li>Updated to work with Huggingface 4.5.x and Fastai 2.3.1 (there is a bug in 2.3.0 that breaks blurr so make sure you are using the latest)</li>
+<li>Fixed Github issues <a href="https://github.com/ohmeow/blurr/issues/36">#36</a>, <a href="https://github.com/ohmeow/blurr/issues/34">#34</a></li>
+<li>Misc. improvements to get blurr in line with the upcoming Huggingface 5.0 release</li>
+</ul>
+<ul>
+<li>A few <strong>breaking changes</strong>:</li>
+</ul>
+<ol>
+<li><code>BLURR_MODEL_HELPER</code> is now just <a href="/blurr/utils.html#BLURR"><code>BLURR</code></a></li>
+</ol>
+<ol>
+<li>Task specific auto models need to be built using the new Huggingface <code>AutoModelFor&lt;Insert task here&gt;</code> classes. The docs have been updated to show you how it works; the prior way of building such models not longer works.</li>
+</ol>
+<p><strong>12/31/2020</strong></p>
 <p><strong><em>The "Goodbye 2020" release with lots of goodies for blurr users:</em></strong></p>
 <ul>
 <li>Updated the Seq2Seq models to use some of the latest huggingface bits like <code>tokenizer.prepare_seq2seq_batch</code>.</li>
@@ -412,7 +412,7 @@ pip install -e ".[dev]"</code></pre>
 <ul>
 <li>Updated to work with the latest version of fast.ai (2.1.8) and huggingface transformers &gt;= 4.x</li>
 <li>Fixed <a href="/blurr/modeling-core.html#Learner.blurr_summary"><code>Learner.blurr_summary</code></a> to work with fast.ai &gt;= 2.1.8</li>
-<li>Fixed inclusion of <code>add_prefix_space</code> in tokenizer <a href="/blurr/utils.html#BLURR_MODEL_HELPER"><code>BLURR_MODEL_HELPER</code></a></li>
+<li>Fixed inclusion of <code>add_prefix_space</code> in tokenizer <code>BLURR_MODEL_HELPER</code></li>
 <li>Fixed token classification <code>show_results</code> for tokenizers that add a prefix space</li>
 <li>Notebooks run with environment variable "TOKENIZERS_PARALLELISM=false" to avoid fast tokenizer warnings</li>
 <li>Updated docs</li>
@@ -463,7 +463,7 @@ pip install -e ".[dev]"</code></pre>
 </ul>
 <p><strong>06/27/2020</strong></p>
 <ul>
-<li>Simplified the <a href="/blurr/utils.html#BLURR_MODEL_HELPER.get_hf_objects"><code>BLURR_MODEL_HELPER.get_hf_objects</code></a> method to support a wide range of options in terms of building the necessary huggingface objects (architecture, config, tokenizer, and model).  Also added <code>cache_dir</code> for saving pre-trained objects in a custom directory.</li>
+<li>Simplified the <code>BLURR_MODEL_HELPER.get_hf_objects</code> method to support a wide range of options in terms of building the necessary huggingface objects (architecture, config, tokenizer, and model).  Also added <code>cache_dir</code> for saving pre-trained objects in a custom directory.</li>
 <li>Misc. renaming and cleanup that may break existing code (please see the docs/source if things blow up)</li>
 <li>Added missing required libraries to requirements.txt (e.g., nlp)</li>
 </ul>

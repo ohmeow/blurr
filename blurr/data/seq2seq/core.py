@@ -56,20 +56,11 @@ class HF_Seq2SeqBeforeBatchTransform(HF_BeforeBatchTransform):
         src_texts=samples.itemgot(0).items
         tgt_texts=samples.itemgot(1).items if (len(samples[0]) > 1) else None
 
-        try:
-            tok_d = self.hf_tokenizer.prepare_seq2seq_batch(src_texts=src_texts, tgt_texts=tgt_texts,
-                                                            max_length=self.max_length,
-                                                            max_target_length=self.max_target_length,
-                                                            padding=self.padding,
-                                                            truncation=self.truncation,
-                                                            return_tensors='pt',
-                                                            **self.tok_kwargs)
-        except NotImplementedError as err:
-            # not all seq2seq models implement "prepare_seq2seq_batch" (i.e., blenderbot)
-            tok_d = self.hf_tokenizer(src_texts, max_length=self.max_length, padding=self.padding,
-                                      truncation=self.truncation, return_tensors='pt', **self.tok_kwargs)
+        tok_d = self.hf_tokenizer(src_texts, max_length=self.max_length, padding=self.padding,
+                                  truncation=self.truncation, return_tensors='pt', **self.tok_kwargs)
 
-            if (tgt_texts):
+        if (tgt_texts):
+            with self.hf_tokenizer.as_target_tokenizer():
                 tok_d_targs = self.hf_tokenizer(tgt_texts, max_length=self.max_target_length, padding=self.padding,
                                       truncation=self.truncation, return_tensors='pt', **self.tok_kwargs)
 

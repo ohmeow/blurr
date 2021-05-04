@@ -38,7 +38,8 @@ class HF_BaseModelWrapper(Module):
 
     def forward(self, x):
         for k in list(x):
-            if k not in self.hf_model_fwd_args: del x[k]
+            if k not in self.hf_model_fwd_args:
+                del x[k]
 
         return self.hf_model(**x,
                              output_hidden_states=self.output_hidden_states,
@@ -47,7 +48,6 @@ class HF_BaseModelWrapper(Module):
                              **self.hf_model_kwargs)
 
 # Cell
-import pdb
 class HF_PreCalculatedLoss():
     def __call__(self, inp, targ, **kwargs):return tensor(0.)
     def decodes(self, x): return x.argmax(dim=-1)

@@ -150,15 +150,15 @@ nb_path: "nbs/01a_data-token-classification.ipynb"
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">task</span> <span class="o">=</span> <span class="n">HF_TASKS_AUTO</span><span class="o">.</span><span class="n">TokenClassification</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">model_cls</span> <span class="o">=</span> <span class="n">AutoModelForTokenClassification</span>
 
 <span class="c1"># pretrained_model_name = &quot;bert-base-multilingual-cased&quot;</span>
 <span class="n">pretrained_model_name</span> <span class="o">=</span> <span class="s1">&#39;roberta-base&#39;</span>
 <span class="n">n_labels</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">labels</span><span class="p">)</span>
 
-<span class="n">hf_arch</span><span class="p">,</span> <span class="n">hf_config</span><span class="p">,</span> <span class="n">hf_tokenizer</span><span class="p">,</span> <span class="n">hf_model</span> <span class="o">=</span> <span class="n">BLURR_MODEL_HELPER</span><span class="o">.</span><span class="n">get_hf_objects</span><span class="p">(</span><span class="n">pretrained_model_name</span><span class="p">,</span> 
-                                                                               <span class="n">task</span><span class="o">=</span><span class="n">task</span><span class="p">,</span>
-                                                                               <span class="n">config_kwargs</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;num_labels&#39;</span><span class="p">:</span> <span class="n">n_labels</span><span class="p">})</span>
+<span class="n">hf_arch</span><span class="p">,</span> <span class="n">hf_config</span><span class="p">,</span> <span class="n">hf_tokenizer</span><span class="p">,</span> <span class="n">hf_model</span> <span class="o">=</span> <span class="n">BLURR</span><span class="o">.</span><span class="n">get_hf_objects</span><span class="p">(</span><span class="n">pretrained_model_name</span><span class="p">,</span> 
+                                                                  <span class="n">model_cls</span><span class="o">=</span><span class="n">model_cls</span><span class="p">,</span>
+                                                                  <span class="n">config_kwargs</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;num_labels&#39;</span><span class="p">:</span> <span class="n">n_labels</span><span class="p">})</span>
 <span class="n">hf_arch</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">hf_config</span><span class="p">),</span> <span class="nb">type</span><span class="p">(</span><span class="n">hf_tokenizer</span><span class="p">),</span> <span class="nb">type</span><span class="p">(</span><span class="n">hf_model</span><span class="p">)</span>
 </pre></div>
 
@@ -486,7 +486,7 @@ decode the dictionary produced as a byproduct of the tokenization process in the
 
 
 <div class="output_text output_subarea output_execute_result">
-<pre>(2, torch.Size([4, 134]), torch.Size([4, 134]))</pre>
+<pre>(2, torch.Size([4, 98]), torch.Size([4, 98]))</pre>
 </div>
 
 </div>
@@ -539,7 +539,7 @@ decode the dictionary produced as a byproduct of the tokenization process in the
     </tr>
     <tr>
       <th>1</th>
-      <td>[('(', 'O'), ('Standard', 'B-ORG'), ('Oil', 'I-ORG'), ('of', 'I-ORG'), ('New', 'I-ORG'), ('Jersey', 'I-ORG'), (')', 'O'), (',', 'O'), ('die', 'O'), ('ausgesprochen', 'O')]</td>
+      <td>[('Scenes', 'B-OTH'), ('of', 'I-OTH'), ('a', 'I-OTH'), ('Sexual', 'I-OTH'), ('Nature', 'I-OTH'), ('(', 'O'), ('GB', 'O'), ('2006', 'O'), (')', 'O'), ('-', 'O')]</td>
     </tr>
   </tbody>
 </table>
@@ -568,7 +568,7 @@ decode the dictionary produced as a byproduct of the tokenization process in the
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="p">[</span> <span class="n">model_type</span> <span class="k">for</span> <span class="n">model_type</span> <span class="ow">in</span> <span class="n">BLURR_MODEL_HELPER</span><span class="o">.</span><span class="n">get_models</span><span class="p">(</span><span class="n">task</span><span class="o">=</span><span class="s1">&#39;TokenClassification&#39;</span><span class="p">)</span> 
+<div class=" highlight hl-ipython3"><pre><span></span><span class="p">[</span> <span class="n">model_type</span> <span class="k">for</span> <span class="n">model_type</span> <span class="ow">in</span> <span class="n">BLURR</span><span class="o">.</span><span class="n">get_models</span><span class="p">(</span><span class="n">task</span><span class="o">=</span><span class="s1">&#39;TokenClassification&#39;</span><span class="p">)</span> 
  <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="n">model_type</span><span class="o">.</span><span class="vm">__name__</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;TF&#39;</span><span class="p">))</span> <span class="p">]</span>
 </pre></div>
 
@@ -585,15 +585,17 @@ decode the dictionary produced as a byproduct of the tokenization process in the
 
 <div class="output_text output_subarea output_execute_result">
 <pre>[transformers.models.albert.modeling_albert.AlbertForTokenClassification,
- transformers.models.auto.modeling_auto.AutoModelForTokenClassification,
  transformers.models.bert.modeling_bert.BertForTokenClassification,
+ transformers.models.big_bird.modeling_big_bird.BigBirdForTokenClassification,
  transformers.models.camembert.modeling_camembert.CamembertForTokenClassification,
  transformers.models.convbert.modeling_convbert.ConvBertForTokenClassification,
  transformers.models.deberta.modeling_deberta.DebertaForTokenClassification,
+ transformers.models.deberta_v2.modeling_deberta_v2.DebertaV2ForTokenClassification,
  transformers.models.distilbert.modeling_distilbert.DistilBertForTokenClassification,
  transformers.models.electra.modeling_electra.ElectraForTokenClassification,
  transformers.models.flaubert.modeling_flaubert.FlaubertForTokenClassification,
  transformers.models.funnel.modeling_funnel.FunnelForTokenClassification,
+ transformers.models.ibert.modeling_ibert.IBertForTokenClassification,
  transformers.models.layoutlm.modeling_layoutlm.LayoutLMForTokenClassification,
  transformers.models.longformer.modeling_longformer.LongformerForTokenClassification,
  transformers.models.mpnet.modeling_mpnet.MPNetForTokenClassification,
@@ -654,7 +656,7 @@ decode the dictionary produced as a byproduct of the tokenization process in the
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="c1">#hide_output</span>
-<span class="n">task</span> <span class="o">=</span> <span class="n">HF_TASKS_AUTO</span><span class="o">.</span><span class="n">TokenClassification</span>
+<span class="n">model_cls</span> <span class="o">=</span> <span class="n">AutoModelForTokenClassification</span>
 <span class="n">bsz</span> <span class="o">=</span> <span class="mi">2</span>
 <span class="n">seq_sz</span> <span class="o">=</span> <span class="mi">128</span>
 
@@ -664,7 +666,7 @@ decode the dictionary produced as a byproduct of the tokenization process in the
     
     <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;=== </span><span class="si">{</span><span class="n">model_name</span><span class="si">}</span><span class="s1"> ===</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
     
-    <span class="n">hf_arch</span><span class="p">,</span> <span class="n">hf_config</span><span class="p">,</span> <span class="n">hf_tokenizer</span><span class="p">,</span> <span class="n">hf_model</span> <span class="o">=</span> <span class="n">BLURR_MODEL_HELPER</span><span class="o">.</span><span class="n">get_hf_objects</span><span class="p">(</span><span class="n">model_name</span><span class="p">,</span> <span class="n">task</span><span class="o">=</span><span class="n">task</span><span class="p">)</span>
+    <span class="n">hf_arch</span><span class="p">,</span> <span class="n">hf_config</span><span class="p">,</span> <span class="n">hf_tokenizer</span><span class="p">,</span> <span class="n">hf_model</span> <span class="o">=</span> <span class="n">BLURR</span><span class="o">.</span><span class="n">get_hf_objects</span><span class="p">(</span><span class="n">model_name</span><span class="p">,</span> <span class="n">model_cls</span><span class="o">=</span><span class="n">model_cls</span><span class="p">)</span>
     <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;architecture:</span><span class="se">\t</span><span class="si">{</span><span class="n">hf_arch</span><span class="si">}</span><span class="se">\n</span><span class="s1">tokenizer:</span><span class="se">\t</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">hf_tokenizer</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
     
     <span class="c1"># not all architectures include a native pad_token (e.g., gpt2, ctrl, etc...), so we add one here</span>

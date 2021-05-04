@@ -17,7 +17,7 @@ from ..core import *
 from datasets import load_metric as hf_load_metric, list_metrics as hf_list_metrics
 
 import nltk
-nltk.download('wordnet')
+nltk.download('wordnet', quiet=True)
 
 logging.set_verbosity_error()
 

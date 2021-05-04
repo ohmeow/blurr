@@ -208,10 +208,10 @@ nb_path: "nbs/01b_data-question-answering.ipynb"
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">task</span> <span class="o">=</span> <span class="n">HF_TASKS_AUTO</span><span class="o">.</span><span class="n">QuestionAnswering</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">model_cls</span> <span class="o">=</span> <span class="n">AutoModelForQuestionAnswering</span>
 
 <span class="n">pretrained_model_name</span> <span class="o">=</span> <span class="s1">&#39;roberta-base&#39;</span> <span class="c1">#&#39;xlm-mlm-ende-1024&#39;</span>
-<span class="n">hf_arch</span><span class="p">,</span> <span class="n">hf_config</span><span class="p">,</span> <span class="n">hf_tokenizer</span><span class="p">,</span> <span class="n">hf_model</span> <span class="o">=</span> <span class="n">BLURR_MODEL_HELPER</span><span class="o">.</span><span class="n">get_hf_objects</span><span class="p">(</span><span class="n">pretrained_model_name</span><span class="p">,</span> <span class="n">task</span><span class="o">=</span><span class="n">task</span><span class="p">)</span>
+<span class="n">hf_arch</span><span class="p">,</span> <span class="n">hf_config</span><span class="p">,</span> <span class="n">hf_tokenizer</span><span class="p">,</span> <span class="n">hf_model</span> <span class="o">=</span> <span class="n">BLURR</span><span class="o">.</span><span class="n">get_hf_objects</span><span class="p">(</span><span class="n">pretrained_model_name</span><span class="p">,</span> <span class="n">model_cls</span><span class="o">=</span><span class="n">model_cls</span><span class="p">)</span>
 </pre></div>
 
     </div>
@@ -567,15 +567,15 @@ decode the dictionary produced as a byproduct of the tokenization process in the
   <tbody>
     <tr>
       <th>0</th>
-      <td>In which year was reports about Beyonce performing for Muammar Gaddafi surface? In 2011, documents obtained by WikiLeaks revealed that Beyoncé was one of many entertainers who performed for the family of Libyan ruler Muammar Gaddafi. Rolling Stone reported that the music industry was urging them to return the money they earned for the concerts; a spokesperson for Beyoncé later confirmed to The Huffington Post that she donated the money to the Clinton Bush Haiti Fund. Later that year she became</td>
-      <td>(20, 21)</td>
-      <td>2011</td>
+      <td>After 1831, what country did Chopin never return to? Chopin arrived in Paris in late September 1831; he would never return to Poland, thus becoming one of many expatriates of the Polish Great Emigration. In France he used the French versions of his given names, and after receiving French citizenship in 1835, he travelled on a French passport. However, Chopin remained close to his fellow Poles in exile as friends and confidants and he never felt fully comfortable speaking French. Chopin's biogra</td>
+      <td>(32, 33)</td>
+      <td>Poland</td>
     </tr>
     <tr>
       <th>1</th>
-      <td>Who managed the Destiny's Child group? Beyoncé Giselle Knowles-Carter (/biːˈjɒnseɪ/ bee-YON-say) (born September 4, 1981) is an American singer, songwriter, record producer and actress. Born and raised in Houston, Texas, she performed in various singing and dancing competitions as a child, and rose to fame in the late 1990s as lead singer of R&amp;B girl-group Destiny's Child. Managed by her father, Mathew Knowles, the group became one of the world's best-selling girl groups</td>
-      <td>(109, 113)</td>
-      <td>Mathew Knowles</td>
+      <td>What was the name of the first group Beyoncé was a part of? At age eight, Beyoncé and childhood friend Kelly Rowland met LaTavia Roberson while in an audition for an all-girl entertainment group. They were placed into a group with three other girls as Girl's Tyme, and rapped and danced on the talent show circuit in Houston. After seeing the group, R&amp;B producer Arne Frager brought them to his Northern California studio and placed them in Star Search, the largest talent show on national TV at the</td>
+      <td>(59, 63)</td>
+      <td>Girl's Tyme</td>
     </tr>
   </tbody>
 </table>
