@@ -118,7 +118,7 @@ nb_path: "nbs/02zc_modeling-seq2seq-translation.ipynb"
 <div class="output_area">
 
 <div class="output_subarea output_stream output_stderr output_text">
-<pre>Reusing dataset wmt16 (/home/wgilliam/.cache/huggingface/datasets/wmt16/de-en/1.0.0/7b2c4443a7d34c2e13df267eaa8cab4c62dd82f6b62b0d9ecc2e3a673ce17308)
+<pre>Reusing dataset wmt16 (/home/wgilliam/.cache/huggingface/datasets/wmt16/de-en/1.0.0/0d9fb3e814712c785176ad8cdb9f465fbe6479000ee6546725db30ad8a8b5f8a)
 </pre>
 </div>
 </div>
@@ -361,7 +361,7 @@ nb_path: "nbs/02zc_modeling-seq2seq-translation.ipynb"
 
 
 <div class="output_text output_subarea output_execute_result">
-<pre>(2, torch.Size([2, 325]), torch.Size([2, 103]))</pre>
+<pre>(2, torch.Size([2, 325]), torch.Size([2, 88]))</pre>
 </div>
 
 </div>
@@ -409,8 +409,8 @@ nb_path: "nbs/02zc_modeling-seq2seq-translation.ipynb"
     </tr>
     <tr>
       <th>1</th>
-      <td>Ich gehe mit der Berichterstatterin konform, daß das Kommissionsdokument leider zu wenig Empfehlungen an die Mitgliedstaaten zur Verwaltungsvereinfachung enthält, und unterstreiche Forderungen wie Konzentration bei Verhandlungen auf die Förderung ei</td>
-      <td>I agree with the rapporteur that unfortunately the Commission document contains too little in the way of recommendations to the Member States on simplifying administration, and I support the calls for negotiations to concentrate on promoting a favou</td>
+      <td>Deshalb besteht der Vorschlag der Fraktion der Sozialdemokratischen Partei Europas, den Sie erwähnt haben, darin, den Mittwoch als Termin der Vorstellung des Programms der Kommission Prodi für die Wahlperiode beizubehalten, und in dieses Programm au</td>
+      <td>Therefore, the proposal of the Group of the Party of European Socialists, and which you have mentioned, is that the Prodi Commission present its legislative programme on Wednesday, including its proposed administrative reform, because, otherwise, we</td>
     </tr>
   </tbody>
 </table>
@@ -455,11 +455,25 @@ nb_path: "nbs/02zc_modeling-seq2seq-translation.ipynb"
                 <span class="n">cbs</span><span class="o">=</span><span class="n">learn_cbs</span><span class="p">,</span>
                 <span class="n">splitter</span><span class="o">=</span><span class="n">partial</span><span class="p">(</span><span class="n">seq2seq_splitter</span><span class="p">,</span> <span class="n">arch</span><span class="o">=</span><span class="n">hf_arch</span><span class="p">))</span> <span class="c1">#.to_native_fp16() #.to_fp16()</span>
 
-<span class="n">learn</span><span class="o">.</span><span class="n">create_opt</span><span class="p">()</span> 
 <span class="n">learn</span><span class="o">.</span><span class="n">freeze</span><span class="p">()</span>
 </pre></div>
 
     </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stderr output_text">
+<pre>[nltk_data] Downloading package wordnet to /home/wgilliam/nltk_data...
+[nltk_data]   Package wordnet is already up-to-date!
+</pre>
+</div>
+</div>
+
 </div>
 </div>
 
@@ -473,10 +487,419 @@ nb_path: "nbs/02zc_modeling-seq2seq-translation.ipynb"
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span> 
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">learn</span><span class="o">.</span><span class="n">blurr_summary</span><span class="p">()</span>
 </pre></div>
 
     </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+<div class="output_html rendered_html output_subarea ">
+
+</div>
+
+</div>
+
+<div class="output_area">
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>HF_BaseModelWrapper (Input shape: 2)
+============================================================================
+Layer (type)         Output Shape         Param #    Trainable 
+============================================================================
+                     2 x 118 x 1024      
+Embedding                                 51470336   False     
+Embedding                                 51470336   False     
+____________________________________________________________________________
+                     2 x 1024            
+BartLearnedPositionalEmbedding                      1050624    False     
+Linear                                    1049600    False     
+Linear                                    1049600    False     
+Linear                                    1049600    False     
+Linear                                    1049600    False     
+LayerNorm                                 2048       True      
+____________________________________________________________________________
+                     2 x 325 x 4096      
+Linear                                    4198400    False     
+____________________________________________________________________________
+                     2 x 325 x 1024      
+Linear                                    4195328    False     
+LayerNorm                                 2048       True      
+Linear                                    1049600    False     
+Linear                                    1049600    False     
+Linear                                    1049600    False     
+Linear                                    1049600    False     
+LayerNorm                                 2048       True      
+____________________________________________________________________________
+                     2 x 325 x 4096      
+Linear                                    4198400    False     
+____________________________________________________________________________
+                     2 x 325 x 1024      
+Linear                                    4195328    False     
+LayerNorm                                 2048       True      
+Linear                                    1049600    False     
+Linear                                    1049600    False     
+Linear                                    1049600    False     
+Linear                                    1049600    False     
+LayerNorm                                 2048       True      
+____________________________________________________________________________
+                     2 x 325 x 4096      
+Linear                                    4198400    False     
+____________________________________________________________________________
+                     2 x 325 x 1024      
+Linear                                    4195328    False     
+LayerNorm                                 2048       True      
+Linear                                    1049600    False     
+Linear                                    1049600    False     
+Linear                                    1049600    False     
+Linear                                    1049600    False     
+LayerNorm                                 2048       True      
+____________________________________________________________________________
+                     2 x 325 x 4096      
+Linear                                    4198400    False     
+____________________________________________________________________________
+                     2 x 325 x 1024      
+Linear                                    4195328    False     
+LayerNorm                                 2048       True      
+Linear                                    1049600    False     
+Linear                                    1049600    False     
+Linear                                    1049600    False     
+Linear                                    1049600    False     
+LayerNorm                                 2048       True      
+____________________________________________________________________________
+                     2 x 325 x 4096      
+Linear                                    4198400    False     
+____________________________________________________________________________
+                     2 x 325 x 1024      
+Linear                                    4195328    False     
+LayerNorm                                 2048       True      
+Linear                                    1049600    False     
+Linear                                    1049600    False     
+Linear                                    1049600    False     
+Linear                                    1049600    False     
+LayerNorm                                 2048       True      
+____________________________________________________________________________
+                     2 x 325 x 4096      
+Linear                                    4198400    False     
+____________________________________________________________________________
+                     2 x 325 x 1024      
+Linear                                    4195328    False     
+LayerNorm                                 2048       True      
+Linear                                    1049600    False     
+Linear                                    1049600    False     
+Linear                                    1049600    False     
+Linear                                    1049600    False     
+LayerNorm                                 2048       True      
+____________________________________________________________________________
+                     2 x 325 x 4096      
+Linear                                    4198400    False     
+____________________________________________________________________________
+                     2 x 325 x 1024      
+Linear                                    4195328    False     
+LayerNorm                                 2048       True      
+Linear                                    1049600    False     
+Linear                                    1049600    False     
+Linear                                    1049600    False     
+Linear                                    1049600    False     
+LayerNorm                                 2048       True      
+____________________________________________________________________________
+                     2 x 325 x 4096      
+Linear                                    4198400    False     
+____________________________________________________________________________
+                     2 x 325 x 1024      
+Linear                                    4195328    False     
+LayerNorm                                 2048       True      
+Linear                                    1049600    False     
+Linear                                    1049600    False     
+Linear                                    1049600    False     
+Linear                                    1049600    False     
+LayerNorm                                 2048       True      
+____________________________________________________________________________
+                     2 x 325 x 4096      
+Linear                                    4198400    False     
+____________________________________________________________________________
+                     2 x 325 x 1024      
+Linear                                    4195328    False     
+LayerNorm                                 2048       True      
+Linear                                    1049600    False     
+Linear                                    1049600    False     
+Linear                                    1049600    False     
+Linear                                    1049600    False     
+LayerNorm                                 2048       True      
+____________________________________________________________________________
+                     2 x 325 x 4096      
+Linear                                    4198400    False     
+____________________________________________________________________________
+                     2 x 325 x 1024      
+Linear                                    4195328    False     
+LayerNorm                                 2048       True      
+Linear                                    1049600    False     
+Linear                                    1049600    False     
+Linear                                    1049600    False     
+Linear                                    1049600    False     
+LayerNorm                                 2048       True      
+____________________________________________________________________________
+                     2 x 325 x 4096      
+Linear                                    4198400    False     
+____________________________________________________________________________
+                     2 x 325 x 1024      
+Linear                                    4195328    False     
+LayerNorm                                 2048       True      
+Linear                                    1049600    False     
+Linear                                    1049600    False     
+Linear                                    1049600    False     
+Linear                                    1049600    False     
+LayerNorm                                 2048       True      
+____________________________________________________________________________
+                     2 x 325 x 4096      
+Linear                                    4198400    False     
+____________________________________________________________________________
+                     2 x 325 x 1024      
+Linear                                    4195328    False     
+LayerNorm                                 2048       True      
+LayerNorm                                 2048       True      
+____________________________________________________________________________
+                     2 x 118 x 1024      
+Embedding                                 51470336   False     
+____________________________________________________________________________
+                     2 x 1024            
+BartLearnedPositionalEmbedding                      1050624    False     
+Linear                                    1049600    True      
+Linear                                    1049600    True      
+Linear                                    1049600    True      
+Linear                                    1049600    True      
+LayerNorm                                 2048       True      
+Linear                                    1049600    True      
+Linear                                    1049600    True      
+Linear                                    1049600    True      
+Linear                                    1049600    True      
+LayerNorm                                 2048       True      
+____________________________________________________________________________
+                     2 x 118 x 4096      
+Linear                                    4198400    True      
+____________________________________________________________________________
+                     2 x 118 x 1024      
+Linear                                    4195328    True      
+LayerNorm                                 2048       True      
+Linear                                    1049600    True      
+Linear                                    1049600    True      
+Linear                                    1049600    True      
+Linear                                    1049600    True      
+LayerNorm                                 2048       True      
+Linear                                    1049600    True      
+Linear                                    1049600    True      
+Linear                                    1049600    True      
+Linear                                    1049600    True      
+LayerNorm                                 2048       True      
+____________________________________________________________________________
+                     2 x 118 x 4096      
+Linear                                    4198400    True      
+____________________________________________________________________________
+                     2 x 118 x 1024      
+Linear                                    4195328    True      
+LayerNorm                                 2048       True      
+Linear                                    1049600    True      
+Linear                                    1049600    True      
+Linear                                    1049600    True      
+Linear                                    1049600    True      
+LayerNorm                                 2048       True      
+Linear                                    1049600    True      
+Linear                                    1049600    True      
+Linear                                    1049600    True      
+Linear                                    1049600    True      
+LayerNorm                                 2048       True      
+____________________________________________________________________________
+                     2 x 118 x 4096      
+Linear                                    4198400    True      
+____________________________________________________________________________
+                     2 x 118 x 1024      
+Linear                                    4195328    True      
+LayerNorm                                 2048       True      
+Linear                                    1049600    True      
+Linear                                    1049600    True      
+Linear                                    1049600    True      
+Linear                                    1049600    True      
+LayerNorm                                 2048       True      
+Linear                                    1049600    True      
+Linear                                    1049600    True      
+Linear                                    1049600    True      
+Linear                                    1049600    True      
+LayerNorm                                 2048       True      
+____________________________________________________________________________
+                     2 x 118 x 4096      
+Linear                                    4198400    True      
+____________________________________________________________________________
+                     2 x 118 x 1024      
+Linear                                    4195328    True      
+LayerNorm                                 2048       True      
+Linear                                    1049600    True      
+Linear                                    1049600    True      
+Linear                                    1049600    True      
+Linear                                    1049600    True      
+LayerNorm                                 2048       True      
+Linear                                    1049600    True      
+Linear                                    1049600    True      
+Linear                                    1049600    True      
+Linear                                    1049600    True      
+LayerNorm                                 2048       True      
+____________________________________________________________________________
+                     2 x 118 x 4096      
+Linear                                    4198400    True      
+____________________________________________________________________________
+                     2 x 118 x 1024      
+Linear                                    4195328    True      
+LayerNorm                                 2048       True      
+Linear                                    1049600    True      
+Linear                                    1049600    True      
+Linear                                    1049600    True      
+Linear                                    1049600    True      
+LayerNorm                                 2048       True      
+Linear                                    1049600    True      
+Linear                                    1049600    True      
+Linear                                    1049600    True      
+Linear                                    1049600    True      
+LayerNorm                                 2048       True      
+____________________________________________________________________________
+                     2 x 118 x 4096      
+Linear                                    4198400    True      
+____________________________________________________________________________
+                     2 x 118 x 1024      
+Linear                                    4195328    True      
+LayerNorm                                 2048       True      
+Linear                                    1049600    True      
+Linear                                    1049600    True      
+Linear                                    1049600    True      
+Linear                                    1049600    True      
+LayerNorm                                 2048       True      
+Linear                                    1049600    True      
+Linear                                    1049600    True      
+Linear                                    1049600    True      
+Linear                                    1049600    True      
+LayerNorm                                 2048       True      
+____________________________________________________________________________
+                     2 x 118 x 4096      
+Linear                                    4198400    True      
+____________________________________________________________________________
+                     2 x 118 x 1024      
+Linear                                    4195328    True      
+LayerNorm                                 2048       True      
+Linear                                    1049600    True      
+Linear                                    1049600    True      
+Linear                                    1049600    True      
+Linear                                    1049600    True      
+LayerNorm                                 2048       True      
+Linear                                    1049600    True      
+Linear                                    1049600    True      
+Linear                                    1049600    True      
+Linear                                    1049600    True      
+LayerNorm                                 2048       True      
+____________________________________________________________________________
+                     2 x 118 x 4096      
+Linear                                    4198400    True      
+____________________________________________________________________________
+                     2 x 118 x 1024      
+Linear                                    4195328    True      
+LayerNorm                                 2048       True      
+Linear                                    1049600    True      
+Linear                                    1049600    True      
+Linear                                    1049600    True      
+Linear                                    1049600    True      
+LayerNorm                                 2048       True      
+Linear                                    1049600    True      
+Linear                                    1049600    True      
+Linear                                    1049600    True      
+Linear                                    1049600    True      
+LayerNorm                                 2048       True      
+____________________________________________________________________________
+                     2 x 118 x 4096      
+Linear                                    4198400    True      
+____________________________________________________________________________
+                     2 x 118 x 1024      
+Linear                                    4195328    True      
+LayerNorm                                 2048       True      
+Linear                                    1049600    True      
+Linear                                    1049600    True      
+Linear                                    1049600    True      
+Linear                                    1049600    True      
+LayerNorm                                 2048       True      
+Linear                                    1049600    True      
+Linear                                    1049600    True      
+Linear                                    1049600    True      
+Linear                                    1049600    True      
+LayerNorm                                 2048       True      
+____________________________________________________________________________
+                     2 x 118 x 4096      
+Linear                                    4198400    True      
+____________________________________________________________________________
+                     2 x 118 x 1024      
+Linear                                    4195328    True      
+LayerNorm                                 2048       True      
+Linear                                    1049600    True      
+Linear                                    1049600    True      
+Linear                                    1049600    True      
+Linear                                    1049600    True      
+LayerNorm                                 2048       True      
+Linear                                    1049600    True      
+Linear                                    1049600    True      
+Linear                                    1049600    True      
+Linear                                    1049600    True      
+LayerNorm                                 2048       True      
+____________________________________________________________________________
+                     2 x 118 x 4096      
+Linear                                    4198400    True      
+____________________________________________________________________________
+                     2 x 118 x 1024      
+Linear                                    4195328    True      
+LayerNorm                                 2048       True      
+Linear                                    1049600    True      
+Linear                                    1049600    True      
+Linear                                    1049600    True      
+Linear                                    1049600    True      
+LayerNorm                                 2048       True      
+Linear                                    1049600    True      
+Linear                                    1049600    True      
+Linear                                    1049600    True      
+Linear                                    1049600    True      
+LayerNorm                                 2048       True      
+____________________________________________________________________________
+                     2 x 118 x 4096      
+Linear                                    4198400    True      
+____________________________________________________________________________
+                     2 x 118 x 1024      
+Linear                                    4195328    True      
+LayerNorm                                 2048       True      
+LayerNorm                                 2048       True      
+____________________________________________________________________________
+                     2 x 118 x 50264     
+Linear                                    51470336   False     
+____________________________________________________________________________
+
+Total params: 560,701,440
+Total trainable params: 201,613,312
+Total non-trainable params: 359,088,128
+
+Optimizer used: functools.partial(&lt;function Adam at 0x7f75085f33a0&gt;)
+Loss function: FlattenedLoss of CrossEntropyLoss()
+
+Model frozen up to parameter group #2
+
+Callbacks:
+  - TrainEvalCallback
+  - HF_BaseModelCallback
+  - Recorder
+  - ProgressCallback</pre>
+</div>
+
+</div>
+
 </div>
 </div>
 
@@ -524,7 +947,7 @@ nb_path: "nbs/02zc_modeling-seq2seq-translation.ipynb"
 
 
 <div class="output_text output_subarea output_execute_result">
-<pre>(2, 3, torch.Size([2, 325]), 2, torch.Size([2, 103]))</pre>
+<pre>(2, 3, torch.Size([2, 325]), 2, torch.Size([2, 121]))</pre>
 </div>
 
 </div>
@@ -597,7 +1020,7 @@ nb_path: "nbs/02zc_modeling-seq2seq-translation.ipynb"
 
 
 <div class="output_text output_subarea output_execute_result">
-<pre>SuggestedLRs(lr_min=0.00010000000474974513, lr_steep=0.0831763744354248)</pre>
+<pre>SuggestedLRs(lr_min=0.00010000000474974513, lr_steep=0.2089296132326126)</pre>
 </div>
 
 </div>
@@ -607,7 +1030,7 @@ nb_path: "nbs/02zc_modeling-seq2seq-translation.ipynb"
 
 
 <div class="output_png output_subarea ">
-<img src="data:image/png;base64,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
+<img src="data:image/png;base64,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k06syrt3717X/eTkZG3cuFHh4eGKj4/X9OnTNXnyZJ1++uk666yz9PrrryslJUXTpk0zserGa2vtlWiz1Prb3NbaK9FmqW20uaq23v5amXMRlbUsWrTIkFTjNmXKFNcx//rXv4wuXboYvr6+RlJSkrFkyRLzCm6ittZew6DNbaHNba29hkGb20qbq2rr7a8NezMBAACPxpwZAADg0QgzAADAoxFmAACARyPMAAAAj0aYAQAAHo0wAwAAPBphBgAAeDTCDAAA8GiEGQCW1rVrV82ePdvsMgBYGGEGgG688UZdfvnlZpdxUmvWrNGtt97a7D+na9eustlsstlsCggIUEJCgp5++mk1dJF0whfQ8thoEoApysrK5OPjc8rjOnbs2ALVnPDYY4/plltuUUlJib7//nvddtttCgkJ0dSpU1usBgANR88MgFPavn27xo8fr6CgIEVGRmry5Mk6evSo6/lvv/1WI0aMUFhYmCIiInTJJZdo3759rucPHDggm82mjz76SKNHj5a/v7/ee+89V4/QM888o86dOysiIkJ33HGHysrKXK/9bU+HzWbTm2++qYkTJ6pdu3bq1auX5s+fX63e+fPnq1evXgoICNCYMWM0d+5c2Ww25eTk1NnO4OBgRUVFqWvXrrr55ps1cOBAfffdd67n9+3bp8suu0yRkZEKCgrS0KFD9f3337ueHz16tA4ePKh7773X1ctTacWKFTrnnHMUEBCguLg43XXXXSosLKz3ZwCgdoQZAHXKyMjQqFGjNGjQIK1du1bffvutDh8+rKuuusp1TGFhoaZPn641a9bohx9+kN1u18SJE+V0Oqu914wZM3TXXXdpx44dGjt2rCRp0aJF2rdvnxYtWqS5c+dqzpw5mjNnTp01Pfroo7rqqqu0efNmjR8/Xtdff72ys7MlnQhOV155pS6//HJt3LhRU6dO1YMPPtigNhuGocWLF2vHjh3Veo8KCgo0fvx4ff/999qwYYPGjh2rCRMmKCUlRZL02WefKTY2Vo899pgyMjKUkZEhSdqyZYvGjh2rSZMmafPmzfrwww/1008/6c4772xQXQBqYe6m3QCsYMqUKcZll1120uceeugh48ILL6z2WGpqqiHJ2LVr10lfk5WVZUgytmzZYhiGYSQnJxuSjNmzZ9f4uV26dDHKy8tdj/3ud78zrr76atf9Ll26GM8//7zrviTjb3/7m+t+QUGBYbPZjG+++cYwDMOYMWOG0b9//2o/58EHHzQkGcePHz/5X8AvP8fX19cIDAw0fHx8DEmGv7+/sXz58lpfYxiG0bdvX+PFF1+stV7DMIzJkycbt956a7XHli1bZtjtdqO4uLjO9wdwavTMAKjTunXrtGjRIgUFBbluCQkJkuQaStq3b5+uu+46de/eXSEhIerWrZskuXosKp1++uk13r9fv37y8vJy3e/cubOysrLqrGngwIGuPwcGBio4ONj1ml27dmno0KHVjh82bFi92vqXv/xFGzdu1JIlSzRmzBg9+OCDGj58uOv5wsJC3X///erbt6/CwsIUFBSknTt31mjnb61bt05z5syp9nc4duxYOZ1OJScn16s2ALVjAjCAOjmdTk2YMEFPPvlkjec6d+4sSZowYYLi4uL0xhtvKDo6Wk6nU/3791dpaWm14wMDA2u8x28nAdtsthrDUw15jWEY1eaqVD5WHx06dFDPnj3Vs2dPffrpp+rZs6fOPPNMnX/++ZJOhJ0FCxbomWeeUc+ePRUQEKArr7yyRjt/y+l0aurUqbrrrrtqPBcfH1+v2gDUjjADoE5JSUn69NNP1bVrV3l71/yVcezYMe3YsUOvvfaaRo4cKUn66aefWrpMl4SEBH399dfVHlu7dm2D36d9+/b605/+pPvuu08bNmyQzWbTsmXLdOONN2rixImSTsyhOXDgQLXX+fr6qqKiotpjSUlJ2rZtm3r27NngOgCcGsNMACRJubm52rhxY7VbSkqK7rjjDmVnZ+vaa6/V6tWrtX//fn333Xf6wx/+oIqKCrVv314RERF6/fXXtXfvXv3444+aPn26ae2YOnWqdu7cqRkzZmj37t366KOPXBOKf9tjcyp33HGHdu3apU8//VSS1LNnT3322WfauHGjNm3apOuuu65GL1LXrl21dOlSpaenu674mjFjhlauXKk77rhDGzdu1J49ezR//nz96U9/anqDARBmAJywePFiDR48uNrt4YcfVnR0tJYvX66KigqNHTtW/fv31913363Q0FDZ7XbZ7Xb997//1bp169S/f3/de++9evrpp01rR7du3fTJJ5/os88+08CBA/XKK6+4rmby8/Nr0Ht17NhRkydP1iOPPCKn06nnn39e7du31/DhwzVhwgSNHTtWSUlJ1V7z2GOP6cCBA+rRo4drjZyBAwdqyZIl2rNnj0aOHKnBgwfroYcecg3TAWgam1HfwWQA8FCPP/64Xn31VaWmpppdCoBmwJwZAK3Oyy+/rKFDhyoiIkLLly/X008/zZouQCtGmAHQ6uzZs0f/+Mc/lJ2drfj4eP35z3/WzJkzzS4LQDNhmAkAAHg0JgADAACPRpgBAAAejTADAAA8GmEGAAB4NMIMAADwaIQZAADg0QgzAADAoxFmAACARyPMAAAAj/b/AboUrMIbcqx3AAAAAElFTkSuQmCC
 "
 >
 </div>
@@ -656,12 +1079,12 @@ nb_path: "nbs/02zc_modeling-seq2seq-translation.ipynb"
   <tbody>
     <tr>
       <td>0</td>
-      <td>2.223296</td>
-      <td>2.126458</td>
-      <td>0.082567</td>
-      <td>0.288516</td>
-      <td>7.607020</td>
-      <td>02:10</td>
+      <td>2.169569</td>
+      <td>2.119875</td>
+      <td>0.080092</td>
+      <td>0.296727</td>
+      <td>7.829588</td>
+      <td>02:31</td>
     </tr>
   </tbody>
 </table>
@@ -717,15 +1140,15 @@ nb_path: "nbs/02zc_modeling-seq2seq-translation.ipynb"
   <tbody>
     <tr>
       <th>0</th>
-      <td>Sie wird aber auf Seite 5 dieser Leitlinien ganz eindeutig genannt, und ich möchte darauf verweisen - weil sie mich dazu aufgefordert haben -, daß diese Partnerschaft für mich - und ich habe lange genug eine Region betreut, um dies beurteilen zu können - ein sehr wirkungsvolles Instrument zur Mobilisierung der geistigen Ressourcen auf lokaler Ebene ist - sowohl derer im öffentlichen Sektor - die Stadt- und Gemeinderäte, den schulischen und gesellschaftlichen Bereich, die Vereine und Verbände -</td>
-      <td>However, I do wish to mention - since you have asked me to do so - that, as far as I am concerned, this partnership - and I spent long enough as a regional administrator within my own country to be able to say this most sincerely - is a tool, one used to involve local brainpower, be it in the public sector, in the form of elected representatives, the social and educational sectors, associations, or in the private sector; a decentralised partnership, and let me mention in this connection, in res</td>
-      <td>As you know, I would like to point out that, because I was asked to do so, this partnership is a very important one for me - and I have had a long-standing interest in it - and that it is an important instrument for the development of local communities, not only in the public sector but also in the private sector as well. And the territorial agreements which I have just mentioned are one of the forms of cooperation between me and Mrs Angelilli, for example, in the form of territorial agreements</td>
+      <td>Die Verkehrssicherheit bestimmte in letzter Zeit häufig die Negativschlagzeilen: Das Eisenbahnunglück nahe dem Londoner Bahnhof Paddington, das furchtbare Eisenbahnunglück in Norwegen, zwei Flugzeugabstürze, bei denen EU-Bürger zu Schaden kamen, und die von der Erika vor der bretonischen Küste verursachte Naturkatastrophe sind Ereignisse, die allein in den letzten vier Monaten zu verzeichnen waren. Sie machen deutlich, daß Verkehrssicherheit keine Selbstverständlichkeit ist und daß diejenigen,</td>
+      <td>Transport safety has sadly been in the news recently: the Paddington rail crash in London, the terrible rail crash in Norway, the two aviation crashes involving EU citizens and the natural disaster involving the Erika off Brittany - all within the last four months - remind us that transport safety can never be taken for granted and that those charged with protecting the public must be highly motivated and highly qualified.</td>
+      <td>In the past few months, there have been a number of serious incidents involving the transport of dangerous goods, such as a railway line near Paddington, a railway in Norwegen, two air transport lines, and the storm of the Erika, which caused a natural disaster. These are all events which have taken place in the past four months and which show that transport safety is not a priority and that the people responsible for the safety of the public transport system must be more active and more qualif</td>
     </tr>
     <tr>
       <th>1</th>
-      <td>Ich möchte daher die Kommission auf zwei Punkte hinweisen: Erstens muß die Konzertierung als Instrument der Koordinierung und der Beteiligung sämtlicher lokaler und regionaler Marktteilnehmer an den Entscheidungen optimal genutzt werden, um speziell Ungleichgewichte und Ungleichheiten zu vermeiden; zweitens bedarf es einer Vereinfachung und transparenteren Gestaltung der Verwaltungsprozesse, die sich allzu häufig unnötig in die Länge ziehen und derart kompliziert sind, daß sie, was vor allem vo</td>
-      <td>Firstly, we need to make the best possible use of consultation as a means of ensuring proper coordination and participation by all local and regional operators in decision-making, precisely so that imbalances and inequalities can be avoided. Secondly, a genuine effort is required to make administrative procedures simpler and more transparent, since, they are all too often unnecessarily lengthy and complicated, to the point of hindering access to the Funds.</td>
-      <td>I would like the Commission to focus on two points, firstly, on the importance of the Commission' s role as an instrument for the coordination and cooperation of local and regional stakeholders in the decision-making process, so as to ensure that there is a level of transparency and coordination in the implementation of the procedures, which are all too often difficult to implement and, in particular, because of the influence of the European Commission, the Commission has been a major factor in</td>
+      <td>Zunächst möchte ich mich zum Forschungsaspekt äußern. Wir erachten es als sehr positiv, daß die Berichterstatterin den Vorschlag unseres Ausschusses in ihre Schlußfolgerungen aufgenommen hat, wonach in den Kohäsionsländern die wissenschaftliche Infrastruktur ausgedehnt werden muß, indem Hochschulen und Bildungseinrichtungen an solchen Orten geschaffen werden, an denen sie besser als bisher den Bewohnern unterentwickelter Regionen zur Verfügung stehen, und es Absolventen erleichtert wird, in ihr</td>
+      <td>We see it as a very positive sign that, in her own conclusions, the rapporteur has taken account of our committee' s proposal that the Cohesion Fund countries should broaden the research infrastructure by locating universities and colleges in such a way that they would serve those who live in undeveloped regions better than now and make it easier for educated people to remain in their home districts.</td>
+      <td>I would like to first comment on the research into the social and economic infrastructure in the countries affected by the proposal of the rapporteur, which we have taken into consideration in our Committee on Education and Social Affairs. We think that it is very positive that in these countries, in particular, there will be more opportunities for the development of the knowledge and skills of the young people, and that they will be able to go to school in more remote areas, and there will als</td>
     </tr>
   </tbody>
 </table>
@@ -780,13 +1203,13 @@ nb_path: "nbs/02zc_modeling-seq2seq-translation.ipynb"
 
 <div class="output_subarea output_stream output_stdout output_text">
 <pre>=== Prediction 1 ===
- I would like to make a beer, however, for the sake of beer, of course. I am a beer drinker, after all, and I like to drink a beer of some kind, as you do too, I would say, in a sense.
+ I would like to make a comment on the beer industry in general, Mr Schubert. It is a very good industry, I would suggest that it is a great beer industry and I would ask that you do the same for beer. Thank you very much.
 
 === Prediction 2 ===
- I would like to make a beer, however, for the sake of beer, of course. I am a beer drinker, after all, and I like to drink a beer of some kind, as you do too, I would say, but not a beer.
+ I would like to make a comment on the beer industry in general, Mr Schubert. It is a very good industry, I would suggest that it is a great beer industry and I would ask that you do the same for beer. Thank you very very much.
 
 === Prediction 3 ===
- I would like to make a beer, however, for the sake of beer, of course. I am a beer drinker, after all, and I like to drink a beer of some kind, as you do too, I would say, in a way.
+ I would like to make a comment on the beer industry in general, Mr Schubert. It is a very good industry, I would suggest that it is a great beer industry and I would ask that you do the same, Mr Schroedter. Thank you.
 
 </pre>
 </div>
@@ -862,7 +1285,7 @@ nb_path: "nbs/02zc_modeling-seq2seq-translation.ipynb"
 
 
 <div class="output_text output_subarea output_execute_result">
-<pre>[&#39; I would like to make a beer, however, for the sake of beer, of course. I am a beer drinker, after all, and I like to drink a beer of some kind, as you do too, I would say, in a sense.&#39;]</pre>
+<pre>[&#39; I would like to make a comment on the beer industry in general, Mr Schubert. It is a very good industry, I would suggest that it is a great beer industry and I would ask that you do the same for beer. Thank you very much.&#39;]</pre>
 </div>
 
 </div>
@@ -992,7 +1415,7 @@ nb_path: "nbs/02zc_modeling-seq2seq-translation.ipynb"
 <div class="output_area">
 
 <div class="output_subarea output_stream output_stderr output_text">
-<pre>Reusing dataset wmt16 (/home/wgilliam/.cache/huggingface/datasets/wmt16/de-en/1.0.0/7b2c4443a7d34c2e13df267eaa8cab4c62dd82f6b62b0d9ecc2e3a673ce17308)
+<pre>Reusing dataset wmt16 (/home/wgilliam/.cache/huggingface/datasets/wmt16/de-en/1.0.0/0d9fb3e814712c785176ad8cdb9f465fbe6479000ee6546725db30ad8a8b5f8a)
 </pre>
 </div>
 </div>

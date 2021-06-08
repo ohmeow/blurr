@@ -136,7 +136,7 @@ def show_batch(x:HF_Seq2SeqInput, y, samples, dataloaders, ctxs=None, max_n=6,
     hf_tokenizer = hf_before_batch_tfm.hf_tokenizer
     ignore_token_id = hf_before_batch_tfm.ignore_token_id
 
-    res = L([ (hf_tokenizer.decode(s[0], skip_special_tokens=True)[:input_trunc_at],
+    res = L([ (hf_tokenizer.decode(s[0], skip_special_tokens=False)[:input_trunc_at],
                hf_tokenizer.decode(s[1][s[1] != ignore_token_id], skip_special_tokens=True)[:target_trunc_at])
              for s in samples ])
 

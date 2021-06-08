@@ -105,7 +105,7 @@ nb_path: "nbs/01zd_data-seq2seq-translation.ipynb"
 <div class="output_area">
 
 <div class="output_subarea output_stream output_stderr output_text">
-<pre>Reusing dataset wmt16 (/home/wgilliam/.cache/huggingface/datasets/wmt16/de-en/1.0.0/7b2c4443a7d34c2e13df267eaa8cab4c62dd82f6b62b0d9ecc2e3a673ce17308)
+<pre>Reusing dataset wmt16 (/home/wgilliam/.cache/huggingface/datasets/wmt16/de-en/1.0.0/0d9fb3e814712c785176ad8cdb9f465fbe6479000ee6546725db30ad8a8b5f8a)
 </pre>
 </div>
 </div>
@@ -362,7 +362,7 @@ nb_path: "nbs/01zd_data-seq2seq-translation.ipynb"
 
 
 <div class="output_text output_subarea output_execute_result">
-<pre>(2, torch.Size([4, 483]), torch.Size([4, 150]))</pre>
+<pre>(2, torch.Size([4, 458]), torch.Size([4, 287]))</pre>
 </div>
 
 </div>
@@ -405,13 +405,13 @@ nb_path: "nbs/01zd_data-seq2seq-translation.ipynb"
   <tbody>
     <tr>
       <th>0</th>
-      <td>Was nun die Ergebnisse der Verhandlungen über die Anwendung der Artikel 3, 4, 5, 6 und 12 des Interimsabkommens bezüglich Warenhandel, öffentlicher Aufträge, Wettbewerb, Konsultationsmechanismen bei Fragen des geistigen Eigentums und Beilegung von S</td>
-      <td>Although for certain sectors there may be flaws - I am thinking specifically of the textiles sector, where the rules of origin issue causes great concern - the effects will be beneficial for both the European Union and Mexico. For the European Union</td>
+      <td>Bericht (A5-0089/2000) von Frau Rühle im Namen des Ausschusses für Haushaltskontrolle über den Aufschub des Beschlusses zur Entlastung der Kommission für die Haushaltsführung des sechsten, siebten und achten Europäischen Entwicklungsfonds für das Ha</td>
+      <td>Report (A5-0089/2000) by Mr Rühle, on behalf of the Committee on Budgetary Control, on postponement of the decision concerning discharge to the Commission in respect of the financial management of the sixth, seventh and eighth European Development F</td>
     </tr>
     <tr>
       <th>1</th>
-      <td>Bei einer ernsthaften Einwanderungspolitik dürfen diese Erwägungen nicht außer acht gelassen werden, denn angesichts einer solchen demographischen und demnächst wirtschaftlichen Katastrophe bedarf es liberaler, nichtrestriktiver, den wirtschaftliche</td>
-      <td>Any meaningful migration policy cannot fail to take these considerations into account, for this demographic holocaust, soon to become an economic disaster, calls for proposals for migration policies which are liberal, antiprotectionist and geared to</td>
+      <td>Ich möchte Sie, die Präsidentin unseres Parlaments, aber auch den Rat und die Kommission ersuchen, bei den türkischen Behörden und beim türkischen Parlament wegen einiger Vorgänge der letzten Tage zu intervenieren: einmal wegen der Aufstellung einer</td>
+      <td>Firstly, the existence of a blacklist of Members of Parliament and representatives of NGOs whom the Turkish government deems undesirable. Secondly, the arrest, which took place at the very time when a delegation from the European Parliament was visi</td>
     </tr>
   </tbody>
 </table>
@@ -540,7 +540,14 @@ nb_path: "nbs/01zd_data-seq2seq-translation.ipynb"
     
     <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;=== </span><span class="si">{</span><span class="n">model_name</span><span class="si">}</span><span class="s1"> ===</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
     
-    <span class="n">hf_arch</span><span class="p">,</span> <span class="n">hf_config</span><span class="p">,</span> <span class="n">hf_tokenizer</span><span class="p">,</span> <span class="n">hf_model</span> <span class="o">=</span> <span class="n">BLURR</span><span class="o">.</span><span class="n">get_hf_objects</span><span class="p">(</span><span class="n">model_name</span><span class="p">,</span> <span class="n">model_cls</span><span class="o">=</span><span class="n">model_cls</span><span class="p">)</span>
+    <span class="n">hf_tok_kwargs</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">model_name</span> <span class="o">==</span> <span class="s1">&#39;sshleifer/tiny-mbart&#39;</span><span class="p">):</span>
+        <span class="n">hf_tok_kwargs</span><span class="p">[</span><span class="s1">&#39;src_lang&#39;</span><span class="p">],</span> <span class="n">hf_tok_kwargs</span><span class="p">[</span><span class="s1">&#39;tgt_lang&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;de_DE&quot;</span><span class="p">,</span> <span class="s2">&quot;en_XX&quot;</span>
+            
+    <span class="n">hf_arch</span><span class="p">,</span> <span class="n">hf_config</span><span class="p">,</span> <span class="n">hf_tokenizer</span><span class="p">,</span> <span class="n">hf_model</span> <span class="o">=</span> <span class="n">BLURR</span><span class="o">.</span><span class="n">get_hf_objects</span><span class="p">(</span><span class="n">model_name</span><span class="p">,</span> 
+                                                                      <span class="n">model_cls</span><span class="o">=</span><span class="n">model_cls</span><span class="p">,</span> 
+                                                                      <span class="n">tokenizer_kwargs</span><span class="o">=</span><span class="n">hf_tok_kwargs</span><span class="p">)</span>
+    
     <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;architecture:</span><span class="se">\t</span><span class="si">{</span><span class="n">hf_arch</span><span class="si">}</span><span class="se">\n</span><span class="s1">tokenizer:</span><span class="se">\t</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">hf_tokenizer</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
     
     <span class="c1"># not all architectures include a native pad_token (e.g., gpt2, ctrl, etc...), so we add one here</span>
@@ -634,6 +641,30 @@ nb_path: "nbs/01zd_data-seq2seq-translation.ipynb"
       <td>marian</td>
       <td>MarianTokenizer</td>
       <td>Helsinki-NLP/opus-mt-de-en</td>
+      <td>PASSED</td>
+      <td></td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>mbart</td>
+      <td>MBartTokenizerFast</td>
+      <td>sshleifer/tiny-mbart</td>
+      <td>PASSED</td>
+      <td></td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>mt5</td>
+      <td>T5TokenizerFast</td>
+      <td>google/mt5-small</td>
+      <td>PASSED</td>
+      <td></td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>t5</td>
+      <td>T5TokenizerFast</td>
+      <td>t5-small</td>
       <td>PASSED</td>
       <td></td>
     </tr>
