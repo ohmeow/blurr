@@ -182,6 +182,12 @@ learn.show_results(learner=learn, max_n=2)
 
 ## ❗ Updates
 
+**06/10/2020**
+
+* Updated to work with Huggingface 4.6.x
+* Added MLM fine-tuning
+* Reorganized code/docs
+
 **05/04/2020**
 
 ***The "May the Fourth be with you" release:***
