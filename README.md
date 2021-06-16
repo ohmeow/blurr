@@ -121,24 +121,24 @@ learn.fit_one_cycle(3, lr_max=1e-3)
   <tbody>
     <tr>
       <td>0</td>
-      <td>0.626491</td>
-      <td>0.555838</td>
-      <td>0.805000</td>
-      <td>00:21</td>
+      <td>0.584600</td>
+      <td>0.393547</td>
+      <td>0.840000</td>
+      <td>00:22</td>
     </tr>
     <tr>
       <td>1</td>
-      <td>0.361657</td>
-      <td>0.305116</td>
-      <td>0.885000</td>
+      <td>0.389956</td>
+      <td>0.300889</td>
+      <td>0.890000</td>
       <td>00:21</td>
     </tr>
     <tr>
       <td>2</td>
-      <td>0.279382</td>
-      <td>0.302756</td>
-      <td>0.880000</td>
-      <td>00:21</td>
+      <td>0.252278</td>
+      <td>0.307273</td>
+      <td>0.890000</td>
+      <td>00:22</td>
     </tr>
   </tbody>
 </table>
@@ -182,13 +182,20 @@ learn.show_results(learner=learn, max_n=2)
 
 ## ❗ Updates
 
-**06/10/2020**
+**06/16/2021**
+
+* Updated to work with fastai 2.4
+* Removed `blurr_summary` as `Learner.summary` works with fastai 2.4
+* Updated `Learner.lr_find` code in docs to the updated API in fastai 2.4
+
+
+**06/10/2021**
 
 * Updated to work with Huggingface 4.6.x
 * Added MLM fine-tuning
 * Reorganized code/docs
 
-**05/04/2020**
+**05/04/2021**
 
 ***The "May the Fourth be with you" release:***
 * Updated to work with Huggingface 4.5.x and Fastai 2.3.1 (there is a bug in 2.3.0 that breaks blurr so make sure you are using the latest)
