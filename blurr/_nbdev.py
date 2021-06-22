@@ -61,7 +61,8 @@ modules = ["utils.py",
            "modeling/seq2seq/summarization.py",
            "data/seq2seq/translation.py",
            "modeling/seq2seq/translation.py",
-           "examples/multilabel_classification.py"]
+           "examples/multilabel_classification.py",
+           "examples/glue.py"]
 
 doc_url = "https://ohmeow.github.io/blurr/"
 

@@ -121,6 +121,29 @@ pip install -e ".[dev]"</code></pre>
 
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="Get-n_labels-from-data-for-config-later">Get <code>n_labels</code> from data for config later<a class="anchor-link" href="#Get-n_labels-from-data-for-config-later"> </a></h3>
+</div>
+</div>
+</div>
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">n_labels</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">imdb_df</span><span class="p">[</span><span class="s1">&#39;label&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">unique</span><span class="p">())</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    {% endraw %}
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
 <h3 id="Get-your-&#129303;-objects">Get your &#129303; objects<a class="anchor-link" href="#Get-your-&#129303;-objects"> </a></h3>
 </div>
 </div>
@@ -135,7 +158,11 @@ pip install -e ".[dev]"</code></pre>
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">model_cls</span> <span class="o">=</span> <span class="n">AutoModelForSequenceClassification</span>
 
 <span class="n">pretrained_model_name</span> <span class="o">=</span> <span class="s2">&quot;bert-base-uncased&quot;</span>
-<span class="n">hf_arch</span><span class="p">,</span> <span class="n">hf_config</span><span class="p">,</span> <span class="n">hf_tokenizer</span><span class="p">,</span> <span class="n">hf_model</span> <span class="o">=</span> <span class="n">BLURR</span><span class="o">.</span><span class="n">get_hf_objects</span><span class="p">(</span><span class="n">pretrained_model_name</span><span class="p">,</span> <span class="n">model_cls</span><span class="o">=</span><span class="n">model_cls</span><span class="p">)</span>
+
+<span class="n">config</span> <span class="o">=</span> <span class="n">AutoConfig</span><span class="o">.</span><span class="n">from_pretrained</span><span class="p">(</span><span class="n">pretrained_model_name</span><span class="p">)</span>
+<span class="n">config</span><span class="o">.</span><span class="n">num_labels</span> <span class="o">=</span> <span class="n">n_labels</span>
+
+<span class="n">hf_arch</span><span class="p">,</span> <span class="n">hf_config</span><span class="p">,</span> <span class="n">hf_tokenizer</span><span class="p">,</span> <span class="n">hf_model</span> <span class="o">=</span> <span class="n">BLURR</span><span class="o">.</span><span class="n">get_hf_objects</span><span class="p">(</span><span class="n">pretrained_model_name</span><span class="p">,</span> <span class="n">model_cls</span><span class="o">=</span><span class="n">model_cls</span><span class="p">,</span> <span class="n">config</span><span class="o">=</span><span class="n">config</span><span class="p">)</span>
 </pre></div>
 
     </div>
@@ -208,7 +235,7 @@ pip install -e ".[dev]"</code></pre>
     </tr>
     <tr>
       <th>1</th>
-      <td>the year 2005 saw no fewer than 3 filmed productions of h. g. wells'great novel, " war of the worlds ". this is perhaps the least well - known and very probably the best of them. no other version of wotw has ever attempted not only to present the story very much as wells wrote it, but also to create the atmosphere of the time in which it was supposed to take place : the last year of the 19th century, 1900 using wells'original setting, in and near woking, england. &lt; br / &gt; &lt; br / &gt; imdb seems unfriendly to what they regard as " spoilers ". that might apply with some films, where the ending might actually be a surprise, but with regard to one of the most famous novels in the world, it seems positively silly. i have no sympathy for people who have neglected to read one of the seminal works in english literature, so let's get right to the chase. the aliens are destroyed through catching an earth disease, against which they have no immunity. if that's a spoiler, so be it ; after a book and 3 other films ( including the 1953 classic ), you ought to know how this ends. &lt; br / &gt; &lt; br / &gt; this film, which follows wells'plot in the main, is also very cleverly presented in a way that might put many viewers off due to their ignorance of late 19th / early 20th century photography. although filmed in a widescreen aspect, the film goes to some lengths to give an impression of contemporaneity. the general coloration of skin and clothes display a sepia tint often found in old photographs ( rather than black ). colors are often reminiscent of hand - tinting. at other times, colors are washed out. these variations are typical of early films, which didn't use standardized celluloid stock and therefore presented a good many changes in print quality, even going from black / white to sepia / white to blue / white to reddish / white and so on as you'll see on occasion here. the special effects are deliberately retrograde, of a sort seen even as late as the 1920s and yet the martians and their machines are very much as wells described them and have a more nearly realistic " feel ". some of effects are really awkward such as the destruction of big ben. the acting is often more in the style of that period than ours. some aspects of victorian dress may appear odd, particularly the use of pomade</td>
+      <td>the shop around the corner is one of the sweetest and most feel - good romantic comedies ever made. there's just no getting around that, and it's hard to actually put one's feeling for this film into words. it's not one of those films that tries too hard, nor does it come up with the oddest possible scenarios to get the two protagonists together in the end. in fact, all its charm is innate, contained within the characters and the setting and the plot... which is highly believable to boot. it's easy to think that such a love story, as beautiful as any other ever told, * could * happen to you... a feeling you don't often get from other romantic comedies, however sweet and heart - warming they may be. &lt; br / &gt; &lt; br / &gt; alfred kralik ( james stewart ) and clara novak ( margaret sullavan ) don't have the most auspicious of first meetings when she arrives in the shop ( matuschek &amp; co. ) he's been working in for the past nine years, asking for a job. they clash from the very beginning, mostly over a cigarette box that plays music when it's opened - - he thinks it's a ludicrous idea ; she makes one big sell of it and gets hired. their bickering takes them through the next six months, even as they both ( unconsciously, of course! ) fall in love with each other when they share their souls and minds in letters passed through po box 237. this would be a pretty thin plotline to base an entire film on, except that the shop around the corner is expertly fleshed - out with a brilliant supporting cast made up of entirely engaging characters, from the fatherly but lonely hugo matuschek ( frank morgan ) himself, who learns that his shop really is his home ; pirovitch ( felix bressart ), kralik's sidekick and friend who always skitters out of the room when faced with the possibility of being asked for his honest opinion ; smarmy pimp - du - jour vadas ( joseph schildkraut ) who ultimately gets his comeuppance from a gloriously righteous kralik ; and ambitious errand boy pepi katona ( william tracy ) who wants nothing more than to be promoted to the position of clerk for matuschek &amp; co. the unpretentious love story between '</td>
       <td>positive</td>
     </tr>
   </tbody>
@@ -275,24 +302,24 @@ pip install -e ".[dev]"</code></pre>
   <tbody>
     <tr>
       <td>0</td>
-      <td>0.584600</td>
-      <td>0.393547</td>
-      <td>0.840000</td>
-      <td>00:22</td>
+      <td>0.643662</td>
+      <td>0.518397</td>
+      <td>0.750000</td>
+      <td>00:21</td>
     </tr>
     <tr>
       <td>1</td>
-      <td>0.389956</td>
-      <td>0.300889</td>
-      <td>0.890000</td>
+      <td>0.370039</td>
+      <td>0.358643</td>
+      <td>0.845000</td>
       <td>00:21</td>
     </tr>
     <tr>
       <td>2</td>
-      <td>0.252278</td>
-      <td>0.307273</td>
-      <td>0.890000</td>
-      <td>00:22</td>
+      <td>0.244052</td>
+      <td>0.303162</td>
+      <td>0.880000</td>
+      <td>00:21</td>
     </tr>
   </tbody>
 </table>
