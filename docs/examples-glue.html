@@ -79,17 +79,6 @@ Using transformers 4.6.1
     {% raw %}
     
 <div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">set_device</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Using GPU #</span><span class="si">{</span><span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">current_device</span><span class="p">()</span><span class="si">}</span><span class="s1">: </span><span class="si">{</span><span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">get_device_name</span><span class="p">()</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
 
 <div class="output_wrapper">
 <div class="output">
@@ -124,101 +113,82 @@ Using transformers 4.6.1
 <div class="output_area">
 
 
-<div class="output_html rendered_html output_subarea ">
-<table border="1" class="dataframe">
-  <thead>
-    <tr style="text-align: right;">
-      <th></th>
-      <th>Name</th>
-      <th>Task type</th>
-      <th>Description</th>
-      <th>Size</th>
-      <th>Metrics</th>
-    </tr>
-    <tr>
-      <th>Abbr</th>
-      <th></th>
-      <th></th>
-      <th></th>
-      <th></th>
-      <th></th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th>CoLA</th>
-      <td>Corpus of Linguistic Acceptability</td>
-      <td>Single-Sentence Task</td>
-      <td>Predict whether a sequence is a grammatical English sentence</td>
-      <td>8.5k</td>
-      <td>Matthews corr.</td>
-    </tr>
-    <tr>
-      <th>SST-2</th>
-      <td>Stanford Sentiment Treebank</td>
-      <td>Single-Sentence Task</td>
-      <td>Predict the sentiment of a given sentence</td>
-      <td>67k</td>
-      <td>Accuracy</td>
-    </tr>
-    <tr>
-      <th>MRPC</th>
-      <td>Microsoft Research Paraphrase Corpus</td>
-      <td>Similarity and Paraphrase Tasks</td>
-      <td>Predict whether two sentences are semantically equivalent</td>
-      <td>3.7k</td>
-      <td>F1/Accuracy</td>
-    </tr>
-    <tr>
-      <th>SST-B</th>
-      <td>Semantic Textual Similarity Benchmark</td>
-      <td>Similarity and Paraphrase Tasks</td>
-      <td>Predict the similarity score for two sentences on a scale from 1 to 5</td>
-      <td>7k</td>
-      <td>Pearson/Spearman corr.</td>
-    </tr>
-    <tr>
-      <th>QQP</th>
-      <td>Quora question pair</td>
-      <td>Similarity and Paraphrase Tasks</td>
-      <td>Predict if two questions are a paraphrase of one another</td>
-      <td>364k</td>
-      <td>F1/Accuracy</td>
-    </tr>
-    <tr>
-      <th>MNLI</th>
-      <td>Mulit-Genre Natural Language Inference</td>
-      <td>Inference Tasks</td>
-      <td>Predict whether the premise entails, contradicts or is neutral to the hypothesis</td>
-      <td>393k</td>
-      <td>Accuracy</td>
-    </tr>
-    <tr>
-      <th>QNLI</th>
-      <td>Stanford Question Answering Dataset</td>
-      <td>Inference Tasks</td>
-      <td>Predict whether the context sentence contains the answer to the question</td>
-      <td>105k</td>
-      <td>Accuracy</td>
-    </tr>
-    <tr>
-      <th>RTE</th>
-      <td>Recognize Textual Entailment</td>
-      <td>Inference Tasks</td>
-      <td>Predict whether one sentece entails another</td>
-      <td>2.5k</td>
-      <td>Accuracy</td>
-    </tr>
-    <tr>
-      <th>WNLI</th>
-      <td>Winograd Schema Challenge</td>
-      <td>Inference Tasks</td>
-      <td>Predict if the sentence with the pronoun substituted is entailed by the original sentence</td>
-      <td>634</td>
-      <td>Accuracy</td>
-    </tr>
-  </tbody>
-</table>
+<div class="output_html rendered_html output_subarea output_execute_result">
+<style  type="text/css" >
+</style><table id="T_2b10a_" ><thead>    <tr>        <th class="col_heading level0 col0" >Abbr</th>        <th class="col_heading level0 col1" >Name</th>        <th class="col_heading level0 col2" >Task type</th>        <th class="col_heading level0 col3" >Description</th>        <th class="col_heading level0 col4" >Size</th>        <th class="col_heading level0 col5" >Metrics</th>    </tr></thead><tbody>
+                <tr>
+                                <td id="T_2b10a_row0_col0" class="data row0 col0" >CoLA</td>
+                        <td id="T_2b10a_row0_col1" class="data row0 col1" >Corpus of Linguistic Acceptability</td>
+                        <td id="T_2b10a_row0_col2" class="data row0 col2" >Single-Sentence Task</td>
+                        <td id="T_2b10a_row0_col3" class="data row0 col3" >Predict whether a sequence is a grammatical English sentence</td>
+                        <td id="T_2b10a_row0_col4" class="data row0 col4" >8.5k</td>
+                        <td id="T_2b10a_row0_col5" class="data row0 col5" >Matthews corr.</td>
+            </tr>
+            <tr>
+                                <td id="T_2b10a_row1_col0" class="data row1 col0" >SST-2</td>
+                        <td id="T_2b10a_row1_col1" class="data row1 col1" >Stanford Sentiment Treebank</td>
+                        <td id="T_2b10a_row1_col2" class="data row1 col2" >Single-Sentence Task</td>
+                        <td id="T_2b10a_row1_col3" class="data row1 col3" >Predict the sentiment of a given sentence</td>
+                        <td id="T_2b10a_row1_col4" class="data row1 col4" >67k</td>
+                        <td id="T_2b10a_row1_col5" class="data row1 col5" >Accuracy</td>
+            </tr>
+            <tr>
+                                <td id="T_2b10a_row2_col0" class="data row2 col0" >MRPC</td>
+                        <td id="T_2b10a_row2_col1" class="data row2 col1" >Microsoft Research Paraphrase Corpus</td>
+                        <td id="T_2b10a_row2_col2" class="data row2 col2" >Similarity and Paraphrase Tasks</td>
+                        <td id="T_2b10a_row2_col3" class="data row2 col3" >Predict whether two sentences are semantically equivalent</td>
+                        <td id="T_2b10a_row2_col4" class="data row2 col4" >3.7k</td>
+                        <td id="T_2b10a_row2_col5" class="data row2 col5" >F1/Accuracy</td>
+            </tr>
+            <tr>
+                                <td id="T_2b10a_row3_col0" class="data row3 col0" >SST-B</td>
+                        <td id="T_2b10a_row3_col1" class="data row3 col1" >Semantic Textual Similarity Benchmark</td>
+                        <td id="T_2b10a_row3_col2" class="data row3 col2" >Similarity and Paraphrase Tasks</td>
+                        <td id="T_2b10a_row3_col3" class="data row3 col3" >Predict the similarity score for two sentences on a scale from 1 to 5</td>
+                        <td id="T_2b10a_row3_col4" class="data row3 col4" >7k</td>
+                        <td id="T_2b10a_row3_col5" class="data row3 col5" >Pearson/Spearman corr.</td>
+            </tr>
+            <tr>
+                                <td id="T_2b10a_row4_col0" class="data row4 col0" >QQP</td>
+                        <td id="T_2b10a_row4_col1" class="data row4 col1" >Quora question pair</td>
+                        <td id="T_2b10a_row4_col2" class="data row4 col2" >Similarity and Paraphrase Tasks</td>
+                        <td id="T_2b10a_row4_col3" class="data row4 col3" >Predict if two questions are a paraphrase of one another</td>
+                        <td id="T_2b10a_row4_col4" class="data row4 col4" >364k</td>
+                        <td id="T_2b10a_row4_col5" class="data row4 col5" >F1/Accuracy</td>
+            </tr>
+            <tr>
+                                <td id="T_2b10a_row5_col0" class="data row5 col0" >MNLI</td>
+                        <td id="T_2b10a_row5_col1" class="data row5 col1" >Mulit-Genre Natural Language Inference</td>
+                        <td id="T_2b10a_row5_col2" class="data row5 col2" >Inference Tasks</td>
+                        <td id="T_2b10a_row5_col3" class="data row5 col3" >Predict whether the premise entails, contradicts or is neutral to the hypothesis</td>
+                        <td id="T_2b10a_row5_col4" class="data row5 col4" >393k</td>
+                        <td id="T_2b10a_row5_col5" class="data row5 col5" >Accuracy</td>
+            </tr>
+            <tr>
+                                <td id="T_2b10a_row6_col0" class="data row6 col0" >QNLI</td>
+                        <td id="T_2b10a_row6_col1" class="data row6 col1" >Stanford Question Answering Dataset</td>
+                        <td id="T_2b10a_row6_col2" class="data row6 col2" >Inference Tasks</td>
+                        <td id="T_2b10a_row6_col3" class="data row6 col3" >Predict whether the context sentence contains the answer to the question</td>
+                        <td id="T_2b10a_row6_col4" class="data row6 col4" >105k</td>
+                        <td id="T_2b10a_row6_col5" class="data row6 col5" >Accuracy</td>
+            </tr>
+            <tr>
+                                <td id="T_2b10a_row7_col0" class="data row7 col0" >RTE</td>
+                        <td id="T_2b10a_row7_col1" class="data row7 col1" >Recognize Textual Entailment</td>
+                        <td id="T_2b10a_row7_col2" class="data row7 col2" >Inference Tasks</td>
+                        <td id="T_2b10a_row7_col3" class="data row7 col3" >Predict whether one sentece entails another</td>
+                        <td id="T_2b10a_row7_col4" class="data row7 col4" >2.5k</td>
+                        <td id="T_2b10a_row7_col5" class="data row7 col5" >Accuracy</td>
+            </tr>
+            <tr>
+                                <td id="T_2b10a_row8_col0" class="data row8 col0" >WNLI</td>
+                        <td id="T_2b10a_row8_col1" class="data row8 col1" >Winograd Schema Challenge</td>
+                        <td id="T_2b10a_row8_col2" class="data row8 col2" >Inference Tasks</td>
+                        <td id="T_2b10a_row8_col3" class="data row8 col3" >Predict if the sentence with the pronoun substituted is entailed by the original sentence</td>
+                        <td id="T_2b10a_row8_col4" class="data row8 col4" >634</td>
+                        <td id="T_2b10a_row8_col5" class="data row8 col5" >Accuracy</td>
+            </tr>
+    </tbody></table>
 </div>
 
 </div>
