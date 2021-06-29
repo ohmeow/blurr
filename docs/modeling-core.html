@@ -6,8 +6,8 @@ title: modeling.core
 keywords: fastai
 sidebar: home_sidebar
 
-summary: "This module contains core custom models, loss functions, and a default layer group splitter for use in applying discriminiative learning rates to your huggingface models trained via fastai"
-description: "This module contains core custom models, loss functions, and a default layer group splitter for use in applying discriminiative learning rates to your huggingface models trained via fastai"
+summary: "This module contains core custom models, loss functions, and a default layer group splitter for use in applying discriminiative learning rates to your Hugging Face models trained via fastai"
+description: "This module contains core custom models, loss functions, and a default layer group splitter for use in applying discriminiative learning rates to your Hugging Face models trained via fastai"
 nb_path: "nbs/01_modeling-core.ipynb"
 ---
 <!--
@@ -94,7 +94,7 @@ nb_path: "nbs/01_modeling-core.ipynb"
 <div class="output_markdown rendered_html output_subarea ">
 <h4 id="hf_splitter" class="doc_header"><code>hf_splitter</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/modeling/core.py#L19" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>hf_splitter</code>(<strong><code>m</code></strong>)</p>
 </blockquote>
-<p>Splits the huggingface model based on various model architecture conventions</p>
+<p>Splits the Hugging Face model based on various model architecture conventions</p>
 
 </div>
 
@@ -178,7 +178,7 @@ nb_path: "nbs/01_modeling-core.ipynb"
 
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>If you want to let your huggingface model calculate the loss for you, make sure you include the <code>labels</code> argument in your inputs and use <a href="/blurr/modeling-core.html#HF_PreCalculatedLoss"><code>HF_PreCalculatedLoss</code></a> as your loss function. Even though we don't really need a loss function per se, we have to provide a custom loss class/function for fastai to function properly (e.g. one with a <code>decodes</code> and <code>activation</code> methods).  Why?  Because these methods will get called in methods like <code>show_results</code> to get the actual predictions.</p>
+<p>If you want to let your Hugging Face model calculate the loss for you, make sure you include the <code>labels</code> argument in your inputs and use <a href="/blurr/modeling-core.html#HF_PreCalculatedLoss"><code>HF_PreCalculatedLoss</code></a> as your loss function. Even though we don't really need a loss function per se, we have to provide a custom loss class/function for fastai to function properly (e.g. one with a <code>decodes</code> and <code>activation</code> methods).  Why?  Because these methods will get called in methods like <code>show_results</code> to get the actual predictions.</p>
 
 </div>
 </div>
@@ -217,8 +217,8 @@ nb_path: "nbs/01_modeling-core.ipynb"
 
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>We use a <code>Callback</code> for handling what is returned from the huggingface model. The return type is (<code>ModelOutput</code>)[<a href="https://huggingface.co/transformers/main_classes/output.html#transformers.file_utils.ModelOutput">https://huggingface.co/transformers/main_classes/output.html#transformers.file_utils.ModelOutput</a>] which makes it easy to return all the goodies we asked for.</p>
-<p>Note that your <code>Learner</code>'s loss will be set for you only if the huggingface model returns one <em>and</em> you are using the <a href="/blurr/modeling-core.html#HF_PreCalculatedLoss"><code>HF_PreCalculatedLoss</code></a> loss function.</p>
+<p>We use a <code>Callback</code> for handling what is returned from the Hugging Face model. The return type is (<code>ModelOutput</code>)[<a href="https://huggingface.co/transformers/main_classes/output.html#transformers.file_utils.ModelOutput">https://huggingface.co/transformers/main_classes/output.html#transformers.file_utils.ModelOutput</a>] which makes it easy to return all the goodies we asked for.</p>
+<p>Note that your <code>Learner</code>'s loss will be set for you only if the Hugging Face model returns one <em>and</em> you are using the <a href="/blurr/modeling-core.html#HF_PreCalculatedLoss"><code>HF_PreCalculatedLoss</code></a> loss function.</p>
 <p>Also note that anything else you asked the model to return (for example, last hidden state, etc..) will be available for you via the <code>blurr_model_outputs</code> property attached to your <code>Learner</code>. For example, assuming you are using BERT for a classification task ... if you have told your <a href="/blurr/modeling-core.html#HF_BaseModelWrapper"><code>HF_BaseModelWrapper</code></a> instance to return attentions, you'd be able to access them via <code>learn.blurr_model_outputs['attentions']</code>.</p>
 
 </div>
@@ -1314,7 +1314,7 @@ Callbacks:
 
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h4 id="Using-ONNX---(TEMPORARILY-UNAVAILABLE)">Using ONNX - (TEMPORARILY UNAVAILABLE)<a class="anchor-link" href="#Using-ONNX---(TEMPORARILY-UNAVAILABLE)"> </a></h4><p>Much of the inspiration for the code below comes from Zach Mueller's excellent <a href="https://muellerzr.github.io/fastinference/">fastinference library</a>, and in many places I simply adapted his code to work with blurr and the various huggingface transformers tasks.</p>
+<h4 id="Using-ONNX---(TEMPORARILY-UNAVAILABLE)">Using ONNX - (TEMPORARILY UNAVAILABLE)<a class="anchor-link" href="#Using-ONNX---(TEMPORARILY-UNAVAILABLE)"> </a></h4><p>Much of the inspiration for the code below comes from Zach Mueller's excellent <a href="https://muellerzr.github.io/fastinference/">fastinference library</a>, and in many places I simply adapted his code to work with blurr and the various Hugging Face transformers tasks.</p>
 
 </div>
 </div>
@@ -2077,7 +2077,7 @@ Callbacks:
 
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Tests">Tests<a class="anchor-link" href="#Tests"> </a></h2><p>The tests below to ensure the core training code above works for <strong>all</strong> pretrained sequence classification models available in huggingface.  These tests are excluded from the CI workflow because of how long they would take to run and the amount of data that would be required to download.</p>
+<h2 id="Tests">Tests<a class="anchor-link" href="#Tests"> </a></h2><p>The tests below to ensure the core training code above works for <strong>all</strong> pretrained sequence classification models available in Hugging Face.  These tests are excluded from the CI workflow because of how long they would take to run and the amount of data that would be required to download.</p>
 <p><strong>Note</strong>: Feel free to modify the code below to test whatever pretrained classification models you are working with ... and if any of your pretrained sequence classification models fail, please submit a github issue <em>(or a PR if you'd like to fix it yourself)</em></p>
 
 </div>
@@ -2253,7 +2253,7 @@ Callbacks:
     
     <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;=== </span><span class="si">{</span><span class="n">model_name</span><span class="si">}</span><span class="s1"> ===</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
     
-    <span class="c1"># 1. get/configure our huggingface objects</span>
+    <span class="c1"># 1. get/configure our Hugging Face objects</span>
     <span class="n">tok_class</span> <span class="o">=</span> <span class="n">RobertaTokenizer</span> <span class="k">if</span> <span class="p">(</span><span class="s1">&#39;/ibert&#39;</span> <span class="ow">in</span> <span class="n">model_name</span><span class="p">)</span> <span class="k">else</span> <span class="kc">None</span>
     
     <span class="n">hf_arch</span><span class="p">,</span> <span class="n">hf_config</span><span class="p">,</span> <span class="n">hf_tokenizer</span><span class="p">,</span> <span class="n">hf_model</span> <span class="o">=</span> <span class="n">BLURR</span><span class="o">.</span><span class="n">get_hf_objects</span><span class="p">(</span><span class="n">model_name</span><span class="p">,</span> 

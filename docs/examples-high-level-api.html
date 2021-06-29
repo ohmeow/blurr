@@ -6,8 +6,8 @@ title: Using the high-level Blurr API
 keywords: fastai
 sidebar: home_sidebar
 
-summary: "Show all of the high-level `BlurrFor<Task>` classes in action here with the raw data sourced from the huggingface datasets library."
-description: "Show all of the high-level `BlurrFor<Task>` classes in action here with the raw data sourced from the huggingface datasets library."
+summary: "Show all of the high-level `BlurrFor<Task>` classes in action here with the raw data sourced from the <a href='https://Hugging Face.co/docs/datasets/index.html'>Hugging Face Datasets library</a>."
+description: "Show all of the high-level `BlurrFor<Task>` classes in action here with the raw data sourced from the <a href='https://Hugging Face.co/docs/datasets/index.html'>Hugging Face Datasets library</a>."
 nb_path: "nbs/99a_examples-high-level-api.ipynb"
 ---
 <!--
@@ -101,6 +101,13 @@ Using transformers 4.8.1
 
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
+<p>The high-level Blurr API provides one liners to build your DataBlock, DataLoaders, and Learner (with sensible defaults) from a DataFrame, CSV file, or a list of dictionaries like we get back from Hugging Face Datasets.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
 <h2 id="Sequence-Classification">Sequence Classification<a class="anchor-link" href="#Sequence-Classification"> </a></h2>
 </div>
 </div>
@@ -185,9 +192,27 @@ Using transformers 4.8.1
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">n_train</span><span class="p">,</span> <span class="n">n_valid</span> <span class="o">=</span> <span class="n">raw_datasets</span><span class="p">[</span><span class="s1">&#39;train&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">num_rows</span><span class="p">,</span> <span class="n">raw_datasets</span><span class="p">[</span><span class="s1">&#39;validation&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">num_rows</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">train_ds</span> <span class="o">=</span> <span class="n">raw_datasets</span><span class="p">[</span><span class="s1">&#39;train&#39;</span><span class="p">]</span><span class="c1">#.select(range(10000))</span>
+<span class="n">valid_ds</span> <span class="o">=</span> <span class="n">raw_datasets</span><span class="p">[</span><span class="s1">&#39;validation&#39;</span><span class="p">]</span><span class="c1">#.select(range(2000))</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    {% endraw %}
+
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">n_train</span><span class="p">,</span> <span class="n">n_valid</span> <span class="o">=</span> <span class="n">train_ds</span><span class="o">.</span><span class="n">num_rows</span><span class="p">,</span> <span class="n">valid_ds</span><span class="o">.</span><span class="n">num_rows</span>
 <span class="n">train_idxs</span><span class="p">,</span> <span class="n">valid_idxs</span> <span class="o">=</span> <span class="n">L</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">n_train</span><span class="p">)),</span> <span class="n">L</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">n_train</span><span class="p">,</span> <span class="n">n_train</span> <span class="o">+</span> <span class="n">n_valid</span><span class="p">))</span>
-<span class="n">raw_ds</span> <span class="o">=</span> <span class="n">concatenate_datasets</span><span class="p">([</span><span class="n">raw_datasets</span><span class="p">[</span><span class="s1">&#39;train&#39;</span><span class="p">],</span> <span class="n">raw_datasets</span><span class="p">[</span><span class="s1">&#39;validation&#39;</span><span class="p">]])</span>
+<span class="n">raw_ds</span> <span class="o">=</span> <span class="n">concatenate_datasets</span><span class="p">([</span><span class="n">train_ds</span><span class="p">,</span> <span class="n">valid_ds</span><span class="p">])</span>
 </pre></div>
 
     </div>
@@ -207,7 +232,6 @@ Using transformers 4.8.1
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">dl_kwargs</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;bs&#39;</span><span class="p">:</span> <span class="mi">4</span><span class="p">,</span> <span class="s1">&#39;val_bs&#39;</span><span class="p">:</span> <span class="mi">8</span><span class="p">}</span>
 <span class="n">learn_kwargs</span> <span class="o">=</span> <span class="p">{</span> <span class="s1">&#39;metrics&#39;</span><span class="p">:</span> <span class="p">[</span><span class="n">accuracy</span><span class="p">]</span> <span class="p">}</span>
 
-<span class="c1"># using a List[dict] such as a huggingface dataset</span>
 <span class="n">learn</span> <span class="o">=</span> <span class="n">BlearnerForSequenceClassification</span><span class="o">.</span><span class="n">from_dictionaries</span><span class="p">(</span><span class="n">raw_ds</span><span class="p">,</span> <span class="s1">&#39;distilroberta-base&#39;</span><span class="p">,</span> 
                                                             <span class="n">text</span><span class="o">=</span><span class="s1">&#39;sentence&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;label&#39;</span><span class="p">,</span>
                                                             <span class="n">dblock_splitter</span><span class="o">=</span><span class="n">IndexSplitter</span><span class="p">(</span><span class="n">valid_idxs</span><span class="p">),</span>
@@ -258,17 +282,17 @@ Using transformers 4.8.1
     </tr>
     <tr>
       <th>1</th>
-      <td>Ron wanted to wear a tuxedo to the party, but wear a tuxedo to the party Caspar couldn't decide whether to.</td>
-      <td>0</td>
+      <td>Reports the covers of which the government prescribes the height of the lettering on almost always put me to sleep.</td>
+      <td>1</td>
     </tr>
     <tr>
       <th>2</th>
-      <td>John is prouder of having gone than Sally expected Joan to believe that the man who didn't shave would be.</td>
+      <td>We talked about the issues we had worked on as students and that our perspectives had changed over the years.</td>
       <td>1</td>
     </tr>
     <tr>
       <th>3</th>
-      <td>They failed to tell me which problem I'll beat the competition more easily, the sooner I solve.</td>
+      <td>Paul has interviewed any student who was at the scene of the crime and Kate has interviewed them too.</td>
       <td>0</td>
     </tr>
   </tbody>
@@ -317,10 +341,10 @@ Using transformers 4.8.1
   <tbody>
     <tr>
       <td>0</td>
-      <td>0.541186</td>
-      <td>0.490749</td>
-      <td>0.778524</td>
-      <td>00:52</td>
+      <td>0.500305</td>
+      <td>0.483770</td>
+      <td>0.779482</td>
+      <td>01:04</td>
     </tr>
   </tbody>
 </table>
@@ -382,25 +406,25 @@ Using transformers 4.8.1
     </tr>
     <tr>
       <th>1</th>
-      <td>As a teacher, you have to deal simultaneously with the administration's pressure on you to succeed, and the children's to be a nice guy.</td>
-      <td>0</td>
-      <td>0</td>
+      <td>The newspaper has reported that they are about to appoint someone, but I can't remember who the newspaper has reported that they are about to appoint.</td>
+      <td>1</td>
+      <td>1</td>
     </tr>
     <tr>
       <th>2</th>
-      <td>He attributed to a short circuit which was caused by an overloaded transducer the fire which destroyed most of my factory.</td>
+      <td>Sandy is very anxious to see if the students will be able to solve the homework problem in a particular way, but she won't tell us which.</td>
       <td>1</td>
-      <td>0</td>
+      <td>1</td>
     </tr>
     <tr>
       <th>3</th>
-      <td>Each author whose contribution is written in any language other than English will provide a summary in English.</td>
+      <td>Clinton is anxious to find out which budget dilemmas Panetta would be willing to tackle in a certain way, but he won't say in which.</td>
       <td>1</td>
       <td>1</td>
     </tr>
     <tr>
       <th>4</th>
-      <td>Most elections are quickly forgotten, but the election of 2000, everyone will remember for a long time.</td>
+      <td>Harry told Sue that Albania is a lovely place for a vacation, and Tom told Sally that Albania is a lovely place for a vacation.</td>
       <td>1</td>
       <td>1</td>
     </tr>
@@ -496,9 +520,27 @@ Using transformers 4.8.1
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">n_train</span><span class="p">,</span> <span class="n">n_valid</span> <span class="o">=</span> <span class="n">raw_datasets</span><span class="p">[</span><span class="s1">&#39;train&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">num_rows</span><span class="p">,</span> <span class="n">raw_datasets</span><span class="p">[</span><span class="s1">&#39;validation&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">num_rows</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">train_ds</span> <span class="o">=</span> <span class="n">raw_datasets</span><span class="p">[</span><span class="s1">&#39;train&#39;</span><span class="p">]</span><span class="c1">#.select(range(10000))</span>
+<span class="n">valid_ds</span> <span class="o">=</span> <span class="n">raw_datasets</span><span class="p">[</span><span class="s1">&#39;validation&#39;</span><span class="p">]</span><span class="c1">#.select(range(2000))</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    {% endraw %}
+
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">n_train</span><span class="p">,</span> <span class="n">n_valid</span> <span class="o">=</span> <span class="n">train_ds</span><span class="o">.</span><span class="n">num_rows</span><span class="p">,</span> <span class="n">valid_ds</span><span class="o">.</span><span class="n">num_rows</span>
 <span class="n">train_idxs</span><span class="p">,</span> <span class="n">valid_idxs</span> <span class="o">=</span> <span class="n">L</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">n_train</span><span class="p">)),</span> <span class="n">L</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">n_train</span><span class="p">,</span> <span class="n">n_train</span> <span class="o">+</span> <span class="n">n_valid</span><span class="p">))</span>
-<span class="n">raw_ds</span> <span class="o">=</span> <span class="n">concatenate_datasets</span><span class="p">([</span><span class="n">raw_datasets</span><span class="p">[</span><span class="s1">&#39;train&#39;</span><span class="p">],</span> <span class="n">raw_datasets</span><span class="p">[</span><span class="s1">&#39;validation&#39;</span><span class="p">]])</span>
+<span class="n">raw_ds</span> <span class="o">=</span> <span class="n">concatenate_datasets</span><span class="p">([</span><span class="n">train_ds</span><span class="p">,</span> <span class="n">valid_ds</span><span class="p">])</span>
 </pre></div>
 
     </div>
@@ -518,7 +560,6 @@ Using transformers 4.8.1
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">dl_kwargs</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;bs&#39;</span><span class="p">:</span> <span class="mi">4</span><span class="p">,</span> <span class="s1">&#39;val_bs&#39;</span><span class="p">:</span> <span class="mi">8</span><span class="p">}</span>
 <span class="n">learn_kwargs</span> <span class="o">=</span> <span class="p">{</span> <span class="s1">&#39;metrics&#39;</span><span class="p">:</span> <span class="p">[</span><span class="n">F1Score</span><span class="p">(),</span> <span class="n">accuracy</span><span class="p">]</span> <span class="p">}</span>
 
-<span class="c1"># using a List[dict] such as a huggingface dataset</span>
 <span class="n">learn</span> <span class="o">=</span> <span class="n">BlearnerForSequenceClassification</span><span class="o">.</span><span class="n">from_dictionaries</span><span class="p">(</span><span class="n">raw_ds</span><span class="p">,</span> <span class="s1">&#39;distilroberta-base&#39;</span><span class="p">,</span> 
                                                             <span class="n">text</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;sentence1&#39;</span><span class="p">,</span> <span class="s1">&#39;sentence2&#39;</span><span class="p">],</span> 
                                                             <span class="n">label</span><span class="o">=</span><span class="s1">&#39;label&#39;</span><span class="p">,</span>
@@ -570,17 +611,17 @@ Using transformers 4.8.1
     </tr>
     <tr>
       <th>1</th>
-      <td>In the evening, he asked for six pizzas and soda, which police delivered. In the evening, he asked for six pepperoni pizzas and two six-packs of soft drinks, which officers delivered.</td>
+      <td>Then the authority can hold another set of public hearings on raising commuting costs, the judge said. But the judge, Louis York, said the authority can hold another set of public hearings on raising commuting costs afterward.</td>
       <td>1</td>
     </tr>
     <tr>
       <th>2</th>
-      <td>Hormone replacement therapy that combines estrogen and progestin doubles a woman's risk of breast cancer, a British study of more than a million women has found. A major British study has added to the evidence that hormone replacement therapy increases the risk of breast cancer, especially when women receive a combination of estrogen and progestin.</td>
+      <td>She met Lady Mary at her Double Bay home yesterday to thank her for the donation. She met Lady Mary for the first time at her Double Bay home in Sydney yesterday to thank her in person for the donation.</td>
       <td>1</td>
     </tr>
     <tr>
       <th>3</th>
-      <td>The report released Monday simply says, This report does not attempt to address the complexities of this issue. The document stated : " This report does not attempt to address the complexities of this issue. "</td>
+      <td>" We disagree with the judge's decision on notice for Engine Company 261, " said a statement by Michael A. Cardozo, the city's corporation counsel. He added that : " We disagree with the judge's decision on notice for Engine Company 261. "</td>
       <td>1</td>
     </tr>
   </tbody>
@@ -630,11 +671,11 @@ Using transformers 4.8.1
   <tbody>
     <tr>
       <td>0</td>
-      <td>0.549731</td>
-      <td>0.532476</td>
-      <td>0.823890</td>
-      <td>0.718137</td>
-      <td>00:24</td>
+      <td>0.520961</td>
+      <td>0.461445</td>
+      <td>0.850318</td>
+      <td>0.769608</td>
+      <td>00:26</td>
     </tr>
   </tbody>
 </table>
@@ -696,26 +737,26 @@ Using transformers 4.8.1
     </tr>
     <tr>
       <th>1</th>
+      <td>SPOT products run a Microsoft operating system and the company's DirectBand radio technology developed with SCA Data Systems. The DirectBand network was developed with the assistance of SCA Data Systems.</td>
+      <td>0</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>Morrill's wife, Ellie, sobbed and hugged Bondeson's sister-in-law during the service. At the service Morrill's widow, Ellie, sobbed and hugged Bondeson's sister-in-law as people consoled her.</td>
+      <td>0</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>3</th>
       <td>" But they never climb out of the pot of beer again. " It's just that they never climb out of the beer again. "</td>
       <td>1</td>
       <td>1</td>
     </tr>
     <tr>
-      <th>2</th>
-      <td>The broader Standard &amp; Poor's 500 Index.SPX edged down 9 points, or 0.98 percent, to 921. The technology-laced Nasdaq Composite Index &lt;.IXIC &gt; shed 15 points, or 0.98 percent, to 1,492.</td>
-      <td>0</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <th>3</th>
-      <td>Chiron already has nearly 20 percent acceptances from PowderJect's shareholders. Chiron has acceptances from holders of nearly 20 percent of PowderJect shares.</td>
-      <td>1</td>
-      <td>1</td>
-    </tr>
-    <tr>
       <th>4</th>
-      <td>Speaking for the first time yesterday, Brigitte's maternal aunt said his family was unaware he had was in prison or that he had remarried. Brigitte's maternal aunt said his family was unaware he had been sent to prison, or that he had remarried in Sydney.</td>
-      <td>1</td>
+      <td>Christina's aunt, Shelley Riling, said the defense's claims were preposterous. Christina's aunt, Shelley Riling, said she will address the court.</td>
+      <td>0</td>
       <td>1</td>
     </tr>
   </tbody>
@@ -860,7 +901,7 @@ Reusing dataset civil_comments (/home/wgilliam/.cache/huggingface/datasets/civil
 
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>The labels need to be OHE as ints (the raw data has them as floats)</p>
+<p>The labels need to be OHE as ints (the raw data has them as floats). We could also do this kind of preprocessing by passing in a <code>preprocess_func</code> to our <a href="/blurr/modeling-core.html#BlearnerForSequenceClassification"><code>BlearnerForSequenceClassification</code></a> factory method, especially useful if such preprocessing depends on one or more of the Hugging Face objects (e.g., config, tokenizer, model, architecture)</p>
 
 </div>
 </div>
@@ -912,7 +953,7 @@ Reusing dataset civil_comments (/home/wgilliam/.cache/huggingface/datasets/civil
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">dl_kwargs</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;bs&#39;</span><span class="p">:</span> <span class="mi">4</span><span class="p">,</span> <span class="s1">&#39;val_bs&#39;</span><span class="p">:</span> <span class="mi">8</span><span class="p">}</span>
 <span class="n">learn_kwargs</span> <span class="o">=</span> <span class="p">{</span> <span class="s1">&#39;metrics&#39;</span><span class="p">:</span> <span class="p">[</span><span class="n">F1ScoreMulti</span><span class="p">(),</span> <span class="n">accuracy_multi</span><span class="p">]</span> <span class="p">}</span>
 
-<span class="c1"># using a List[dict] such as a huggingface dataset</span>
+<span class="c1"># using a List[dict] such as a Hugging Face dataset</span>
 <span class="n">learn</span> <span class="o">=</span> <span class="n">BlearnerForSequenceClassification</span><span class="o">.</span><span class="n">from_dictionaries</span><span class="p">(</span><span class="n">raw_ds</span><span class="p">,</span> <span class="s1">&#39;distilroberta-base&#39;</span><span class="p">,</span> 
                                                             <span class="n">text</span><span class="o">=</span><span class="s1">&#39;text&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">lbl_cols</span><span class="p">,</span>
                                                             <span class="n">dblock_splitter</span><span class="o">=</span><span class="n">IndexSplitter</span><span class="p">(</span><span class="n">valid_idxs</span><span class="p">),</span>
@@ -963,17 +1004,17 @@ Reusing dataset civil_comments (/home/wgilliam/.cache/huggingface/datasets/civil
     </tr>
     <tr>
       <th>1</th>
-      <td>I've went to Pizza Jerk three times and to Red Sauce twice. Pizza Jerk's menu is larger and more complicated, and they changed several menu items after the first two, which is why it got that third visit.\n\nThe photos are assigned after all of my visits (so that we don't tip off owners to a coming review) and also after the first draft of my review is written. I consult with the art director about what to take photos of. In this case, yes, I did say to take more shots of Pizza Jerk.\n\nA few days</td>
+      <td>Addiction to  legal pharmaceutical opioids like Percocet, Oxycodone, Percodan, are proven to be a direct GATEWAY to heroin use.  Prescription drugs are directly responsible for over 237,000 deaths yearly in the US plus over 5,000 killed due to pharmaceutical intoxicated drivers.  A child is admitted to an emergency room every 9 minutes for prescription drug poisoning the USA.  \n\n\nAlcohol consumption is a direct GATEWAY to domestic violence, traffic fatalities, teen pregnancies and death.  Over</td>
       <td></td>
     </tr>
     <tr>
       <th>2</th>
-      <td>Yes the police officer seems to run toward the truck at first....this sort of reaction sometimes happens when someone panics when a several ton vehicle is coming at them. When you threaten with a b.s. "we're armed and there'll be no violence so long as we get to do whatever white privilege destruction of Pauite artifacts we want, as long as we can ignore (see the New Yorker) the facts that in private hands land use the feds provide would cost likely three times as much, that the original owners</td>
+      <td>I'm sure you've heard the adage: "A lie gone unchallenged becomes the truth in 24 hours." Why would you advocate allowing lies to stand unchallenged, simply because you can deal with them?  Sorry, but I find that level of complacency disgusting.\n\nUnless...  The idea of floating lies is not unique to the Left, but it is a prominent arrow in their quiver and has been used so frequently, that it has permanently altered the political climate for both sides.\n\nObjoke: \n\nQ: How can you tell when a Rep</td>
       <td></td>
     </tr>
     <tr>
       <th>3</th>
-      <td>Outsider:  Here's some more info for you. It's based on the Oregon Department of Employment's publication "Oregon's Minimum Wage Jobs: Facxts, Figures and Context"\nFacts:  100,000 minimum wage jobs out of 1.9 million  about 5%\n              Total wages:  about 1% of total wages in the State\n              \nMy conclusion: the Minimum wage increase will represent a.05% increase in the wages paid in Oregon.\n\nThe article's summary:\n\n"On the whole, small to moderate increases in the minimum wage do n</td>
+      <td>I was one of 60-odd kids who were the first kindergarten class to participate in SI, which at the time was a grand experiment with kids from all walks in across the city. With all the challenges we encountered as the first K-12 SI class, we still find ourselves largely in Portland, well educated, compassionate, independently-minded and engaged people who loved the program we participated in. Many of us refer to SI as a family. For a public education, it was truly one of a kind, and I would hope</td>
       <td></td>
     </tr>
   </tbody>
@@ -1023,11 +1064,11 @@ Reusing dataset civil_comments (/home/wgilliam/.cache/huggingface/datasets/civil
   <tbody>
     <tr>
       <td>0</td>
-      <td>0.038633</td>
-      <td>0.040438</td>
-      <td>0.159195</td>
-      <td>0.987785</td>
-      <td>01:10</td>
+      <td>0.029738</td>
+      <td>0.041094</td>
+      <td>0.165975</td>
+      <td>0.987499</td>
+      <td>01:14</td>
     </tr>
   </tbody>
 </table>
@@ -1107,7 +1148,7 @@ Reusing dataset civil_comments (/home/wgilliam/.cache/huggingface/datasets/civil
     </tr>
     <tr>
       <th>1</th>
-      <td>Thank you for this article.\nErrata: My father, Dr. James Ford Lewis, was minister of the First Unitarian Church in Portland in '58-'60; he wasn't Portland's "first Unitarian minister." The church was founded here in 1867 (http://bit.ly/29ClQCp).  \nI met Mr. Ellison at Sacramento City College, not at my own university.\nAt PCS, for "Astoria" I am coaching the Shoshoni language, not "Shoshona," which does not exist, and there is no such thing as "Scotch-Canadian patois." The Scots-Canadian accent is what I spoke of. The Iowa, Arikara, Hawaiian languages will also be heard, along with another 10+ accents of English. \nMy work as OnStar's voice began with years of work at General Magic, where I recorded tens of thousands of prompts (rather than "a succession of responses") for a system, not doomed but premature, that supported 2.5 million users at its peak. (http://bit.ly/29Q7P7a).  And I am the longest-working pro voice in *speech recognition,* not in general. That would be some bold claim!</td>
+      <td>Glad to see, as Canadians we are more and more conscious and aware, of all these abuses from immigration, Trudeau can save travel time and costs if he would have paid attention in the first place, foreign labor and foreign student policies hurting the Canadians (middle-class and families and employees and youth! and disadvantaged disabled, homeless and aboriginals) The bad immigration policy list and abuse, goes on and on and on, it's hard to keep track, write it down people! Now it is high-time for all Canadian politicians to take their heads out of the sand, or wherever they may have them, learn something useful to help Canadians, and put a stop to this abuse, nonsense and madness we have been having with too much immigration, and do their jobs! do what's right. Lot's of attention and resources need to be focused on reducing immigration, fixing our bad policies, limiting foreign labor, etc. etc. it is not even funny! Nothing else matters. 40k per year. McCallum, Barton goodbye thanks</td>
       <td></td>
       <td>[]</td>
     </tr>
@@ -1119,13 +1160,13 @@ Reusing dataset civil_comments (/home/wgilliam/.cache/huggingface/datasets/civil
     </tr>
     <tr>
       <th>3</th>
-      <td>Glad to see, as Canadians we are more and more conscious and aware, of all these abuses from immigration, Trudeau can save travel time and costs if he would have paid attention in the first place, foreign labor and foreign student policies hurting the Canadians (middle-class and families and employees and youth! and disadvantaged disabled, homeless and aboriginals) The bad immigration policy list and abuse, goes on and on and on, it's hard to keep track, write it down people! Now it is high-time for all Canadian politicians to take their heads out of the sand, or wherever they may have them, learn something useful to help Canadians, and put a stop to this abuse, nonsense and madness we have been having with too much immigration, and do their jobs! do what's right. Lot's of attention and resources need to be focused on reducing immigration, fixing our bad policies, limiting foreign labor, etc. etc. it is not even funny! Nothing else matters. 40k per year. McCallum, Barton goodbye thanks</td>
+      <td>Thank you for this article.\nErrata: My father, Dr. James Ford Lewis, was minister of the First Unitarian Church in Portland in '58-'60; he wasn't Portland's "first Unitarian minister." The church was founded here in 1867 (http://bit.ly/29ClQCp).  \nI met Mr. Ellison at Sacramento City College, not at my own university.\nAt PCS, for "Astoria" I am coaching the Shoshoni language, not "Shoshona," which does not exist, and there is no such thing as "Scotch-Canadian patois." The Scots-Canadian accent is what I spoke of. The Iowa, Arikara, Hawaiian languages will also be heard, along with another 10+ accents of English. \nMy work as OnStar's voice began with years of work at General Magic, where I recorded tens of thousands of prompts (rather than "a succession of responses") for a system, not doomed but premature, that supported 2.5 million users at its peak. (http://bit.ly/29Q7P7a).  And I am the longest-working pro voice in *speech recognition,* not in general. That would be some bold claim!</td>
       <td></td>
       <td>[]</td>
     </tr>
     <tr>
       <th>4</th>
-      <td>"But local economist Paul Brewbaker said the monetary savings of abandoning the project doesn’t take into account how such a move would derail Honolulu’s efforts to achieve higher urban density and improved urban mobility, and would further discourage companies from investing in Hawaii"\n\nAgain, rail was first touted for traffic decongestion, then for affordable housing, but it's  really for TOD - Transit Oriented Development - for corporations to develop in Hawaii. It may sound okay from a business standpoint but Oahu is a small island. \n\nWhat about the small private mom-and-pop property owners along the Honolulu Rail Corridor? Will the city/state abuse its powers of eminent domain to pave the way for bigger private corporate development? When will the public know about this little secret of Honolulu Rail?\n\nThe  Rail powers-that-be acted intransigently to railroad this project.  They grossly UNDER-estimated the projected costs, KNOWING they could blackmail Oahu into this present stage.</td>
+      <td>a) President Trump is not threatening to annihilate many countries.  Kim is.\nb) Kim has stated that NK can produce as many hydrogen bombs as it wishes;  there is no reason not to believe him.\nc) NK has tested 2 ICBMs and several intermediate range missiles.\nd) Fascists believe in racial purity, the dominance of the state over the individual, and the use of force to accomplish their goals.  Kim believes that Koreans are racially superior, that the state is superior to the individual and can use any means necessary to control the individual, and Kim believes in the use of force to realize his goals.  Kim is clearly a fascist.\ne) Nominally, Kim is a "communist," but neither he nor the regime has any truck whatsoever with the key element of communism:  "From each according to his ability, to each according to his needs."  Moreover, Kim and the élite have lots of private property which is'streng verboten' under communism.\n\nYou have a fundamental misunderstanding of Kim and NK.\n\nVery sad.</td>
       <td></td>
       <td>[]</td>
     </tr>
@@ -1133,6 +1174,483 @@ Reusing dataset civil_comments (/home/wgilliam/.cache/huggingface/datasets/civil
 </table>
 </div>
 
+</div>
+
+</div>
+</div>
+
+</div>
+    {% endraw %}
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Token-Classification">Token Classification<a class="anchor-link" href="#Token-Classification"> </a></h2>
+</div>
+</div>
+</div>
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">raw_datasets</span> <span class="o">=</span> <span class="n">load_dataset</span><span class="p">(</span><span class="s1">&#39;germeval_14&#39;</span><span class="p">)</span> 
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">raw_datasets</span><span class="si">}</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">raw_datasets</span><span class="p">[</span><span class="s2">&quot;train&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">raw_datasets</span><span class="p">[</span><span class="s2">&quot;train&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">features</span><span class="si">}</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stderr output_text">
+<pre>Reusing dataset germ_eval14 (/home/wgilliam/.cache/huggingface/datasets/germ_eval14/germeval_14/2.0.0/0f174b84866aa3b8ebae65c271610520be4422405d7e8467bd24cfd493d325f0)
+</pre>
+</div>
+</div>
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>DatasetDict({
+    train: Dataset({
+        features: [&#39;id&#39;, &#39;source&#39;, &#39;tokens&#39;, &#39;ner_tags&#39;, &#39;nested_ner_tags&#39;],
+        num_rows: 24000
+    })
+    validation: Dataset({
+        features: [&#39;id&#39;, &#39;source&#39;, &#39;tokens&#39;, &#39;ner_tags&#39;, &#39;nested_ner_tags&#39;],
+        num_rows: 2200
+    })
+    test: Dataset({
+        features: [&#39;id&#39;, &#39;source&#39;, &#39;tokens&#39;, &#39;ner_tags&#39;, &#39;nested_ner_tags&#39;],
+        num_rows: 5100
+    })
+})
+
+{&#39;id&#39;: &#39;0&#39;, &#39;ner_tags&#39;: [19, 0, 0, 0, 7, 0, 0, 0, 0, 19, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], &#39;nested_ner_tags&#39;: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], &#39;source&#39;: &#39;n-tv.de vom 26.02.2005 [2005-02-26] &#39;, &#39;tokens&#39;: [&#39;Schartau&#39;, &#39;sagte&#39;, &#39;dem&#39;, &#39;&#34;&#39;, &#39;Tagesspiegel&#39;, &#39;&#34;&#39;, &#39;vom&#39;, &#39;Freitag&#39;, &#39;,&#39;, &#39;Fischer&#39;, &#39;sei&#39;, &#39;&#34;&#39;, &#39;in&#39;, &#39;einer&#39;, &#39;Weise&#39;, &#39;aufgetreten&#39;, &#39;,&#39;, &#39;die&#39;, &#39;alles&#39;, &#39;andere&#39;, &#39;als&#39;, &#39;überzeugend&#39;, &#39;war&#39;, &#39;&#34;&#39;, &#39;.&#39;]}
+
+{&#39;id&#39;: Value(dtype=&#39;string&#39;, id=None), &#39;source&#39;: Value(dtype=&#39;string&#39;, id=None), &#39;tokens&#39;: Sequence(feature=Value(dtype=&#39;string&#39;, id=None), length=-1, id=None), &#39;ner_tags&#39;: Sequence(feature=ClassLabel(num_classes=25, names=[&#39;O&#39;, &#39;B-LOC&#39;, &#39;I-LOC&#39;, &#39;B-LOCderiv&#39;, &#39;I-LOCderiv&#39;, &#39;B-LOCpart&#39;, &#39;I-LOCpart&#39;, &#39;B-ORG&#39;, &#39;I-ORG&#39;, &#39;B-ORGderiv&#39;, &#39;I-ORGderiv&#39;, &#39;B-ORGpart&#39;, &#39;I-ORGpart&#39;, &#39;B-OTH&#39;, &#39;I-OTH&#39;, &#39;B-OTHderiv&#39;, &#39;I-OTHderiv&#39;, &#39;B-OTHpart&#39;, &#39;I-OTHpart&#39;, &#39;B-PER&#39;, &#39;I-PER&#39;, &#39;B-PERderiv&#39;, &#39;I-PERderiv&#39;, &#39;B-PERpart&#39;, &#39;I-PERpart&#39;], names_file=None, id=None), length=-1, id=None), &#39;nested_ner_tags&#39;: Sequence(feature=ClassLabel(num_classes=25, names=[&#39;O&#39;, &#39;B-LOC&#39;, &#39;I-LOC&#39;, &#39;B-LOCderiv&#39;, &#39;I-LOCderiv&#39;, &#39;B-LOCpart&#39;, &#39;I-LOCpart&#39;, &#39;B-ORG&#39;, &#39;I-ORG&#39;, &#39;B-ORGderiv&#39;, &#39;I-ORGderiv&#39;, &#39;B-ORGpart&#39;, &#39;I-ORGpart&#39;, &#39;B-OTH&#39;, &#39;I-OTH&#39;, &#39;B-OTHderiv&#39;, &#39;I-OTHderiv&#39;, &#39;B-OTHpart&#39;, &#39;I-OTHpart&#39;, &#39;B-PER&#39;, &#39;I-PER&#39;, &#39;B-PERderiv&#39;, &#39;I-PERderiv&#39;, &#39;B-PERpart&#39;, &#39;I-PERpart&#39;], names_file=None, id=None), length=-1, id=None)}
+
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+    {% endraw %}
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Capture the indexes for both train and validation sets, use the datasets <code>concatenate_datasets</code> to put them into a single dataset, and finally use the <code>IndexSplitter</code> method to define our train/validation splits as such:</p>
+
+</div>
+</div>
+</div>
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">train_ds</span> <span class="o">=</span> <span class="n">raw_datasets</span><span class="p">[</span><span class="s1">&#39;train&#39;</span><span class="p">]</span><span class="c1">#.select(range(1000))</span>
+<span class="n">valid_ds</span> <span class="o">=</span> <span class="n">raw_datasets</span><span class="p">[</span><span class="s1">&#39;validation&#39;</span><span class="p">]</span><span class="c1">#.select(range(500))</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    {% endraw %}
+
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">n_train</span><span class="p">,</span> <span class="n">n_valid</span> <span class="o">=</span> <span class="n">train_ds</span><span class="o">.</span><span class="n">num_rows</span><span class="p">,</span> <span class="n">valid_ds</span><span class="o">.</span><span class="n">num_rows</span>
+<span class="n">train_idxs</span><span class="p">,</span> <span class="n">valid_idxs</span> <span class="o">=</span> <span class="n">L</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">n_train</span><span class="p">)),</span> <span class="n">L</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">n_train</span><span class="p">,</span> <span class="n">n_train</span> <span class="o">+</span> <span class="n">n_valid</span><span class="p">))</span>
+<span class="n">raw_ds</span> <span class="o">=</span> <span class="n">concatenate_datasets</span><span class="p">([</span><span class="n">train_ds</span><span class="p">,</span> <span class="n">valid_ds</span><span class="p">])</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    {% endraw %}
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>We can grab the "labels" a token can be associated with as we do here or we can let the <a href="/blurr/modeling-token-classification.html#BlearnerForTokenClassification"><code>BlearnerForTokenClassification</code></a> factory methods figure it out for us.</p>
+
+</div>
+</div>
+</div>
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">labels</span> <span class="o">=</span> <span class="n">train_ds</span><span class="o">.</span><span class="n">features</span><span class="p">[</span><span class="s1">&#39;ner_tags&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">feature</span><span class="o">.</span><span class="n">names</span>
+<span class="nb">len</span><span class="p">(</span><span class="n">labels</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>25</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    {% endraw %}
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>As we need pass the tag (not the index) for each example's tokens in a list, we use the handy <code>datasets.map</code> function to create a new attribute, "token_labels", with that data.  This could also be done by passing in a <code>preprocess_func</code>  to a <a href="/blurr/modeling-token-classification.html#BlearnerForTokenClassification"><code>BlearnerForTokenClassification</code></a> factory method; especially useful if we need to use one or more of the Hugging Face objects (e.g., tokenzier, model, config, or architecture name)</p>
+
+</div>
+</div>
+</div>
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">get_item_labels</span><span class="p">(</span><span class="n">example</span><span class="p">):</span>
+    <span class="n">example</span><span class="p">[</span><span class="s1">&#39;token_labels&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span> <span class="n">labels</span><span class="p">[</span><span class="n">tag_idx</span><span class="p">]</span> <span class="k">for</span> <span class="n">tag_idx</span> <span class="ow">in</span> <span class="n">example</span><span class="p">[</span><span class="s1">&#39;ner_tags&#39;</span><span class="p">]</span> <span class="p">]</span>
+    <span class="k">return</span> <span class="n">example</span>
+                         
+<span class="n">raw_ds</span> <span class="o">=</span> <span class="n">raw_ds</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">get_item_labels</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    {% endraw %}
+
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">learn</span> <span class="o">=</span> <span class="n">BlearnerForTokenClassification</span><span class="o">.</span><span class="n">from_dictionaries</span><span class="p">(</span><span class="n">raw_ds</span><span class="p">,</span> <span class="s1">&#39;bert-base-multilingual-cased&#39;</span><span class="p">,</span> 
+                                                         <span class="n">tokens</span><span class="o">=</span><span class="s1">&#39;tokens&#39;</span><span class="p">,</span> <span class="n">token_labels</span><span class="o">=</span><span class="s1">&#39;token_labels&#39;</span><span class="p">,</span> <span class="n">labels</span><span class="o">=</span><span class="n">labels</span><span class="p">,</span>
+                                                         <span class="n">dblock_splitter</span><span class="o">=</span><span class="n">RandomSplitter</span><span class="p">(),</span> 
+                                                         <span class="n">dl_kwargs</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;bs&#39;</span><span class="p">:</span><span class="mi">2</span><span class="p">})</span>
+
+<span class="n">learn</span><span class="o">.</span><span class="n">unfreeze</span><span class="p">()</span>
+<span class="n">fit_cbs</span> <span class="o">=</span> <span class="p">[</span><span class="n">HF_TokenClassMetricsCallback</span><span class="p">()]</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    {% endraw %}
+
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">learn</span><span class="o">.</span><span class="n">dls</span><span class="o">.</span><span class="n">show_batch</span><span class="p">(</span><span class="n">dataloaders</span><span class="o">=</span><span class="n">learn</span><span class="o">.</span><span class="n">dls</span><span class="p">,</span> <span class="n">max_n</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+<div class="output_html rendered_html output_subarea ">
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>token / target label</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>[('Andere', 'O'), ('Albumtitel', 'O'), ('sind', 'O'), ('an', 'O'), ('bekannte', 'O'), ('Begriffe', 'O'), ('angelehnt', 'O'), (':', 'O'), ('Fettes', 'B-OTH'), ('Brot', 'I-OTH'), ('für', 'I-OTH'), ('die', 'I-OTH'), ('Welt', 'I-OTH'), ('(', 'O'), ('Brot', 'O'), ('für', 'O'), ('die', 'O'), ('Welt', 'O'), ('),', 'O'), ('Auf', 'O'), ('einem', 'B-OTH'), ('Auge', 'I-OTH'), ('blöd', 'I-OTH'), ('(', 'I-OTH'), ('„', 'O'), ('Auf', 'O'), ('einem', 'O'), ('Auge', 'O'), ('blind', 'O'), ('),', 'O'), ('Am', 'O'), ('Wasser', 'O'), ('gebaut', 'O'), ('(', 'B-OTH'), ('„', 'I-OTH'), ('Nah', 'I-OTH'), ('am', 'O'), ('Wasser', 'O'), ('gebaut', 'O'), (')', 'O'), ('und', 'O'), ('Strom', 'O'), ('und', 'O'), ('Drang', 'O'), ('(', 'O'), ('„', 'B-OTH'), ('Sturm', 'I-OTH'), ('und', 'I-OTH'), ('Drang', 'O'), (').', 'O')]</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>[('Demnach', 'O'), ('kommt', 'O'), ('die', 'O'), ('Staatsoper', 'O'), ('Unter', 'B-LOC'), ('den', 'I-LOC'), ('Linden', 'I-LOC'), ('auf', 'O'), ('72,', 'O'), ('8', 'O'), ('Prozent', 'O'), ('(', 'O'), ('76,', 'O'), ('4', 'O'), ('in', 'O'), ('2003', 'O'), ('),', 'O'), ('die', 'B-ORG'), ('Deutsche', 'I-ORG'), ('Oper', 'O'), ('auf', 'O'), ('64', 'O'), ('Prozent', 'O'), ('(', 'O'), ('61,', 'O'), ('9', 'O'), ('in', 'O'), ('2003', 'O'), (')', 'O'), ('und', 'O'), ('die', 'O'), ('Komische', 'O'), ('Oper', 'O'), ('auf', 'O'), ('52,', 'O'), ('7', 'O'), ('Prozent', 'O'), ('(', 'O'), ('48,', 'O'), ('7', 'O')]</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    {% endraw %}
+
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">learn</span><span class="o">.</span><span class="n">fit_one_cycle</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">lr_max</span><span class="o">=</span> <span class="mf">3e-5</span><span class="p">,</span> <span class="n">moms</span><span class="o">=</span><span class="p">(</span><span class="mf">0.8</span><span class="p">,</span><span class="mf">0.7</span><span class="p">,</span><span class="mf">0.8</span><span class="p">),</span> <span class="n">cbs</span><span class="o">=</span><span class="n">fit_cbs</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+<div class="output_html rendered_html output_subarea ">
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: left;">
+      <th>epoch</th>
+      <th>train_loss</th>
+      <th>valid_loss</th>
+      <th>accuracy</th>
+      <th>precision</th>
+      <th>recall</th>
+      <th>f1</th>
+      <th>time</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>0</td>
+      <td>0.054739</td>
+      <td>0.064740</td>
+      <td>0.980470</td>
+      <td>0.852643</td>
+      <td>0.840121</td>
+      <td>0.846336</td>
+      <td>15:17</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+</div>
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stderr output_text">
+<pre>/home/wgilliam/miniconda3/envs/blurr/lib/python3.9/site-packages/seqeval/metrics/v1.py:57: UndefinedMetricWarning: Recall and F-score are ill-defined and being set to 0.0 in labels with no true samples. Use `zero_division` parameter to control this behavior.
+  _warn_prf(average, modifier, msg_start, len(result))
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+    {% endraw %}
+
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">learn</span><span class="o">.</span><span class="n">show_results</span><span class="p">(</span><span class="n">learner</span><span class="o">=</span><span class="n">learn</span><span class="p">,</span> <span class="n">max_n</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">trunc_at</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+<div class="output_html rendered_html output_subarea ">
+
+</div>
+
+</div>
+
+<div class="output_area">
+
+
+<div class="output_html rendered_html output_subarea ">
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>token / target label / predicted label</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>[('Jetzt', 'O', 'O'), ('noch', 'O', 'O'), ('Gleichgesinnte', 'O', 'O'), ('treffen,', 'O', 'O'), ('das', 'O', 'O'), ('wäre', 'O', 'O'), ('ein', 'O', 'O'), ('sauberer', 'O', 'O'), ('Abschluss', 'O', 'O'), ('und', 'O', 'O')]</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>[('Da', 'O', 'O'), ('Intrigen,', 'O', 'O'), ('Verschwörungen', 'O', 'O'), ('und', 'O', 'O'), ('das', 'O', 'O'), ('brutale', 'O', 'O'), ('Verfolgen', 'O', 'O'), ('der', 'O', 'O'), ('eigenen', 'O', 'O'), ('Interessen', 'O', 'O')]</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    {% endraw %}
+
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">learn</span><span class="o">.</span><span class="n">token_classification_report</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>              precision    recall  f1-score   support
+
+         LOC       0.91      0.89      0.90      1890
+    LOCderiv       0.91      0.86      0.89       664
+     LOCpart       0.69      0.75      0.72       118
+         ORG       0.78      0.78      0.78      1258
+    ORGderiv       0.00      0.00      0.00         0
+     ORGpart       0.79      0.71      0.75       200
+         OTH       0.70      0.70      0.70       638
+    OTHderiv       0.66      0.56      0.61        55
+     OTHpart       0.17      0.62      0.27         8
+         PER       0.94      0.91      0.92      1739
+    PERderiv       0.00      0.00      0.00         0
+     PERpart       0.34      0.31      0.33        35
+
+   micro avg       0.85      0.84      0.85      6605
+   macro avg       0.57      0.59      0.57      6605
+weighted avg       0.86      0.84      0.85      6605
+
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+    {% endraw %}
+
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">txt</span> <span class="o">=</span><span class="s2">&quot;I live in California, but I&#39;d love to travel to Scotland and visit the Macallan distillery.&quot;</span>
+<span class="n">txt2</span> <span class="o">=</span> <span class="s2">&quot;Jane Doe loves working for ohmeow.com.&quot;</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    {% endraw %}
+
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">res</span> <span class="o">=</span> <span class="n">learn</span><span class="o">.</span><span class="n">blurr_predict_tokens</span><span class="p">([</span><span class="n">txt</span><span class="o">.</span><span class="n">split</span><span class="p">(),</span> <span class="n">txt2</span><span class="o">.</span><span class="n">split</span><span class="p">()])</span>
+<span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">res</span><span class="p">:</span> <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="p">[(</span><span class="n">tok</span><span class="p">,</span> <span class="n">lbl</span><span class="p">)</span> <span class="k">for</span> <span class="n">tok</span><span class="p">,</span><span class="n">lbl</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">r</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">r</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="p">]</span><span class="si">}</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>[(&#39;I&#39;, &#39;O&#39;), (&#39;live&#39;, &#39;O&#39;), (&#39;in&#39;, &#39;O&#39;), (&#39;California,&#39;, &#39;B-LOC&#39;), (&#39;but&#39;, &#39;O&#39;), (&#34;I&#39;d&#34;, &#39;O&#39;), (&#39;love&#39;, &#39;O&#39;), (&#39;to&#39;, &#39;O&#39;), (&#39;travel&#39;, &#39;O&#39;), (&#39;to&#39;, &#39;O&#39;), (&#39;Scotland&#39;, &#39;B-LOC&#39;), (&#39;and&#39;, &#39;O&#39;), (&#39;visit&#39;, &#39;O&#39;), (&#39;the&#39;, &#39;O&#39;), (&#39;Macallan&#39;, &#39;B-ORG&#39;), (&#39;distillery.&#39;, &#39;I-ORG&#39;)]
+
+[(&#39;Jane&#39;, &#39;B-PER&#39;), (&#39;Doe&#39;, &#39;I-PER&#39;), (&#39;loves&#39;, &#39;O&#39;), (&#39;working&#39;, &#39;O&#39;), (&#39;for&#39;, &#39;O&#39;), (&#39;ohmeow.com.&#39;, &#39;B-OTH&#39;)]
+
+</pre>
+</div>
 </div>
 
 </div>
@@ -1220,6 +1738,13 @@ Reusing dataset civil_comments (/home/wgilliam/.cache/huggingface/datasets/civil
 </div>
     {% endraw %}
 
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>We use the <code>preprocess_func</code> here as the preprocessing is dependent upon the Hugging Face tokenizer which will vary dependending on the pretrained model we use for the task.</p>
+
+</div>
+</div>
+</div>
     {% raw %}
     
 <div class="cell border-box-sizing code_cell rendered">
@@ -1323,15 +1848,15 @@ Reusing dataset civil_comments (/home/wgilliam/.cache/huggingface/datasets/civil
   <tbody>
     <tr>
       <th>0</th>
-      <td>what magazine said beyonce was the " world's most beautiful woman "? in september 2010, beyonce made her runway modelling debut at tom ford's spring / summer 2011 fashion show. she was named " world's most beautiful woman " by people and the " hottest female singer of all time " by complex in 2012. in january 2013, gq placed her on its cover, featuring her atop its " 100 sexiest women of the 21st century " list. vh1 listed her at number 1 on its 100 sexiest artists list. several wax figures of b</td>
-      <td>(51, 52)</td>
-      <td>people</td>
+      <td>how many copies of 4 sold in the first week? her fourth studio album 4 was released on june 28, 2011 in the us. 4 sold 310, 000 copies in its first week and debuted atop the billboard 200 chart, giving beyonce her fourth consecutive number - one album in the us. the album was preceded by two of its singles " run the world ( girls ) " and " best thing i never had ", which both attained moderate success. the fourth single " love on top " was a commercial success in the us. 4 also produced four oth</td>
+      <td>(31, 34)</td>
+      <td>310, 000</td>
     </tr>
     <tr>
       <th>1</th>
-      <td>where were items from the clothing line displayed? beyonce and her mother introduced house of dereon, a contemporary women's fashion line, in 2005. the concept is inspired by three generations of women in their family, the name paying tribute to beyonce's grandmother, agnez dereon, a respected seamstress. according to tina, the overall style of the line best reflects her and beyonce's taste and style. beyonce and her mother founded their family's company beyond productions, which provides the li</td>
-      <td>(129, 139)</td>
-      <td>in destiny's child's shows and tours</td>
+      <td>which campaign does beyonce contribute to that encourages leadership in females? in an interview published by vogue in april 2013, beyonce was asked if she considers herself a feminist, to which she said, " that word can be very extreme... but i guess i am a modern - day feminist. i do believe in equality ". she would later align herself more publicly with the movement, sampling " we should all be feminists ", a speech delivered by nigerian author chimamanda ngozi adichie at a tedxeuston confere</td>
+      <td>(132, 135)</td>
+      <td>ban bossy</td>
     </tr>
   </tbody>
 </table>
@@ -1378,20 +1903,20 @@ Reusing dataset civil_comments (/home/wgilliam/.cache/huggingface/datasets/civil
   <tbody>
     <tr>
       <td>0</td>
-      <td>2.288779</td>
-      <td>1.615837</td>
+      <td>2.233430</td>
+      <td>1.807422</td>
       <td>00:47</td>
     </tr>
     <tr>
       <td>1</td>
-      <td>1.378569</td>
-      <td>1.015918</td>
+      <td>1.479179</td>
+      <td>1.103898</td>
       <td>00:47</td>
     </tr>
     <tr>
       <td>2</td>
-      <td>0.968127</td>
-      <td>1.050176</td>
+      <td>1.053905</td>
+      <td>1.113511</td>
       <td>00:47</td>
     </tr>
   </tbody>
@@ -1450,19 +1975,19 @@ Reusing dataset civil_comments (/home/wgilliam/.cache/huggingface/datasets/civil
   <tbody>
     <tr>
       <th>0</th>
-      <td>who did beyonce part ways with during her hiatus? beyonce announced a hiatus from her music career in january 2010, heeding her mother's advice, " to live life, to be inspired by things again ". during the break she and her father parted ways as business partners. beyonce's musical break lasted nine months and saw her visit multiple european cities, the great wall of china, the egyptian pyramids, australia, english music festivals and various museums and ballet performances.</td>
-      <td>(50, 52)</td>
-      <td>her father</td>
-      <td>(50, 52)</td>
-      <td>her father</td>
+      <td>how was the single released? on february 6, 2016, one day before her performance at the super bowl, beyonce released a new single exclusively on music streaming service tidal called " formation ".</td>
+      <td>(29, 30)</td>
+      <td>exclusively</td>
+      <td>(29, 35)</td>
+      <td>exclusively on music streaming service tidal</td>
     </tr>
     <tr>
       <th>1</th>
-      <td>beyonce became the first female artist to perform solo in 20 years at which stage? in 2011, documents obtained by wikileaks revealed that beyonce was one of many entertainers who performed for the family of libyan ruler muammar gaddafi. rolling stone reported that the music industry was urging them to return the money they earned for the concerts ; a spokesperson for beyonce later confirmed to the huffington post that she donated the money to the clinton bush haiti fund. later that year she beca</td>
-      <td>(109, 116)</td>
-      <td>the 2011 glastonbury festival</td>
-      <td>(110, 116)</td>
-      <td>2011 glastonbury festival</td>
+      <td>who has beyonce at number one on her five best singer / dancers? beyonce has received praise for her stage presence and voice during live performances. jarett wieselman of the new york post placed her at number one on her list of the five best singer / dancers. according to barbara ellen of the guardian beyonce is the most in - charge female artist she's seen onstage, while alice jones of the independent wrote she " takes her role as entertainer so seriously she's almost too good. " the ex - pre</td>
+      <td>(30, 35)</td>
+      <td>jarett wieselman</td>
+      <td>(30, 35)</td>
+      <td>jarett wieselman</td>
     </tr>
   </tbody>
 </table>
@@ -1484,7 +2009,7 @@ Reusing dataset civil_comments (/home/wgilliam/.cache/huggingface/datasets/civil
 </div>
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>TO DO</p>
+<p>In summary, whether you want to work with Blurr's low, mid, or high-level API ... we got you covered :)</p>
 
 </div>
 </div>

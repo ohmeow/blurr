@@ -6,8 +6,8 @@ title: data.seq2seq.core
 keywords: fastai
 sidebar: home_sidebar
 
-summary: "This module contains the core seq2seq (e.g., language modeling, summarization, translation) bits required to use the fastai DataBlock API and/or mid-level data processing pipelines to organize your data in a way modelable by huggingface transformer implementations."
-description: "This module contains the core seq2seq (e.g., language modeling, summarization, translation) bits required to use the fastai DataBlock API and/or mid-level data processing pipelines to organize your data in a way modelable by huggingface transformer implementations."
+summary: "This module contains the core seq2seq (e.g., language modeling, summarization, translation) bits required to use the fastai DataBlock API and/or mid-level data processing pipelines to organize your data in a way modelable by Hugging Face transformer implementations."
+description: "This module contains the core seq2seq (e.g., language modeling, summarization, translation) bits required to use the fastai DataBlock API and/or mid-level data processing pipelines to organize your data in a way modelable by Hugging Face transformer implementations."
 nb_path: "nbs/10_data-seq2seq-core.ipynb"
 ---
 <!--
@@ -155,7 +155,7 @@ nb_path: "nbs/10_data-seq2seq-core.ipynb"
 
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>We create a subclass of <a href="/blurr/data-core.html#HF_BeforeBatchTransform"><code>HF_BeforeBatchTransform</code></a> for summarization tasks to add <code>decoder_input_ids</code> and <code>labels</code> to our inputs during training, which will in turn allow the huggingface model to calculate the loss for us.  See <a href="https://huggingface.co/transformers/glossary.html#labels">here</a> and <a href="https://huggingface.co/transformers/glossary.html#decoder-input-ids">here</a> for more information on these additional inputs used in summarization, translation, and conversational training tasks. How they should look for particular architectures can be found by looking at those model's <code>forward</code> function's docs (See <a href="https://huggingface.co/transformers/model_doc/bart.html#transformers.BartModel.forward">here</a> for BART for example)</p>
+<p>We create a subclass of <a href="/blurr/data-core.html#HF_BeforeBatchTransform"><code>HF_BeforeBatchTransform</code></a> for summarization tasks to add <code>decoder_input_ids</code> and <code>labels</code> to our inputs during training, which will in turn allow the Hugging Face model to calculate the loss for us.  See <a href="https://huggingface.co/transformers/glossary.html#labels">here</a> and <a href="https://huggingface.co/transformers/glossary.html#decoder-input-ids">here</a> for more information on these additional inputs used in summarization, translation, and conversational training tasks. How they should look for particular architectures can be found by looking at those model's <code>forward</code> function's docs (See <a href="https://huggingface.co/transformers/model_doc/bart.html#transformers.BartModel.forward">here</a> for BART for example)</p>
 <p>Note also that <code>labels</code> is simply target_ids shifted to the right by one since the task to is to predict the next token based on the current (and all previous) <code>decoder_input_ids</code>.</p>
 <p>And lastly, we also update our targets to just be the <code>input_ids</code> of our target sequence so that fastai's <code>Learner.show_results</code> works (again, almost all the fastai bits require returning a single tensor to work).</p>
 

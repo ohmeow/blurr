@@ -6,8 +6,8 @@ title: data.core
 keywords: fastai
 sidebar: home_sidebar
 
-summary: "This module contains the core bits required to use the fastai DataBlock API and/or mid-level data processing pipelines to organize your data in a way modelable by huggingface transformer implementations."
-description: "This module contains the core bits required to use the fastai DataBlock API and/or mid-level data processing pipelines to organize your data in a way modelable by huggingface transformer implementations."
+summary: "This module contains the core bits required to use the fastai DataBlock API and/or mid-level data processing pipelines to organize your data in a way modelable by Hugging Face transformer implementations."
+description: "This module contains the core bits required to use the fastai DataBlock API and/or mid-level data processing pipelines to organize your data in a way modelable by Hugging Face transformer implementations."
 nb_path: "nbs/01_data-core.ipynb"
 ---
 <!--
@@ -108,7 +108,7 @@ nb_path: "nbs/01_data-core.ipynb"
 
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>A <a href="/blurr/data-core.html#HF_BaseInput"><code>HF_BaseInput</code></a> object is returned from the decodes method of <a href="/blurr/data-core.html#HF_AfterBatchTransform"><code>HF_AfterBatchTransform</code></a> as a means to customize @typedispatched functions like <code>DataLoaders.show_batch</code> and <code>Learner.show_results</code>. It uses the "input_ids" of a huggingface object as the representative tensor for <code>show</code> methods</p>
+<p>A <a href="/blurr/data-core.html#HF_BaseInput"><code>HF_BaseInput</code></a> object is returned from the decodes method of <a href="/blurr/data-core.html#HF_AfterBatchTransform"><code>HF_AfterBatchTransform</code></a> as a means to customize @typedispatched functions like <code>DataLoaders.show_batch</code> and <code>Learner.show_results</code>. It uses the "input_ids" of a Hugging Face object as the representative tensor for <code>show</code> methods</p>
 
 </div>
 </div>
@@ -229,7 +229,7 @@ decode the dictionary produced as a byproduct of the tokenization process in the
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <p>A basic wrapper that links defaults transforms for the data block API</p>
-<p><a href="/blurr/data-core.html#HF_TextBlock"><code>HF_TextBlock</code></a> has been dramatically simplified from it's predecessor. It handles setting up your <a href="/blurr/data-core.html#HF_BeforeBatchTransform"><code>HF_BeforeBatchTransform</code></a> and <a href="/blurr/data-core.html#HF_AfterBatchTransform"><code>HF_AfterBatchTransform</code></a> transforms regardless of data source (e.g., this will work with files, DataFrames, whatever). You must either pass in your own instance of a <a href="/blurr/data-core.html#HF_BeforeBatchTransform"><code>HF_BeforeBatchTransform</code></a> class or the huggingface architecture and tokenizer via the <code>hf_arch</code> and <code>hf_tokenizer</code> (the other args are optional).</p>
+<p><a href="/blurr/data-core.html#HF_TextBlock"><code>HF_TextBlock</code></a> has been dramatically simplified from it's predecessor. It handles setting up your <a href="/blurr/data-core.html#HF_BeforeBatchTransform"><code>HF_BeforeBatchTransform</code></a> and <a href="/blurr/data-core.html#HF_AfterBatchTransform"><code>HF_AfterBatchTransform</code></a> transforms regardless of data source (e.g., this will work with files, DataFrames, whatever). You must either pass in your own instance of a <a href="/blurr/data-core.html#HF_BeforeBatchTransform"><code>HF_BeforeBatchTransform</code></a> class or the Hugging Face architecture and tokenizer via the <code>hf_arch</code> and <code>hf_tokenizer</code> (the other args are optional).</p>
 
 </div>
 </div>
@@ -389,7 +389,7 @@ decode the dictionary produced as a byproduct of the tokenization process in the
 
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>There are a bunch of ways we can get at the four huggingface elements we need (e.g., architecture name, tokenizer, config, and model).  We can just create them directly, or we can use one of the helper methods available via <a href="/blurr/utils.html#BLURR"><code>BLURR</code></a>.</p>
+<p>There are a bunch of ways we can get at the four Hugging Face elements we need (e.g., architecture name, tokenizer, config, and model).  We can just create them directly, or we can use one of the helper methods available via <a href="/blurr/utils.html#BLURR"><code>BLURR</code></a>.</p>
 
 </div>
 </div>
@@ -583,7 +583,7 @@ decode the dictionary produced as a byproduct of the tokenization process in the
 
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Tests">Tests<a class="anchor-link" href="#Tests"> </a></h2><p>The tests below to ensure the core DataBlock code above works for <strong>all</strong> pretrained sequence classification models available in huggingface.  These tests are excluded from the CI workflow because of how long they would take to run and the amount of data that would be required to download.</p>
+<h2 id="Tests">Tests<a class="anchor-link" href="#Tests"> </a></h2><p>The tests below to ensure the core DataBlock code above works for <strong>all</strong> pretrained sequence classification models available in Hugging Face.  These tests are excluded from the CI workflow because of how long they would take to run and the amount of data that would be required to download.</p>
 <p><strong>Note</strong>: Feel free to modify the code below to test whatever pretrained classification models you are working with ... and if any of your pretrained sequence classification models fail, please submit a github issue <em>(or a PR if you'd like to fix it yourself)</em></p>
 
 </div>
