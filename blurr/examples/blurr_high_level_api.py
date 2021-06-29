@@ -12,6 +12,7 @@ from transformers import *
 from ..utils import *
 from ..data.core import *
 from ..modeling.core import *
+from ..modeling.token_classification import *
 from ..modeling.question_answering import *
 
 logging.set_verbosity_error()

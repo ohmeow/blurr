@@ -95,7 +95,7 @@ class BlurrUtil():
         return str_to_class(config)
 
     def get_tokenizers(self, arch):
-        """Used to get the available huggingface tokenizers for a given architecture. Note: There may be
+        """Used to get the available Hugging Face tokenizers for a given architecture. Note: There may be
         multiple tokenizers and so this returns a list.
         """
         toks = sorted(self._df[(self._df.functional_area == 'tokenization') &
@@ -145,7 +145,7 @@ class BlurrUtil():
         create the model.
 
         Optionally, you can pass a config (obj), tokenizer (class), and/or model (class) (along with any
-        related kwargs for each) to get as specific as you want w/r/t what huggingface objects are returned.
+        related kwargs for each) to get as specific as you want w/r/t what Hugging Face objects are returned.
         """
 
         # config

@@ -35,7 +35,7 @@ class HF_Seq2SeqMetricsCallback(Callback):
         if (custom_metrics is not None):
             for metric_name, metric_info_dict in custom_metrics.items():
                 # self.custom_metric_funcs (tuple): the function to compute the metric and what should be returned,
-                # if the "compute_func" is not defined, we assume it is a huggingface metric
+                # if the "compute_func" is not defined, we assume it is a Hugging Face metric
                 if ('compute_func' in metric_info_dict):
                     compute_func = metric_info_dict['compute_func']
                 else:
@@ -211,7 +211,7 @@ def blurr_generate(self:Learner, inp, task=None, **kwargs):
     (see [here](https://huggingface.co/transformers/main_classes/model.html#transformers.PreTrainedModel.generate)
     for a list of arguments you can pass in)
     """
-    # grab the huggingface tokenizer from the learner's dls.tfms
+    # grab the Hugging Face tokenizer from the learner's dls.tfms
     hf_before_batch_tfm = get_blurr_tfm(self.dls.before_batch)
     hf_config = hf_before_batch_tfm.hf_config
     hf_tokenizer = hf_before_batch_tfm.hf_tokenizer

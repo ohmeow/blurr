@@ -94,7 +94,7 @@ class HF_TextBlock(TransformBlock):
                                                        **before_batch_kwargs.copy())
 
         # as we'll have our HF_BeforeBatchTransforme by now, we'll use it to set the TransformBlock's
-        # huggingface face objects
+        # Hugging Face face objects
         self.hf_arch = before_batch_tfm.hf_arch
         self.hf_config = before_batch_tfm.hf_config
         self.hf_tokenizer = before_batch_tfm.hf_tokenizer

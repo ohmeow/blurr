@@ -17,7 +17,7 @@ logging.set_verbosity_error()
 
 # Cell
 def hf_splitter(m):
-    """Splits the huggingface model based on various model architecture conventions"""
+    """Splits the Hugging Face model based on various model architecture conventions"""
     model = m.hf_model if (hasattr(m, 'hf_model')) else m
     root_modules = list(model.named_children())
     top_module_name, top_module = root_modules[0]
