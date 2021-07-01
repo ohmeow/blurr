@@ -269,7 +269,7 @@ learn.show_results(learner=learn, max_n=2)
 
 ## ❗ Updates
 
-**07/01/2021** - v0.0.30
+**07/01/2021** - v0.0.29
 
 * Updated to work with tranformers 4.8
 * Introducing the `Blearner` high-level API with task specific blearners for building your DataBlock, DataLoaders, and Learner in one line of code (usually :))
