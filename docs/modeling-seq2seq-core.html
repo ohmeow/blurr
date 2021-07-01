@@ -871,45 +871,11 @@ An exhaustive search has yielded some clues, but no proof of where the Boeing 77
 
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>We'll add a <code>blurr_generate</code> method to <code>Learner</code> that uses Hugging Face's <code>PreTrainedModel.generate</code> to create our predictions.  For the full list of arguments you can pass in see <a href="https://huggingface.co/transformers/main_classes/model.html#transformers.PreTrainedModel.generate">here</a>. You can also check out their <a href="https://github.com/huggingface/blog/blob/master/notebooks/02_how_to_generate.ipynb">"How To Generate"</a> notebook for more information about how it all works.</p>
+<p>To make things even easier, for text generation tasks you can simply call the <code>Learn.blurr_generate</code> method, optionally passing in whatever text generation kwargs you wish, to accomplish the same as above.</p>
 
 </div>
 </div>
 </div>
-    {% raw %}
-    
-<div class="cell border-box-sizing code_cell rendered">
-
-</div>
-    {% endraw %}
-
-    {% raw %}
-    
-<div class="cell border-box-sizing code_cell rendered">
-
-<div class="output_wrapper">
-<div class="output">
-
-<div class="output_area">
-
-
-<div class="output_markdown rendered_html output_subarea ">
-<h4 id="Learner.blurr_generate" class="doc_header"><code>Learner.blurr_generate</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/modeling/seq2seq/core.py#L208" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>Learner.blurr_generate</code>(<strong><code>inp</code></strong>, <strong><code>task</code></strong>=<em><code>None</code></em>, <strong>**<code>kwargs</code></strong>)</p>
-</blockquote>
-<p>Uses the built-in <code>generate</code> method to generate the text
-(see <a href="https://huggingface.co/transformers/main_classes/model.html#transformers.PreTrainedModel.generate">here</a>
-for a list of arguments you can pass in)</p>
-
-</div>
-
-</div>
-
-</div>
-</div>
-
-</div>
-    {% endraw %}
-
     {% raw %}
     
 <div class="cell border-box-sizing code_cell rendered">
@@ -970,6 +936,29 @@ The robbers spoke French and drove vehicles with French lRicense plates, police 
     {% raw %}
     
 <div class="cell border-box-sizing code_cell rendered">
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+<div class="output_subarea output_text output_error">
+<pre>
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
+<span class="ansi-green-fg">&lt;ipython-input-1-9e4d7c3f397b&gt;</span> in <span class="ansi-cyan-fg">&lt;module&gt;</span>
+<span class="ansi-green-intense-fg ansi-bold">      1</span> <span class="ansi-red-fg">#export</span>
+<span class="ansi-green-fg">----&gt; 2</span><span class="ansi-red-fg"> </span><span class="ansi-blue-fg">@</span>typedispatch
+<span class="ansi-green-intense-fg ansi-bold">      3</span> def show_results(x:HF_Seq2SeqInput, y, samples, outs, learner, ctxs=None, max_n=6, 
+<span class="ansi-green-intense-fg ansi-bold">      4</span>                  input_trunc_at=None, target_trunc_at=None, text_gen_kwargs={}, **kwargs):  
+<span class="ansi-green-intense-fg ansi-bold">      5</span> 
+
+<span class="ansi-red-fg">NameError</span>: name &#39;typedispatch&#39; is not defined</pre>
+</div>
+</div>
+
+</div>
+</div>
 
 </div>
     {% endraw %}

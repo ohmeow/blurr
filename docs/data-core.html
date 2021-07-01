@@ -32,6 +32,16 @@ nb_path: "nbs/01_data-core.ipynb"
     {% raw %}
     
 <div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span> 
+</pre></div>
+
+    </div>
+</div>
+</div>
 
 </div>
     {% endraw %}
@@ -39,17 +49,36 @@ nb_path: "nbs/01_data-core.ipynb"
     {% raw %}
     
 <div class="cell border-box-sizing code_cell rendered">
-<div class="input">
 
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">set_device</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Using GPU #</span><span class="si">{</span><span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">current_device</span><span class="p">()</span><span class="si">}</span><span class="s1">: </span><span class="si">{</span><span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">get_device_name</span><span class="p">()</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
-</pre></div>
+</div>
+    {% endraw %}
 
-    </div>
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>Using pytorch 1.7.1
+Using fastai 2.4
+Using transformers 4.8.1
+</pre>
 </div>
 </div>
+
+</div>
+</div>
+
+</div>
+    {% endraw %}
+
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
 
 <div class="output_wrapper">
 <div class="output">
@@ -243,13 +272,14 @@ decode the dictionary produced as a byproduct of the tokenization process in the
 
 <div class="output_area">
 
-
-<div class="output_markdown rendered_html output_subarea ">
-<h4 id="get_blurr_tfm" class="doc_header"><code>get_blurr_tfm</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/data/core.py#L112" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>get_blurr_tfm</code>(<strong><code>tfms_list</code></strong>, <strong><code>tfm_class</code></strong>=<em><code>HF_BeforeBatchTransform</code></em>)</p>
-</blockquote>
-
+<div class="output_subarea output_text output_error">
+<pre>
+<span class="ansi-cyan-fg">  File </span><span class="ansi-green-fg">&#34;&lt;ipython-input-1-30d8d3f9c0eb&gt;&#34;</span><span class="ansi-cyan-fg">, line </span><span class="ansi-green-fg">3</span>
+<span class="ansi-red-fg">    return next(filter(lambda el: issubclass(type(el), tfm_class), tfms_list), None)</span>
+    ^
+<span class="ansi-red-fg">IndentationError</span><span class="ansi-red-fg">:</span> unexpected indent
+</pre>
 </div>
-
 </div>
 
 </div>
@@ -261,6 +291,25 @@ decode the dictionary produced as a byproduct of the tokenization process in the
     {% raw %}
     
 <div class="cell border-box-sizing code_cell rendered">
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+<div class="output_markdown rendered_html output_subarea ">
+<h4 id="get_blurr_tfm" class="doc_header"><code>get_blurr_tfm</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/data/core.py#L112" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>get_blurr_tfm</code>(<strong><code>tfms_list</code></strong>, <strong><code>tfm_class</code></strong>=<em><code>HF_BeforeBatchTransform</code></em>)</p>
+</blockquote>
+<p>Given a fastai DataLoaders batch transformes, this method can be used to get at the <a href="/blurr/data-core.html#HF_BeforeBatchTransform"><code>HF_BeforeBatchTransform</code></a>
+instance used in your Blurr DataBlock</p>
+
+</div>
+
+</div>
+
+</div>
+</div>
 
 </div>
     {% endraw %}
@@ -566,8 +615,8 @@ decode the dictionary produced as a byproduct of the tokenization process in the
     </tr>
     <tr>
       <th>1</th>
-      <td>The year 2005 saw no fewer than 3 filmed productions of H. G. Wells' great novel, "War of the Worlds". This is perhaps the least well-known and very probably the best of them. No other version of WotW has ever attempted not only to present the story very much as Wells wrote it, but also to create the atmosphere of the time in which it was supposed to take place: the last year of the 19th Century, 1900  using Wells' original setting, in and near Woking, England.&lt;br /&gt;&lt;br /&gt;IMDb seems unfriendly</td>
-      <td>positive</td>
+      <td>Now that Che(2008) has finished its relatively short Australian cinema run (extremely limited release:1 screen in Sydney, after 6wks), I can guiltlessly join both hosts of "At The Movies" in taking Steven Soderbergh to task.&lt;br /&gt;&lt;br /&gt;It's usually satisfying to watch a film director change his style/subject, but Soderbergh's most recent stinker, The Girlfriend Experience(2009), was also missing a story, so narrative (and editing?) seem to suddenly be Soderbergh's main challenge. Strange, after</td>
+      <td>negative</td>
     </tr>
   </tbody>
 </table>
@@ -589,202 +638,6 @@ decode the dictionary produced as a byproduct of the tokenization process in the
 </div>
 </div>
 </div>
-    {% raw %}
-    
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="p">[</span> <span class="n">model_type</span> <span class="k">for</span> <span class="n">model_type</span> <span class="ow">in</span> <span class="n">BLURR</span><span class="o">.</span><span class="n">get_models</span><span class="p">(</span><span class="n">task</span><span class="o">=</span><span class="s1">&#39;SequenceClassification&#39;</span><span class="p">)</span> 
- <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="n">model_type</span><span class="o">.</span><span class="vm">__name__</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;TF&#39;</span><span class="p">))</span> <span class="p">]</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-<div class="output_area">
-
-
-
-<div class="output_text output_subarea output_execute_result">
-<pre>[transformers.models.albert.modeling_albert.AlbertForSequenceClassification,
- transformers.models.bart.modeling_bart.BartForSequenceClassification,
- transformers.models.bert.modeling_bert.BertForSequenceClassification,
- transformers.models.big_bird.modeling_big_bird.BigBirdForSequenceClassification,
- transformers.models.bigbird_pegasus.modeling_bigbird_pegasus.BigBirdPegasusForSequenceClassification,
- transformers.models.ctrl.modeling_ctrl.CTRLForSequenceClassification,
- transformers.models.camembert.modeling_camembert.CamembertForSequenceClassification,
- transformers.models.convbert.modeling_convbert.ConvBertForSequenceClassification,
- transformers.models.deberta.modeling_deberta.DebertaForSequenceClassification,
- transformers.models.deberta_v2.modeling_deberta_v2.DebertaV2ForSequenceClassification,
- transformers.models.distilbert.modeling_distilbert.DistilBertForSequenceClassification,
- transformers.models.electra.modeling_electra.ElectraForSequenceClassification,
- transformers.models.flaubert.modeling_flaubert.FlaubertForSequenceClassification,
- transformers.models.funnel.modeling_funnel.FunnelForSequenceClassification,
- transformers.models.gpt2.modeling_gpt2.GPT2ForSequenceClassification,
- transformers.models.gpt_neo.modeling_gpt_neo.GPTNeoForSequenceClassification,
- transformers.models.ibert.modeling_ibert.IBertForSequenceClassification,
- transformers.models.led.modeling_led.LEDForSequenceClassification,
- transformers.models.layoutlm.modeling_layoutlm.LayoutLMForSequenceClassification,
- transformers.models.longformer.modeling_longformer.LongformerForSequenceClassification,
- transformers.models.mbart.modeling_mbart.MBartForSequenceClassification,
- transformers.models.mpnet.modeling_mpnet.MPNetForSequenceClassification,
- transformers.models.megatron_bert.modeling_megatron_bert.MegatronBertForSequenceClassification,
- transformers.models.mobilebert.modeling_mobilebert.MobileBertForSequenceClassification,
- transformers.models.openai.modeling_openai.OpenAIGPTForSequenceClassification,
- transformers.models.reformer.modeling_reformer.ReformerForSequenceClassification,
- transformers.models.roberta.modeling_roberta.RobertaForSequenceClassification,
- transformers.models.squeezebert.modeling_squeezebert.SqueezeBertForSequenceClassification,
- transformers.models.tapas.modeling_tapas.TapasForSequenceClassification,
- transformers.models.transfo_xl.modeling_transfo_xl.TransfoXLForSequenceClassification,
- transformers.models.xlm.modeling_xlm.XLMForSequenceClassification,
- transformers.models.xlm_roberta.modeling_xlm_roberta.XLMRobertaForSequenceClassification,
- transformers.models.xlnet.modeling_xlnet.XLNetForSequenceClassification]</pre>
-</div>
-
-</div>
-
-</div>
-</div>
-
-</div>
-    {% endraw %}
-
-    {% raw %}
-    
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">pretrained_model_names</span> <span class="o">=</span> <span class="p">[</span>
-    <span class="s1">&#39;albert-base-v1&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;facebook/bart-base&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;bert-base-uncased&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;google/bigbird-roberta-base&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;sshleifer/tiny-ctrl&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;camembert-base&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;sarnikowski/convbert-medium-small-da-cased&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;microsoft/deberta-base&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;microsoft/deberta-v2-xlarge&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;distilbert-base-uncased&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;monologg/electra-small-finetuned-imdb&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;flaubert/flaubert_small_cased&#39;</span><span class="p">,</span> 
-    <span class="s1">&#39;huggingface/funnel-small-base&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;gpt2&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;kssteven/ibert-roberta-base&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;allenai/led-base-16384&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;microsoft/layoutlm-base-uncased&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;allenai/longformer-base-4096&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;sshleifer/tiny-mbart&#39;</span><span class="p">,</span> 
-    <span class="s1">&#39;microsoft/mpnet-base&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;google/mobilebert-uncased&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;openai-gpt&#39;</span><span class="p">,</span>
-    <span class="c1">#&#39;reformer-enwik8&#39;,                  # (see model card; does not work with/require a tokenizer so no bueno here)</span>
-    <span class="s1">&#39;roberta-base&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;squeezebert/squeezebert-uncased&#39;</span><span class="p">,</span>
-    <span class="c1">#&#39;google/tapas-base&#39;,                # (requires pip install torch-scatter)</span>
-    <span class="s1">&#39;transfo-xl-wt103&#39;</span><span class="p">,</span> 
-    <span class="s1">&#39;xlm-mlm-en-2048&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;xlm-roberta-base&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;xlnet-base-cased&#39;</span>
-<span class="p">]</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-</div>
-    {% endraw %}
-
-    {% raw %}
-    
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">path</span> <span class="o">=</span> <span class="n">untar_data</span><span class="p">(</span><span class="n">URLs</span><span class="o">.</span><span class="n">IMDB_SAMPLE</span><span class="p">)</span>
-
-<span class="n">model_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="s1">&#39;models&#39;</span><span class="p">)</span>
-<span class="n">imdb_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">path</span><span class="o">/</span><span class="s1">&#39;texts.csv&#39;</span><span class="p">)</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-</div>
-    {% endraw %}
-
-    {% raw %}
-    
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="c1">#hide_output</span>
-<span class="n">model_cls</span> <span class="o">=</span> <span class="n">AutoModelForSequenceClassification</span>
-<span class="n">bsz</span> <span class="o">=</span> <span class="mi">2</span>
-<span class="n">seq_sz</span> <span class="o">=</span> <span class="mi">128</span>
-
-<span class="n">test_results</span> <span class="o">=</span> <span class="p">[]</span>
-<span class="k">for</span> <span class="n">model_name</span> <span class="ow">in</span> <span class="n">pretrained_model_names</span><span class="p">:</span>
-    <span class="n">error</span><span class="o">=</span><span class="kc">None</span>
-    
-    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;=== </span><span class="si">{</span><span class="n">model_name</span><span class="si">}</span><span class="s1"> ===</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
-    
-    <span class="n">tok_class</span> <span class="o">=</span> <span class="n">RobertaTokenizer</span> <span class="k">if</span> <span class="p">(</span><span class="s1">&#39;/ibert&#39;</span> <span class="ow">in</span> <span class="n">model_name</span><span class="p">)</span> <span class="k">else</span> <span class="kc">None</span>
-
-    <span class="n">hf_arch</span><span class="p">,</span> <span class="n">hf_config</span><span class="p">,</span> <span class="n">hf_tokenizer</span><span class="p">,</span> <span class="n">hf_model</span> <span class="o">=</span> <span class="n">BLURR</span><span class="o">.</span><span class="n">get_hf_objects</span><span class="p">(</span><span class="n">model_name</span><span class="p">,</span> 
-                                                                      <span class="n">model_cls</span><span class="o">=</span><span class="n">model_cls</span><span class="p">,</span> 
-                                                                      <span class="n">tokenizer_cls</span><span class="o">=</span><span class="n">tok_class</span><span class="p">)</span>   
-    
-    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;architecture:</span><span class="se">\t</span><span class="si">{</span><span class="n">hf_arch</span><span class="si">}</span><span class="se">\n</span><span class="s1">tokenizer:</span><span class="se">\t</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">hf_tokenizer</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
-    
-    <span class="c1"># not all architectures include a native pad_token (e.g., gpt2, ctrl, etc...), so we add one here</span>
-    <span class="k">if</span> <span class="p">(</span><span class="n">hf_tokenizer</span><span class="o">.</span><span class="n">pad_token</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">):</span> 
-        <span class="n">hf_tokenizer</span><span class="o">.</span><span class="n">add_special_tokens</span><span class="p">({</span><span class="s1">&#39;pad_token&#39;</span><span class="p">:</span> <span class="s1">&#39;&lt;pad&gt;&#39;</span><span class="p">})</span>  
-        <span class="n">hf_config</span><span class="o">.</span><span class="n">pad_token_id</span> <span class="o">=</span> <span class="n">hf_tokenizer</span><span class="o">.</span><span class="n">get_vocab</span><span class="p">()[</span><span class="s1">&#39;&lt;pad&gt;&#39;</span><span class="p">]</span>
-        <span class="n">hf_model</span><span class="o">.</span><span class="n">resize_token_embeddings</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">hf_tokenizer</span><span class="p">))</span>   
-    
-    <span class="n">blocks</span> <span class="o">=</span> <span class="p">(</span>
-        <span class="n">HF_TextBlock</span><span class="p">(</span><span class="n">hf_arch</span><span class="p">,</span> <span class="n">hf_config</span><span class="p">,</span> <span class="n">hf_tokenizer</span><span class="p">,</span> <span class="n">hf_model</span><span class="p">,</span> <span class="n">padding</span><span class="o">=</span><span class="s1">&#39;max_length&#39;</span><span class="p">,</span> <span class="n">max_length</span><span class="o">=</span><span class="n">seq_sz</span><span class="p">),</span> 
-        <span class="n">CategoryBlock</span>
-    <span class="p">)</span>
-
-    <span class="n">dblock</span> <span class="o">=</span> <span class="n">DataBlock</span><span class="p">(</span><span class="n">blocks</span><span class="o">=</span><span class="n">blocks</span><span class="p">,</span> <span class="n">get_x</span><span class="o">=</span><span class="n">ColReader</span><span class="p">(</span><span class="s1">&#39;text&#39;</span><span class="p">),</span> <span class="n">get_y</span><span class="o">=</span><span class="n">ColReader</span><span class="p">(</span><span class="s1">&#39;label&#39;</span><span class="p">),</span> <span class="n">splitter</span><span class="o">=</span><span class="n">ColSplitter</span><span class="p">())</span>
-    <span class="n">dls</span> <span class="o">=</span> <span class="n">dblock</span><span class="o">.</span><span class="n">dataloaders</span><span class="p">(</span><span class="n">imdb_df</span><span class="p">,</span> <span class="n">bs</span><span class="o">=</span><span class="n">bsz</span><span class="p">)</span> 
-    <span class="n">b</span> <span class="o">=</span> <span class="n">dls</span><span class="o">.</span><span class="n">one_batch</span><span class="p">()</span>
-    
-    <span class="k">try</span><span class="p">:</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;*** TESTING DataLoaders ***</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
-        <span class="n">test_eq</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">b</span><span class="p">),</span> <span class="mi">2</span><span class="p">)</span>
-        <span class="n">test_eq</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">b</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;input_ids&#39;</span><span class="p">]),</span> <span class="n">bsz</span><span class="p">)</span>
-        <span class="n">test_eq</span><span class="p">(</span><span class="n">b</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;input_ids&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Size</span><span class="p">([</span><span class="n">bsz</span><span class="p">,</span> <span class="n">seq_sz</span><span class="p">]))</span>
-        <span class="n">test_eq</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">b</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span> <span class="n">bsz</span><span class="p">)</span>
-
-        <span class="n">test_results</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">hf_arch</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">hf_tokenizer</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="n">model_name</span><span class="p">,</span> <span class="s1">&#39;PASSED&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">))</span>
-        <span class="n">dls</span><span class="o">.</span><span class="n">show_batch</span><span class="p">(</span><span class="n">dataloaders</span><span class="o">=</span><span class="n">dls</span><span class="p">,</span> <span class="n">max_n</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">trunc_at</span><span class="o">=</span><span class="mi">1000</span><span class="p">)</span>
-        
-    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
-        <span class="n">test_results</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">hf_arch</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">hf_tokenizer</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="n">model_name</span><span class="p">,</span> <span class="s1">&#39;FAILED&#39;</span><span class="p">,</span> <span class="n">err</span><span class="p">))</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-</div>
-    {% endraw %}
-
     {% raw %}
     
 <div class="cell border-box-sizing code_cell rendered">
@@ -1046,7 +899,14 @@ decode the dictionary produced as a byproduct of the tokenization process in the
 
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Cleanup">Cleanup<a class="anchor-link" href="#Cleanup"> </a></h2>
+<h2 id="Summary">Summary<a class="anchor-link" href="#Summary"> </a></h2>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>The <code>blurr.data.core</code> module contains the fundamental bits for not only sequence classification data preprocessing tasks, but also for <em>all</em> NLP tasks included in this library.</p>
+
 </div>
 </div>
 </div>

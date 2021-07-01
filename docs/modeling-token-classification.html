@@ -32,6 +32,16 @@ nb_path: "nbs/03_modeling-token-classification.ipynb"
     {% raw %}
     
 <div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span> 
+</pre></div>
+
+    </div>
+</div>
+</div>
 
 </div>
     {% endraw %}
@@ -39,17 +49,36 @@ nb_path: "nbs/03_modeling-token-classification.ipynb"
     {% raw %}
     
 <div class="cell border-box-sizing code_cell rendered">
-<div class="input">
 
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">set_device</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Using GPU #</span><span class="si">{</span><span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">current_device</span><span class="p">()</span><span class="si">}</span><span class="s1">: </span><span class="si">{</span><span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">get_device_name</span><span class="p">()</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
-</pre></div>
+</div>
+    {% endraw %}
 
-    </div>
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>Using pytorch 1.7.1
+Using fastai 2.4
+Using transformers 4.8.1
+</pre>
 </div>
 </div>
+
+</div>
+</div>
+
+</div>
+    {% endraw %}
+
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
 
 <div class="output_wrapper">
 <div class="output">
@@ -470,91 +499,6 @@ nb_path: "nbs/03_modeling-token-classification.ipynb"
 </div>
 </div>
 </div>
-    {% raw %}
-    
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span> 
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-</div>
-    {% endraw %}
-
-    {% raw %}
-    
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span> 
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-</div>
-    {% endraw %}
-
-    {% raw %}
-    
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span> 
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-</div>
-    {% endraw %}
-
-    {% raw %}
-    
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span> 
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-</div>
-    {% endraw %}
-
-    {% raw %}
-    
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span> 
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-</div>
-    {% endraw %}
-
     {% raw %}
     
 <div class="cell border-box-sizing code_cell rendered">
@@ -1477,85 +1421,6 @@ weighted avg       0.71      0.53      0.60       263
 
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>... and onnx</p>
-
-</div>
-</div>
-</div>
-    {% raw %}
-    
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># @patch</span>
-<span class="c1"># def predict_tokens(self:blurrONNX, items, **kargs):</span>
-<span class="c1">#     hf_before_batch_tfm = get_blurr_tfm(self.dls.before_batch)</span>
-<span class="c1">#     return _blurr_predict_tokens(self.predict, items, hf_before_batch_tfm)</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-</div>
-    {% endraw %}
-
-    {% raw %}
-    
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># learn.blurr_to_onnx(export_fname, quantize=True)</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-</div>
-    {% endraw %}
-
-    {% raw %}
-    
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># onnx_inf = blurrONNX(export_fname)</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-</div>
-    {% endraw %}
-
-    {% raw %}
-    
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># res = onnx_inf.predict_tokens(txt.split())</span>
-<span class="c1"># for r in res: print(f&#39;{[(tok, lbl) for tok,lbl in zip(r[0],r[1]) ]}\n&#39;)</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-</div>
-    {% endraw %}
-
-<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
 <h2 id="High-level-API">High-level API<a class="anchor-link" href="#High-level-API"> </a></h2>
 </div>
 </div>
@@ -1938,207 +1803,6 @@ weighted avg       0.78      0.56      0.64       281
     {% raw %}
     
 <div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="k">try</span><span class="p">:</span> <span class="k">del</span> <span class="n">learn</span><span class="p">;</span> <span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">empty_cache</span><span class="p">()</span>
-<span class="k">except</span><span class="p">:</span> <span class="k">pass</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-</div>
-    {% endraw %}
-
-    {% raw %}
-    
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="p">[</span> <span class="n">model_type</span> <span class="k">for</span> <span class="n">model_type</span> <span class="ow">in</span> <span class="n">BLURR</span><span class="o">.</span><span class="n">get_models</span><span class="p">(</span><span class="n">task</span><span class="o">=</span><span class="s1">&#39;TokenClassification&#39;</span><span class="p">)</span> 
- <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="n">model_type</span><span class="o">.</span><span class="vm">__name__</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;TF&#39;</span><span class="p">))</span> <span class="p">]</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-<div class="output_area">
-
-
-
-<div class="output_text output_subarea output_execute_result">
-<pre>[transformers.models.albert.modeling_albert.AlbertForTokenClassification,
- transformers.models.bert.modeling_bert.BertForTokenClassification,
- transformers.models.big_bird.modeling_big_bird.BigBirdForTokenClassification,
- transformers.models.camembert.modeling_camembert.CamembertForTokenClassification,
- transformers.models.convbert.modeling_convbert.ConvBertForTokenClassification,
- transformers.models.deberta.modeling_deberta.DebertaForTokenClassification,
- transformers.models.deberta_v2.modeling_deberta_v2.DebertaV2ForTokenClassification,
- transformers.models.distilbert.modeling_distilbert.DistilBertForTokenClassification,
- transformers.models.electra.modeling_electra.ElectraForTokenClassification,
- transformers.models.flaubert.modeling_flaubert.FlaubertForTokenClassification,
- transformers.models.funnel.modeling_funnel.FunnelForTokenClassification,
- transformers.models.ibert.modeling_ibert.IBertForTokenClassification,
- transformers.models.layoutlm.modeling_layoutlm.LayoutLMForTokenClassification,
- transformers.models.longformer.modeling_longformer.LongformerForTokenClassification,
- transformers.models.mpnet.modeling_mpnet.MPNetForTokenClassification,
- transformers.models.megatron_bert.modeling_megatron_bert.MegatronBertForTokenClassification,
- transformers.models.mobilebert.modeling_mobilebert.MobileBertForTokenClassification,
- transformers.models.roberta.modeling_roberta.RobertaForTokenClassification,
- transformers.models.squeezebert.modeling_squeezebert.SqueezeBertForTokenClassification,
- transformers.models.xlm.modeling_xlm.XLMForTokenClassification,
- transformers.models.xlm_roberta.modeling_xlm_roberta.XLMRobertaForTokenClassification,
- transformers.models.xlnet.modeling_xlnet.XLNetForTokenClassification]</pre>
-</div>
-
-</div>
-
-</div>
-</div>
-
-</div>
-    {% endraw %}
-
-    {% raw %}
-    
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">pretrained_model_names</span> <span class="o">=</span> <span class="p">[</span>
-    <span class="s1">&#39;albert-base-v1&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;bert-base-multilingual-cased&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;camembert-base&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;distilbert-base-uncased&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;google/electra-small-discriminator&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;flaubert/flaubert_small_cased&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;huggingface/funnel-small-base&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;allenai/longformer-base-4096&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;microsoft/mpnet-base&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;google/mobilebert-uncased&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;roberta-base&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;squeezebert/squeezebert-uncased&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;xlm-mlm-en-2048&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;xlm-roberta-base&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;xlnet-base-cased&#39;</span>
-<span class="p">]</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-</div>
-    {% endraw %}
-
-    {% raw %}
-    
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="c1">#hide_output</span>
-<span class="n">model_cls</span> <span class="o">=</span> <span class="n">AutoModelForTokenClassification</span>
-<span class="n">bsz</span> <span class="o">=</span> <span class="mi">4</span>
-<span class="n">seq_sz</span> <span class="o">=</span> <span class="mi">64</span>
-
-<span class="n">test_results</span> <span class="o">=</span> <span class="p">[]</span>
-<span class="k">for</span> <span class="n">model_name</span> <span class="ow">in</span> <span class="n">pretrained_model_names</span><span class="p">:</span>
-    <span class="n">error</span><span class="o">=</span><span class="kc">None</span>
-    
-    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;=== </span><span class="si">{</span><span class="n">model_name</span><span class="si">}</span><span class="s1"> ===</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
-    
-    <span class="n">config</span> <span class="o">=</span> <span class="n">AutoConfig</span><span class="o">.</span><span class="n">from_pretrained</span><span class="p">(</span><span class="n">model_name</span><span class="p">)</span>
-    <span class="n">config</span><span class="o">.</span><span class="n">num_labels</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">labels</span><span class="p">)</span>
-    
-    <span class="n">hf_arch</span><span class="p">,</span> <span class="n">hf_config</span><span class="p">,</span> <span class="n">hf_tokenizer</span><span class="p">,</span> <span class="n">hf_model</span> <span class="o">=</span> <span class="n">BLURR</span><span class="o">.</span><span class="n">get_hf_objects</span><span class="p">(</span><span class="n">model_name</span><span class="p">,</span> 
-                                                                      <span class="n">model_cls</span><span class="o">=</span><span class="n">model_cls</span><span class="p">,</span> 
-                                                                      <span class="n">config</span><span class="o">=</span><span class="n">config</span><span class="p">)</span>
-    
-    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;architecture:</span><span class="se">\t</span><span class="si">{</span><span class="n">hf_arch</span><span class="si">}</span><span class="se">\n</span><span class="s1">tokenizer:</span><span class="se">\t</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">hf_tokenizer</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
-    
-    <span class="c1"># not all architectures include a native pad_token (e.g., gpt2, ctrl, etc...), so we add one here</span>
-    <span class="k">if</span> <span class="p">(</span><span class="n">hf_tokenizer</span><span class="o">.</span><span class="n">pad_token</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">):</span> 
-        <span class="n">hf_tokenizer</span><span class="o">.</span><span class="n">add_special_tokens</span><span class="p">({</span><span class="s1">&#39;pad_token&#39;</span><span class="p">:</span> <span class="s1">&#39;&lt;pad&gt;&#39;</span><span class="p">})</span>  
-        <span class="n">hf_config</span><span class="o">.</span><span class="n">pad_token_id</span> <span class="o">=</span> <span class="n">hf_tokenizer</span><span class="o">.</span><span class="n">get_vocab</span><span class="p">()[</span><span class="s1">&#39;&lt;pad&gt;&#39;</span><span class="p">]</span>
-        <span class="n">hf_model</span><span class="o">.</span><span class="n">resize_token_embeddings</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">hf_tokenizer</span><span class="p">))</span> 
-    
-    <span class="n">before_batch_tfm</span> <span class="o">=</span> <span class="n">HF_TokenClassBeforeBatchTransform</span><span class="p">(</span><span class="n">hf_arch</span><span class="p">,</span> <span class="n">hf_config</span><span class="p">,</span> <span class="n">hf_tokenizer</span><span class="p">,</span> <span class="n">hf_model</span><span class="p">,</span>
-                                                         <span class="n">max_length</span><span class="o">=</span><span class="n">seq_sz</span><span class="p">,</span>
-                                                         <span class="n">padding</span><span class="o">=</span><span class="s1">&#39;max_length&#39;</span><span class="p">,</span>
-                                                         <span class="n">is_split_into_words</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> 
-                                                         <span class="n">tok_kwargs</span><span class="o">=</span><span class="p">{</span> <span class="s1">&#39;return_special_tokens_mask&#39;</span><span class="p">:</span> <span class="kc">True</span> <span class="p">})</span>
-
-    <span class="n">blocks</span> <span class="o">=</span> <span class="p">(</span>
-        <span class="n">HF_TextBlock</span><span class="p">(</span><span class="n">before_batch_tfm</span><span class="o">=</span><span class="n">before_batch_tfm</span><span class="p">,</span> <span class="n">input_return_type</span><span class="o">=</span><span class="n">HF_TokenClassInput</span><span class="p">),</span> 
-        <span class="n">HF_TokenCategoryBlock</span><span class="p">(</span><span class="n">vocab</span><span class="o">=</span><span class="n">labels</span><span class="p">)</span>
-    <span class="p">)</span>
-
-    <span class="n">dblock</span> <span class="o">=</span> <span class="n">DataBlock</span><span class="p">(</span><span class="n">blocks</span><span class="o">=</span><span class="n">blocks</span><span class="p">,</span> 
-                       <span class="n">get_x</span><span class="o">=</span><span class="n">ColReader</span><span class="p">(</span><span class="s1">&#39;tokens&#39;</span><span class="p">),</span>
-                       <span class="n">get_y</span><span class="o">=</span> <span class="k">lambda</span> <span class="n">inp</span><span class="p">:</span> <span class="p">[</span> 
-                           <span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">hf_tokenizer</span><span class="o">.</span><span class="n">tokenize</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">entity</span><span class="p">))))</span> 
-                           <span class="k">for</span> <span class="n">entity</span><span class="p">,</span> <span class="n">label</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">inp</span><span class="o">.</span><span class="n">tokens</span><span class="p">,</span> <span class="n">inp</span><span class="o">.</span><span class="n">labels</span><span class="p">)</span> 
-                       <span class="p">],</span>
-                       <span class="n">splitter</span><span class="o">=</span><span class="n">RandomSplitter</span><span class="p">())</span>
-    
-    <span class="n">dls</span> <span class="o">=</span> <span class="n">dblock</span><span class="o">.</span><span class="n">dataloaders</span><span class="p">(</span><span class="n">germ_eval_df</span><span class="p">,</span> <span class="n">bs</span><span class="o">=</span><span class="n">bsz</span><span class="p">)</span>
-
-    <span class="n">model</span> <span class="o">=</span> <span class="n">HF_BaseModelWrapper</span><span class="p">(</span><span class="n">hf_model</span><span class="p">)</span>
-    <span class="n">learn</span> <span class="o">=</span> <span class="n">Learner</span><span class="p">(</span><span class="n">dls</span><span class="p">,</span> 
-                <span class="n">model</span><span class="p">,</span>
-                <span class="n">opt_func</span><span class="o">=</span><span class="n">partial</span><span class="p">(</span><span class="n">Adam</span><span class="p">),</span>
-                <span class="n">cbs</span><span class="o">=</span><span class="p">[</span><span class="n">HF_BaseModelCallback</span><span class="p">],</span>
-                <span class="n">splitter</span><span class="o">=</span><span class="n">hf_splitter</span><span class="p">)</span><span class="o">.</span><span class="n">to_fp16</span><span class="p">()</span>
-
-    <span class="n">learn</span><span class="o">.</span><span class="n">create_opt</span><span class="p">()</span>             <span class="c1"># -&gt; will create your layer groups based on your &quot;splitter&quot; function</span>
-    <span class="n">learn</span><span class="o">.</span><span class="n">freeze</span><span class="p">()</span>
-    
-    <span class="n">b</span> <span class="o">=</span> <span class="n">dls</span><span class="o">.</span><span class="n">one_batch</span><span class="p">()</span>
-    
-    <span class="k">try</span><span class="p">:</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;*** TESTING DataLoaders ***&#39;</span><span class="p">)</span>
-        <span class="n">test_eq</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">b</span><span class="p">),</span> <span class="mi">2</span><span class="p">)</span>
-        <span class="n">test_eq</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">b</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;input_ids&#39;</span><span class="p">]),</span> <span class="n">bsz</span><span class="p">)</span>
-        <span class="n">test_eq</span><span class="p">(</span><span class="n">b</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;input_ids&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Size</span><span class="p">([</span><span class="n">bsz</span><span class="p">,</span> <span class="n">seq_sz</span><span class="p">]))</span>
-        <span class="n">test_eq</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">b</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span> <span class="n">bsz</span><span class="p">)</span>
-
-        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;*** TESTING Training/Results ***&#39;</span><span class="p">)</span>
-        <span class="n">learn</span><span class="o">.</span><span class="n">fit_one_cycle</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">lr_max</span><span class="o">=</span> <span class="mf">3e-5</span><span class="p">,</span> <span class="n">moms</span><span class="o">=</span><span class="p">(</span><span class="mf">0.8</span><span class="p">,</span><span class="mf">0.7</span><span class="p">,</span><span class="mf">0.8</span><span class="p">),</span> 
-                            <span class="n">cbs</span><span class="o">=</span><span class="p">[</span><span class="n">HF_TokenClassMetricsCallback</span><span class="p">(</span><span class="n">tok_metrics</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;accuracy&#39;</span><span class="p">])])</span>
-
-        <span class="n">test_results</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">hf_arch</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">hf_tokenizer</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">hf_model</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="s1">&#39;PASSED&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">))</span>
-        <span class="n">learn</span><span class="o">.</span><span class="n">show_results</span><span class="p">(</span><span class="n">learner</span><span class="o">=</span><span class="n">learn</span><span class="p">,</span> <span class="n">max_n</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">trunc_at</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
-        
-    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
-        <span class="n">test_results</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">hf_arch</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">hf_tokenizer</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">hf_model</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="s1">&#39;FAILED&#39;</span><span class="p">,</span> <span class="n">err</span><span class="p">))</span>
-        
-    <span class="k">finally</span><span class="p">:</span>
-        <span class="c1"># cleanup</span>
-        <span class="k">del</span> <span class="n">learn</span><span class="p">;</span> <span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">empty_cache</span><span class="p">()</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-</div>
-    {% endraw %}
-
-    {% raw %}
-    
-<div class="cell border-box-sizing code_cell rendered">
 
 <div class="output_wrapper">
 <div class="output">
@@ -2293,7 +1957,14 @@ weighted avg       0.78      0.56      0.64       281
 
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Cleanup">Cleanup<a class="anchor-link" href="#Cleanup"> </a></h2>
+<h2 id="Summary">Summary<a class="anchor-link" href="#Summary"> </a></h2>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>This module includes all the low, mid, and high-level API bits for token tasks training and inference.</p>
+
 </div>
 </div>
 </div>

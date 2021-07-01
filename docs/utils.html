@@ -39,17 +39,29 @@ nb_path: "nbs/00_utils.ipynb"
     {% raw %}
     
 <div class="cell border-box-sizing code_cell rendered">
-<div class="input">
 
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">set_device</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Using GPU #</span><span class="si">{</span><span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">current_device</span><span class="p">()</span><span class="si">}</span><span class="s1">: </span><span class="si">{</span><span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">get_device_name</span><span class="p">()</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
-</pre></div>
+<div class="output_wrapper">
+<div class="output">
 
-    </div>
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>Using pytorch 1.7.1
+Using fastai 2.4
+Using transformers 4.8.1
+</pre>
 </div>
 </div>
+
+</div>
+</div>
+
+</div>
+    {% endraw %}
+
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
 
 <div class="output_wrapper">
 <div class="output">
@@ -177,7 +189,7 @@ nb_path: "nbs/00_utils.ipynb"
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h4 id="Singleton object at 0x7fbce3fccdc0>" class="doc_header"><code>Singleton object at 0x7fbce3fccdc0></code><a href="" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>Singleton object at 0x7fbce3fccdc0></code>(<strong>*<code>args</code></strong>, <strong>**<code>kwargs</code></strong>)</p>
+<h4 id="Singleton object at 0x7ff842c86d90>" class="doc_header"><code>Singleton object at 0x7ff842c86d90></code><a href="" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>Singleton object at 0x7ff842c86d90></code>(<strong>*<code>args</code></strong>, <strong>**<code>kwargs</code></strong>)</p>
 </blockquote>
 
 </div>
@@ -217,295 +229,6 @@ nb_path: "nbs/00_utils.ipynb"
 </pre></div>
 
     </div>
-</div>
-</div>
-
-</div>
-    {% endraw %}
-
-    {% raw %}
-    
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">display_df</span><span class="p">(</span><span class="n">mh</span><span class="o">.</span><span class="n">_df</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="mi">20</span><span class="p">))</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-<div class="output_area">
-
-
-<div class="output_html rendered_html output_subarea ">
-<table border="1" class="dataframe">
-  <thead>
-    <tr style="text-align: right;">
-      <th></th>
-      <th>class_name</th>
-      <th>module</th>
-      <th>module_part_0</th>
-      <th>module_part_1</th>
-      <th>module_part_2</th>
-      <th>module_part_3</th>
-      <th>functional_area</th>
-      <th>arch</th>
-      <th>model_task</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th>3</th>
-      <td>AdaptiveEmbedding</td>
-      <td>transformers.models.transfo_xl.modeling_transfo_xl</td>
-      <td>transformers</td>
-      <td>models</td>
-      <td>transfo_xl</td>
-      <td>modeling_transfo_xl</td>
-      <td>modeling</td>
-      <td>transfo_xl</td>
-      <td>None</td>
-    </tr>
-    <tr>
-      <th>4</th>
-      <td>AlbertConfig</td>
-      <td>transformers.models.albert.configuration_albert</td>
-      <td>transformers</td>
-      <td>models</td>
-      <td>albert</td>
-      <td>configuration_albert</td>
-      <td>configuration</td>
-      <td>albert</td>
-      <td>NaN</td>
-    </tr>
-    <tr>
-      <th>5</th>
-      <td>AlbertForMaskedLM</td>
-      <td>transformers.models.albert.modeling_albert</td>
-      <td>transformers</td>
-      <td>models</td>
-      <td>albert</td>
-      <td>modeling_albert</td>
-      <td>modeling</td>
-      <td>albert</td>
-      <td>MaskedLM</td>
-    </tr>
-    <tr>
-      <th>6</th>
-      <td>AlbertForMultipleChoice</td>
-      <td>transformers.models.albert.modeling_albert</td>
-      <td>transformers</td>
-      <td>models</td>
-      <td>albert</td>
-      <td>modeling_albert</td>
-      <td>modeling</td>
-      <td>albert</td>
-      <td>MultipleChoice</td>
-    </tr>
-    <tr>
-      <th>7</th>
-      <td>AlbertForPreTraining</td>
-      <td>transformers.models.albert.modeling_albert</td>
-      <td>transformers</td>
-      <td>models</td>
-      <td>albert</td>
-      <td>modeling_albert</td>
-      <td>modeling</td>
-      <td>albert</td>
-      <td>PreTraining</td>
-    </tr>
-    <tr>
-      <th>8</th>
-      <td>AlbertForQuestionAnswering</td>
-      <td>transformers.models.albert.modeling_albert</td>
-      <td>transformers</td>
-      <td>models</td>
-      <td>albert</td>
-      <td>modeling_albert</td>
-      <td>modeling</td>
-      <td>albert</td>
-      <td>QuestionAnswering</td>
-    </tr>
-    <tr>
-      <th>9</th>
-      <td>AlbertForSequenceClassification</td>
-      <td>transformers.models.albert.modeling_albert</td>
-      <td>transformers</td>
-      <td>models</td>
-      <td>albert</td>
-      <td>modeling_albert</td>
-      <td>modeling</td>
-      <td>albert</td>
-      <td>SequenceClassification</td>
-    </tr>
-    <tr>
-      <th>10</th>
-      <td>AlbertForTokenClassification</td>
-      <td>transformers.models.albert.modeling_albert</td>
-      <td>transformers</td>
-      <td>models</td>
-      <td>albert</td>
-      <td>modeling_albert</td>
-      <td>modeling</td>
-      <td>albert</td>
-      <td>TokenClassification</td>
-    </tr>
-    <tr>
-      <th>11</th>
-      <td>AlbertModel</td>
-      <td>transformers.models.albert.modeling_albert</td>
-      <td>transformers</td>
-      <td>models</td>
-      <td>albert</td>
-      <td>modeling_albert</td>
-      <td>modeling</td>
-      <td>albert</td>
-      <td>None</td>
-    </tr>
-    <tr>
-      <th>12</th>
-      <td>AlbertPreTrainedModel</td>
-      <td>transformers.models.albert.modeling_albert</td>
-      <td>transformers</td>
-      <td>models</td>
-      <td>albert</td>
-      <td>modeling_albert</td>
-      <td>modeling</td>
-      <td>albert</td>
-      <td>None</td>
-    </tr>
-    <tr>
-      <th>13</th>
-      <td>AlbertTokenizer</td>
-      <td>transformers.models.albert.tokenization_albert</td>
-      <td>transformers</td>
-      <td>models</td>
-      <td>albert</td>
-      <td>tokenization_albert</td>
-      <td>tokenization</td>
-      <td>albert</td>
-      <td>NaN</td>
-    </tr>
-    <tr>
-      <th>14</th>
-      <td>AlbertTokenizerFast</td>
-      <td>transformers.models.albert.tokenization_albert_fast</td>
-      <td>transformers</td>
-      <td>models</td>
-      <td>albert</td>
-      <td>tokenization_albert_fast</td>
-      <td>tokenization</td>
-      <td>albert_fast</td>
-      <td>NaN</td>
-    </tr>
-    <tr>
-      <th>20</th>
-      <td>BartConfig</td>
-      <td>transformers.models.bart.configuration_bart</td>
-      <td>transformers</td>
-      <td>models</td>
-      <td>bart</td>
-      <td>configuration_bart</td>
-      <td>configuration</td>
-      <td>bart</td>
-      <td>NaN</td>
-    </tr>
-    <tr>
-      <th>21</th>
-      <td>BartForCausalLM</td>
-      <td>transformers.models.bart.modeling_bart</td>
-      <td>transformers</td>
-      <td>models</td>
-      <td>bart</td>
-      <td>modeling_bart</td>
-      <td>modeling</td>
-      <td>bart</td>
-      <td>CausalLM</td>
-    </tr>
-    <tr>
-      <th>22</th>
-      <td>BartForConditionalGeneration</td>
-      <td>transformers.models.bart.modeling_bart</td>
-      <td>transformers</td>
-      <td>models</td>
-      <td>bart</td>
-      <td>modeling_bart</td>
-      <td>modeling</td>
-      <td>bart</td>
-      <td>ConditionalGeneration</td>
-    </tr>
-    <tr>
-      <th>23</th>
-      <td>BartForQuestionAnswering</td>
-      <td>transformers.models.bart.modeling_bart</td>
-      <td>transformers</td>
-      <td>models</td>
-      <td>bart</td>
-      <td>modeling_bart</td>
-      <td>modeling</td>
-      <td>bart</td>
-      <td>QuestionAnswering</td>
-    </tr>
-    <tr>
-      <th>24</th>
-      <td>BartForSequenceClassification</td>
-      <td>transformers.models.bart.modeling_bart</td>
-      <td>transformers</td>
-      <td>models</td>
-      <td>bart</td>
-      <td>modeling_bart</td>
-      <td>modeling</td>
-      <td>bart</td>
-      <td>SequenceClassification</td>
-    </tr>
-    <tr>
-      <th>25</th>
-      <td>BartModel</td>
-      <td>transformers.models.bart.modeling_bart</td>
-      <td>transformers</td>
-      <td>models</td>
-      <td>bart</td>
-      <td>modeling_bart</td>
-      <td>modeling</td>
-      <td>bart</td>
-      <td>None</td>
-    </tr>
-    <tr>
-      <th>26</th>
-      <td>BartPretrainedModel</td>
-      <td>transformers.models.bart.modeling_bart</td>
-      <td>transformers</td>
-      <td>models</td>
-      <td>bart</td>
-      <td>modeling_bart</td>
-      <td>modeling</td>
-      <td>bart</td>
-      <td>None</td>
-    </tr>
-    <tr>
-      <th>27</th>
-      <td>BartTokenizer</td>
-      <td>transformers.models.bart.tokenization_bart</td>
-      <td>transformers</td>
-      <td>models</td>
-      <td>bart</td>
-      <td>tokenization_bart</td>
-      <td>tokenization</td>
-      <td>bart</td>
-      <td>NaN</td>
-    </tr>
-  </tbody>
-</table>
-</div>
-
-</div>
-
 </div>
 </div>
 
@@ -1386,7 +1109,14 @@ related kwargs for each) to get as specific as you want w/r/t what Hugging Face 
 
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Cleanup">Cleanup<a class="anchor-link" href="#Cleanup"> </a></h2>
+<h2 id="Summary">Summary<a class="anchor-link" href="#Summary"> </a></h2>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Use the <a href="/blurr/utils.html#BLURR"><code>BLURR</code></a> object is optional, as you're free to build your Hugging Face objects manually which sometimes may be required given your use case.  Most of the time, however, <a href="/blurr/utils.html#BLURR"><code>BLURR</code></a> is sufficent to get you everything you need in one-line with a pretrained model name or path.</p>
+
 </div>
 </div>
 </div>
