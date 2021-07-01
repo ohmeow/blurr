@@ -269,6 +269,14 @@ learn.show_results(learner=learn, max_n=2)
 
 ## ❗ Updates
 
+**07/01/2021** - v0.0.30
+
+* Updated to work with tranformers 4.8
+* Introducing the `Blearner` high-level API with task specific blearners for building your DataBlock, DataLoaders, and Learner in one line of code (usually :))
+* Added LOTS of examples (using low/high-level APIs, using Hugging Face datasets, and handling all the GLUE tasks)
+* Updated setup.py so you can now use Blurr on Windows (H/T to @EinAeffchen for the fix)
+
+
 **06/16/2021**
 
 * Updated to work with fastai 2.4
