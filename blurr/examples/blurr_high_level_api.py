@@ -12,6 +12,10 @@ from transformers import *
 from ..utils import *
 from ..data.core import *
 from ..modeling.core import *
+
+from ..data.language_modeling import BertMLMStrategy, CausalLMStrategy
+from ..modeling.language_modeling import *
+
 from ..modeling.token_classification import *
 from ..modeling.question_answering import *
 

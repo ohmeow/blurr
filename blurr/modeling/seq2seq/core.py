@@ -205,39 +205,6 @@ def seq2seq_splitter(m, arch):
     raise ValueError(f'seq2seq_splitter does not support this architecutre: {arch}')
 
 # Cell
-@patch
-def blurr_generate(self:Learner, inp, task=None, **kwargs):
-    """Uses the built-in `generate` method to generate the text
-    (see [here](https://huggingface.co/transformers/main_classes/model.html#transformers.PreTrainedModel.generate)
-    for a list of arguments you can pass in)
-    """
-    # grab the Hugging Face tokenizer from the learner's dls.tfms
-    hf_before_batch_tfm = get_blurr_tfm(self.dls.before_batch)
-    hf_config = hf_before_batch_tfm.hf_config
-    hf_tokenizer = hf_before_batch_tfm.hf_tokenizer
-    tok_kwargs = hf_before_batch_tfm.tok_kwargs
-
-    # grab the text generation kwargs
-    text_gen_kwargs = hf_before_batch_tfm.text_gen_kwargs if (len(kwargs) == 0) else kwargs
-
-    if (isinstance(inp, str)):
-        input_ids = hf_tokenizer.encode(inp, padding=True, truncation=True, return_tensors='pt', **tok_kwargs)
-    else:
-        # note (10/30/2020): as of pytorch 1.7, this has to be a plain ol tensor (not a subclass of TensorBase)
-        input_ids = inp.as_subclass(Tensor)
-
-    input_ids = input_ids.to(self.model.hf_model.device)
-
-    gen_texts = self.model.hf_model.generate(input_ids, **text_gen_kwargs)
-    outputs = [ hf_tokenizer.decode(txt, skip_special_tokens=True, clean_up_tokenization_spaces=False)
-               for txt in gen_texts ]
-
-    if hf_before_batch_tfm.hf_arch == 'pegasus':
-        outputs = [o.replace('<n>', ' ') for o in outputs]
-
-    return outputs
-
-# Cell
 @typedispatch
 def show_results(x:HF_Seq2SeqInput, y, samples, outs, learner, ctxs=None, max_n=6,
                  input_trunc_at=None, target_trunc_at=None, text_gen_kwargs={}, **kwargs):

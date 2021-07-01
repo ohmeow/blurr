@@ -110,6 +110,9 @@ class HF_TextBlock(TransformBlock):
 
 # Cell
 def get_blurr_tfm(tfms_list, tfm_class=HF_BeforeBatchTransform):
+    """Given a fastai DataLoaders batch transformes, this method can be used to get at the `HF_BeforeBatchTransform`
+    instance used in your Blurr DataBlock
+    """
     return next(filter(lambda el: issubclass(type(el), tfm_class), tfms_list), None)
 
 # Cell
