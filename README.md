@@ -269,6 +269,12 @@ learn.show_results(learner=learn, max_n=2)
 
 ## ❗ Updates
 
+**07/11/2021** - v0.0.30
+
+* Finished initial `Blearner` high-level API for all Blurr supported tasks
+* Finished high-level APIs examples for all Blurr supported tasks
+* Fixed squad preprocessing
+
 **07/01/2021** - v0.0.29
 
 * Updated to work with tranformers 4.8
