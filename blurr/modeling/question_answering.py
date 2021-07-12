@@ -93,7 +93,8 @@ class BlearnerForQuestionAnswering(Blearner):
         super().__init__(dls, hf_model, base_model_cb=HF_QstAndAnsModelCallback, **kwargs)
 
     @classmethod
-    def get_model_cls(self): return AutoModelForQuestionAnswering
+    def get_model_cls(self):
+        return AutoModelForQuestionAnswering
 
     @classmethod
     def _get_x(cls, x, qst, ctx, padding_side='right'):
@@ -101,7 +102,8 @@ class BlearnerForQuestionAnswering(Blearner):
 
     @classmethod
     def _create_learner(cls, data, pretrained_model_name_or_path, preprocess_func, max_seq_len,
-                        context, question, tok_ans_start, tok_ans_end, dblock_splitter,
+                        context_attr, question_attr, answer_text_attr,
+                        tok_ans_start_attr, tok_ans_end_attr, dblock_splitter,
                         dl_kwargs, learner_kwargs):
 
         hf_arch, hf_config, hf_tokenizer, hf_model = BLURR.get_hf_objects(pretrained_model_name_or_path,
@@ -115,7 +117,8 @@ class BlearnerForQuestionAnswering(Blearner):
         # returns a DataFrame with the expected format
         if (preprocess_func):
             data = preprocess_func(data, hf_arch, hf_config, hf_tokenizer, hf_model, max_seq_len,
-                                   context, question,tok_ans_start, tok_ans_end)
+                                   context_attr, question_attr, answer_text_attr,
+                                   tok_ans_start_attr, tok_ans_end_attr)
 
         # bits required by our "before_batch_tfm" and DataBlock
         vocab = list(range(max_seq_len))
@@ -127,13 +130,15 @@ class BlearnerForQuestionAnswering(Blearner):
                                                      truncation=trunc_strat,
                                                      tok_kwargs={ 'return_special_tokens_mask': True })
 
+        # define getters
         if (isinstance(data, pd.DataFrame)):
-            get_x = partial(cls._get_x, qst=question, ctx=context, padding_side=padding_side)
-            get_y = [ColReader(tok_ans_start), ColReader(tok_ans_end)]
+            get_x = partial(cls._get_x, qst=question_attr, ctx=context_attr, padding_side=padding_side)
+            get_y = [ColReader(tok_ans_start_attr), ColReader(tok_ans_end_attr)]
         else:
-            get_x = partial(cls._get_x, qst=question, ctx=context, padding_side=padding_side)
-            get_y = [ItemGetter(tok_ans_start), ItemGetter(tok_ans_end)]
+            get_x = partial(cls._get_x, qst=question_attr, ctx=context_attr, padding_side=padding_side)
+            get_y = [ItemGetter(tok_ans_start_attr), ItemGetter(tok_ans_end_attr)]
 
+        # define DataBlock and DataLoaders
         blocks = (
             HF_TextBlock(before_batch_tfm=before_batch_tfm, input_return_type=HF_QuestionAnswerInput),
             CategoryBlock(vocab=vocab),
@@ -153,32 +158,37 @@ class BlearnerForQuestionAnswering(Blearner):
 
     @classmethod
     def from_dataframe(cls, df, pretrained_model_name_or_path, preprocess_func=None, max_seq_len=None,
-                       context='context', question='question',
-                       tok_ans_start='tok_answer_start', tok_ans_end='tok_answer_end',
-                       dblock_splitter=ColSplitter(), dl_kwargs={}, learner_kwargs={}):
+                       context_attr='context', question_attr='question', answer_text_attr='answer_text',
+                       tok_ans_start_attr='tok_answer_start', tok_ans_end_attr='tok_answer_end',
+                       dblock_splitter=ColSplitter(),
+                       dl_kwargs={}, learner_kwargs={}):
 
         return cls._create_learner(df, pretrained_model_name_or_path, preprocess_func, max_seq_len,
-                                   context, question, tok_ans_start, tok_ans_end, dblock_splitter,
+                                   context_attr, question_attr, answer_text_attr,
+                                   tok_ans_start_attr, tok_ans_end_attr, dblock_splitter,
                                    dl_kwargs, learner_kwargs)
 
     @classmethod
     def from_csv(cls, csv_file, pretrained_model_name_or_path, preprocess_func=None, max_seq_len=None,
-                       context='context', question='question',
-                       tok_ans_start='tok_answer_start', tok_ans_end='tok_answer_end',
+                       context_attr='context', question_attr='question', answer_text_attr='answer_text',
+                       tok_ans_start_attr='tok_answer_start', tok_ans_end_attr='tok_answer_end',
                        dblock_splitter=ColSplitter(), dl_kwargs={}, learner_kwargs={}):
 
         df = pd.read_csv(csv_file)
 
-        return cls.from_dataframe(df, pretrained_model_name_or_path=pretrained_model_name_or_path,
-                                  text=text, label=label, n_labels=n_labels, dblock_splitter=dblock_splitter,
-                                  dl_kwargs=dl_kwargs, learner_kwargs=learner_kwargs)
+        return cls.from_dataframe(df, pretrained_model_name_or_path, preprocess_func, max_seq_len,
+                                  context_attr, question_attr, answer_text_attr,
+                                  tok_ans_start_attr, tok_ans_end_attr, dblock_splitter,
+                                  dl_kwargs, learner_kwargs)
 
     @classmethod
     def from_dictionaries(cls, ds, pretrained_model_name_or_path, preprocess_func=None, max_seq_len=None,
-                       context='context', question='question',
-                       tok_ans_start='tok_answer_start', tok_ans_end='tok_answer_end',
-                       dblock_splitter=ColSplitter(), dl_kwargs={}, learner_kwargs={}):
+                          context_attr='context', question_attr='question', answer_text_attr='answer_text',
+                          tok_ans_start_attr='tok_answer_start', tok_ans_end_attr='tok_answer_end',
+                          dblock_splitter=ColSplitter(),
+                          dl_kwargs={}, learner_kwargs={}):
 
         return cls._create_learner(ds, pretrained_model_name_or_path, preprocess_func, max_seq_len,
-                                   context, question, tok_ans_start, tok_ans_end, dblock_splitter,
+                                   context_attr, question_attr, answer_text_attr,
+                                   tok_ans_start_attr, tok_ans_end_attr, dblock_splitter,
                                    dl_kwargs, learner_kwargs)

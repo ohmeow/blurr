@@ -197,8 +197,8 @@ class BlearnerForSequenceClassification(Blearner):
 
     @classmethod
     def _create_learner(cls, data, pretrained_model_name_or_path, preprocess_func,
-                        text, label, n_labels,
-                        dblock_splitter, dl_kwargs, learner_kwargs):
+                        text_attr, label_attr, n_labels, dblock_splitter,
+                        dl_kwargs, learner_kwargs):
 
         # get our hf objects
         hf_arch, hf_config, hf_tokenizer, hf_model = BLURR.get_hf_objects(pretrained_model_name_or_path,
@@ -207,7 +207,7 @@ class BlearnerForSequenceClassification(Blearner):
 
         # if we need to preprocess the raw data before creating our DataLoaders
         if (preprocess_func):
-            data = preprocess_func(data, hf_arch, hf_config, hf_tokenizer, hf_model, text, label)
+            data = preprocess_func(data, hf_arch, hf_config, hf_tokenizer, hf_model, text_attr, label_attr)
 
         # not all architectures include a native pad_token (e.g., gpt2, ctrl, etc...), so we add one here
         if (hf_tokenizer.pad_token is None):
@@ -215,21 +215,23 @@ class BlearnerForSequenceClassification(Blearner):
             hf_config.pad_token_id = hf_tokenizer.get_vocab()['<pad>']
             hf_model.resize_token_embeddings(len(hf_tokenizer))
 
-        # build dblock, dls, and default metrics (optionsl)
+        # defin our input/target getters
         if (isinstance(data, pd.DataFrame)):
-            get_x = ColReader(text)
-            get_y = ColReader(label)
+            get_x = ColReader(text_attr)
+            get_y = ColReader(label_attr)
         else:
-            get_x = partial(cls._get_x, attr=text)
-            get_y = partial(cls._get_y, attr=label)
+            get_x = partial(cls._get_x, attr=text_attr)
+            get_y = partial(cls._get_y, attr=label_attr)
 
-        if (is_listy(label)):
-            trg_block = MultiCategoryBlock(encoded=True, vocab=label)
+        # infer loss function and default metrics
+        if (is_listy(label_attr)):
+            trg_block = MultiCategoryBlock(encoded=True, vocab=label_attr)
             learner_kwargs['metrics'] = learner_kwargs.get('metrics', [F1ScoreMulti(), accuracy_multi])
         else:
             trg_block = CategoryBlock
             learner_kwargs['metrics'] = learner_kwargs.get('metrics', [F1Score(), accuracy])
 
+        # build our DataBlock and DataLoaders
         blocks = (HF_TextBlock(hf_arch, hf_config, hf_tokenizer, hf_model), trg_block)
         dblock = DataBlock(blocks=blocks,
                            get_x=get_x,
@@ -243,20 +245,21 @@ class BlearnerForSequenceClassification(Blearner):
 
     @classmethod
     def from_dataframe(cls, df, pretrained_model_name_or_path, preprocess_func=None,
-                       text='text', label='label', n_labels=None, dblock_splitter=ColSplitter(),
+                       text_attr='text', label_attr='label', n_labels=None, dblock_splitter=ColSplitter(),
                        dl_kwargs={}, learner_kwargs={}):
 
         # we need to tell transformer how many labels/classes to expect
         if (n_labels is None):
-            n_labels = len(label) if(is_listy(label)) else len(df[label].unique())
+            n_labels = len(label_attr) if(is_listy(label_attr)) else len(df[label_attr].unique())
 
         return cls._create_learner(df, pretrained_model_name_or_path, preprocess_func,
-                                   text, label, n_labels, dblock_splitter, dl_kwargs, learner_kwargs)
+                                   text_attr, label_attr, n_labels, dblock_splitter,
+                                   dl_kwargs, learner_kwargs)
 
 
     @classmethod
     def from_csv(cls, csv_file, pretrained_model_name_or_path, preprocess_func=None,
-                 text='text', label='label', n_labels=None, dblock_splitter=None,
+                 text_attr='text', label_attr='label', n_labels=None, dblock_splitter=None,
                  dl_kwargs={}, learner_kwargs={}):
 
         df = pd.read_csv(csv_file)
@@ -264,18 +267,19 @@ class BlearnerForSequenceClassification(Blearner):
         return cls.from_dataframe(df,
                                   pretrained_model_name_or_path=pretrained_model_name_or_path,
                                   preprocess_func=preprocess_func,
-                                  text=text, label=label, n_labels=n_labels,
+                                  text_attr=text_attr, label_attr=label_attr, n_labels=n_labels,
                                   dblock_splitter=dblock_splitter,
                                   dl_kwargs=dl_kwargs, learner_kwargs=learner_kwargs)
 
     @classmethod
     def from_dictionaries(cls, ds, pretrained_model_name_or_path, preprocess_func=None,
-                          text='text', label='label', n_labels=None, dblock_splitter=RandomSplitter(),
+                          text_attr='text', label_attr='label', n_labels=None, dblock_splitter=RandomSplitter(),
                           dl_kwargs={}, learner_kwargs={}):
 
         # we need to tell transformer how many labels/classes to expect
         if (n_labels is None):
-            n_labels = len(label) if(is_listy(label)) else len(set([item[label] for item in ds]))
+            n_labels = len(label_attr) if(is_listy(label_attr)) else len(set([item[label_attr] for item in ds]))
 
         return cls._create_learner(ds, pretrained_model_name_or_path, preprocess_func,
-                                   text, label, n_labels, dblock_splitter, dl_kwargs, learner_kwargs)
+                                   text_attr, label_attr, n_labels, dblock_splitter,
+                                   dl_kwargs, learner_kwargs)

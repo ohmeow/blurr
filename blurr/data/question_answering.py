@@ -16,8 +16,8 @@ from fastai.text.all import *
 logging.set_verbosity_error()
 
 # Cell
-def pre_process_squad(row, hf_arch, hf_tokenizer):
-    context, qst, ans = row['context'], row['question'], row['answer_text']
+def pre_process_squad(row, hf_arch, hf_tokenizer, ctx_attr='context', qst_attr='question', ans_attr='answer_text'):
+    context, qst, ans = row[ctx_attr], row[qst_attr], row[ans_attr]
 
     tok_kwargs = {}
 
@@ -26,7 +26,7 @@ def pre_process_squad(row, hf_arch, hf_tokenizer):
     else:
         tok_input = hf_tokenizer.convert_ids_to_tokens(hf_tokenizer.encode(context, qst, **tok_kwargs))
 
-    tok_ans = hf_tokenizer.tokenize(str(row['answer_text']), **tok_kwargs)
+    tok_ans = hf_tokenizer.tokenize(str(row[ans_attr]), **tok_kwargs)
 
     start_idx, end_idx = 0,0
     for idx, tok in enumerate(tok_input):

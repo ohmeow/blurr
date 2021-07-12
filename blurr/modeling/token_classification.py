@@ -210,8 +210,13 @@ class BlearnerForTokenClassification(Blearner):
         return [ (label, len(tokenizer.tokenize(str(entity)))) for entity, label in zip(r[tokens], r[token_labels]) ]
 
     @classmethod
+    def get_metrics_cb(self):
+        return HF_TokenClassMetricsCallback()
+
+    @classmethod
     def _create_learner(cls, data, pretrained_model_name_or_path, preprocess_func,
-                        tokens, token_labels, labels, dblock_splitter, dl_kwargs, learner_kwargs):
+                        tokens_attr, token_labels_attr, labels, dblock_splitter,
+                        dl_kwargs, learner_kwargs):
 
         # get our hf objects
         n_labels = len(labels)
@@ -229,13 +234,13 @@ class BlearnerForTokenClassification(Blearner):
             hf_config.pad_token_id = hf_tokenizer.get_vocab()['<pad>']
             hf_model.resize_token_embeddings(len(hf_tokenizer))
 
-        # build dblock, dls, and default metrics (optionsl)
+        # build getters
         if (isinstance(data, pd.DataFrame)):
-            get_x = ColReader(tokens)
-            get_y = partial(cls._get_y, tokens=tokens, token_labels=token_labels, tokenizer=hf_tokenizer)
+            get_x = ColReader(tokens_attr)
+            get_y = partial(cls._get_y, tokens=tokens_attr, token_labels=token_labels_attr, tokenizer=hf_tokenizer)
         else:
-            get_x = ItemGetter(tokens)
-            get_y = partial(cls._get_y, tokens=tokens, token_labels=token_labels, tokenizer=hf_tokenizer)
+            get_x = ItemGetter(tokens_attr)
+            get_y = partial(cls._get_y, tokens=tokens_attr, token_labels=token_labels_attr, tokenizer=hf_tokenizer)
 
         before_batch_tfm = HF_TokenClassBeforeBatchTransform(hf_arch, hf_config, hf_tokenizer, hf_model,
                                                              is_split_into_words=True,
@@ -258,20 +263,22 @@ class BlearnerForTokenClassification(Blearner):
 
     @classmethod
     def from_dataframe(cls, df, pretrained_model_name_or_path, preprocess_func=None,
-                       tokens='tokens', token_labels='token_labels', labels=None, dblock_splitter=ColSplitter(),
+                       tokens_attr='tokens', token_labels_attr='token_labels', labels=None,
+                       dblock_splitter=ColSplitter(),
                        dl_kwargs={}, learner_kwargs={}):
 
         # we need to tell transformer how many labels/classes to expect
         if (labels is None):
-            labels = sorted(list(set([lbls for sublist in df[token_labels].tolist() for lbls in sublist])))
+            labels = sorted(list(set([lbls for sublist in df[token_labels_attr].tolist() for lbls in sublist])))
 
         return cls._create_learner(df, pretrained_model_name_or_path, preprocess_func,
-                                   tokens, token_labels, labels, dblock_splitter, dl_kwargs, learner_kwargs)
+                                   tokens_attr, token_labels_attr, labels, dblock_splitter,
+                                   dl_kwargs, learner_kwargs)
 
 
     @classmethod
     def from_csv(cls, csv_file, pretrained_model_name_or_path, preprocess_func=None,
-                 tokens='tokens', token_labels='labels', labels=None, dblock_splitter=ColSplitter(),
+                 tokens_attr='tokens', token_labels_attr='labels', labels=None, dblock_splitter=ColSplitter(),
                  dl_kwargs={}, learner_kwargs={}):
 
         df = pd.read_csv(csv_file)
@@ -279,20 +286,22 @@ class BlearnerForTokenClassification(Blearner):
         return cls.from_dataframe(df,
                                   pretrained_model_name_or_path=pretrained_model_name_or_path,
                                   preprocess_func=preprocess_func,
-                                  tokens=tokens, token_labels=token_labels, labels=labels,
+                                  tokens_attr=tokens_attr, token_labels_attr=token_labels_attr, labels=labels,
                                   dblock_splitter=dblock_splitter,
                                   dl_kwargs=dl_kwargs, learner_kwargs=learner_kwargs)
 
     @classmethod
     def from_dictionaries(cls, ds, pretrained_model_name_or_path, preprocess_func=None,
-                       tokens='tokens', token_labels='token_labels', labels=None, dblock_splitter=RandomSplitter(),
-                       dl_kwargs={}, learner_kwargs={}):
+                          tokens_attr='tokens', token_labels_attr='token_labels', labels=None,
+                          dblock_splitter=RandomSplitter(),
+                          dl_kwargs={}, learner_kwargs={}):
 
         # we need to tell transformer how many labels/classes to expect
         if (labels is None):
             all_labels = []
-            for item in raw_ds: all_labels += item[token_labels]
+            for item in raw_ds: all_labels += item[token_labels_attr]
             labels = sorted(list(set(all_labels)))
 
         return cls._create_learner(ds, pretrained_model_name_or_path, preprocess_func,
-                                   tokens, token_labels, labels, dblock_splitter, dl_kwargs, learner_kwargs)
+                                   tokens_attr, token_labels_attr, labels, dblock_splitter,
+                                   dl_kwargs, learner_kwargs)
