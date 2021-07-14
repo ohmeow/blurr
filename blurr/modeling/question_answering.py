@@ -111,7 +111,7 @@ class BlearnerForQuestionAnswering(Blearner):
 
         # potentially used by our preprocess_func, it is the basis for our CategoryBlock vocab
         if (max_seq_len is None):
-            max_seq_len = hf_confg.get('max_position_embeddings', 128)
+            max_seq_len = hf_config.get('max_position_embeddings', 128)
 
         # client can pass in a function that takes the raw data, hf objects, and max_seq_len ... and
         # returns a DataFrame with the expected format
