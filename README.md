@@ -1,5 +1,5 @@
 # blurr
-> A library that integrates huggingface transformers with version 2 of the fastai framework
+> A library that integrates huggingface transformers with the world of fastai, giving fastai devs everything they need to train, evaluate, and deploy transformer specific models.
 
 
 ## Install
