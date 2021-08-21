@@ -5,13 +5,21 @@ __all__ = ['hf_splitter', 'HF_BaseModelWrapper', 'HF_PreCalculatedLoss', 'HF_Bas
 
 # Cell
 import inspect, torch
-from transformers import *
+from fastprogress.fastprogress import progress_bar,master_bar
+from transformers import AutoModelForSequenceClassification, logging
+from fastcore.all import *
+from fastai.callback.all import *
+from fastai.data.block import *
+from fastai.data.core import DataLoader, DataLoaders, TfmdDL
+from fastai.data.transforms import *
+from fastai.learner import *
+from fastai.losses import CrossEntropyLossFlat
+from fastai.optimizer import Adam, OptimWrapper, params
+from fastai.metrics import accuracy, F1Score
+from fastai.torch_core import Module, display_df, get_empty_df, show_title
 
-from fastai.text.all import *
-from fastai.callback.hook import _print_shapes
-
-from ..utils import *
-from ..data.core import *
+from ..utils import BLURR
+from ..data.core import HF_TextBlock, HF_BaseInput, get_blurr_tfm
 
 logging.set_verbosity_error()
 
@@ -29,7 +37,14 @@ def hf_splitter(m):
 
 # Cell
 class HF_BaseModelWrapper(Module):
-    def __init__(self, hf_model, output_hidden_states=False, output_attentions=False, hf_model_kwargs={}):
+    def __init__(
+        self,
+        hf_model,                    # Your Hugging Face model
+        output_hidden_states=False,  # If True, hidden_states will be returned and accessed from Learner
+        output_attentions=False,     # If True, attentions will be returned and accessed from Learner
+        # Any additional keyword arguments you want passed into your models forward method
+        hf_model_kwargs={}
+    ):
         super().__init__()
 
         store_attr(self=self, names='output_hidden_states, output_attentions, hf_model_kwargs')
@@ -82,31 +97,49 @@ class HF_BaseModelCallback(Callback):
 
 # Cell
 @typedispatch
-def show_results(x:HF_BaseInput, y, samples, outs, learner, ctxs=None, max_n=6, trunc_at=None, **kwargs):
-    #grab tokenizer and trunc_at to pass into HF_BaseInput.show
-    hf_before_batch_tfm = get_blurr_tfm(learner.dls.before_batch)
-    kwargs['hf_tokenizer'] = hf_before_batch_tfm.hf_tokenizer
-    kwargs['trunc_at'] = trunc_at
+def show_results(
+    x:HF_BaseInput, # This typedispatched `show_batch` will be called for `HF_BaseInput` typed inputs
+    y,              # Your targets
+    samples,        # Your raw inputs/targets
+    outs,           # The model's predictions
+    # Your `Learner`. This is required so as to get at the Hugging Face objects for
+    # decoding them into something understandable
+    learner,
+    # Your `show_results` context
+    ctxs=None,
+    # The maximum number of items to show
+    max_n=6,
+     # Any truncation your want applied to your decoded inputs
+    trunc_at=None,
+    # Any other keyword arguments you want applied to `show_batch`
+    **kwargs
+):
+    # grab our tokenizer
+    batch_tfm = get_blurr_tfm(learner.dls.after_batch)
+    hf_tokenizer = batch_tfm.hf_tokenizer
 
-    if ctxs is None: ctxs = get_empty_df(min(len(samples), max_n))
-    ctxs = show_batch[object](x, y, samples, max_n=max_n, ctxs=ctxs, **kwargs)
+    res = L()
+    n_inp = learner.dls.n_inp
 
-    n_preds_per_input = len(outs[0])
-    if (n_preds_per_input == 1):
-        for i,ctx in enumerate(ctxs): ctx['target'] = outs[i][0]
-    else:
-        for pred_idx in range(n_preds_per_input):
-            for i,ctx in enumerate(ctxs):  ctx[f'target{pred_idx+1}'] = outs[i][pred_idx]
+    for idx, (input_ids, label, pred, sample) in enumerate(zip(x, y, outs, samples)):
+        if (idx >= max_n): break
 
-    display_df(pd.DataFrame(ctxs))
+        rets = [ hf_tokenizer.decode(input_ids, skip_special_tokens=True)[:trunc_at] ]
+        for item in sample[n_inp:]: rets.append(label.item() if (torch.is_tensor(item)) else item)
+        for item in pred: rets.append(item.item() if (torch.is_tensor(item)) else item)
+        res.append(tuplify(rets))
+
+    cols = ['text'] + [ 'target' if (i == 0) else f'target_{i}' for i in range(len(res[0]) - n_inp*2) ]
+    cols += [ 'prediction' if (i == 0) else f'prediction_{i}' for i in range(len(res[0]) - n_inp*2) ]
+    display_df(pd.DataFrame(res, columns=cols)[:max_n])
     return ctxs
 
 # Cell
 @patch
 def blurr_predict(self:Learner, items, rm_type_tfms=None):
-    hf_before_batch_tfm = get_blurr_tfm(self.dls.before_batch)
+    batch_tfm = get_blurr_tfm(self.dls.after_batch)
 
-    is_split_str = hf_before_batch_tfm.is_split_into_words and isinstance(items[0], str)
+    is_split_str = batch_tfm.is_split_into_words and isinstance(items[0], str)
     is_df = isinstance(items, pd.DataFrame)
 
     if (not is_df and (is_split_str or not is_listy(items))): items = [items]
@@ -130,19 +163,19 @@ def blurr_predict(self:Learner, items, rm_type_tfms=None):
 
 # Cell
 @patch
-def blurr_generate(self:Learner, inp, task=None, **kwargs):
+def blurr_generate(self:Learner, inp, **kwargs):
     """Uses the built-in `generate` method to generate the text
     (see [here](https://huggingface.co/transformers/main_classes/model.html#transformers.PreTrainedModel.generate)
     for a list of arguments you can pass in)
     """
     # grab the Hugging Face tokenizer from the learner's dls.tfms
-    hf_before_batch_tfm = get_blurr_tfm(self.dls.before_batch)
-    hf_config = hf_before_batch_tfm.hf_config
-    hf_tokenizer = hf_before_batch_tfm.hf_tokenizer
-    tok_kwargs = hf_before_batch_tfm.tok_kwargs
+    batch_tfm = get_blurr_tfm(self.dls.after_batch)
+    hf_config = batch_tfm.hf_config
+    hf_tokenizer = batch_tfm.hf_tokenizer
+    tok_kwargs = batch_tfm.tok_kwargs
 
     # grab the text generation kwargs
-    text_gen_kwargs = hf_before_batch_tfm.text_gen_kwargs if (len(kwargs) == 0) else kwargs
+    text_gen_kwargs = batch_tfm.text_gen_kwargs if (len(kwargs) == 0) else kwargs
 
     if (isinstance(inp, str)):
         input_ids = hf_tokenizer.encode(inp, padding=True, truncation=True, return_tensors='pt', **tok_kwargs)
@@ -156,7 +189,7 @@ def blurr_generate(self:Learner, inp, task=None, **kwargs):
     outputs = [ hf_tokenizer.decode(txt, skip_special_tokens=True, clean_up_tokenization_spaces=False)
                for txt in gen_texts ]
 
-    if hf_before_batch_tfm.hf_arch == 'pegasus':
+    if batch_tfm.hf_arch == 'pegasus':
         outputs = [o.replace('<n>', ' ') for o in outputs]
 
     return outputs
@@ -165,8 +198,13 @@ def blurr_generate(self:Learner, inp, task=None, **kwargs):
 @delegates(Learner.__init__)
 class Blearner(Learner):
 
-    def __init__(self, dls, hf_model, base_model_cb=HF_BaseModelCallback, **kwargs):
-
+    def __init__(
+        self,
+        dls,
+        hf_model,
+        base_model_cb=HF_BaseModelCallback,
+        **kwargs
+    ):
         model = kwargs.get('model', HF_BaseModelWrapper(hf_model))
         loss_func = kwargs.pop('loss_func', dls.loss_func if hasattr(dls, 'loss_func') else None)
         splitter = kwargs.pop('splitter', hf_splitter)
@@ -180,7 +218,12 @@ class Blearner(Learner):
 @delegates(Blearner.__init__)
 class BlearnerForSequenceClassification(Blearner):
 
-    def __init__(self, dls, hf_model, **kwargs):
+    def __init__(
+        self,
+        dls,
+        hf_model,
+        **kwargs
+    ):
         super().__init__(dls, hf_model, **kwargs)
 
     @classmethod
@@ -196,10 +239,18 @@ class BlearnerForSequenceClassification(Blearner):
         return r[attr] if (isinstance(attr, str)) else [r[inp] for inp in attr]
 
     @classmethod
-    def _create_learner(cls, data, pretrained_model_name_or_path, preprocess_func,
-                        text_attr, label_attr, n_labels, dblock_splitter,
-                        dl_kwargs, learner_kwargs):
-
+    def _create_learner(
+        cls,
+        data,
+        pretrained_model_name_or_path,
+        preprocess_func,
+        text_attr,
+        label_attr,
+        n_labels,
+        dblock_splitter,
+        dl_kwargs,
+        learner_kwargs
+    ):
         # get our hf objects
         hf_arch, hf_config, hf_tokenizer, hf_model = BLURR.get_hf_objects(pretrained_model_name_or_path,
                                                                           model_cls=cls.get_model_cls(),
@@ -244,10 +295,18 @@ class BlearnerForSequenceClassification(Blearner):
         return cls(dls, hf_model, **learner_kwargs.copy())
 
     @classmethod
-    def from_dataframe(cls, df, pretrained_model_name_or_path, preprocess_func=None,
-                       text_attr='text', label_attr='label', n_labels=None, dblock_splitter=ColSplitter(),
-                       dl_kwargs={}, learner_kwargs={}):
-
+    def from_dataframe(
+        cls,
+        df,
+        pretrained_model_name_or_path,
+        preprocess_func=None,
+        text_attr='text',
+        label_attr='label',
+        n_labels=None,
+        dblock_splitter=ColSplitter(),
+        dl_kwargs={},
+        learner_kwargs={}
+    ):
         # we need to tell transformer how many labels/classes to expect
         if (n_labels is None):
             n_labels = len(label_attr) if(is_listy(label_attr)) else len(df[label_attr].unique())
@@ -258,10 +317,17 @@ class BlearnerForSequenceClassification(Blearner):
 
 
     @classmethod
-    def from_csv(cls, csv_file, pretrained_model_name_or_path, preprocess_func=None,
-                 text_attr='text', label_attr='label', n_labels=None, dblock_splitter=None,
-                 dl_kwargs={}, learner_kwargs={}):
-
+    def from_csv(
+        cls,
+        csv_file,
+        pretrained_model_name_or_path,
+        preprocess_func=None,
+        text_attr='text',
+        label_attr='label',
+        n_labels=None,
+        dblock_splitter=None,
+        learner_kwargs={}
+    ):
         df = pd.read_csv(csv_file)
 
         return cls.from_dataframe(df,
@@ -272,10 +338,18 @@ class BlearnerForSequenceClassification(Blearner):
                                   dl_kwargs=dl_kwargs, learner_kwargs=learner_kwargs)
 
     @classmethod
-    def from_dictionaries(cls, ds, pretrained_model_name_or_path, preprocess_func=None,
-                          text_attr='text', label_attr='label', n_labels=None, dblock_splitter=RandomSplitter(),
-                          dl_kwargs={}, learner_kwargs={}):
-
+    def from_dictionaries(
+        cls,
+        ds,
+        pretrained_model_name_or_path,
+        preprocess_func=None,
+        text_attr='text',
+        label_attr='label',
+        n_labels=None,
+        dblock_splitter=RandomSplitter(),
+        dl_kwargs={},
+        learner_kwargs={}
+    ):
         # we need to tell transformer how many labels/classes to expect
         if (n_labels is None):
             n_labels = len(label_attr) if(is_listy(label_attr)) else len(set([item[label_attr] for item in ds]))
