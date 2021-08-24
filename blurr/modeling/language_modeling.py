@@ -88,7 +88,17 @@ class LM_MetricsCallback(Callback):
 
 # Cell
 @typedispatch
-def show_results(x:HF_CausalLMInput, y, samples, outs, learner, ctxs=None, max_n=6, trunc_at=None, **kwargs):
+def show_results(
+    x:HF_CausalLMInput,
+    y,
+    samples,
+    outs,
+    learner,
+    ctxs=None,
+    max_n=6,
+    trunc_at=None,
+    **kwargs
+):
     # grab our tokenizer and ignore token to decode
     tfm = first_blurr_tfm(learner.dls)
 
@@ -107,7 +117,17 @@ def show_results(x:HF_CausalLMInput, y, samples, outs, learner, ctxs=None, max_n
 
 # Cell
 @typedispatch
-def show_results(x:HF_MLMInput, y, samples, outs, learner, ctxs=None, max_n=6, trunc_at=None, **kwargs):
+def show_results(
+    x:HF_MLMInput,
+    y,
+    samples,
+    outs,
+    learner,
+    ctxs=None,
+    max_n=6,
+    trunc_at=None,
+    **kwargs
+):
     # grab our tokenizer and ignore token to decode
     tfm = first_blurr_tfm(learner.dls)
 
@@ -151,7 +171,12 @@ def show_results(x:HF_MLMInput, y, samples, outs, learner, ctxs=None, max_n=6, t
 
 # Cell
 @patch
-def blurr_fill_mask(self:Learner, inp, n_preds=1, **kwargs):
+def blurr_fill_mask(
+    self:Learner,
+    inp,
+    n_preds=1,
+    **kwargs
+):
     """For MLM models"""
     # grab the Hugging Face tokenizer from the learner's dls.tfms
     tfm = first_blurr_tfm(self.dls)
@@ -198,9 +223,17 @@ class BlearnerForLM(Blearner):
         return LM_MetricsCallback()
 
     @classmethod
-    def _create_learner(cls, data, pretrained_model_name_or_path, preprocess_func,
-                        lm_strategy_cls, text_attr, dblock_splitter, dl_kwargs, learner_kwargs):
-
+    def _create_learner(
+        cls,
+        data,
+        pretrained_model_name_or_path,
+        preprocess_func,
+        lm_strategy_cls,
+        text_attr,
+        dblock_splitter,
+        dl_kwargs,
+        learner_kwargs
+    ):
         lm_type = lm_strategy_cls.get_lm_type()
 
         # get our hf objects
@@ -238,29 +271,50 @@ class BlearnerForLM(Blearner):
         return cls(dls, hf_model, **learner_kwargs.copy())
 
     @classmethod
-    def from_dataframe(cls, df, pretrained_model_name_or_path, preprocess_func=None,
-                       lm_strategy_cls=CausalLMStrategy, text_attr='text', dblock_splitter=ColSplitter(),
-                       dl_kwargs={}, learner_kwargs={}):
-
+    def from_dataframe(
+        cls,
+        df,
+        pretrained_model_name_or_path,
+        preprocess_func=None,
+        lm_strategy_cls=CausalLMStrategy,
+        text_attr='text',
+        dblock_splitter=ColSplitter(),
+        dl_kwargs={},
+        learner_kwargs={}
+    ):
         return cls._create_learner(df, pretrained_model_name_or_path, preprocess_func,
                                    lm_strategy_cls, text_attr, dblock_splitter, dl_kwargs, learner_kwargs)
 
 
     @classmethod
-    def from_csv(cls, csv_file, pretrained_model_name_or_path, preprocess_func=None,
-                 lm_strategy_cls=CausalLMStrategy, text_attr='text', dblock_splitter=ColSplitter(),
-                 dl_kwargs={}, learner_kwargs={}):
-
+    def from_csv(
+        cls,
+        csv_file,
+        pretrained_model_name_or_path,
+        preprocess_func=None,
+        lm_strategy_cls=CausalLMStrategy,
+        text_attr='text',
+        dblock_splitter=ColSplitter(),
+        dl_kwargs={},
+        learner_kwargs={}
+    ):
         df = pd.read_csv(csv_file)
         return cls.from_dataframe(df, pretrained_model_name_or_path, preprocess_func,
                                   lm_strategy_cls, text_attr, dblock_splitter,
                                   dl_kwargs, learner_kwargs)
 
     @classmethod
-    def from_dictionaries(cls, ds, pretrained_model_name_or_path, preprocess_func=None,
-                          lm_strategy_cls=CausalLMStrategy, text_attr='text', dblock_splitter=RandomSplitter(),
-                          dl_kwargs={}, learner_kwargs={}):
-
+    def from_dictionaries(
+        cls,
+        ds,
+        pretrained_model_name_or_path,
+        preprocess_func=None,
+        lm_strategy_cls=CausalLMStrategy,
+        text_attr='text',
+        dblock_splitter=RandomSplitter(),
+        dl_kwargs={},
+        learner_kwargs={}
+    ):
         return cls._create_learner(ds, pretrained_model_name_or_path, preprocess_func,
                                    lm_strategy_cls, text_attr, dblock_splitter,
                                    dl_kwargs, learner_kwargs)

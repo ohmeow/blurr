@@ -57,11 +57,19 @@ class HF_TokenClassInput(HF_BaseInput): pass
 
 # Cell
 class HF_TokenClassBeforeBatchTransform(HF_BeforeBatchTransform):
-    def __init__(self, hf_arch, hf_config, hf_tokenizer, hf_model,
-                 ignore_token_id=CrossEntropyLossFlat().ignore_index,
-                 max_length=None, padding=True, truncation=True, is_split_into_words=True,
-                 tok_kwargs={}, **kwargs):
-
+    def __init__(
+        self,
+        hf_arch,
+        hf_config,
+        hf_tokenizer,
+        hf_model,
+        ignore_token_id=CrossEntropyLossFlat().ignore_index,
+        max_length=None,
+        padding=True,
+        truncation=True,
+        is_split_into_words=True,
+        tok_kwargs={}, **kwargs
+    ):
         super().__init__(hf_arch, hf_config, hf_tokenizer, hf_model,
                          max_length=max_length, padding=padding, truncation=truncation,
                          is_split_into_words=is_split_into_words, tok_kwargs=tok_kwargs, **kwargs)
@@ -89,7 +97,16 @@ class HF_TokenClassBeforeBatchTransform(HF_BeforeBatchTransform):
 
 # Cell
 @typedispatch
-def show_batch(x:HF_TokenClassInput, y, samples, dataloaders, ctxs=None, max_n=6, trunc_at=None, **kwargs):
+def show_batch(
+    x:HF_TokenClassInput,
+    y,
+    samples,
+    dataloaders,
+    ctxs=None,
+    max_n=6,
+    trunc_at=None,
+    **kwargs
+):
     # grab our tokenizer
     tfm = first_blurr_tfm(dataloaders, before_batch_tfm_class=HF_TokenClassBeforeBatchTransform)
     hf_tokenizer = tfm.hf_tokenizer

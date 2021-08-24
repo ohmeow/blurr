@@ -63,9 +63,9 @@ nb_path: "nbs/02_data-language-modeling.ipynb"
 <div class="output_area">
 
 <div class="output_subarea output_stream output_stdout output_text">
-<pre>Using pytorch 1.7.1
-Using fastai 2.4
-Using transformers 4.8.1
+<pre>torch: 1.7.1
+fastai: 2.5.0
+transformers: 4.9.2
 </pre>
 </div>
 </div>
@@ -295,7 +295,7 @@ Using transformers 4.8.1
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h2 id="LMType" class="doc_header"><code>LMType</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/data/language_modeling.py#L21" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>Enum</code> = [CAUSAL, MASKED]</p>
+<h2 id="LMType" class="doc_header"><code>LMType</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/data/language_modeling.py#L24" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>Enum</code> = [CAUSAL, MASKED]</p>
 </blockquote>
 <p>An enumeration.</p>
 
@@ -333,9 +333,16 @@ Using transformers 4.8.1
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h2 id="LMStrategy" class="doc_header"><code>class</code> <code>LMStrategy</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/data/language_modeling.py#L26" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>LMStrategy</code>(<strong><code>hf_tokenizer</code></strong>, <strong><code>ignore_token_id</code></strong>=<em><code>-100</code></em>) :: <code>ABC</code></p>
+<h2 id="LMStrategy" class="doc_header"><code>class</code> <code>LMStrategy</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/data/language_modeling.py#L29" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>LMStrategy</code>(<strong><code>hf_tokenizer</code></strong>, <strong><code>ignore_token_id</code></strong>=<em><code>-100</code></em>) :: <code>ABC</code></p>
 </blockquote>
 <p>ABC for various language modeling strategies</p>
+<p><strong>Parameters:</strong></p>
+<ul>
+<li><p><strong><code>hf_tokenizer</code></strong> : <em><code>&lt;class 'inspect._empty'&gt;</code></em></p>
+</li>
+<li><p><strong><code>ignore_token_id</code></strong> : <em><code>&lt;class 'int'&gt;</code></em>, <em>optional</em></p>
+</li>
+</ul>
 
 </div>
 
@@ -365,10 +372,39 @@ Using transformers 4.8.1
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h2 id="HF_LMBeforeBatchTransform" class="doc_header"><code>class</code> <code>HF_LMBeforeBatchTransform</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/data/language_modeling.py#L45" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>HF_LMBeforeBatchTransform</code>(<strong><code>hf_arch</code></strong>, <strong><code>hf_config</code></strong>, <strong><code>hf_tokenizer</code></strong>, <strong><code>hf_model</code></strong>, <strong><code>lm_strategy_cls</code></strong>:<a href="/blurr/data-language-modeling.html#LMStrategy"><code>LMStrategy</code></a>, <strong><code>max_length</code></strong>=<em><code>None</code></em>, <strong><code>padding</code></strong>=<em><code>True</code></em>, <strong><code>truncation</code></strong>=<em><code>True</code></em>, <strong><code>is_split_into_words</code></strong>=<em><code>False</code></em>, <strong><code>ignore_token_id</code></strong>=<em><code>-100</code></em>, <strong><code>tok_kwargs</code></strong>=<em><code>{}</code></em>, <strong><code>text_gen_kwargs</code></strong>=<em><code>{}</code></em>, <strong>**<code>kwargs</code></strong>) :: <a href="/blurr/data-core.html#HF_BeforeBatchTransform"><code>HF_BeforeBatchTransform</code></a></p>
+<h2 id="HF_LMBeforeBatchTransform" class="doc_header"><code>class</code> <code>HF_LMBeforeBatchTransform</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/data/language_modeling.py#L52" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>HF_LMBeforeBatchTransform</code>(<strong><code>hf_arch</code></strong>, <strong><code>hf_config</code></strong>, <strong><code>hf_tokenizer</code></strong>, <strong><code>hf_model</code></strong>, <strong><code>lm_strategy_cls</code></strong>:<a href="/blurr/data-language-modeling.html#LMStrategy"><code>LMStrategy</code></a>, <strong><code>max_length</code></strong>=<em><code>None</code></em>, <strong><code>padding</code></strong>=<em><code>True</code></em>, <strong><code>truncation</code></strong>=<em><code>True</code></em>, <strong><code>is_split_into_words</code></strong>=<em><code>False</code></em>, <strong><code>ignore_token_id</code></strong>=<em><code>-100</code></em>, <strong><code>tok_kwargs</code></strong>=<em><code>{}</code></em>, <strong><code>text_gen_kwargs</code></strong>=<em><code>{}</code></em>, <strong>**<code>kwargs</code></strong>) :: <a href="/blurr/data-core.html#HF_BeforeBatchTransform"><code>HF_BeforeBatchTransform</code></a></p>
 </blockquote>
 <p>Handles everything you need to assemble a mini-batch of inputs and targets, as well as
 decode the dictionary produced as a byproduct of the tokenization process in the <code>encodes</code> method.</p>
+<p><strong>Parameters:</strong></p>
+<ul>
+<li><p><strong><code>hf_arch</code></strong> : <em><code>&lt;class 'inspect._empty'&gt;</code></em></p>
+</li>
+<li><p><strong><code>hf_config</code></strong> : <em><code>&lt;class 'inspect._empty'&gt;</code></em></p>
+</li>
+<li><p><strong><code>hf_tokenizer</code></strong> : <em><code>&lt;class 'inspect._empty'&gt;</code></em></p>
+</li>
+<li><p><strong><code>hf_model</code></strong> : <em><code>&lt;class 'inspect._empty'&gt;</code></em></p>
+</li>
+<li><p><strong><code>lm_strategy_cls</code></strong> : <em><code>&lt;class 'blurr.data.language_modeling.LMStrategy'&gt;</code></em></p>
+</li>
+<li><p><strong><code>max_length</code></strong> : <em><code>&lt;class 'NoneType'&gt;</code></em>, <em>optional</em></p>
+</li>
+<li><p><strong><code>padding</code></strong> : <em><code>&lt;class 'bool'&gt;</code></em>, <em>optional</em></p>
+</li>
+<li><p><strong><code>truncation</code></strong> : <em><code>&lt;class 'bool'&gt;</code></em>, <em>optional</em></p>
+</li>
+<li><p><strong><code>is_split_into_words</code></strong> : <em><code>&lt;class 'bool'&gt;</code></em>, <em>optional</em></p>
+</li>
+<li><p><strong><code>ignore_token_id</code></strong> : <em><code>&lt;class 'int'&gt;</code></em>, <em>optional</em></p>
+</li>
+<li><p><strong><code>tok_kwargs</code></strong> : <em><code>&lt;class 'dict'&gt;</code></em>, <em>optional</em></p>
+</li>
+<li><p><strong><code>text_gen_kwargs</code></strong> : <em><code>&lt;class 'dict'&gt;</code></em>, <em>optional</em></p>
+</li>
+<li><p><strong><code>kwargs</code></strong> : <em><code>&lt;class 'inspect._empty'&gt;</code></em></p>
+</li>
+</ul>
 
 </div>
 
@@ -462,9 +498,9 @@ decode the dictionary produced as a byproduct of the tokenization process in the
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h2 id="HF_CausalLMInput" class="doc_header"><code>class</code> <code>HF_CausalLMInput</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/data/language_modeling.py#L67" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>HF_CausalLMInput</code>(<strong><code>x</code></strong>, <strong>**<code>kwargs</code></strong>) :: <a href="/blurr/data-core.html#HF_BaseInput"><code>HF_BaseInput</code></a></p>
+<h2 id="HF_CausalLMInput" class="doc_header"><code>class</code> <code>HF_CausalLMInput</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/data/language_modeling.py#L85" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>HF_CausalLMInput</code>(<strong><code>x</code></strong>, <strong>**<code>kwargs</code></strong>) :: <a href="/blurr/data-core.html#HF_BaseInput"><code>HF_BaseInput</code></a></p>
 </blockquote>
-<p>A <code>Tensor</code> which support subclass pickling, and maintains metadata when casting or after methods</p>
+<p>The base represenation of your inputs; used by the various fastai <code>show</code> methods</p>
 
 </div>
 
@@ -494,10 +530,17 @@ decode the dictionary produced as a byproduct of the tokenization process in the
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h2 id="CausalLMStrategy" class="doc_header"><code>class</code> <code>CausalLMStrategy</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/data/language_modeling.py#L70" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>CausalLMStrategy</code>(<strong><code>hf_tokenizer</code></strong>, <strong><code>ignore_token_id</code></strong>=<em><code>-100</code></em>) :: <a href="/blurr/data-language-modeling.html#LMStrategy"><code>LMStrategy</code></a></p>
+<h2 id="CausalLMStrategy" class="doc_header"><code>class</code> <code>CausalLMStrategy</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/data/language_modeling.py#L88" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>CausalLMStrategy</code>(<strong><code>hf_tokenizer</code></strong>, <strong><code>ignore_token_id</code></strong>=<em><code>-100</code></em>) :: <a href="/blurr/data-language-modeling.html#LMStrategy"><code>LMStrategy</code></a></p>
 </blockquote>
 <p>For next token prediction language modeling tasks, we want to use the <a href="/blurr/data-language-modeling.html#CausalLMStrategy"><code>CausalLMStrategy</code></a> which makes the
 necessary changes in your inputs/targets for causal LMs</p>
+<p><strong>Parameters:</strong></p>
+<ul>
+<li><p><strong><code>hf_tokenizer</code></strong> : <em><code>&lt;class 'inspect._empty'&gt;</code></em></p>
+</li>
+<li><p><strong><code>ignore_token_id</code></strong> : <em><code>&lt;class 'int'&gt;</code></em>, <em>optional</em></p>
+</li>
+</ul>
 
 </div>
 
@@ -682,8 +725,8 @@ necessary changes in your inputs/targets for causal LMs</p>
     </tr>
     <tr>
       <th>1</th>
-      <td>\n = George Calvert, 1st Baron Baltimore = \n \n George Calvert, 1st Baron Baltimore ( &lt;unk&gt; – 15 April 1632 ) was an English politician and &lt;unk&gt;. He achieved domestic political success as a Member of Parliament and later Secretary of State under King James I. He lost much of his political power after his support for a failed marriage alliance between Prince Charles and the Spanish House of Habsburg royal family. Rather than continue in politics, he resigned all of his political offices in 1625 e</td>
-      <td>\n = George Calvert, 1st Baron Baltimore = \n \n George Calvert, 1st Baron Baltimore ( &lt;unk&gt; – 15 April 1632 ) was an English politician and &lt;unk&gt;. He achieved domestic political success as a Member of Parliament and later Secretary of State under King James I. He lost much of his political power after his support for a failed marriage alliance between Prince Charles and the Spanish House of Habsburg royal family. Rather than continue in politics, he resigned all of his political offices in 1625 ex</td>
+      <td>\n = Laurence Olivier = \n \n Laurence Kerr Olivier, Baron Olivier, &lt;unk&gt; ( / &lt;unk&gt; &lt;unk&gt; &lt;unk&gt; / ; 22 May 1907 – 11 July 1989 ) was an English actor who, along with his contemporaries Ralph Richardson and John Gielgud, dominated the British stage of the mid @-@ 20th century. He also worked in films throughout his career, playing more than fifty cinema roles. Late in his career, he had considerable success in television roles. \n His family had no theatrical connections, but Olivier's father, a cle</td>
+      <td>\n = Laurence Olivier = \n \n Laurence Kerr Olivier, Baron Olivier, &lt;unk&gt; ( / &lt;unk&gt; &lt;unk&gt; &lt;unk&gt; / ; 22 May 1907 – 11 July 1989 ) was an English actor who, along with his contemporaries Ralph Richardson and John Gielgud, dominated the British stage of the mid @-@ 20th century. He also worked in films throughout his career, playing more than fifty cinema roles. Late in his career, he had considerable success in television roles. \n His family had no theatrical connections, but Olivier's father, a cler</td>
     </tr>
   </tbody>
 </table>
@@ -763,9 +806,9 @@ necessary changes in your inputs/targets for causal LMs</p>
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h2 id="HF_MLMInput" class="doc_header"><code>class</code> <code>HF_MLMInput</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/data/language_modeling.py#L105" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>HF_MLMInput</code>(<strong><code>x</code></strong>, <strong>**<code>kwargs</code></strong>) :: <a href="/blurr/data-core.html#HF_BaseInput"><code>HF_BaseInput</code></a></p>
+<h2 id="HF_MLMInput" class="doc_header"><code>class</code> <code>HF_MLMInput</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/data/language_modeling.py#L132" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>HF_MLMInput</code>(<strong><code>x</code></strong>, <strong>**<code>kwargs</code></strong>) :: <a href="/blurr/data-core.html#HF_BaseInput"><code>HF_BaseInput</code></a></p>
 </blockquote>
-<p>A <code>Tensor</code> which support subclass pickling, and maintains metadata when casting or after methods</p>
+<p>The base represenation of your inputs; used by the various fastai <code>show</code> methods</p>
 
 </div>
 
@@ -795,9 +838,16 @@ necessary changes in your inputs/targets for causal LMs</p>
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h2 id="BertMLMStrategy" class="doc_header"><code>class</code> <code>BertMLMStrategy</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/data/language_modeling.py#L108" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>BertMLMStrategy</code>(<strong><code>hf_tokenizer</code></strong>, <strong><code>ignore_token_id</code></strong>=<em><code>-100</code></em>) :: <a href="/blurr/data-language-modeling.html#LMStrategy"><code>LMStrategy</code></a></p>
+<h2 id="BertMLMStrategy" class="doc_header"><code>class</code> <code>BertMLMStrategy</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/data/language_modeling.py#L135" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>BertMLMStrategy</code>(<strong><code>hf_tokenizer</code></strong>, <strong><code>ignore_token_id</code></strong>=<em><code>-100</code></em>) :: <a href="/blurr/data-language-modeling.html#LMStrategy"><code>LMStrategy</code></a></p>
 </blockquote>
 <p>A masked language modeling strategy using the default BERT masking definition.</p>
+<p><strong>Parameters:</strong></p>
+<ul>
+<li><p><strong><code>hf_tokenizer</code></strong> : <em><code>&lt;class 'inspect._empty'&gt;</code></em></p>
+</li>
+<li><p><strong><code>ignore_token_id</code></strong> : <em><code>&lt;class 'int'&gt;</code></em>, <em>optional</em></p>
+</li>
+</ul>
 
 </div>
 
@@ -912,12 +962,12 @@ necessary changes in your inputs/targets for causal LMs</p>
 
 <div class="output_text output_subarea output_execute_result">
 <pre>(tensor([  101,  1027,  3960,  7758,  1027,  3960,  7758,  1006,  1013,  1026,
-          4895,   103,  1028, 11723,  1025,  2141,  2728,  5297, 27946,  1010],
+          4895,  2243,  1028,  1013,  1025,  2141,   103,  5297, 27946,  1010],
         device=&#39;cuda:1&#39;),
- tensor([-100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, 2243,
-         -100, 1013, -100, -100, -100, -100, -100, -100], device=&#39;cuda:1&#39;),
- tensor([-100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, 2243,
-         -100, 1013, -100, -100, -100, -100, -100, -100], device=&#39;cuda:1&#39;))</pre>
+ tensor([-100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100,
+         -100, -100, -100, -100, 2728, -100, -100, 1010], device=&#39;cuda:1&#39;),
+ tensor([-100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100,
+         -100, -100, -100, -100, 2728, -100, -100, 1010], device=&#39;cuda:1&#39;))</pre>
 </div>
 
 </div>
@@ -1000,13 +1050,13 @@ necessary changes in your inputs/targets for causal LMs</p>
   <tbody>
     <tr>
       <th>0</th>
-      <td>[MASK] [MASK] dylan = [MASK] [MASK] ( / &lt; un ##k &gt; / ; born robert allen zimmerman , may 24 [MASK] 1941 ) is an [MASK] singer @ - @ songwriter , artist and writer . he has been influential in popular music [and] culture for [MASK] than five decades . much of his most celebrated work [MASK] from the [MASK] when his songs chronicle ##d [MASK] unrest , although dylan rep [MASK] ##ated [MASK] from [MASK] that [MASK] was a spokesman for [MASK] generation . [MASK] , early songs such as ["] blow ##in ['] in the wind " and " the times they are a @ - @ &lt; un ##k &gt; ' " became anthem [crowned] for the american civil rights and anti @ - [MASK] war movements . after he left his initial base in the american folk music [MASK] , his six @ - [MASK] minute single " like a [rolling] stone " altered the range [MASK] popular music in 1965 . his mid @ - @ 1960s recordings , backed by rock musicians [MASK] [MASK] the [plank] end of the united states music charts while also attracting &lt; [MASK] [MASK] &gt; and criticism [MASK] others in the folk movement . dylan ' s lyrics have incorporated various political , social , [MASK] , and [pensions] influences . they [MASK] ##ied existing [communist] music conventions and appealed [##kow] the [MASK] ##rgeon ##ing counter ##culture . initially inspired by the performances of little richard and</td>
-      <td>[=] [bob] dylan = [bob] [dylan] ( / &lt; un ##k &gt; / ; born robert allen zimmerman , may 24 [,] 1941 ) is an [american] singer @ - @ songwriter , artist and writer . he has been influential in popular music [and] culture for [more] than five decades . much of his most celebrated work [dates] from the [1960s] when his songs chronicle ##d [social] unrest , although dylan rep [##udi] ##ated [suggestions] from [journalists] that [he] was a spokesman for [his] generation . [nevertheless] , early songs such as ["] blow ##in ['] in the wind " and " the times they are a @ - @ &lt; un ##k &gt; ' " became anthem [##s] for the american civil rights and anti @ - [@] war movements . after he left his initial base in the american folk music [revival] , his six @ - [@] minute single " like a [rolling] stone " altered the range [of] popular music in 1965 . his mid @ - @ 1960s recordings , backed by rock musicians [,] [reached] the [top] end of the united states music charts while also attracting &lt; [un] [##k] &gt; and criticism [from] others in the folk movement . dylan ' s lyrics have incorporated various political , social , [philosophical] , and [literary] influences . they [def] ##ied existing [pop] music conventions and appealed [to] the [bu] ##rgeon ##ing counter ##culture . initially inspired by the performances of little richard and</td>
+      <td>= [MASK] dylan = bob dylan [MASK] / &lt; un ##k &gt; / ; born robert [MASK] zimmerman , may 24 , 1941 ) [MASK] an american singer @ - @ songwriter , artist [MASK] writer [MASK] he has been influential in popular [MASK] [averaging] culture for more than five decades . much of his [MASK] celebrated work dates from the 1960s when his songs chronicle ##d social unrest , although dylan rep ##udi ##ated suggestions from journalists that he was a spokesman for [MASK] generation . nevertheless , early [MASK] such as [MASK] blow [MASK] ' in the wind " and " the times they are [a] @ - @ &lt; un ##k &gt; ' " became [MASK] ##s for the [MASK] civil rights [MASK] anti @ - @ war movements . after [MASK] left his initial base in the [MASK] folk music revival , his six @ - [MASK] minute single " like [MASK] rolling stone [MASK] altered the [MASK] [MASK] popular [MASK] in [MASK] . his mid @ - @ 1960s recordings , backed by rock musicians , reached the top end of the united [MASK] music charts [MASK] also attracting &lt; un ##k &gt; and criticism from others in the [debating] movement . [MASK] ' s lyrics have incorporated various political , social , philosophical [##cheon] and literary influences . they def [##avia] existing pop music conventions [MASK] [MASK] to the bu ##rgeon ##ing counter ##culture [MASK] initially [MASK] [MASK] the performances of little richard and</td>
+      <td>= [bob] dylan = bob dylan [(] / &lt; un ##k &gt; / ; born robert [allen] zimmerman , may 24 , 1941 ) [is] an american singer @ - @ songwriter , artist [and] writer [.] he has been influential in popular [music] [and] culture for more than five decades . much of his [most] celebrated work dates from the 1960s when his songs chronicle ##d social unrest , although dylan rep ##udi ##ated suggestions from journalists that he was a spokesman for [his] generation . nevertheless , early [songs] such as ["] blow [##in] ' in the wind " and " the times they are [a] @ - @ &lt; un ##k &gt; ' " became [anthem] ##s for the [american] civil rights [and] anti @ - @ war movements . after [he] left his initial base in the [american] folk music revival , his six @ - [@] minute single " like [a] rolling stone ["] altered the [range] [of] popular [music] in [1965] . his mid @ - @ 1960s recordings , backed by rock musicians , reached the top end of the united [states] music charts [while] also attracting &lt; un ##k &gt; and criticism from others in the [folk] movement . [dylan] ' s lyrics have incorporated various political , social , philosophical [,] and literary influences . they def [##ied] existing pop music conventions [and] [appealed] to the bu ##rgeon ##ing counter ##culture [.] initially [inspired] [by] the performances of little richard and</td>
     </tr>
     <tr>
       <th>1</th>
-      <td>= battle of romani = the battle of romani [MASK] [notion] last ground attack [MASK] the central powers on the suez canal at the beginning of the [MASK] and palestine campaign during [MASK] first [MASK] war . the [slavery] was fought [[unused580]] [MASK] and 5 august 1916 near [the] [hinduism] town of romani and the [MASK] of ancient pe ##lus [MASK] on the sinai peninsula [MASK] 23 miles ( 37 [MASK] ) east of [electronics] suez canal [MASK] this [MASK] by [the] [MASK] ( lowland ) division and the anzac [mounted] division of [MASK] egyptian expeditionary force [MASK] ee ##f ) over a joint ottoman and german force [MASK] [MASK] had marched across the sinai [MASK] marked the [MASK] of the defence of the [MASK] canal campaign , also known as the offensive zur [MASK] un ##k &gt; des &lt; [un] ##k &gt; and the &lt; un ##k &gt; [&lt;] un ##k &gt; &lt; un ##k &gt; , which had begun on 26 january 1915 . this british empire victory , [MASK] first against the ottoman [empire] in the war , ensured the safety of the suez canal from ground [MASK] , and ended the central powers ' ambitions of [MASK] ##ing traffic through the canal by gaining control of the strategically [MASK] northern approaches to the suez canal . the pursuit [MASK] [MASK] [MASK] mounted division [MASK] ended at bi ##r el abd on 12 august began the [MASK] and palestine campaign . thereafter , the anzac [MASK] [MASK]</td>
-      <td>= battle of romani = the battle of romani [was] [the] last ground attack [of] the central powers on the suez canal at the beginning of the [sinai] and palestine campaign during [the] first [world] war . the [battle] was fought [between] [3] and 5 august 1916 near [the] [egyptian] town of romani and the [site] of ancient pe ##lus [##ium] on the sinai peninsula [,] 23 miles ( 37 [km] ) east of [the] suez canal [.] this [victory] by [the] [52nd] ( lowland ) division and the anzac [mounted] division of [the] egyptian expeditionary force [(] ee ##f ) over a joint ottoman and german force [,] [which] had marched across the sinai [,] marked the [end] of the defence of the [suez] canal campaign , also known as the offensive zur [&lt;] un ##k &gt; des &lt; [un] ##k &gt; and the &lt; un ##k &gt; [&lt;] un ##k &gt; &lt; un ##k &gt; , which had begun on 26 january 1915 . this british empire victory , [the] first against the ottoman [empire] in the war , ensured the safety of the suez canal from ground [attacks] , and ended the central powers ' ambitions of [disrupt] ##ing traffic through the canal by gaining control of the strategically [important] northern approaches to the suez canal . the pursuit [by] [the] [anzac] mounted division [which] ended at bi ##r el abd on 12 august began the [sinai] and palestine campaign . thereafter , the anzac [mounted] [division]</td>
+      <td>[ix] ireland = ireland ( [MASK] &lt; un [MASK] &gt; / ; irish : &lt; un ##k &gt; [ &lt; un ##k &gt; ] ; ulster [MASK] - @ scots : &lt; un ##k &gt; [ &lt; [MASK] ##k [MASK] ] [MASK] is an island [vittorio] the north atlantic . it is separated from great britain to its east by the north channel [lowers] the irish sea , [MASK] st george ' s channel . [MASK] is the second @ - @ largest island of the british isles [MASK] the third @ - @ largest in [MASK] , and the [MASK] [MASK] - @ [MASK] on [writings] . &lt; un ##k &gt; , ireland is divided between the republic of ireland [MASK] [MASK] named ireland ) , which covers five @ - @ &lt; un ##k &gt; of [MASK] island , and northern ireland , which is part of the united kingdom , in the northeast of the island . in 2011 the population of ireland [MASK] about 6 @ . @ 4 million , [MASK] it the second @ - @ most populous [MASK] [in] europe [MASK] great britain . just under 4 [MASK] . @ 6 million live in the republic of [ireland] [MASK] just over [1] @ . @ 8 million live in northern ireland . [MASK] island ' s geography [MASK] relatively low @ [MASK] @ lying mountains surrounding [MASK] [MASK] [MASK] , with several navigable rivers extending inland [MASK] the island [MASK] lush [vegetation] ,</td>
+      <td>[=] ireland = ireland ( [/] &lt; un [##k] &gt; / ; irish : &lt; un ##k &gt; [ &lt; un ##k &gt; ] ; ulster [@] - @ scots : &lt; un ##k &gt; [ &lt; [un] ##k [&gt;] ] [)] is an island [in] the north atlantic . it is separated from great britain to its east by the north channel [,] the irish sea , [and] st george ' s channel . [ireland] is the second @ - @ largest island of the british isles [,] the third @ - @ largest in [europe] , and the [twentieth] [@] - @ [largest] on [earth] . &lt; un ##k &gt; , ireland is divided between the republic of ireland [(] [officially] named ireland ) , which covers five @ - @ &lt; un ##k &gt; of [the] island , and northern ireland , which is part of the united kingdom , in the northeast of the island . in 2011 the population of ireland [was] about 6 @ . @ 4 million , [ranking] it the second @ - @ most populous [island] [in] europe [after] great britain . just under 4 [@] . @ 6 million live in the republic of [ireland] [and] just over [1] @ . @ 8 million live in northern ireland . [the] island ' s geography [comprises] relatively low @ [-] @ lying mountains surrounding [a] [central] [plain] , with several navigable rivers extending inland [.] the island [has] lush [vegetation] ,</td>
     </tr>
   </tbody>
 </table>

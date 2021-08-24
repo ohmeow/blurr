@@ -36,9 +36,13 @@ class HF_QstAndAnsModelCallback(HF_BaseModelCallback):
 # Cell
 class MultiTargetLoss(Module):
     """Provides the ability to apply different loss functions to multi-modal targets/predictions"""
-    def __init__(self, loss_classes=[CrossEntropyLossFlat, CrossEntropyLossFlat], loss_classes_kwargs=[{}, {}],
-                 weights=[1, 1], reduction='mean'):
-
+    def __init__(
+        self,
+        loss_classes=[CrossEntropyLossFlat, CrossEntropyLossFlat],
+        loss_classes_kwargs=[{}, {}],
+        weights=[1, 1],
+        reduction='mean'
+    ):
         loss_funcs = [ cls(reduction=reduction, **kwargs) for cls, kwargs in zip(loss_classes, loss_classes_kwargs) ]
         store_attr(self=self, names='loss_funcs, weights')
         self._reduction = reduction
@@ -74,9 +78,18 @@ class MultiTargetLoss(Module):
 
 # Cell
 @typedispatch
-def show_results(x:HF_QuestionAnswerInput, y, samples, outs, learner, skip_special_tokens=True,
-                 ctxs=None, max_n=6, trunc_at=None, **kwargs):
-
+def show_results(
+    x:HF_QuestionAnswerInput,
+    y,
+    samples,
+    outs,
+    learner,
+    skip_special_tokens=True,
+    ctxs=None,
+    max_n=6,
+    trunc_at=None,
+    **kwargs
+):
     tfm = first_blurr_tfm(learner.dls)
     hf_tokenizer = tfm.hf_tokenizer
 
@@ -98,7 +111,12 @@ def show_results(x:HF_QuestionAnswerInput, y, samples, outs, learner, skip_speci
 @delegates(Blearner.__init__)
 class BlearnerForQuestionAnswering(Blearner):
 
-    def __init__(self, dls, hf_model, **kwargs):
+    def __init__(
+        self,
+        dls,
+        hf_model,
+        **kwargs
+    ):
         kwargs['loss_func'] = kwargs.get('loss_func', MultiTargetLoss())
         super().__init__(dls, hf_model, base_model_cb=HF_QstAndAnsModelCallback, **kwargs)
 
@@ -107,15 +125,31 @@ class BlearnerForQuestionAnswering(Blearner):
         return AutoModelForQuestionAnswering
 
     @classmethod
-    def _get_x(cls, x, qst, ctx, padding_side='right'):
+    def _get_x(
+        cls,
+        x,
+        qst,
+        ctx,
+        padding_side='right'
+    ):
          return (x[qst], x[ctx]) if (padding_side == 'right') else (x[ctx], x[qst])
 
     @classmethod
-    def _create_learner(cls, data, pretrained_model_name_or_path, preprocess_func, max_seq_len,
-                        context_attr, question_attr, answer_text_attr,
-                        tok_ans_start_attr, tok_ans_end_attr, dblock_splitter,
-                        dl_kwargs, learner_kwargs):
-
+    def _create_learner(
+        cls,
+        data,
+        pretrained_model_name_or_path,
+        preprocess_func,
+        max_seq_len,
+        context_attr,
+        question_attr,
+        answer_text_attr,
+        tok_ans_start_attr,
+        tok_ans_end_attr,
+        dblock_splitter,
+        dl_kwargs,
+        learner_kwargs
+    ):
         hf_arch, hf_config, hf_tokenizer, hf_model = BLURR.get_hf_objects(pretrained_model_name_or_path,
                                                                           model_cls=cls.get_model_cls())
 
@@ -167,23 +201,42 @@ class BlearnerForQuestionAnswering(Blearner):
         return cls(dls, hf_model, **learner_kwargs.copy())
 
     @classmethod
-    def from_dataframe(cls, df, pretrained_model_name_or_path, preprocess_func=None, max_seq_len=None,
-                       context_attr='context', question_attr='question', answer_text_attr='answer_text',
-                       tok_ans_start_attr='tok_answer_start', tok_ans_end_attr='tok_answer_end',
-                       dblock_splitter=ColSplitter(),
-                       dl_kwargs={}, learner_kwargs={}):
-
+    def from_dataframe(
+        cls,
+        df,
+        pretrained_model_name_or_path,
+        preprocess_func=None,
+        max_seq_len=None,
+        context_attr='context',
+        question_attr='question',
+        answer_text_attr='answer_text',
+        tok_ans_start_attr='tok_answer_start',
+        tok_ans_end_attr='tok_answer_end',
+        dblock_splitter=ColSplitter(),
+        dl_kwargs={},
+        learner_kwargs={}
+    ):
         return cls._create_learner(df, pretrained_model_name_or_path, preprocess_func, max_seq_len,
                                    context_attr, question_attr, answer_text_attr,
                                    tok_ans_start_attr, tok_ans_end_attr, dblock_splitter,
                                    dl_kwargs, learner_kwargs)
 
     @classmethod
-    def from_csv(cls, csv_file, pretrained_model_name_or_path, preprocess_func=None, max_seq_len=None,
-                       context_attr='context', question_attr='question', answer_text_attr='answer_text',
-                       tok_ans_start_attr='tok_answer_start', tok_ans_end_attr='tok_answer_end',
-                       dblock_splitter=ColSplitter(), dl_kwargs={}, learner_kwargs={}):
-
+    def from_csv(
+        cls,
+        csv_file,
+        pretrained_model_name_or_path,
+        preprocess_func=None,
+        max_seq_len=None,
+        context_attr='context',
+        question_attr='question',
+        answer_text_attr='answer_text',
+        tok_ans_start_attr='tok_answer_start',
+        tok_ans_end_attr='tok_answer_end',
+        dblock_splitter=ColSplitter(),
+        dl_kwargs={},
+        learner_kwargs={}
+    ):
         df = pd.read_csv(csv_file)
 
         return cls.from_dataframe(df, pretrained_model_name_or_path, preprocess_func, max_seq_len,
@@ -192,12 +245,21 @@ class BlearnerForQuestionAnswering(Blearner):
                                   dl_kwargs, learner_kwargs)
 
     @classmethod
-    def from_dictionaries(cls, ds, pretrained_model_name_or_path, preprocess_func=None, max_seq_len=None,
-                          context_attr='context', question_attr='question', answer_text_attr='answer_text',
-                          tok_ans_start_attr='tok_answer_start', tok_ans_end_attr='tok_answer_end',
-                          dblock_splitter=ColSplitter(),
-                          dl_kwargs={}, learner_kwargs={}):
-
+    def from_dictionaries(
+        cls,
+        ds,
+        pretrained_model_name_or_path,
+        preprocess_func=None,
+        max_seq_len=None,
+        context_attr='context',
+        question_attr='question',
+        answer_text_attr='answer_text',
+        tok_ans_start_attr='tok_answer_start',
+        tok_ans_end_attr='tok_answer_end',
+        dblock_splitter=ColSplitter(),
+        dl_kwargs={},
+        learner_kwargs={}
+    ):
         return cls._create_learner(ds, pretrained_model_name_or_path, preprocess_func, max_seq_len,
                                    context_attr, question_attr, answer_text_attr,
                                    tok_ans_start_attr, tok_ans_end_attr, dblock_splitter,

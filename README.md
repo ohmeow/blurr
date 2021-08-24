@@ -1,5 +1,5 @@
 # blurr
-> A library that integrates huggingface transformers with the world of fastai, giving fastai devs everything they need to train, evaluate, and deploy transformer specific models.
+> A library that integrates huggingface transformers with version 2 of the fastai framework
 
 
 ## Install
@@ -80,7 +80,7 @@ dls.show_batch(dataloaders=dls, max_n=2)
     <tr style="text-align: right;">
       <th></th>
       <th>text</th>
-      <th>category</th>
+      <th>target</th>
     </tr>
   </thead>
   <tbody>
@@ -91,8 +91,8 @@ dls.show_batch(dataloaders=dls, max_n=2)
     </tr>
     <tr>
       <th>1</th>
-      <td>the blob starts with one of the most bizarre theme songs ever, sung by an uncredited burt bacharach of all people! you really have to hear it to believe it, the blob may be worth watching just for this song alone &amp; my user comment summary is just a little taste of the classy lyrics... after this unnerving opening credits sequence the blob introduces us, the viewer that is, to steve andrews ( steve mcqueen as steven mcqueen ) &amp; his girlfriend jane martin ( aneta corsaut ) who are parked on their own somewhere &amp; witness what looks like a meteorite falling to earth in nearby woods. an old man ( olin howland as olin howlin ) who lives in a cabin also sees it &amp; goes to investigate, he finds a crater &amp; a strange football sized rock which splits open when he unwisely pokes it with a stick. laying in the centre of the meteorite is a strange jelly like substance which sticks to the stick, if you know what i mean! it then slides up the stick &amp; attaches itself to the old man's hand. meanwhile steve &amp; jane are quietly driving along minding their own business when the old man runs out in front of steve's car, steve being a decent kinda guy decides to take the old man to dr. t. hallan ( alden'stephen'chase as steven chase ) at the local surgery. dr. hallan says he doesn't know what the substance on the old man's hand is but it's getting bigger &amp; asks steve to go back where he found him &amp; see if he can find out what happened. steve agrees but doesn't come up with anything &amp; upon returning to dr. hallan's surgery he witnesses the blob devouring him. the town's police, lieutenant dave ( earl rowe ) &amp; the teenage hating sergeant jim bert ( john benson ) unsurprisingly don't believe a word of it &amp; end up suspecting steve &amp; his mates al ( anthony franke ), tony ( robert fields ) &amp; someone called'mooch'miller ( james bonnet ) of playing an elaborate practical joke on the police department. however as the blob continues to eat it's way through the town steve sets about finding proof of it's existence &amp; convincing the police about the threat it posses not just to their town but the entire world! &lt; br / &gt; &lt; br / &gt; directed irvin s. yeaw</td>
-      <td>negative</td>
+      <td>although recognized as the best film treatment of the difficulties of having a house in the country built ( or bought ) to your specifications, it is not the first, nor the last. in 1940 jack benny and ann sheridan were the leads in the film version of the comedy george washington slept here by george s. kaufman and moss hart. and about fifteen years ago shelly long and tom hanks had the lead in the money pit. the former was about moving into an 18th century country house that... err, needs work. the latter was about building your dream house - in the late 1980s. although the two films have their moments, both are not as good as blandings, which was based on an autobiographical novel of the same name. &lt; br / &gt; &lt; br / &gt; jim blandings and his wife muriel ( cary grant and myrna loy ) are noticing the tight corners of their apartment, which they share with their two daughters joan and betsy ( sharyn moffett and connie marshall ). although blandings has a good income as an advertising executive ( in 1948 he is making $ 15, 000. 00 a year, which was like making $ 90, 000. 00 today ), and lives in a luxury apartment - which in the new york city of that day he rents! - he feels they should seek something better. he and muriel take a drive into the country ( connecticut ) and soon find an old ruin that both imagine can be fixed up as that dream house they want. &lt; br / &gt; &lt; br / &gt; and they both fall into the financial worm hole that buying land and construction can lead to. for one thing, they are so gung ho about the idea of building a home like this they fail to heed warning after warning by their wise, if cynical friend and lawyer bill cole ( melvin douglas, in a nicely sardonic role ). for example, jim buys land from a connecticut dealer ( ian wolfe, sucking his chops quietly ), with a check before double checking the correct cost for the land in that part of connecticut. bill points out he's paid about five or six thousand dollars more for the land than it is worth. there are problems about water supply that both blandings just never think about, such as hard and soft water - which leads to the zis - zis water softening machine. they find that the designs they have in mind, and have worked out with their architect ( reginald denny ), can't be dropped cheaply at a spur of the</td>
+      <td>positive</td>
     </tr>
   </tbody>
 </table>
@@ -131,24 +131,24 @@ learn.fit_one_cycle(3, lr_max=1e-3)
   <tbody>
     <tr>
       <td>0</td>
-      <td>0.551857</td>
-      <td>0.367600</td>
-      <td>0.850000</td>
-      <td>00:22</td>
+      <td>0.534926</td>
+      <td>0.371495</td>
+      <td>0.855000</td>
+      <td>00:21</td>
     </tr>
     <tr>
       <td>1</td>
-      <td>0.283458</td>
-      <td>0.278012</td>
-      <td>0.915000</td>
+      <td>0.339886</td>
+      <td>0.302558</td>
+      <td>0.885000</td>
       <td>00:21</td>
     </tr>
     <tr>
       <td>2</td>
-      <td>0.257814</td>
-      <td>0.316565</td>
-      <td>0.880000</td>
-      <td>00:22</td>
+      <td>0.226277</td>
+      <td>0.304851</td>
+      <td>0.890000</td>
+      <td>00:21</td>
     </tr>
   </tbody>
 </table>
@@ -169,8 +169,8 @@ learn.show_results(learner=learn, max_n=2)
     <tr style="text-align: right;">
       <th></th>
       <th>text</th>
-      <th>category</th>
       <th>target</th>
+      <th>prediction</th>
     </tr>
   </thead>
   <tbody>
@@ -201,71 +201,28 @@ Included in the high-level API is a general `BLearner` class (pronouned **"Blurr
 learn = BLearnerForSequenceClassification.from_dataframe(imdb_df, pretrained_model_name, dl_kwargs={ 'bs': 4})
 ```
 
+
+    ---------------------------------------------------------------------------
+
+    NameError                                 Traceback (most recent call last)
+
+    <ipython-input-10-267a4c3e0825> in <module>
+          1 #slow
+    ----> 2 learn = BLearnerForSequenceClassification.from_dataframe(imdb_df, pretrained_model_name, dl_kwargs={ 'bs': 4})
+    
+
+    NameError: name 'BLearnerForSequenceClassification' is not defined
+
+
 ```python
 #slow
 learn.fit_one_cycle(1, lr_max=1e-3)
 ```
 
-
-<table border="1" class="dataframe">
-  <thead>
-    <tr style="text-align: left;">
-      <th>epoch</th>
-      <th>train_loss</th>
-      <th>valid_loss</th>
-      <th>accuracy</th>
-      <th>f1_score</th>
-      <th>time</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>0</td>
-      <td>0.535312</td>
-      <td>0.453687</td>
-      <td>0.860000</td>
-      <td>0.847826</td>
-      <td>00:22</td>
-    </tr>
-  </tbody>
-</table>
-
-
 ```python
 #slow
 learn.show_results(learner=learn, max_n=2)
 ```
-
-
-
-
-
-
-<table border="1" class="dataframe">
-  <thead>
-    <tr style="text-align: right;">
-      <th></th>
-      <th>text</th>
-      <th>category</th>
-      <th>target</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th>0</th>
-      <td>the trouble with the book, " memoirs of a geisha " is that it had japanese surfaces but underneath the surfaces it was all an american man's way of thinking. reading the book is like watching a magnificent ballet with great music, sets, and costumes yet performed by barnyard animals dressed in those costumesso far from japanese ways of thinking were the characters. &lt; br / &gt; &lt; br / &gt; the movie isn't about japan or real geisha. it is a story about a few american men's mistaken ideas about japan and geisha filtered through their own ignorance and misconceptions. so what is this movie if it isn't about japan or geisha? is it pure fantasy as so many people have said? yes, but then why make it into an american fantasy? &lt; br / &gt; &lt; br / &gt; there were so many missed opportunities. imagine a culture where there are no puritanical hang - ups, no connotations of sin about sex. sex is natural and normal. how is sex handled in this movie? right. like it was dirty. the closest thing to a sex scene in the movie has sayuri wrinkling up her nose and grimacing with distaste for five seconds as if the man trying to mount her had dropped a handful of cockroaches on her crotch. &lt; br / &gt; &lt; br / &gt; does anyone actually enjoy sex in this movie? nope. one character is said to be promiscuous but all we see is her pushing away her lover because it looks like she doesn't want to get caught doing something dirty. such typical american puritanism has no place in a movie about japanese geisha. &lt; br / &gt; &lt; br / &gt; did sayuri enjoy her first ravishing by some old codger after her cherry was auctioned off? nope. she lies there like a cold slab of meat on a chopping block. of course she isn't supposed to enjoy it. and that is what i mean about this movie. why couldn't they have given her something to enjoy? why does all the sex have to be sinful and wrong? &lt; br / &gt; &lt; br / &gt; behind mameha the chairman was sayuri's secret patron, and as such he was behind the auction of her virginity. he could have rigged the auction and won her himself. nobu didn't even bid. so why did the chairman let that old codger win her and, reeking of old - man stink,</td>
-      <td>negative</td>
-      <td>negative</td>
-    </tr>
-    <tr>
-      <th>1</th>
-      <td>&lt; br / &gt; &lt; br / &gt; i'm sure things didn't exactly go the same way in the real life of homer hickam as they did in the film adaptation of his book, rocket boys, but the movie " october sky " ( an anagram of the book's title ) is good enough to stand alone. i have not read hickam's memoirs, but i am still able to enjoy and understand their film adaptation. the film, directed by joe johnston and written by lewis colick, records the story of teenager homer hickam ( jake gyllenhaal ), beginning in october of 1957. it opens with the sound of a radio broadcast, bringing news of the russian satellite sputnik, the first artificial satellite in orbit. we see a images of a blue - gray town and its people : mostly miners working for the olga coal company. one of the miners listens to the news on a hand - held radio as he enters the elevator shaft, but the signal is lost as he disappears into the darkness, losing sight of the starry sky above him. a melancholy violin tune fades with this image. we then get a jolt of elvis on a car radio as words on the screen inform us of the setting : october 5, 1957, coalwood, west virginia. homer and his buddies, roy lee cook ( william lee scott ) and sherman o'dell ( chad lindberg ), are talking about football tryouts. football scholarships are the only way out of the town, and working in the mines, for these boys. " why are the jocks the only ones who get to go to college, " questions homer. roy lee replies, " they're also the only ones who get the girls. " homer doesn't make it in football like his older brother, so he is destined for the mines, and to follow in his father's footsteps as mine foreman. until he sees the dot of light streaking across the october sky. then he wants to build a rocket. " i want to go into space, " says homer. after a disastrous attempt involving a primitive rocket and his mother's ( natalie canerday ) fence, homer enlists the help of the nerdy quentin wilson ( chris owen ). quentin asks homer, " what do you want to know about rockets? " homer quickly anwers, " everything. " his science teacher at big creek high school, miss frieda riley ( laura dern ) greatly supports homer, and</td>
-      <td>positive</td>
-      <td>positive</td>
-    </tr>
-  </tbody>
-</table>
-
 
 ## ❗ Updates
 

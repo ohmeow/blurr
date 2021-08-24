@@ -19,7 +19,14 @@ from .core import HF_BaseInput, HF_BeforeBatchTransform, first_blurr_tfm
 logging.set_verbosity_error()
 
 # Cell
-def pre_process_squad(row, hf_arch, hf_tokenizer, ctx_attr='context', qst_attr='question', ans_attr='answer_text'):
+def pre_process_squad(
+    row,
+    hf_arch,
+    hf_tokenizer,
+    ctx_attr='context',
+    qst_attr='question',
+    ans_attr='answer_text'
+):
     context, qst, ans = row[ctx_attr], row[qst_attr], row[ans_attr]
 
     tok_kwargs = {}
@@ -51,10 +58,19 @@ class HF_QuestionAnswerInput(HF_BaseInput): pass
 
 # Cell
 class HF_QABeforeBatchTransform(HF_BeforeBatchTransform):
-    def __init__(self, hf_arch, hf_config, hf_tokenizer, hf_model,
-                 max_length=None, padding=True, truncation=True,  is_split_into_words=False,
-                 tok_kwargs={}, **kwargs):
-
+    def __init__(
+        self,
+        hf_arch,
+        hf_config,
+        hf_tokenizer,
+        hf_model,
+        max_length=None,
+        padding=True,
+        truncation=True,
+        is_split_into_words=False,
+        tok_kwargs={},
+        **kwargs
+    ):
         super().__init__(hf_arch, hf_config, hf_tokenizer, hf_model,
                          max_length=max_length, padding=padding, truncation=truncation,
                          is_split_into_words=is_split_into_words, tok_kwargs=tok_kwargs, **kwargs)
@@ -71,7 +87,16 @@ class HF_QABeforeBatchTransform(HF_BeforeBatchTransform):
 
 # Cell
 @typedispatch
-def show_batch(x:HF_QuestionAnswerInput, y, samples, dataloaders, ctxs=None, max_n=6, trunc_at=None, **kwargs):
+def show_batch(
+    x:HF_QuestionAnswerInput,
+    y,
+    samples,
+    dataloaders,
+    ctxs=None,
+    max_n=6,
+    trunc_at=None,
+    **kwargs
+):
     # grab our tokenizer
     tfm = first_blurr_tfm(dataloaders)
     hf_tokenizer = tfm.hf_tokenizer

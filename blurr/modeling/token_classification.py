@@ -125,9 +125,17 @@ class HF_TokenClassMetricsCallback(Callback):
 
 # Cell
 @typedispatch
-def show_results(x:HF_TokenClassInput, y:HF_TokenTensorCategory, samples, outs, learner,
-                 ctxs=None, max_n=6, trunc_at=None, **kwargs):
-
+def show_results(
+    x:HF_TokenClassInput,
+    y:HF_TokenTensorCategory,
+    samples,
+    outs,
+    learner,
+    ctxs=None,
+    max_n=6,
+    trunc_at=None,
+    **kwargs
+):
     tfm = first_blurr_tfm(learner.dls, before_batch_tfm_class=HF_TokenClassBeforeBatchTransform)
     hf_tokenizer = tfm.hf_tokenizer
     ignore_token_id = tfm.ignore_token_id
@@ -148,7 +156,11 @@ def show_results(x:HF_TokenClassInput, y:HF_TokenTensorCategory, samples, outs, 
     return ctxs
 
 # Cell
-def _blurr_predict_tokens(predict_func, items, tfm):
+def _blurr_predict_tokens(
+    predict_func,
+    items,
+    tfm
+):
     """Remove all the unnecessary predicted tokens after calling `Learner.blurr_predict` or `blurrONNX.predict.
     Aligns the predicted labels, label ids, and probabilities with what you passed in excluding subword tokens
     """
@@ -227,10 +239,18 @@ class BlearnerForTokenClassification(Blearner):
         return HF_TokenClassMetricsCallback()
 
     @classmethod
-    def _create_learner(cls, data, pretrained_model_name_or_path, preprocess_func,
-                        tokens_attr, token_labels_attr, labels, dblock_splitter,
-                        dl_kwargs, learner_kwargs):
-
+    def _create_learner(
+        cls,
+        data,
+        pretrained_model_name_or_path,
+        preprocess_func,
+        tokens_attr,
+        token_labels_attr,
+        labels,
+        dblock_splitter,
+        dl_kwargs,
+        learner_kwargs
+    ):
         # get our hf objects
         n_labels = len(labels)
         hf_arch, hf_config, hf_tokenizer, hf_model = BLURR.get_hf_objects(pretrained_model_name_or_path,
@@ -275,11 +295,18 @@ class BlearnerForTokenClassification(Blearner):
         return cls(dls, hf_model, **learner_kwargs.copy())
 
     @classmethod
-    def from_dataframe(cls, df, pretrained_model_name_or_path, preprocess_func=None,
-                       tokens_attr='tokens', token_labels_attr='token_labels', labels=None,
-                       dblock_splitter=ColSplitter(),
-                       dl_kwargs={}, learner_kwargs={}):
-
+    def from_dataframe(
+        cls,
+        df,
+        pretrained_model_name_or_path,
+        preprocess_func=None,
+        tokens_attr='tokens',
+        token_labels_attr='token_labels',
+        labels=None,
+        dblock_splitter=ColSplitter(),
+        dl_kwargs={},
+        learner_kwargs={}
+    ):
         # we need to tell transformer how many labels/classes to expect
         if (labels is None):
             labels = sorted(list(set([lbls for sublist in df[token_labels_attr].tolist() for lbls in sublist])))
@@ -290,10 +317,18 @@ class BlearnerForTokenClassification(Blearner):
 
 
     @classmethod
-    def from_csv(cls, csv_file, pretrained_model_name_or_path, preprocess_func=None,
-                 tokens_attr='tokens', token_labels_attr='labels', labels=None, dblock_splitter=ColSplitter(),
-                 dl_kwargs={}, learner_kwargs={}):
-
+    def from_csv(
+        cls,
+        csv_file,
+        pretrained_model_name_or_path,
+        preprocess_func=None,
+        tokens_attr='tokens',
+        token_labels_attr='labels',
+        labels=None,
+        dblock_splitter=ColSplitter(),
+        dl_kwargs={},
+        learner_kwargs={}
+    ):
         df = pd.read_csv(csv_file)
 
         return cls.from_dataframe(df,
@@ -304,10 +339,18 @@ class BlearnerForTokenClassification(Blearner):
                                   dl_kwargs=dl_kwargs, learner_kwargs=learner_kwargs)
 
     @classmethod
-    def from_dictionaries(cls, ds, pretrained_model_name_or_path, preprocess_func=None,
-                          tokens_attr='tokens', token_labels_attr='token_labels', labels=None,
-                          dblock_splitter=RandomSplitter(),
-                          dl_kwargs={}, learner_kwargs={}):
+    def from_dictionaries(
+        cls,
+        ds,
+        pretrained_model_name_or_path,
+        preprocess_func=None,
+        tokens_attr='tokens',
+        token_labels_attr='token_labels',
+        labels=None,
+        dblock_splitter=RandomSplitter(),
+        dl_kwargs={},
+        learner_kwargs={}
+    ):
 
         # we need to tell transformer how many labels/classes to expect
         if (labels is None):

@@ -63,9 +63,9 @@ nb_path: "nbs/03_data-token-classification.ipynb"
 <div class="output_area">
 
 <div class="output_subarea output_stream output_stdout output_text">
-<pre>Using pytorch 1.7.1
-Using fastai 2.4
-Using transformers 4.8.1
+<pre>torch: 1.7.1
+fastai: 2.5.0
+transformers: 4.9.2
 </pre>
 </div>
 </div>
@@ -235,7 +235,7 @@ Using transformers 4.8.1
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h2 id="HF_TokenTensorCategory" class="doc_header"><code>class</code> <code>HF_TokenTensorCategory</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/data/token_classification.py#L20" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>HF_TokenTensorCategory</code>(<strong><code>x</code></strong>, <strong>**<code>kwargs</code></strong>) :: <code>TensorBase</code></p>
+<h2 id="HF_TokenTensorCategory" class="doc_header"><code>class</code> <code>HF_TokenTensorCategory</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/data/token_classification.py#L24" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>HF_TokenTensorCategory</code>(<strong><code>x</code></strong>, <strong>**<code>kwargs</code></strong>) :: <code>TensorBase</code></p>
 </blockquote>
 <p>A <code>Tensor</code> which support subclass pickling, and maintains metadata when casting or after methods</p>
 
@@ -267,9 +267,18 @@ Using transformers 4.8.1
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h2 id="HF_TokenCategorize" class="doc_header"><code>class</code> <code>HF_TokenCategorize</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/data/token_classification.py#L23" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>HF_TokenCategorize</code>(<strong><code>vocab</code></strong>=<em><code>None</code></em>, <strong><code>ignore_token</code></strong>=<em><code>None</code></em>, <strong><code>ignore_token_id</code></strong>=<em><code>None</code></em>) :: <code>Transform</code></p>
+<h2 id="HF_TokenCategorize" class="doc_header"><code>class</code> <code>HF_TokenCategorize</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/data/token_classification.py#L27" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>HF_TokenCategorize</code>(<strong><code>vocab</code></strong>=<em><code>None</code></em>, <strong><code>ignore_token</code></strong>=<em><code>None</code></em>, <strong><code>ignore_token_id</code></strong>=<em><code>None</code></em>) :: <code>Transform</code></p>
 </blockquote>
 <p>Reversible transform of a list of category string to <code>vocab</code> id</p>
+<p><strong>Parameters:</strong></p>
+<ul>
+<li><p><strong><code>vocab</code></strong> : <em><code>&lt;class 'NoneType'&gt;</code></em>, <em>optional</em></p>
+</li>
+<li><p><strong><code>ignore_token</code></strong> : <em><code>&lt;class 'NoneType'&gt;</code></em>, <em>optional</em></p>
+</li>
+<li><p><strong><code>ignore_token_id</code></strong> : <em><code>&lt;class 'NoneType'&gt;</code></em>, <em>optional</em></p>
+</li>
+</ul>
 
 </div>
 
@@ -313,9 +322,18 @@ Using transformers 4.8.1
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h4 id="HF_TokenCategoryBlock" class="doc_header"><code>HF_TokenCategoryBlock</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/data/token_classification.py#L45" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>HF_TokenCategoryBlock</code>(<strong><code>vocab</code></strong>=<em><code>None</code></em>, <strong><code>ignore_token</code></strong>=<em><code>None</code></em>, <strong><code>ignore_token_id</code></strong>=<em><code>None</code></em>)</p>
+<h4 id="HF_TokenCategoryBlock" class="doc_header"><code>HF_TokenCategoryBlock</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/data/token_classification.py#L49" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>HF_TokenCategoryBlock</code>(<strong><code>vocab</code></strong>=<em><code>None</code></em>, <strong><code>ignore_token</code></strong>=<em><code>None</code></em>, <strong><code>ignore_token_id</code></strong>=<em><code>None</code></em>)</p>
 </blockquote>
 <p><code>TransformBlock</code> for single-label categorical targets</p>
+<p><strong>Parameters:</strong></p>
+<ul>
+<li><p><strong><code>vocab</code></strong> : <em><code>&lt;class 'NoneType'&gt;</code></em>, <em>optional</em></p>
+</li>
+<li><p><strong><code>ignore_token</code></strong> : <em><code>&lt;class 'NoneType'&gt;</code></em>, <em>optional</em></p>
+</li>
+<li><p><strong><code>ignore_token_id</code></strong> : <em><code>&lt;class 'NoneType'&gt;</code></em>, <em>optional</em></p>
+</li>
+</ul>
 
 </div>
 
@@ -345,9 +363,9 @@ Using transformers 4.8.1
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h2 id="HF_TokenClassInput" class="doc_header"><code>class</code> <code>HF_TokenClassInput</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/data/token_classification.py#L52" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>HF_TokenClassInput</code>(<strong><code>x</code></strong>, <strong>**<code>kwargs</code></strong>) :: <a href="/blurr/data-core.html#HF_BaseInput"><code>HF_BaseInput</code></a></p>
+<h2 id="HF_TokenClassInput" class="doc_header"><code>class</code> <code>HF_TokenClassInput</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/data/token_classification.py#L56" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>HF_TokenClassInput</code>(<strong><code>x</code></strong>, <strong>**<code>kwargs</code></strong>) :: <a href="/blurr/data-core.html#HF_BaseInput"><code>HF_BaseInput</code></a></p>
 </blockquote>
-<p>A <code>Tensor</code> which support subclass pickling, and maintains metadata when casting or after methods</p>
+<p>The base represenation of your inputs; used by the various fastai <code>show</code> methods</p>
 
 </div>
 
@@ -377,10 +395,35 @@ Using transformers 4.8.1
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h2 id="HF_TokenClassBeforeBatchTransform" class="doc_header"><code>class</code> <code>HF_TokenClassBeforeBatchTransform</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/data/token_classification.py#L55" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>HF_TokenClassBeforeBatchTransform</code>(<strong><code>hf_arch</code></strong>, <strong><code>hf_config</code></strong>, <strong><code>hf_tokenizer</code></strong>, <strong><code>hf_model</code></strong>, <strong><code>ignore_token_id</code></strong>=<em><code>-100</code></em>, <strong><code>max_length</code></strong>=<em><code>None</code></em>, <strong><code>padding</code></strong>=<em><code>True</code></em>, <strong><code>truncation</code></strong>=<em><code>True</code></em>, <strong><code>is_split_into_words</code></strong>=<em><code>True</code></em>, <strong><code>tok_kwargs</code></strong>=<em><code>{}</code></em>, <strong>**<code>kwargs</code></strong>) :: <a href="/blurr/data-core.html#HF_BeforeBatchTransform"><code>HF_BeforeBatchTransform</code></a></p>
+<h2 id="HF_TokenClassBeforeBatchTransform" class="doc_header"><code>class</code> <code>HF_TokenClassBeforeBatchTransform</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/data/token_classification.py#L59" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>HF_TokenClassBeforeBatchTransform</code>(<strong><code>hf_arch</code></strong>, <strong><code>hf_config</code></strong>, <strong><code>hf_tokenizer</code></strong>, <strong><code>hf_model</code></strong>, <strong><code>ignore_token_id</code></strong>=<em><code>-100</code></em>, <strong><code>max_length</code></strong>=<em><code>None</code></em>, <strong><code>padding</code></strong>=<em><code>True</code></em>, <strong><code>truncation</code></strong>=<em><code>True</code></em>, <strong><code>is_split_into_words</code></strong>=<em><code>True</code></em>, <strong><code>tok_kwargs</code></strong>=<em><code>{}</code></em>, <strong>**<code>kwargs</code></strong>) :: <a href="/blurr/data-core.html#HF_BeforeBatchTransform"><code>HF_BeforeBatchTransform</code></a></p>
 </blockquote>
 <p>Handles everything you need to assemble a mini-batch of inputs and targets, as well as
 decode the dictionary produced as a byproduct of the tokenization process in the <code>encodes</code> method.</p>
+<p><strong>Parameters:</strong></p>
+<ul>
+<li><p><strong><code>hf_arch</code></strong> : <em><code>&lt;class 'inspect._empty'&gt;</code></em></p>
+</li>
+<li><p><strong><code>hf_config</code></strong> : <em><code>&lt;class 'inspect._empty'&gt;</code></em></p>
+</li>
+<li><p><strong><code>hf_tokenizer</code></strong> : <em><code>&lt;class 'inspect._empty'&gt;</code></em></p>
+</li>
+<li><p><strong><code>hf_model</code></strong> : <em><code>&lt;class 'inspect._empty'&gt;</code></em></p>
+</li>
+<li><p><strong><code>ignore_token_id</code></strong> : <em><code>&lt;class 'int'&gt;</code></em>, <em>optional</em></p>
+</li>
+<li><p><strong><code>max_length</code></strong> : <em><code>&lt;class 'NoneType'&gt;</code></em>, <em>optional</em></p>
+</li>
+<li><p><strong><code>padding</code></strong> : <em><code>&lt;class 'bool'&gt;</code></em>, <em>optional</em></p>
+</li>
+<li><p><strong><code>truncation</code></strong> : <em><code>&lt;class 'bool'&gt;</code></em>, <em>optional</em></p>
+</li>
+<li><p><strong><code>is_split_into_words</code></strong> : <em><code>&lt;class 'bool'&gt;</code></em>, <em>optional</em></p>
+</li>
+<li><p><strong><code>tok_kwargs</code></strong> : <em><code>&lt;class 'dict'&gt;</code></em>, <em>optional</em></p>
+</li>
+<li><p><strong><code>kwargs</code></strong> : <em><code>&lt;class 'inspect._empty'&gt;</code></em></p>
+</li>
+</ul>
 
 </div>
 
@@ -551,7 +594,7 @@ decode the dictionary produced as a byproduct of the tokenization process in the
     </tr>
     <tr>
       <th>1</th>
-      <td>[('(', 'O'), ('Standard', 'B-ORG'), ('Oil', 'I-ORG'), ('of', 'I-ORG'), ('New', 'I-ORG'), ('Jersey', 'I-ORG'), (')', 'O'), (',', 'O'), ('die', 'O'), ('ausgesprochen', 'O')]</td>
+      <td>[('NEWSru.ua', 'B-OTH'), ('/', 'O'), (':', 'O'), ('Политисполком', 'B-OTH'), ('СПУ', 'I-OTH'), ('отказал', 'I-OTH'), ('Морозу', 'I-OTH'), ('в', 'I-OTH'), ('отставке', 'I-OTH'), ('Die', 'O')]</td>
     </tr>
   </tbody>
 </table>
