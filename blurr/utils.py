@@ -164,7 +164,8 @@ class BlurrUtil():
         model_kwargs={},
          # If you want to change the location Hugging Face objects are cached
         cache_dir:Union[str, os.PathLike]=None
-    ):   # A tuple (architecture (str), config (obj), tokenizer (obj), and model (obj)
+        # A tuple containg the (architecture (str), config (obj), tokenizer (obj), and model (obj)
+    ) -> (str, PretrainedConfig, PreTrainedTokenizerBase, PreTrainedModel):
         """Given at minimum a `pretrained_model_name_or_path` and `model_cls (such as
         `AutoModelForSequenceClassification"), this method returns all the Hugging Face objects you need to train
         a model using Blurr
