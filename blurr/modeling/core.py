@@ -5,10 +5,12 @@ __all__ = ['hf_splitter', 'HF_BaseModelWrapper', 'HF_PreCalculatedLoss', 'HF_Bas
 
 # Cell
 import os, inspect
+from typing import Any, Callable, Dict, List, Optional, Union, Type
 
 from fastcore.all import *
 from fastai.callback.all import *
 from fastai.data.block import DataBlock, ColReader, CategoryBlock, MultiCategoryBlock, ColSplitter, RandomSplitter
+from fastai.data.core import DataLoader, DataLoaders, TfmdDL
 from fastai.imports import *
 from fastai.learner import *
 from fastai.losses import CrossEntropyLossFlat
@@ -17,7 +19,10 @@ from fastai.metrics import accuracy, F1Score, accuracy_multi, F1ScoreMulti
 from fastai.torch_core import *
 from fastai.torch_imports import *
 from fastprogress.fastprogress import progress_bar,master_bar
-from transformers import AutoModelForSequenceClassification, logging
+from transformers import (
+    AutoModelForSequenceClassification, logging,
+    PretrainedConfig, PreTrainedTokenizerBase, PreTrainedModel
+)
 
 from ..utils import BLURR
 from ..data.core import HF_TextBlock, HF_BaseInput, first_blurr_tfm
@@ -25,7 +30,7 @@ from ..data.core import HF_TextBlock, HF_BaseInput, first_blurr_tfm
 logging.set_verbosity_error()
 
 # Cell
-def hf_splitter(m):
+def hf_splitter(m:Module):
     """Splits the Hugging Face model based on various model architecture conventions"""
     model = m.hf_model if (hasattr(m, 'hf_model')) else m
     root_modules = list(model.named_children())
@@ -40,9 +45,12 @@ def hf_splitter(m):
 class HF_BaseModelWrapper(Module):
     def __init__(
         self,
-        hf_model,                    # Your Hugging Face model
-        output_hidden_states=False,  # If True, hidden_states will be returned and accessed from Learner
-        output_attentions=False,     # If True, attentions will be returned and accessed from Learner
+        # Your Hugging Face model
+        hf_model:PreTrainedModel,
+        # If True, hidden_states will be returned and accessed from Learner
+        output_hidden_states:bool=False,
+        # If True, attentions will be returned and accessed from Learner
+        output_attentions:bool=False,
         # Any additional keyword arguments you want passed into your models forward method
         hf_model_kwargs={}
     ):
@@ -204,9 +212,13 @@ class Blearner(Learner):
 
     def __init__(
         self,
-        dls,
-        hf_model,
-        base_model_cb=HF_BaseModelCallback,
+        # Your fast.ai DataLoaders
+        dls:DataLoaders,
+        # Your pretrained Hugging Face transformer
+        hf_model:PreTrainedModel,
+        # Your `HF_BaseModelCallback`
+        base_model_cb:HF_BaseModelCallback=HF_BaseModelCallback,
+        # Any kwargs you want to pass to your `BLearner`
         **kwargs
     ):
         model = kwargs.get('model', HF_BaseModelWrapper(hf_model))
@@ -224,8 +236,8 @@ class BlearnerForSequenceClassification(Blearner):
 
     def __init__(
         self,
-        dls,
-        hf_model,
+        dls: DataLoaders,
+        hf_model: PreTrainedModel,
         **kwargs
     ):
         super().__init__(dls, hf_model, **kwargs)
@@ -245,15 +257,25 @@ class BlearnerForSequenceClassification(Blearner):
     @classmethod
     def _create_learner(
         cls,
+        # Your raw dataset
         data,
-        pretrained_model_name_or_path,
-        preprocess_func,
-        text_attr,
-        label_attr,
-        n_labels,
-        dblock_splitter,
-        dl_kwargs,
-        learner_kwargs
+        # The name or path of the pretrained model you want to fine-tune
+        pretrained_model_name_or_path:Optional[Union[str, os.PathLike]],
+        # A function to perform any preprocessing required for your Dataset
+        preprocess_func:Callable=None,
+        # The attribute in your dataset that contains your raw text
+        text_attr:str='text',
+        # The attribute in your dataset that contains your labels/targets
+        label_attr:str='label',
+        # The number of labels/classes your model should predict
+        n_labels:int=2,
+        # A function that will split your Dataset into a training and validation set
+        # See [here](https://docs.fast.ai/data.transforms.html#Split) for a list of fast.ai splitters
+        dblock_splitter:Callable=RandomSplitter(),
+        # Any kwargs to pass to your `DataLoaders`
+        dl_kwargs={},
+        # Any kwargs to pass to your task specific `Blearner`
+        learner_kwargs={}
     ):
         # get our hf objects
         hf_arch, hf_config, hf_tokenizer, hf_model = BLURR.get_hf_objects(pretrained_model_name_or_path,
@@ -301,14 +323,24 @@ class BlearnerForSequenceClassification(Blearner):
     @classmethod
     def from_dataframe(
         cls,
-        df,
-        pretrained_model_name_or_path,
-        preprocess_func=None,
-        text_attr='text',
-        label_attr='label',
-        n_labels=None,
-        dblock_splitter=ColSplitter(),
+        # Your pandas DataFrame
+        df:pd.DataFrame,
+        # The name or path of the pretrained model you want to fine-tune
+        pretrained_model_name_or_path:Optional[Union[str, os.PathLike]],
+        # A function to perform any preprocessing required for your Dataset
+        preprocess_func:Callable=None,
+        # The attribute in your dataset that contains your raw text
+        text_attr:str='text',
+        # The attribute in your dataset that contains your labels/targets
+        label_attr:str='label',
+        # The number of labels/classes your model should predict
+        n_labels:int=2,
+        # A function that will split your Dataset into a training and validation set
+        # See [here](https://docs.fast.ai/data.transforms.html#Split) for a list of fast.ai splitters
+        dblock_splitter:Callable=ColSplitter(),
+        # Any kwargs to pass to your `DataLoaders`
         dl_kwargs={},
+        # Any kwargs to pass to your task specific `Blearner`
         learner_kwargs={}
     ):
         # we need to tell transformer how many labels/classes to expect
@@ -323,13 +355,24 @@ class BlearnerForSequenceClassification(Blearner):
     @classmethod
     def from_csv(
         cls,
-        csv_file,
-        pretrained_model_name_or_path,
-        preprocess_func=None,
-        text_attr='text',
-        label_attr='label',
-        n_labels=None,
-        dblock_splitter=None,
+        # The path to your csv file
+        csv_file:Union[Path, str],
+        # The name or path of the pretrained model you want to fine-tune
+        pretrained_model_name_or_path:Optional[Union[str, os.PathLike]],
+        # A function to perform any preprocessing required for your Dataset
+        preprocess_func:Callable=None,
+        # The attribute in your dataset that contains your raw text
+        text_attr:str='text',
+        # The attribute in your dataset that contains your labels/targets
+        label_attr:str='label',
+        # The number of labels/classes your model should predict
+        n_labels:int=2,
+        # A function that will split your Dataset into a training and validation set
+        # See [here](https://docs.fast.ai/data.transforms.html#Split) for a list of fast.ai splitters
+        dblock_splitter:Callable=ColSplitter(),
+        # Any kwargs to pass to your `DataLoaders`
+        dl_kwargs={},
+        # Any kwargs to pass to your task specific `Blearner`
         learner_kwargs={}
     ):
         df = pd.read_csv(csv_file)
@@ -344,14 +387,24 @@ class BlearnerForSequenceClassification(Blearner):
     @classmethod
     def from_dictionaries(
         cls,
-        ds,
-        pretrained_model_name_or_path,
-        preprocess_func=None,
-        text_attr='text',
-        label_attr='label',
-        n_labels=None,
-        dblock_splitter=RandomSplitter(),
+        # A list of dictionaries
+        ds:List[Dict],
+        # The name or path of the pretrained model you want to fine-tune
+        pretrained_model_name_or_path:Optional[Union[str, os.PathLike]],
+        # A function to perform any preprocessing required for your Dataset
+        preprocess_func:Callable=None,
+        # The attribute in your dataset that contains your raw text
+        text_attr:str='text',
+        # The attribute in your dataset that contains your labels/targets
+        label_attr:str='label',
+        # The number of labels/classes your model should predict
+        n_labels:int=2,
+        # A function that will split your Dataset into a training and validation set
+        # See [here](https://docs.fast.ai/data.transforms.html#Split) for a list of fast.ai splitters
+        dblock_splitter:Callable=RandomSplitter(),
+        # Any kwargs to pass to your `DataLoaders`
         dl_kwargs={},
+        # Any kwargs to pass to your task specific `Blearner`
         learner_kwargs={}
     ):
         # we need to tell transformer how many labels/classes to expect
