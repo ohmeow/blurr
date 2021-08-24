@@ -6,18 +6,22 @@ __all__ = ['HF_BaseInput', 'HF_BeforeBatchTransform', 'HF_AfterBatchTransform', 
 
 # Cell
 import os, inspect
-from functools import reduce, partial
 from dataclasses import dataclass
+from functools import reduce, partial
+from typing import Any, Callable, List, Optional, Union, Type
 
 from fastcore.all import *
 from fastai.data.block import TransformBlock
-from fastai.data.core import DataLoader, DataLoaders, TfmdDL
+from fastai.data.core import Datasets, DataLoader, DataLoaders, TfmdDL
 from fastai.imports import *
 from fastai.losses import CrossEntropyLossFlat
 from fastai.text.data import SortedDL
 from fastai.torch_core import *
 from fastai.torch_imports import *
-from transformers import DataCollatorWithPadding, logging
+from transformers import (
+    DataCollatorWithPadding, logging,
+    PretrainedConfig, PreTrainedTokenizerBase, PreTrainedModel
+)
 
 from ..utils import BLURR
 
@@ -28,11 +32,14 @@ class HF_BaseInput(TensorBase):
     """The base represenation of your inputs; used by the various fastai `show` methods"""
     def show(
         self,
-        hf_tokenizer,   # A Hugging Face tokenizer
-        ctx=None,       # The "context" associated to the current `show_batch/results` call
-        trunc_at=None,  # Any truncation you want to apply to the decoded tokenized inputs
-        **kwargs
-    ):
+        # A Hugging Face tokenizer
+        hf_tokenizer:PreTrainedTokenizerBase,
+        # The "context" associated to the current `show_batch/results` call
+        ctx=None,
+        # Any truncation you want to apply to the decoded tokenized inputs
+        trunc_at:int=None,
+        # A decoded string of your tokenized inputs (input_ids)
+    ) -> str:
         input_ids = self.cpu().numpy()
         decoded_input = str(hf_tokenizer.decode(input_ids, skip_special_tokens=True))[:trunc_at]
 
@@ -45,19 +52,30 @@ class HF_BeforeBatchTransform(Transform):
     """
     def __init__(
         self,
-        hf_arch,       # The abbreviation/name of your Hugging Face transformer architecture
-        hf_config,     # A Hugging Face configuration object
-        hf_tokenizer,  # A Hugging Face tokenizer
-        hf_model,      # A Hugging Face model
-        # The `max_length` argument applied to your `hf_tokenizer` during tokenization
-        max_length=None,
-        # The `padding` argument applied to your `hf_tokenizer` during tokenization
-        padding=True,
-        # The `truncation` argument applied to your `hf_tokenizer` during tokenization
-        truncation=True,
+        # The abbreviation/name of your Hugging Face transformer architecture (e.b., bert, bart, etc..)
+        hf_arch:str,
+        # A specific configuration instance you want to use
+        hf_config:PretrainedConfig,
+        # A Hugging Face tokenizer
+        hf_tokenizer:PreTrainedTokenizerBase,
+        # A Hugging Face model
+        hf_model:PreTrainedModel,
+        # To control the length of the padding/truncation. It can be an integer or None,
+        # in which case it will default to the maximum length the model can accept. If the model has no
+        # specific maximum input length, truncation/padding to max_length is deactivated.
+        # See [Everything you always wanted to know about padding and truncation](https://huggingface.co/transformers/preprocessing.html#everything-you-always-wanted-to-know-about-padding-and-truncation)
+        max_length:int=None,
+        # To control the `padding` applied to your `hf_tokenizer` during tokenization. If None, will default to
+        # `False` or `'do_not_pad'.
+        # See [Everything you always wanted to know about padding and truncation](https://huggingface.co/transformers/preprocessing.html#everything-you-always-wanted-to-know-about-padding-and-truncation)
+        padding:Union[bool, str]=True,
+        # To control `truncation` applied to your `hf_tokenizer` during tokenization. If None, will default to
+        # `False` or `do_not_truncate`.
+        # See [Everything you always wanted to know about padding and truncation](https://huggingface.co/transformers/preprocessing.html#everything-you-always-wanted-to-know-about-padding-and-truncation)
+        truncation:Union[bool, str]=True,
         # The `is_split_into_words` argument applied to your `hf_tokenizer` during tokenization. Set this to `True`
         # if your inputs are pre-tokenized (not numericalized)
-        is_split_into_words=False,
+        is_split_into_words:bool=False,
         # Any other keyword arguments you want included when using your `hf_tokenizer` to tokenize your inputs
         tok_kwargs={},
         # Keyword arguments to apply to `HF_BeforeBatchTransform`
@@ -105,9 +123,9 @@ class HF_AfterBatchTransform(Transform):
     def __init__(
         self,
         # A Hugging Face tokenizer
-        hf_tokenizer,
+        hf_tokenizer: PreTrainedTokenizerBase,
         # The return type your decoded inputs should be cast too (used by methods such as `show_batch`)
-        input_return_type=HF_BaseInput
+        input_return_type:Type=HF_BaseInput
     ):
         store_attr(self=self, names='hf_tokenizer, input_return_type')
 
@@ -115,7 +133,7 @@ class HF_AfterBatchTransform(Transform):
         self,
         # The encoded samples for your batch. `input_ids` will be pulled out of your dictionary of Hugging Face
         # inputs, cast to `self.input_return_type` and returned for methods such as `show_batch`
-        encoded_samples
+        encoded_samples:Type
     ):
         """Returns the proper object and data for show related fastai methods"""
         if (isinstance(encoded_samples, dict)):
@@ -126,17 +144,15 @@ class HF_AfterBatchTransform(Transform):
 def blurr_sort_func(
     example,
     # A Hugging Face tokenizer
-    hf_tokenizer,
+    hf_tokenizer:PreTrainedTokenizerBase,
     # The `is_split_into_words` argument applied to your `hf_tokenizer` during tokenization. Set this to `True`
     # if your inputs are pre-tokenized (not numericalized)
-    is_split_into_words,
+    is_split_into_words:bool=False,
     # Any other keyword arguments you want to include during tokenization
-    tok_kwargs
+    tok_kwargs={}
 ):
     """This method is used by the `SortedDL` to ensure your dataset is sorted *after* tokenization"""
-    if (is_split_into_words):
-        return len(example[0])
-
+    if (is_split_into_words):  return len(example[0])
     return len(hf_tokenizer.tokenize(example[0], **tok_kwargs))
 
 # Cell
@@ -144,29 +160,44 @@ class HF_TextBlock(TransformBlock):
     """The core `TransformBlock` to prepare your data for training in Blurr with fastai's `DataBlock` API"""
     def __init__(
         self,
-        hf_arch=None,                      # The abbreviation/name of your Hugging Face transformer architecture
-        hf_config=None,                    # A Hugging Face configuration object
-        hf_tokenizer=None,                 # A Hugging Face tokenizer
-        hf_model=None,                     # A Hugging Face model
+        # The abbreviation/name of your Hugging Face transformer architecture (not required if passing in an
+        # instance of `HF_BeforeBatchTransform` to `before_batch_tfm`)
+        hf_arch:str=None,
+        # A Hugging Face configuration object (not required if passing in an
+        # instance of `HF_BeforeBatchTransform` to `before_batch_tfm`)
+        hf_config:PretrainedConfig=None,
+        # A Hugging Face tokenizer (not required if passing in an
+        # instance of `HF_BeforeBatchTransform` to `before_batch_tfm`)
+        hf_tokenizer:PreTrainedTokenizerBase=None,
+        # A Hugging Face model (not required if passing in an
+        # instance of `HF_BeforeBatchTransform` to `before_batch_tfm`)
+        hf_model:PreTrainedModel=None,
         # The before batch transform you want to use to tokenize your raw data on the fly
-        # (defaults to # An instance of `HF_BeforeBatchTransform`)
-        before_batch_tfm=None,
+        # (defaults to an instance of `HF_BeforeBatchTransform` created using the Hugging Face objects defined above)
+        before_batch_tfm:HF_BeforeBatchTransform=None,
         # The batch_tfms to apply to the creation of your DataLoaders,
-        # (defaults to HF_AfterBatchTransform)
-        after_batch_tfm=None,
-        # The `max_length` argument applied to your `hf_tokenizer` during tokenization
-        max_length=None,
-        # The `padding` argument applied to your `hf_tokenizer` during tokenization
-        padding=True,
-        # The `truncation` argument applied to your `hf_tokenizer` during tokenization
-        truncation=True,
+        # (defaults to HF_AfterBatchTransform created using the Hugging Face objects defined above)
+        after_batch_tfm:HF_AfterBatchTransform=None,
+        # To control the length of the padding/truncation. It can be an integer or None,
+        # in which case it will default to the maximum length the model can accept. If the model has no
+        # specific maximum input length, truncation/padding to max_length is deactivated.
+        # See [Everything you always wanted to know about padding and truncation](https://huggingface.co/transformers/preprocessing.html#everything-you-always-wanted-to-know-about-padding-and-truncation)
+        max_length:int=None,
+        # To control the `padding` applied to your `hf_tokenizer` during tokenization. If None, will default to
+        # `False` or `'do_not_pad'.
+        # See [Everything you always wanted to know about padding and truncation](https://huggingface.co/transformers/preprocessing.html#everything-you-always-wanted-to-know-about-padding-and-truncation)
+        padding:Union[bool, str]=True,
+        # To control `truncation` applied to your `hf_tokenizer` during tokenization. If None, will default to
+        # `False` or `do_not_truncate`.
+        # See [Everything you always wanted to know about padding and truncation](https://huggingface.co/transformers/preprocessing.html#everything-you-always-wanted-to-know-about-padding-and-truncation)
+        truncation:Union[bool, str]=True,
         # The `is_split_into_words` argument applied to your `hf_tokenizer` during tokenization. Set this to `True`
         # if your inputs are pre-tokenized (not numericalized)
-        is_split_into_words=False,
+        is_split_into_words:bool=False,
         # The return type your decoded inputs should be cast too (used by methods such as `show_batch`)
         input_return_type=HF_BaseInput,
         # The type of `DataLoader` you want created (defaults to `SortedDL`)
-        dl_type=None,
+        dl_type:DataLoader=None,
         # Any keyword arguments you want applied to your before batch tfm
         before_batch_kwargs={},
         # Any keyword arguments you want applied to your after batch tfm (or referred to in fastai as `batch_tfms`)
@@ -224,8 +255,10 @@ class BlurrBatchCreator():
     """
     def __init__(
         self,
-        hf_tokenizer,      # Your Hugging Face tokenizer
-        data_collator=None # Defaults to use Hugging Face's DataCollatorWithPadding(tokenizer=hf_tokenizer)
+        # Your Hugging Face tokenizer
+        hf_tokenizer:PreTrainedTokenizerBase,
+        # Defaults to use Hugging Face's DataCollatorWithPadding(tokenizer=hf_tokenizer)
+        data_collator:Type=None
     ):
         self.hf_tokenizer = hf_tokenizer
         self.data_collator = data_collator if (data_collator) else DataCollatorWithPadding(tokenizer=hf_tokenizer)
@@ -248,15 +281,23 @@ class BlurrBatchTransform(HF_AfterBatchTransform):
     """A class used to cast your inputs into something understandable in fastai `show` methods"""
     def __init__(
         self,
-        hf_arch,       # The abbreviation/name of your Hugging Face transformer architecture
-        hf_config,     # A Hugging Face configuration object
-        hf_tokenizer,  # A Hugging Face tokenizer
-        hf_model,      # A Hugging Face model
+        # The abbreviation/name of your Hugging Face transformer architecture (not required if passing in an
+        # instance of `HF_BeforeBatchTransform` to `before_batch_tfm`)
+        hf_arch:str=None,
+        # A Hugging Face configuration object (not required if passing in an
+        # instance of `HF_BeforeBatchTransform` to `before_batch_tfm`)
+        hf_config:PretrainedConfig=None,
+        # A Hugging Face tokenizer (not required if passing in an
+        # instance of `HF_BeforeBatchTransform` to `before_batch_tfm`)
+        hf_tokenizer:PreTrainedTokenizerBase=None,
+        # A Hugging Face model (not required if passing in an
+        # instance of `HF_BeforeBatchTransform` to `before_batch_tfm`)
+        hf_model:PreTrainedModel=None,
         # The `is_split_into_words` argument applied to your `hf_tokenizer` during tokenization. Set this to `True`
         # if your inputs are pre-tokenized (not numericalized)
-        is_split_into_words=False,
+        is_split_into_words:bool=False,
         # The token ID to ignore when calculating loss/metrics
-        ignore_token_id = CrossEntropyLossFlat().ignore_index,
+        ignore_token_id:int = CrossEntropyLossFlat().ignore_index,
         # Any other keyword arguments you want included when using your `hf_tokenizer` to tokenize your inputs
         tok_kwargs={},
         # Any text generation keyword arguments
@@ -277,16 +318,30 @@ class BlurrDataLoader(TfmdDL):
     """A class that makes creating a fast.ai `DataLoader` that works with Blurr"""
     def __init__(
         self,
-        dataset,                  # A standard PyTorch Dataset
-        hf_arch,                  # The abbreviation/name of your Hugging Face transformer architecture
-        hf_config,                # A Hugging Face configuration object
-        hf_tokenizer,             # A Hugging Face tokenizer
-        hf_model,                 # A Hugging Face model
-        batch_creator=None,       # An instance of `BlurrBatchCreator` or equivalent
-        batch_tfm=None,           # The batch_tfm used to decode Blurr batches (default: HF_AfterBatchTransform)
-        preproccesing_func=None,  # (optional) A preprocessing function that will be applied to your dataset
-        batch_tfm_kwargs={},      # Keyword arguments to be applied to your batch_tfm
-        **kwargs                  # Keyword arguments to be applied to `BlurrDataLoader`
+        # A standard PyTorch Dataset
+        dataset:Union[torch.utils.data.dataset.Dataset, Datasets],
+        # The abbreviation/name of your Hugging Face transformer architecture (not required if passing in an
+        # instance of `HF_BeforeBatchTransform` to `before_batch_tfm`)
+        hf_arch:str,
+        # A Hugging Face configuration object (not required if passing in an instance of `HF_BeforeBatchTransform`
+        # to `before_batch_tfm`)
+        hf_config:PretrainedConfig,
+        # A Hugging Face tokenizer (not required if passing in an instance of `HF_BeforeBatchTransform` to
+        # `before_batch_tfm`)
+        hf_tokenizer:PreTrainedTokenizerBase,
+        # A Hugging Face model (not required if passing in an instance of `HF_BeforeBatchTransform` to
+        # `before_batch_tfm`)
+        hf_model:PreTrainedModel,
+        # An instance of `BlurrBatchCreator` or equivalent
+        batch_creator:BlurrBatchCreator=None,
+        # The batch_tfm used to decode Blurr batches (default: HF_AfterBatchTransform)
+        batch_tfm:BlurrBatchTransform=None,
+        # (optional) A preprocessing function that will be applied to your dataset
+        preproccesing_func:Callable[[Union[torch.utils.data.dataset.Dataset, Datasets], PreTrainedTokenizerBase, PreTrainedModel], Union[torch.utils.data.dataset.Dataset, Datasets]]=None,
+        # Keyword arguments to be applied to your `batch_tfm`
+        batch_tfm_kwargs={},
+        # Keyword arguments to be applied to `BlurrDataLoader`
+        **kwargs
     ):
         if(preproccesing_func): dataset = preproccesing_func(dataset, hf_tokenizer, hf_model)
 
@@ -303,9 +358,12 @@ class BlurrDataLoader(TfmdDL):
 
     def new(
         self,
-        dataset=None, # A standard PyTorch and fastai dataset
-        cls=None,     # The class you want to create an instance of (will be "self" if None)
-        **kwargs      # Any additional keyword arguments you want to pass to the __init__ method of `cls`
+        # A standard PyTorch and fastai dataset
+        dataset:Union[torch.utils.data.dataset.Dataset]=None,
+        # The class you want to create an instance of (will be "self" if None)
+        cls:Type=None,
+        #  Any additional keyword arguments you want to pass to the __init__ method of `cls`
+        **kwargs
     ):
         """We have to override the new method in order to add back the Hugging Face objects in this factory
         method (called for example in places like `show_results`). With the exception of the additions to the kwargs
@@ -332,8 +390,10 @@ class BlurrDataLoader(TfmdDL):
 
 # Cell
 def get_blurr_tfm(
-    tfms_list,                          # A list of transforms (e.g., dls.after_batch, dls.before_batch, etc...)
-    tfm_class=HF_BeforeBatchTransform    # The transform to find
+    # A list of transforms (e.g., dls.after_batch, dls.before_batch, etc...)
+    tfms_list:Pipeline,
+    # The transform to find
+    tfm_class:Transform=HF_BeforeBatchTransform
 ):
     """Given a fastai DataLoaders batch transforms, this method can be used to get at a transform
     instance used in your Blurr DataBlock
@@ -342,9 +402,9 @@ def get_blurr_tfm(
 
 # Cell
 def first_blurr_tfm(
-    dls,                                            # Your fast.ai `DataLoaders
-    before_batch_tfm_class=HF_BeforeBatchTransform, # The before_batch transform to look for
-    blurr_batch_tfm_class=BlurrBatchTransform       # The after_batch (or batch_tfm) to look for
+    dls:DataLoaders,                                          # Your fast.ai `DataLoaders
+    before_batch_tfm_class:Transform=HF_BeforeBatchTransform, # The before_batch transform to look for
+    blurr_batch_tfm_class:Transform=BlurrBatchTransform       # The after_batch (or batch_tfm) to look for
 ):
     """This convenience method will find the first Blurr transform required for methods such as
     `show_batch` and `show_results`. The returned transform should have everything you need to properly
@@ -360,9 +420,12 @@ def first_blurr_tfm(
 # Cell
 @typedispatch
 def show_batch(
-    x:HF_BaseInput, # This typedispatched `show_batch` will be called for `HF_BaseInput` typed inputs
-    y,              # Your targets
-    samples,        # Your raw inputs/targets
+    # This typedispatched `show_batch` will be called for `HF_BaseInput` typed inputs
+    x:HF_BaseInput,
+    # Your targets
+    y,
+    # Your raw inputs/targets
+    samples,
     # Your `DataLoaders`. This is required so as to get at the Hugging Face objects for
     # decoding them into something understandable
     dataloaders,
@@ -395,9 +458,12 @@ def show_batch(
 
 # Cell
 def preproc_hf_dataset(
-    dataset,       # A standard PyTorch Dataset
-    hf_tokenizer,  # A Hugging Face tokenizer
-    hf_model       # A Hugging Face model
+    # A standard PyTorch Dataset or fast.ai Datasets
+    dataset:Union[torch.utils.data.dataset.Dataset, Datasets],
+    # A Hugging Face tokenizer
+    hf_tokenizer:PreTrainedTokenizerBase,
+    # A Hugging Face model
+    hf_model:PreTrainedModel
 ):
     """This method can be used to preprocess most Hugging Face Datasets for use in Blurr and other training
     libraries
