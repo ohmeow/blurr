@@ -13,7 +13,7 @@ from enum import Enum
 from fastcore.foundation import L
 from transformers import (
     AutoConfig, AutoTokenizer, logging,
-    PreTrainedTokenizerFast, PreTrainedTokenizer, PretrainedConfig, PreTrainedModel
+    PretrainedConfig, PreTrainedTokenizerBase, PreTrainedModel
 )
 
 logging.set_verbosity_error()
@@ -155,7 +155,7 @@ class BlurrUtil():
         config:Union[PretrainedConfig, str, os.PathLike]=None,
         # A specific tokenizer class you want to use. If None, a tokenizer will be instantiated
         # using the AutoTokenizer class along with any supplied `tokenizer_kwargs`
-        tokenizer_cls:Union[PreTrainedTokenizer, PreTrainedTokenizerFast]=None,
+        tokenizer_cls:PreTrainedTokenizerBase=None,
         # Any keyword arguments you want to pass to the `AutoConfig` (only used if you do NOT pass int a config above)
         config_kwargs={},
         # Any keyword arguments you want to pass in the creation of your tokenizer

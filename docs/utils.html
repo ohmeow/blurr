@@ -180,8 +180,8 @@ nb_path: "nbs/00_utils.ipynb"
 
 <div class="output_subarea output_stream output_stdout output_text">
 <pre>typing.List
-&lt;function test_eq at 0x7f36d58a8280&gt;
-&lt;__main__.Singleton object at 0x7f36d57ffc70&gt;
+&lt;function test_eq at 0x7fa845c60280&gt;
+&lt;__main__.Singleton object at 0x7fa84568e250&gt;
 </pre>
 </div>
 </div>
@@ -291,7 +291,7 @@ fastai: 2.5.0
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h4 id="Singleton object at 0x7fee70bd6d60>" class="doc_header"><code>Singleton object at 0x7fee70bd6d60></code><a href="" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>Singleton object at 0x7fee70bd6d60></code>(<strong>*<code>args</code></strong>, <strong>**<code>kwargs</code></strong>)</p>
+<h4 id="Singleton object at 0x7f21386a6eb0>" class="doc_header"><code>Singleton object at 0x7f21386a6eb0></code><a href="" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>Singleton object at 0x7f21386a6eb0></code>(<strong>*<code>args</code></strong>, <strong>**<code>kwargs</code></strong>)</p>
 </blockquote>
 
 </div>
@@ -850,7 +850,7 @@ just those available to a specific architecture</p>
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h4 id="BlurrUtil.get_hf_objects" class="doc_header"><code>BlurrUtil.get_hf_objects</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/utils.py#L147" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>BlurrUtil.get_hf_objects</code>(<strong><code>pretrained_model_name_or_path</code></strong>:<code>Union</code>[<code>str</code>, <code>PathLike</code>, <code>NoneType</code>], <strong><code>model_cls</code></strong>:<code>PreTrainedModel</code>, <strong><code>config</code></strong>:<code>Union</code>[<code>PretrainedConfig</code>, <code>str</code>, <code>PathLike</code>]=<em><code>None</code></em>, <strong><code>tokenizer_cls</code></strong>:<code>Union</code>[<code>PreTrainedTokenizer</code>, <code>PreTrainedTokenizerFast</code>]=<em><code>None</code></em>, <strong><code>config_kwargs</code></strong>=<em><code>{}</code></em>, <strong><code>tokenizer_kwargs</code></strong>=<em><code>{}</code></em>, <strong><code>model_kwargs</code></strong>=<em><code>{}</code></em>, <strong><code>cache_dir</code></strong>:<code>Union</code>[<code>str</code>, <code>PathLike</code>]=<em><code>None</code></em>)</p>
+<h4 id="BlurrUtil.get_hf_objects" class="doc_header"><code>BlurrUtil.get_hf_objects</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/utils.py#L147" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>BlurrUtil.get_hf_objects</code>(<strong><code>pretrained_model_name_or_path</code></strong>:<code>Union</code>[<code>str</code>, <code>PathLike</code>, <code>NoneType</code>], <strong><code>model_cls</code></strong>:<code>PreTrainedModel</code>, <strong><code>config</code></strong>:<code>Union</code>[<code>PretrainedConfig</code>, <code>str</code>, <code>PathLike</code>]=<em><code>None</code></em>, <strong><code>tokenizer_cls</code></strong>:<code>PreTrainedTokenizerBase</code>=<em><code>None</code></em>, <strong><code>config_kwargs</code></strong>=<em><code>{}</code></em>, <strong><code>tokenizer_kwargs</code></strong>=<em><code>{}</code></em>, <strong><code>model_kwargs</code></strong>=<em><code>{}</code></em>, <strong><code>cache_dir</code></strong>:<code>Union</code>[<code>str</code>, <code>PathLike</code>]=<em><code>None</code></em>)</p>
 </blockquote>
 <p>Given at minimum a <code>pretrained_model_name_or_path</code> and <code>model_cls (such as</code>AutoModelForSequenceClassification"), this method returns all the Hugging Face objects you need to train
 a model using Blurr</p>
@@ -866,7 +866,7 @@ a model using Blurr</p>
 using the AutoConfig class along with any supplied `config_kwargs`</p></li>
 </ul>
 <ul>
-<li><strong><code>tokenizer_cls</code></strong> : <em><code>typing.Union[transformers.tokenization_utils.PreTrainedTokenizer, transformers.tokenization_utils_fast.PreTrainedTokenizerFast]</code></em>, <em>optional</em>    <p>A specific tokenizer class you want to use. If None, a tokenizer will be instantiated
+<li><strong><code>tokenizer_cls</code></strong> : <em><code>&lt;class 'transformers.tokenization_utils_base.PreTrainedTokenizerBase'&gt;</code></em>, <em>optional</em> <p>A specific tokenizer class you want to use. If None, a tokenizer will be instantiated
 using the AutoTokenizer class along with any supplied `tokenizer_kwargs`</p></li>
 </ul>
 <ul>
@@ -880,6 +880,10 @@ using the AutoTokenizer class along with any supplied `tokenizer_kwargs`</p></li
 </ul>
 <ul>
 <li><strong><code>cache_dir</code></strong> : <em><code>typing.Union[str, os.PathLike]</code></em>, <em>optional</em> <p>If you want to change the location Hugging Face objects are cached</p></li>
+</ul>
+<p><strong>Returns</strong>:</p>
+<ul>
+<li><em><code>(&lt;class 'str'&gt;, &lt;class 'transformers.configuration_utils.PretrainedConfig'&gt;, &lt;class 'transformers.tokenization_utils_base.PreTrainedTokenizerBase'&gt;, &lt;class 'transformers.modeling_utils.PreTrainedModel'&gt;)</code></em>  <p>A tuple containg the (architecture (str), config (obj), tokenizer (obj), and model (obj)</p></li>
 </ul>
 
 </div>
