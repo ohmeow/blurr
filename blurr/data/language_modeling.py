@@ -4,16 +4,19 @@ __all__ = ['LMType', 'LMStrategy', 'HF_LMBeforeBatchTransform', 'HF_CausalLMInpu
            'BertMLMStrategy']
 
 # Cell
-import torch, pdb
-from enum import Enum
+import os, random
 from abc import ABC, abstractmethod
+from enum import Enum
 
-from transformers import *
-from fastai.text.all import *
+from fastcore.all import *
+from fastai.imports import *
+from fastai.losses import CrossEntropyLossFlat
+from fastai.torch_core import *
+from fastai.torch_imports import *
+from transformers import AutoModelForCausalLM, AutoModelForMaskedLM, logging
 
-from ..utils import *
-from .core import *
-# from blurr.data.seq2seq.core import *
+from ..utils import BLURR
+from .core import HF_BaseInput, HF_BeforeBatchTransform, first_blurr_tfm
 
 logging.set_verbosity_error()
 
@@ -25,7 +28,11 @@ class LMType(Enum):
 # Cell
 class LMStrategy(ABC):
     """ABC for various language modeling strategies"""
-    def __init__(self, hf_tokenizer, ignore_token_id=CrossEntropyLossFlat().ignore_index):
+    def __init__(
+        self,
+        hf_tokenizer,
+        ignore_token_id=CrossEntropyLossFlat().ignore_index
+    ):
         store_attr(['hf_tokenizer', 'ignore_token_id'])
 
     @abstractmethod
@@ -43,11 +50,22 @@ class LMStrategy(ABC):
 
 # Cell
 class HF_LMBeforeBatchTransform(HF_BeforeBatchTransform):
-    def __init__(self, hf_arch, hf_config, hf_tokenizer, hf_model, lm_strategy_cls:LMStrategy,
-                 max_length=None, padding=True, truncation=True, is_split_into_words=False,
-                 ignore_token_id = CrossEntropyLossFlat().ignore_index,
-                 tok_kwargs={}, text_gen_kwargs={}, **kwargs):
-
+    def __init__(
+        self,
+        hf_arch,
+        hf_config,
+        hf_tokenizer,
+        hf_model,
+        lm_strategy_cls:LMStrategy,
+        max_length=None,
+        padding=True,
+        truncation=True,
+        is_split_into_words=False,
+        ignore_token_id = CrossEntropyLossFlat().ignore_index,
+        tok_kwargs={},
+        text_gen_kwargs={},
+        **kwargs
+    ):
         super().__init__(hf_arch, hf_config, hf_tokenizer, hf_model,
                          max_length=max_length, padding=padding, truncation=truncation,
                          is_split_into_words=is_split_into_words,
@@ -88,11 +106,20 @@ class CausalLMStrategy(LMStrategy):
 
 # Cell
 @typedispatch
-def show_batch(x:HF_CausalLMInput, y, samples, dataloaders, ctxs=None, max_n=6, trunc_at=None, **kwargs):
+def show_batch(
+    x:HF_CausalLMInput,
+    y,
+    samples,
+    dataloaders,
+    ctxs=None,
+    max_n=6,
+    trunc_at=None,
+    **kwargs
+):
     # grab our tokenizer and ignore token to decode
-    hf_before_batch_tfm = get_blurr_tfm(dataloaders.before_batch)
-    hf_tokenizer = hf_before_batch_tfm.hf_tokenizer
-    ignore_token_id = hf_before_batch_tfm.ignore_token_id
+    tfm = first_blurr_tfm(dataloaders)
+    hf_tokenizer = tfm.hf_tokenizer
+    ignore_token_id = tfm.ignore_token_id
 
     res = L([ (hf_tokenizer.decode(s[0], skip_special_tokens=False)[:trunc_at],
                hf_tokenizer.decode(s[1][s[1] != ignore_token_id], skip_special_tokens=True)[:trunc_at])
@@ -108,7 +135,11 @@ class HF_MLMInput(HF_BaseInput): pass
 class BertMLMStrategy(LMStrategy):
     """A masked language modeling strategy using the default BERT masking definition.
     """
-    def __init__(self, hf_tokenizer, ignore_token_id=CrossEntropyLossFlat().ignore_index):
+    def __init__(
+        self,
+        hf_tokenizer,
+        ignore_token_id=CrossEntropyLossFlat().ignore_index
+    ):
         super().__init__(hf_tokenizer, ignore_token_id)
 
         vocab = hf_tokenizer.get_vocab()
@@ -161,15 +192,27 @@ class BertMLMStrategy(LMStrategy):
 
 # Cell
 @typedispatch
-def show_batch(x:HF_MLMInput, y, samples, dataloaders, ctxs=None, max_n=6, trunc_at=None, **kwargs):
+def show_batch(
+    x:HF_MLMInput,
+    y,
+    samples,
+    dataloaders,
+    ctxs=None,
+    max_n=6,
+    trunc_at=None,
+    **kwargs
+):
     # grab our tokenizer and ignore token to decode
-    hf_before_batch_tfm = get_blurr_tfm(dataloaders.before_batch)
-    hf_tokenizer = hf_before_batch_tfm.hf_tokenizer
-    ignore_token_id = hf_before_batch_tfm.ignore_token_id
+    tfm = first_blurr_tfm(dataloaders)
+    hf_tokenizer = tfm.hf_tokenizer
+    ignore_token_id = tfm.ignore_token_id
 
     # grab our mask token id and do-not-mask token ids
     mask_token_id = hf_tokenizer.mask_token_id
-    dnm_tok_ids = hf_before_batch_tfm.lm_strategy.dnm_tok_ids
+
+    vocab = hf_tokenizer.get_vocab()
+    dnm_tok_ids = [ vocab[tok] for tok in list(hf_tokenizer.special_tokens_map.values())
+                   if vocab[tok] != mask_token_id ]
 
     res = L()
     for s in samples:

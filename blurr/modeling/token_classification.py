@@ -3,16 +3,29 @@
 __all__ = ['calculate_token_class_metrics', 'HF_TokenClassMetricsCallback', 'BlearnerForTokenClassification']
 
 # Cell
-import ast, torch
-from transformers import *
-from fastai.text.all import *
+import os, ast, inspect
 
-from ..utils import *
-from ..data.core import *
-from ..data.token_classification import *
-from .core import *
-
+from fastcore.all import *
+from fastai.callback.all import *
+from fastai.data.block import DataBlock, ColReader, ItemGetter, ColSplitter, RandomSplitter
+from fastai.imports import *
+from fastai.learner import *
+from fastai.losses import CrossEntropyLossFlat
+from fastai.optimizer import Adam, OptimWrapper, params
+from fastai.metrics import perplexity
+from fastai.torch_core import *
+from fastai.torch_imports import *
+from fastprogress.fastprogress import progress_bar,master_bar
 from seqeval import metrics as seq_metrics
+from transformers import AutoModelForTokenClassification, logging
+
+from ..utils import BLURR
+from ..data.core import HF_TextBlock, BlurrDataLoader, get_blurr_tfm, first_blurr_tfm
+from .core import HF_PreCalculatedLoss, Blearner
+from ..data.token_classification import (
+    HF_TokenClassInput, HF_TokenTensorCategory, HF_TokenCategorize,
+    HF_TokenCategoryBlock, HF_TokenClassBeforeBatchTransform
+)
 
 logging.set_verbosity_error()
 
@@ -47,13 +60,13 @@ class HF_TokenClassMetricsCallback(Callback):
         if (not self.do_setup): return
 
         # grab the hf_tokenizer from the HF_TokenClassBeforeBatchTransform
-        hf_before_batch_tfm = get_blurr_tfm(self.learn.dls.before_batch)
+        tfm = first_blurr_tfm(self.learn.dls, before_batch_tfm_class=HF_TokenClassBeforeBatchTransform)
         hf_tok_categorize_tfm = get_blurr_tfm(self.learn.dls.tfms[1], tfm_class=HF_TokenCategorize)
 
-        self.hf_tokenizer = hf_before_batch_tfm.hf_tokenizer
+        self.hf_tokenizer = tfm.hf_tokenizer
         self.ignore_label_token_id = hf_tok_categorize_tfm.ignore_token_id
         self.tok_special_symbols = list(self.hf_tokenizer.special_tokens_map.values())
-        self.tok_kwargs = hf_before_batch_tfm.kwargs
+        self.tok_kwargs = tfm.kwargs
 
         # add custom text generation specific metrics
         custom_metric_keys = self.custom_metrics_dict.keys()
@@ -115,9 +128,9 @@ class HF_TokenClassMetricsCallback(Callback):
 def show_results(x:HF_TokenClassInput, y:HF_TokenTensorCategory, samples, outs, learner,
                  ctxs=None, max_n=6, trunc_at=None, **kwargs):
 
-    hf_before_batch_tfm = get_blurr_tfm(learner.dls.before_batch)
-    hf_tokenizer = hf_before_batch_tfm.hf_tokenizer
-    ignore_token_id = hf_before_batch_tfm.ignore_token_id
+    tfm = first_blurr_tfm(learner.dls, before_batch_tfm_class=HF_TokenClassBeforeBatchTransform)
+    hf_tokenizer = tfm.hf_tokenizer
+    ignore_token_id = tfm.ignore_token_id
 
     res = L()
     for inp, trg, sample, pred in zip(x, y, samples, outs):
@@ -135,13 +148,13 @@ def show_results(x:HF_TokenClassInput, y:HF_TokenTensorCategory, samples, outs, 
     return ctxs
 
 # Cell
-def _blurr_predict_tokens(predict_func, items, hf_before_batch_tfm):
+def _blurr_predict_tokens(predict_func, items, tfm):
     """Remove all the unnecessary predicted tokens after calling `Learner.blurr_predict` or `blurrONNX.predict.
     Aligns the predicted labels, label ids, and probabilities with what you passed in excluding subword tokens
     """
     # grab the Hugging Face tokenizer from the learner's dls.tfms
-    hf_tokenizer = hf_before_batch_tfm.hf_tokenizer
-    tok_kwargs = hf_before_batch_tfm.tok_kwargs
+    hf_tokenizer = tfm.hf_tokenizer
+    tok_kwargs = tfm.tok_kwargs
 
     if (isinstance(items[0], str)): items = [items]
 
@@ -158,10 +171,10 @@ def _blurr_predict_tokens(predict_func, items, hf_before_batch_tfm):
         # the `special_tokens_mask` to help with getting rid or irelevant predicts for any special tokens
         # (e.g., [CLS], [SEP], etc...)
         res = hf_tokenizer(inp, None,
-                           max_length=hf_before_batch_tfm.max_length,
-                           padding=hf_before_batch_tfm.padding,
-                           truncation=hf_before_batch_tfm.truncation,
-                           is_split_into_words=hf_before_batch_tfm.is_split_into_words,
+                           max_length=tfm.max_length,
+                           padding=tfm.padding,
+                           truncation=tfm.truncation,
+                           is_split_into_words=tfm.is_split_into_words,
                            **tok_kwargs)
 
         special_toks_msk = L(res['special_tokens_mask'])
@@ -191,8 +204,8 @@ def _blurr_predict_tokens(predict_func, items, hf_before_batch_tfm):
 # Cell
 @patch
 def blurr_predict_tokens(self:Learner, items, **kargs):
-    hf_before_batch_tfm = get_blurr_tfm(self.dls.before_batch)
-    return _blurr_predict_tokens(self.blurr_predict, items, hf_before_batch_tfm)
+    tfm = first_blurr_tfm(self.dls, before_batch_tfm_class=HF_TokenClassBeforeBatchTransform)
+    return _blurr_predict_tokens(self.blurr_predict, items, tfm)
 
 # Cell
 @delegates(Blearner.__init__)

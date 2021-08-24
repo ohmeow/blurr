@@ -3,9 +3,10 @@
 __all__ = []
 
 # Cell
-import torch, datasets
-from transformers import *
+import os
 
+import datasets
+from transformers import *
 from fastai.text.all import *
 from fastai.callback.hook import _print_shapes
 

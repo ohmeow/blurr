@@ -3,16 +3,26 @@
 __all__ = ['HF_QstAndAnsModelCallback', 'MultiTargetLoss', 'BlearnerForQuestionAnswering']
 
 # Cell
-import ast
+import os, ast, inspect
 
-import torch
-from transformers import *
-from fastai.text.all import *
+from fastcore.all import *
+from fastai.callback.all import *
+from fastai.data.block import DataBlock, CategoryBlock, ColReader, ItemGetter, ColSplitter, RandomSplitter
+from fastai.imports import *
+from fastai.learner import *
+from fastai.losses import CrossEntropyLossFlat
+from fastai.optimizer import Adam, OptimWrapper, params
+# from fastai.metrics import perplexity
+from fastai.torch_core import *
+from fastai.torch_imports import *
+from fastprogress.fastprogress import progress_bar,master_bar
+from seqeval import metrics as seq_metrics
+from transformers import AutoModelForQuestionAnswering, logging
 
-from ..utils import *
-from ..data.core import *
-from ..data.question_answering import *
-from .core import *
+from ..utils import BLURR
+from ..data.core import HF_TextBlock, BlurrDataLoader, first_blurr_tfm
+from .core import HF_BaseModelCallback, HF_PreCalculatedLoss, Blearner
+from ..data.question_answering import HF_QuestionAnswerInput, HF_QABeforeBatchTransform
 
 logging.set_verbosity_error()
 
@@ -67,8 +77,8 @@ class MultiTargetLoss(Module):
 def show_results(x:HF_QuestionAnswerInput, y, samples, outs, learner, skip_special_tokens=True,
                  ctxs=None, max_n=6, trunc_at=None, **kwargs):
 
-    hf_before_batch_tfm = get_blurr_tfm(learner.dls.before_batch)
-    hf_tokenizer = hf_before_batch_tfm.hf_tokenizer
+    tfm = first_blurr_tfm(learner.dls)
+    hf_tokenizer = tfm.hf_tokenizer
 
     res = L()
     for sample, input_ids, start, end, pred in zip(samples, x, *y, outs):

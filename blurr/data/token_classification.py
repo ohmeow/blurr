@@ -4,15 +4,19 @@ __all__ = ['HF_TokenTensorCategory', 'HF_TokenCategorize', 'HF_TokenCategoryBloc
            'HF_TokenClassBeforeBatchTransform']
 
 # Cell
-import ast
+import os, ast
 from functools import reduce
 
-import torch
-from transformers import *
-from fastai.text.all import *
+from fastcore.all import *
+from fastai.data.block import TransformBlock, Category, CategoryMap
+from fastai.imports import *
+from fastai.losses import CrossEntropyLossFlat
+from fastai.torch_core import *
+from fastai.torch_imports import *
+from transformers import AutoModelForTokenClassification, logging
 
-from ..utils import *
-from .core import *
+from ..utils import BLURR
+from .core import HF_BaseInput, HF_BeforeBatchTransform, first_blurr_tfm
 
 logging.set_verbosity_error()
 
@@ -87,8 +91,8 @@ class HF_TokenClassBeforeBatchTransform(HF_BeforeBatchTransform):
 @typedispatch
 def show_batch(x:HF_TokenClassInput, y, samples, dataloaders, ctxs=None, max_n=6, trunc_at=None, **kwargs):
     # grab our tokenizer
-    hf_before_batch_tfm = get_blurr_tfm(dataloaders.before_batch)
-    hf_tokenizer = hf_before_batch_tfm.hf_tokenizer
+    tfm = first_blurr_tfm(dataloaders, before_batch_tfm_class=HF_TokenClassBeforeBatchTransform)
+    hf_tokenizer = tfm.hf_tokenizer
 
     res = L()
     for inp, trg, sample in zip(x, y, samples):

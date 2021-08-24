@@ -4,22 +4,23 @@ __all__ = ['hf_splitter', 'HF_BaseModelWrapper', 'HF_PreCalculatedLoss', 'HF_Bas
            'BlearnerForSequenceClassification']
 
 # Cell
-import inspect, torch
-from fastprogress.fastprogress import progress_bar,master_bar
-from transformers import AutoModelForSequenceClassification, logging
+import os, inspect
+
 from fastcore.all import *
 from fastai.callback.all import *
-from fastai.data.block import *
-from fastai.data.core import DataLoader, DataLoaders, TfmdDL
-from fastai.data.transforms import *
+from fastai.data.block import DataBlock, ColReader, CategoryBlock, MultiCategoryBlock, ColSplitter, RandomSplitter
+from fastai.imports import *
 from fastai.learner import *
 from fastai.losses import CrossEntropyLossFlat
 from fastai.optimizer import Adam, OptimWrapper, params
-from fastai.metrics import accuracy, F1Score
-from fastai.torch_core import Module, display_df, get_empty_df, show_title
+from fastai.metrics import accuracy, F1Score, accuracy_multi, F1ScoreMulti
+from fastai.torch_core import *
+from fastai.torch_imports import *
+from fastprogress.fastprogress import progress_bar,master_bar
+from transformers import AutoModelForSequenceClassification, logging
 
 from ..utils import BLURR
-from ..data.core import HF_TextBlock, HF_BaseInput, get_blurr_tfm
+from ..data.core import HF_TextBlock, HF_BaseInput, first_blurr_tfm
 
 logging.set_verbosity_error()
 
@@ -115,8 +116,8 @@ def show_results(
     **kwargs
 ):
     # grab our tokenizer
-    batch_tfm = get_blurr_tfm(learner.dls.after_batch)
-    hf_tokenizer = batch_tfm.hf_tokenizer
+    tfm = first_blurr_tfm(learner.dls)
+    hf_tokenizer = tfm.hf_tokenizer
 
     res = L()
     n_inp = learner.dls.n_inp
@@ -137,9 +138,10 @@ def show_results(
 # Cell
 @patch
 def blurr_predict(self:Learner, items, rm_type_tfms=None):
-    batch_tfm = get_blurr_tfm(self.dls.after_batch)
+    # grab our blurr tfm with the bits to properly decode/show our inputs/targets
+    tfm = first_blurr_tfm(self.dls)
 
-    is_split_str = batch_tfm.is_split_into_words and isinstance(items[0], str)
+    is_split_str = tfm.is_split_into_words and isinstance(items[0], str)
     is_df = isinstance(items, pd.DataFrame)
 
     if (not is_df and (is_split_str or not is_listy(items))): items = [items]
@@ -168,14 +170,16 @@ def blurr_generate(self:Learner, inp, **kwargs):
     (see [here](https://huggingface.co/transformers/main_classes/model.html#transformers.PreTrainedModel.generate)
     for a list of arguments you can pass in)
     """
+    # grab our blurr tfm with the bits to properly decode/show our inputs/targets
+    tfm = first_blurr_tfm(self.dls)
+
     # grab the Hugging Face tokenizer from the learner's dls.tfms
-    batch_tfm = get_blurr_tfm(self.dls.after_batch)
-    hf_config = batch_tfm.hf_config
-    hf_tokenizer = batch_tfm.hf_tokenizer
-    tok_kwargs = batch_tfm.tok_kwargs
+    hf_config = tfm.hf_config
+    hf_tokenizer = tfm.hf_tokenizer
+    tok_kwargs = tfm.tok_kwargs
 
     # grab the text generation kwargs
-    text_gen_kwargs = batch_tfm.text_gen_kwargs if (len(kwargs) == 0) else kwargs
+    text_gen_kwargs = tfm.text_gen_kwargs if (len(kwargs) == 0) else kwargs
 
     if (isinstance(inp, str)):
         input_ids = hf_tokenizer.encode(inp, padding=True, truncation=True, return_tensors='pt', **tok_kwargs)
@@ -189,7 +193,7 @@ def blurr_generate(self:Learner, inp, **kwargs):
     outputs = [ hf_tokenizer.decode(txt, skip_special_tokens=True, clean_up_tokenization_spaces=False)
                for txt in gen_texts ]
 
-    if batch_tfm.hf_arch == 'pegasus':
+    if tfm.hf_arch == 'pegasus':
         outputs = [o.replace('<n>', ' ') for o in outputs]
 
     return outputs

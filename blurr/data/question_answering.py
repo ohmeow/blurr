@@ -6,12 +6,15 @@ __all__ = ['pre_process_squad', 'HF_QuestionAnswerInput', 'HF_QABeforeBatchTrans
 import ast
 from functools import reduce
 
-from ..utils import *
-from .core import *
+from fastcore.all import *
+from fastai.imports import *
+from fastai.losses import CrossEntropyLossFlat
+from fastai.torch_core import *
+from fastai.torch_imports import *
+from transformers import AutoModelForQuestionAnswering, logging
 
-import torch
-from transformers import *
-from fastai.text.all import *
+from ..utils import BLURR
+from .core import HF_BaseInput, HF_BeforeBatchTransform, first_blurr_tfm
 
 logging.set_verbosity_error()
 
@@ -70,8 +73,8 @@ class HF_QABeforeBatchTransform(HF_BeforeBatchTransform):
 @typedispatch
 def show_batch(x:HF_QuestionAnswerInput, y, samples, dataloaders, ctxs=None, max_n=6, trunc_at=None, **kwargs):
     # grab our tokenizer
-    hf_before_batch_tfm = get_blurr_tfm(dataloaders.before_batch)
-    hf_tokenizer = hf_before_batch_tfm.hf_tokenizer
+    tfm = first_blurr_tfm(dataloaders)
+    hf_tokenizer = tfm.hf_tokenizer
 
     res = L()
     for sample, input_ids, start, end in zip(samples, x, *y):

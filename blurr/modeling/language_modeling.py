@@ -3,17 +3,31 @@
 __all__ = ['LM_MetricsCallback', 'BlearnerForLM']
 
 # Cell
-import ast
+import os, ast, inspect
 
-import torch
-from transformers import *
-from fastai.text.all import *
+from fastcore.all import *
+from fastai.callback.all import *
+from fastai.data.block import DataBlock, ColReader, ItemGetter, ColSplitter, RandomSplitter
+from fastai.imports import *
+from fastai.learner import *
+from fastai.losses import CrossEntropyLossFlat
+from fastai.optimizer import Adam, OptimWrapper, params
+from fastai.metrics import perplexity
+from fastai.torch_core import *
+from fastai.torch_imports import *
+from fastprogress.fastprogress import progress_bar,master_bar
 from sklearn.metrics import accuracy_score
+from transformers import AutoModelForCausalLM, AutoModelForMaskedLM, logging
 
-from ..utils import *
-from ..data.core import *
-from ..data.language_modeling import *
-from .core import *
+
+from ..utils import BLURR
+from ..data.core import HF_TextBlock, BlurrDataLoader, first_blurr_tfm
+from .core import HF_PreCalculatedLoss, Blearner
+from ..data.language_modeling import (
+    HF_LMBeforeBatchTransform, LMType, HF_CausalLMInput, CausalLMStrategy, HF_MLMInput, BertMLMStrategy
+)
+
+logging.set_verbosity_error()
 
 # Cell
 class LM_MetricsCallback(Callback):
@@ -76,10 +90,11 @@ class LM_MetricsCallback(Callback):
 @typedispatch
 def show_results(x:HF_CausalLMInput, y, samples, outs, learner, ctxs=None, max_n=6, trunc_at=None, **kwargs):
     # grab our tokenizer and ignore token to decode
-    hf_before_batch_tfm = get_blurr_tfm(learner.dls.before_batch)
-    hf_config = hf_before_batch_tfm.hf_config
-    hf_tokenizer = hf_before_batch_tfm.hf_tokenizer
-    ignore_token_id = hf_before_batch_tfm.ignore_token_id
+    tfm = first_blurr_tfm(learner.dls)
+
+    hf_config = tfm.hf_config
+    hf_tokenizer = tfm.hf_tokenizer
+    ignore_token_id = tfm.ignore_token_id
 
     res = L([(
         hf_tokenizer.decode(s[0], skip_special_tokens=True)[:trunc_at],
@@ -94,14 +109,18 @@ def show_results(x:HF_CausalLMInput, y, samples, outs, learner, ctxs=None, max_n
 @typedispatch
 def show_results(x:HF_MLMInput, y, samples, outs, learner, ctxs=None, max_n=6, trunc_at=None, **kwargs):
     # grab our tokenizer and ignore token to decode
-    hf_before_batch_tfm = get_blurr_tfm(learner.dls.before_batch)
-    hf_config = hf_before_batch_tfm.hf_config
-    hf_tokenizer = hf_before_batch_tfm.hf_tokenizer
-    ignore_token_id = hf_before_batch_tfm.ignore_token_id
+    tfm = first_blurr_tfm(learner.dls)
+
+    hf_config = tfm.hf_config
+    hf_tokenizer = tfm.hf_tokenizer
+    ignore_token_id = tfm.ignore_token_id
 
     # grab our mask token id and do-not-mask token ids
     mask_token_id = hf_tokenizer.mask_token_id
-    dnm_tok_ids = hf_before_batch_tfm.lm_strategy.dnm_tok_ids
+
+    vocab = hf_tokenizer.get_vocab()
+    dnm_tok_ids = [ vocab[tok] for tok in list(hf_tokenizer.special_tokens_map.values())
+                   if vocab[tok] != mask_token_id ]
 
     res = L()
     for s, t in zip(samples, outs):
@@ -135,13 +154,14 @@ def show_results(x:HF_MLMInput, y, samples, outs, learner, ctxs=None, max_n=6, t
 def blurr_fill_mask(self:Learner, inp, n_preds=1, **kwargs):
     """For MLM models"""
     # grab the Hugging Face tokenizer from the learner's dls.tfms
-    hf_before_batch_tfm = get_blurr_tfm(self.dls.before_batch)
-    hf_config = hf_before_batch_tfm.hf_config
-    hf_tokenizer = hf_before_batch_tfm.hf_tokenizer
-    tok_kwargs = hf_before_batch_tfm.tok_kwargs
+    tfm = first_blurr_tfm(self.dls)
+
+    hf_config = tfm.hf_config
+    hf_tokenizer = tfm.hf_tokenizer
+    tok_kwargs = tfm.tok_kwargs
 
     # grab the text generation kwargs
-    text_gen_kwargs = hf_before_batch_tfm.text_gen_kwargs if (len(kwargs) == 0) else kwargs
+    text_gen_kwargs = tfm.text_gen_kwargs if (len(kwargs) == 0) else kwargs
 
     if (isinstance(inp, str)):
         input_ids = hf_tokenizer.encode(inp, padding=True, truncation=True, return_tensors='pt', **tok_kwargs)
