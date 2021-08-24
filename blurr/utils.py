@@ -3,15 +3,18 @@
 __all__ = ['Singleton', 'str_to_type', 'print_versions', 'BlurrUtil', 'BLURR', 'HF_TASKS', 'HF_ARCHITECTURES']
 
 # Cell
-import importlib, inspect, sys, torch
+import os, importlib, inspect, sys, torch
+from typing import List, Optional, Union, Type
 
 import numpy as np
 import pandas as pd
 
 from enum import Enum
 from fastcore.foundation import L
-from transformers import logging, AutoConfig, AutoTokenizer
-from typing import List, Union, Type
+from transformers import (
+    AutoConfig, AutoTokenizer, logging,
+    PreTrainedTokenizerFast, PreTrainedTokenizer, PretrainedConfig, PreTrainedModel
+)
 
 logging.set_verbosity_error()
 
@@ -143,23 +146,24 @@ class BlurrUtil():
 
     def get_hf_objects(
         self,
-        # The name or path of the pretrained model
-        pretrained_model_name_or_path,
+        # The name or path of the pretrained model you want to fine-tune
+        pretrained_model_name_or_path:Optional[Union[str, os.PathLike]],
         # The model class you want to use (e.g., AutoModelFor<task>)
-        model_cls,
+        model_cls:PreTrainedModel,
         # A specific configuration instance you want to use. If None, a configuration object will be instantiated
         # using the AutoConfig class along with any supplied `config_kwargs`
-        config=None,
-        # A specific tokenizer instance you want to use.
-        tokenizer_cls=None,
-        # Any kwargs you want to pass to the `AutoConfig` (only used if you do NOT pass int a config above)
+        config:Union[PretrainedConfig, str, os.PathLike]=None,
+        # A specific tokenizer class you want to use. If None, a tokenizer will be instantiated
+        # using the AutoTokenizer class along with any supplied `tokenizer_kwargs`
+        tokenizer_cls:Union[PreTrainedTokenizer, PreTrainedTokenizerFast]=None,
+        # Any keyword arguments you want to pass to the `AutoConfig` (only used if you do NOT pass int a config above)
         config_kwargs={},
-        # Any kwargs you want to pass in the creation of your tokenizer
+        # Any keyword arguments you want to pass in the creation of your tokenizer
         tokenizer_kwargs={},
-        # Any kwargs you want to pass in the creation of your model
+        # Any keyword arguments you want to pass in the creation of your model
         model_kwargs={},
          # If you want to change the location Hugging Face objects are cached
-        cache_dir=None
+        cache_dir:Union[str, os.PathLike]=None
     ):   # A tuple (architecture (str), config (obj), tokenizer (obj), and model (obj)
         """Given at minimum a `pretrained_model_name_or_path` and `model_cls (such as
         `AutoModelForSequenceClassification"), this method returns all the Hugging Face objects you need to train

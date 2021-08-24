@@ -43,27 +43,6 @@ nb_path: "nbs/00_utils.ipynb"
 </div>
     {% endraw %}
 
-    {% raw %}
-    
-<div class="cell border-box-sizing code_cell rendered">
-
-<div class="output_wrapper">
-<div class="output">
-
-<div class="output_area">
-
-<div class="output_subarea output_stream output_stdout output_text">
-<pre>Using GPU #1: GeForce GTX 1080 Ti
-</pre>
-</div>
-</div>
-
-</div>
-</div>
-
-</div>
-    {% endraw %}
-
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <h2 id="Utility-classes-and-methods">Utility classes and methods<a class="anchor-link" href="#Utility-classes-and-methods"> </a></h2><p>The <a href="/blurr/utils.html#Singleton"><code>Singleton</code></a> class and <a href="/blurr/utils.html#str_to_type"><code>str_to_type</code></a> methods are used in the construction of the <a href="/blurr/utils.html#BLURR"><code>BLURR</code></a> instance, as well as, in other parts of the library. <a href="/blurr/utils.html#print_versions"><code>print_versions</code></a> is a nicety added for developers wishing to know what versions of specific libraries are being used for documentation and troubleshooting.</p>
@@ -82,7 +61,7 @@ nb_path: "nbs/00_utils.ipynb"
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h2 id="Singleton" class="doc_header"><code>class</code> <code>Singleton</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/utils.py#L19" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>Singleton</code>()</p>
+<h2 id="Singleton" class="doc_header"><code>class</code> <code>Singleton</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/utils.py#L22" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>Singleton</code>()</p>
 </blockquote>
 
 </div>
@@ -149,9 +128,17 @@ nb_path: "nbs/00_utils.ipynb"
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h4 id="str_to_type" class="doc_header"><code>str_to_type</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/utils.py#L28" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>str_to_type</code>(<strong><code>typename</code></strong>:<code>str</code>)</p>
+<h4 id="str_to_type" class="doc_header"><code>str_to_type</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/utils.py#L31" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>str_to_type</code>(<strong><code>typename</code></strong>:<code>str</code>)</p>
 </blockquote>
 <p>Converts a type represented as a string to the actual class</p>
+<p><strong>Parameters:</strong></p>
+<ul>
+<li><strong><code>typename</code></strong> : <em><code>&lt;class 'str'&gt;</code></em>   <p>The name of a type as a string</p></li>
+</ul>
+<p><strong>Returns</strong>:</p>
+<ul>
+<li><em><code>typing.Type</code></em>  <p>Returns the actual type</p></li>
+</ul>
 
 </div>
 
@@ -193,8 +180,8 @@ nb_path: "nbs/00_utils.ipynb"
 
 <div class="output_subarea output_stream output_stdout output_text">
 <pre>typing.List
-&lt;function test_eq at 0x7f2fce278af0&gt;
-&lt;__main__.Singleton object at 0x7f2fcdca5280&gt;
+&lt;function test_eq at 0x7f36d58a8280&gt;
+&lt;__main__.Singleton object at 0x7f36d57ffc70&gt;
 </pre>
 </div>
 </div>
@@ -223,9 +210,13 @@ nb_path: "nbs/00_utils.ipynb"
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h4 id="print_versions" class="doc_header"><code>print_versions</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/utils.py#L35" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>print_versions</code>(<strong><code>packages</code></strong>:<code>Union</code>[<code>str</code>, <code>List</code>[<code>str</code>]])</p>
+<h4 id="print_versions" class="doc_header"><code>print_versions</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/utils.py#L38" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>print_versions</code>(<strong><code>packages</code></strong>:<code>Union</code>[<code>str</code>, <code>List</code>[<code>str</code>]])</p>
 </blockquote>
 <p>Prints the name and version of one or more packages in your environment</p>
+<p><strong>Parameters:</strong></p>
+<ul>
+<li><strong><code>packages</code></strong> : <em><code>typing.Union[str, typing.List[str]]</code></em> <p>A string of space delimited package names or a list of package names</p></li>
+</ul>
 
 </div>
 
@@ -300,7 +291,7 @@ fastai: 2.5.0
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h4 id="Singleton object at 0x7f4e7d69cf40>" class="doc_header"><code>Singleton object at 0x7f4e7d69cf40></code><a href="" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>Singleton object at 0x7f4e7d69cf40></code>(<strong>*<code>args</code></strong>, <strong>**<code>kwargs</code></strong>)</p>
+<h4 id="Singleton object at 0x7fee70bd6d60>" class="doc_header"><code>Singleton object at 0x7fee70bd6d60></code><a href="" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>Singleton object at 0x7fee70bd6d60></code>(<strong>*<code>args</code></strong>, <strong>**<code>kwargs</code></strong>)</p>
 </blockquote>
 
 </div>
@@ -385,10 +376,14 @@ fastai: 2.5.0
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h4 id="BlurrUtil.get_tasks" class="doc_header"><code>BlurrUtil.get_tasks</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/utils.py#L105" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>BlurrUtil.get_tasks</code>(<strong><code>arch</code></strong>:<code>str</code>=<em><code>None</code></em>)</p>
+<h4 id="BlurrUtil.get_tasks" class="doc_header"><code>BlurrUtil.get_tasks</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/utils.py#L108" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>BlurrUtil.get_tasks</code>(<strong><code>arch</code></strong>:<code>str</code>=<em><code>None</code></em>)</p>
 </blockquote>
 <p>This method can be used to get a list of all tasks supported by your transformers install, or
 just those available to a specific architecture</p>
+<p><strong>Parameters:</strong></p>
+<ul>
+<li><strong><code>arch</code></strong> : <em><code>&lt;class 'str'&gt;</code></em>, <em>optional</em>   <p>A transformer architecture (e.g., 'bert')</p></li>
+</ul>
 
 </div>
 
@@ -453,7 +448,7 @@ just those available to a specific architecture</p>
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h4 id="BlurrUtil.get_architectures" class="doc_header"><code>BlurrUtil.get_architectures</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/utils.py#L117" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>BlurrUtil.get_architectures</code>()</p>
+<h4 id="BlurrUtil.get_architectures" class="doc_header"><code>BlurrUtil.get_architectures</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/utils.py#L120" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>BlurrUtil.get_architectures</code>()</p>
 </blockquote>
 
 </div>
@@ -508,9 +503,13 @@ just those available to a specific architecture</p>
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h4 id="BlurrUtil.get_model_architecture" class="doc_header"><code>BlurrUtil.get_model_architecture</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/utils.py#L136" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>BlurrUtil.get_model_architecture</code>(<strong><code>model_name_or_enum</code></strong>)</p>
+<h4 id="BlurrUtil.get_model_architecture" class="doc_header"><code>BlurrUtil.get_model_architecture</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/utils.py#L139" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>BlurrUtil.get_model_architecture</code>(<strong><code>model_name_or_enum</code></strong>)</p>
 </blockquote>
 <p>Get the architecture for a given model name / enum</p>
+<p><strong>Parameters:</strong></p>
+<ul>
+<li><strong><code>model_name_or_enum</code></strong> : <em><code>&lt;class 'inspect._empty'&gt;</code></em></li>
+</ul>
 
 </div>
 
@@ -571,9 +570,16 @@ just those available to a specific architecture</p>
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h4 id="BlurrUtil.get_models" class="doc_header"><code>BlurrUtil.get_models</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/utils.py#L123" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>BlurrUtil.get_models</code>(<strong><code>arch</code></strong>:<code>str</code>=<em><code>None</code></em>, <strong><code>task</code></strong>:<code>str</code>=<em><code>None</code></em>)</p>
+<h4 id="BlurrUtil.get_models" class="doc_header"><code>BlurrUtil.get_models</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/utils.py#L126" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>BlurrUtil.get_models</code>(<strong><code>arch</code></strong>:<code>str</code>=<em><code>None</code></em>, <strong><code>task</code></strong>:<code>str</code>=<em><code>None</code></em>)</p>
 </blockquote>
 <p>The transformer models available for use (optional: by architecture | task)</p>
+<p><strong>Parameters:</strong></p>
+<ul>
+<li><strong><code>arch</code></strong> : <em><code>&lt;class 'str'&gt;</code></em>, <em>optional</em>   <p>A transformer architecture (e.g., 'bert')</p></li>
+</ul>
+<ul>
+<li><strong><code>task</code></strong> : <em><code>&lt;class 'str'&gt;</code></em>, <em>optional</em>   <p>A transformer task (e.g., 'TokenClassification')</p></li>
+</ul>
 
 </div>
 
@@ -844,10 +850,37 @@ just those available to a specific architecture</p>
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h4 id="BlurrUtil.get_hf_objects" class="doc_header"><code>BlurrUtil.get_hf_objects</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/utils.py#L144" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>BlurrUtil.get_hf_objects</code>(<strong><code>pretrained_model_name_or_path</code></strong>, <strong><code>model_cls</code></strong>, <strong><code>config</code></strong>=<em><code>None</code></em>, <strong><code>tokenizer_cls</code></strong>=<em><code>None</code></em>, <strong><code>config_kwargs</code></strong>=<em><code>{}</code></em>, <strong><code>tokenizer_kwargs</code></strong>=<em><code>{}</code></em>, <strong><code>model_kwargs</code></strong>=<em><code>{}</code></em>, <strong><code>cache_dir</code></strong>=<em><code>None</code></em>)</p>
+<h4 id="BlurrUtil.get_hf_objects" class="doc_header"><code>BlurrUtil.get_hf_objects</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/utils.py#L147" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>BlurrUtil.get_hf_objects</code>(<strong><code>pretrained_model_name_or_path</code></strong>:<code>Union</code>[<code>str</code>, <code>PathLike</code>, <code>NoneType</code>], <strong><code>model_cls</code></strong>:<code>PreTrainedModel</code>, <strong><code>config</code></strong>:<code>Union</code>[<code>PretrainedConfig</code>, <code>str</code>, <code>PathLike</code>]=<em><code>None</code></em>, <strong><code>tokenizer_cls</code></strong>:<code>Union</code>[<code>PreTrainedTokenizer</code>, <code>PreTrainedTokenizerFast</code>]=<em><code>None</code></em>, <strong><code>config_kwargs</code></strong>=<em><code>{}</code></em>, <strong><code>tokenizer_kwargs</code></strong>=<em><code>{}</code></em>, <strong><code>model_kwargs</code></strong>=<em><code>{}</code></em>, <strong><code>cache_dir</code></strong>:<code>Union</code>[<code>str</code>, <code>PathLike</code>]=<em><code>None</code></em>)</p>
 </blockquote>
 <p>Given at minimum a <code>pretrained_model_name_or_path</code> and <code>model_cls (such as</code>AutoModelForSequenceClassification"), this method returns all the Hugging Face objects you need to train
 a model using Blurr</p>
+<p><strong>Parameters:</strong></p>
+<ul>
+<li><strong><code>pretrained_model_name_or_path</code></strong> : <em><code>typing.Union[str, os.PathLike, NoneType]</code></em>   <p>The name or path of the pretrained model you want to fine-tune</p></li>
+</ul>
+<ul>
+<li><strong><code>model_cls</code></strong> : <em><code>&lt;class 'transformers.modeling_utils.PreTrainedModel'&gt;</code></em>  <p>The model class you want to use (e.g., AutoModelFor<task>)</p></li>
+</ul>
+<ul>
+<li><strong><code>config</code></strong> : <em><code>typing.Union[transformers.configuration_utils.PretrainedConfig, str, os.PathLike]</code></em>, <em>optional</em> <p>A specific configuration instance you want to use. If None, a configuration object will be instantiated
+using the AutoConfig class along with any supplied `config_kwargs`</p></li>
+</ul>
+<ul>
+<li><strong><code>tokenizer_cls</code></strong> : <em><code>typing.Union[transformers.tokenization_utils.PreTrainedTokenizer, transformers.tokenization_utils_fast.PreTrainedTokenizerFast]</code></em>, <em>optional</em>    <p>A specific tokenizer class you want to use. If None, a tokenizer will be instantiated
+using the AutoTokenizer class along with any supplied `tokenizer_kwargs`</p></li>
+</ul>
+<ul>
+<li><strong><code>config_kwargs</code></strong> : <em><code>&lt;class 'dict'&gt;</code></em>, <em>optional</em> <p>Any keyword arguments you want to pass to the `AutoConfig` (only used if you do NOT pass int a config above)</p></li>
+</ul>
+<ul>
+<li><strong><code>tokenizer_kwargs</code></strong> : <em><code>&lt;class 'dict'&gt;</code></em>, <em>optional</em>  <p>Any keyword arguments you want to pass in the creation of your tokenizer</p></li>
+</ul>
+<ul>
+<li><strong><code>model_kwargs</code></strong> : <em><code>&lt;class 'dict'&gt;</code></em>, <em>optional</em>  <p>Any keyword arguments you want to pass in the creation of your model</p></li>
+</ul>
+<ul>
+<li><strong><code>cache_dir</code></strong> : <em><code>typing.Union[str, os.PathLike]</code></em>, <em>optional</em> <p>If you want to change the location Hugging Face objects are cached</p></li>
+</ul>
 
 </div>
 
