@@ -4,10 +4,12 @@ __all__ = ['LM_MetricsCallback', 'BlearnerForLM']
 
 # Cell
 import os, ast, inspect
+from typing import Any, Callable, Dict, List, Optional, Union, Type
 
 from fastcore.all import *
 from fastai.callback.all import *
 from fastai.data.block import DataBlock, ColReader, ItemGetter, ColSplitter, RandomSplitter
+from fastai.data.core import DataLoader, DataLoaders, TfmdDL
 from fastai.imports import *
 from fastai.learner import *
 from fastai.losses import CrossEntropyLossFlat
@@ -17,14 +19,17 @@ from fastai.torch_core import *
 from fastai.torch_imports import *
 from fastprogress.fastprogress import progress_bar,master_bar
 from sklearn.metrics import accuracy_score
-from transformers import AutoModelForCausalLM, AutoModelForMaskedLM, logging
+from transformers import (
+    AutoModelForCausalLM, AutoModelForMaskedLM, logging,
+    PretrainedConfig, PreTrainedTokenizerBase, PreTrainedModel
+)
 
 
 from ..utils import BLURR
 from ..data.core import HF_TextBlock, BlurrDataLoader, first_blurr_tfm
 from .core import HF_PreCalculatedLoss, Blearner
 from ..data.language_modeling import (
-    HF_LMBeforeBatchTransform, LMType, HF_CausalLMInput, CausalLMStrategy, HF_MLMInput, BertMLMStrategy
+    HF_LMBeforeBatchTransform, LMType, LMStrategy, HF_CausalLMInput, CausalLMStrategy, HF_MLMInput, BertMLMStrategy
 )
 
 logging.set_verbosity_error()
@@ -89,14 +94,24 @@ class LM_MetricsCallback(Callback):
 # Cell
 @typedispatch
 def show_results(
+    # This typedispatched `show_results` will be called for `HF_CausalLMInput` typed inputs
     x:HF_CausalLMInput,
+    # Your targets
     y,
+    # Your raw inputs/targets
     samples,
+    # The model's predictions
     outs,
+    # Your `Learner`. This is required so as to get at the Hugging Face objects for decoding them into
+    # something understandable
     learner,
+    # Your `show_results` context
     ctxs=None,
+    # The maximum number of items to show
     max_n=6,
+     # Any truncation your want applied to your decoded inputs
     trunc_at=None,
+    # Any other keyword arguments you want applied to `show_results`
     **kwargs
 ):
     # grab our tokenizer and ignore token to decode
@@ -118,14 +133,24 @@ def show_results(
 # Cell
 @typedispatch
 def show_results(
+    # This typedispatched `show_results` will be called for `HF_MLMInput` typed inputs
     x:HF_MLMInput,
+    # Your targets
     y,
+    # Your raw inputs/targets
     samples,
+    # The model's predictions
     outs,
+    # Your `Learner`. This is required so as to get at the Hugging Face objects for decoding them into
+    # something understandable
     learner,
+    # Your `show_results` context
     ctxs=None,
+    # The maximum number of items to show
     max_n=6,
+     # Any truncation your want applied to your decoded inputs
     trunc_at=None,
+    # Any other keyword arguments you want applied to `show_results`
     **kwargs
 ):
     # grab our tokenizer and ignore token to decode
@@ -173,8 +198,11 @@ def show_results(
 @patch
 def blurr_fill_mask(
     self:Learner,
-    inp,
-    n_preds=1,
+    # Your input_ids or raw text string with a `hf_tokenizer.mask_token`
+    inp:Union[List[int], str],
+    # The number of predictions you want to return for the [MASK]ed token
+    n_preds:int=1,
+    # Any other keyword arguments you want applied to text generation
     **kwargs
 ):
     """For MLM models"""
@@ -210,7 +238,12 @@ def blurr_fill_mask(
 @delegates(Blearner.__init__)
 class BlearnerForLM(Blearner):
 
-    def __init__(self, dls, hf_model, **kwargs):
+    def __init__(
+        self,
+        dls: DataLoaders,
+        hf_model: PreTrainedModel,
+        **kwargs
+    ):
         kwargs['loss_func'] = HF_PreCalculatedLoss()
         super().__init__(dls, hf_model, **kwargs)
 
@@ -225,14 +258,23 @@ class BlearnerForLM(Blearner):
     @classmethod
     def _create_learner(
         cls,
+        # Your raw dataset
         data,
-        pretrained_model_name_or_path,
-        preprocess_func,
-        lm_strategy_cls,
-        text_attr,
-        dblock_splitter,
-        dl_kwargs,
-        learner_kwargs
+        # The name or path of the pretrained model you want to fine-tune
+        pretrained_model_name_or_path:Optional[Union[str, os.PathLike]],
+        # A function to perform any preprocessing required for your Dataset
+        preprocess_func:Callable=None,
+        # The language modeling strategy (or objective)
+        lm_strategy_cls:LMStrategy=CausalLMStrategy,
+        # The attribute in your dataset that contains your raw text
+        text_attr:str='text',
+        # A function that will split your Dataset into a training and validation set
+        # See [here](https://docs.fast.ai/data.transforms.html#Split) for a list of fast.ai splitters
+        dblock_splitter:Callable=RandomSplitter(),
+        # Any kwargs to pass to your `DataLoaders`
+        dl_kwargs={},
+        # Any kwargs to pass to your task specific `Blearner`
+        learner_kwargs={}
     ):
         lm_type = lm_strategy_cls.get_lm_type()
 
@@ -273,13 +315,22 @@ class BlearnerForLM(Blearner):
     @classmethod
     def from_dataframe(
         cls,
-        df,
-        pretrained_model_name_or_path,
-        preprocess_func=None,
-        lm_strategy_cls=CausalLMStrategy,
-        text_attr='text',
-        dblock_splitter=ColSplitter(),
+        # Your pandas DataFrame
+        df:pd.DataFrame,
+        # The name or path of the pretrained model you want to fine-tune
+        pretrained_model_name_or_path:Optional[Union[str, os.PathLike]],
+        # A function to perform any preprocessing required for your Dataset
+        preprocess_func:Callable=None,
+        # The language modeling strategy (or objective)
+        lm_strategy_cls:LMStrategy=CausalLMStrategy,
+        # The attribute in your dataset that contains your raw text
+        text_attr:str='text',
+        # A function that will split your Dataset into a training and validation set
+        # See [here](https://docs.fast.ai/data.transforms.html#Split) for a list of fast.ai splitters
+        dblock_splitter:Callable=ColSplitter(),
+        # Any kwargs to pass to your `DataLoaders`
         dl_kwargs={},
+        # Any kwargs to pass to your task specific `Blearner`
         learner_kwargs={}
     ):
         return cls._create_learner(df, pretrained_model_name_or_path, preprocess_func,
@@ -289,13 +340,22 @@ class BlearnerForLM(Blearner):
     @classmethod
     def from_csv(
         cls,
-        csv_file,
-        pretrained_model_name_or_path,
-        preprocess_func=None,
-        lm_strategy_cls=CausalLMStrategy,
-        text_attr='text',
-        dblock_splitter=ColSplitter(),
+        # The path to your csv file
+        csv_file:Union[Path, str],
+        # The name or path of the pretrained model you want to fine-tune
+        pretrained_model_name_or_path:Optional[Union[str, os.PathLike]],
+        # A function to perform any preprocessing required for your Dataset
+        preprocess_func:Callable=None,
+        # The language modeling strategy (or objective)
+        lm_strategy_cls:LMStrategy=CausalLMStrategy,
+        # The attribute in your dataset that contains your raw text
+        text_attr:str='text',
+        # A function that will split your Dataset into a training and validation set
+        # See [here](https://docs.fast.ai/data.transforms.html#Split) for a list of fast.ai splitters
+        dblock_splitter:Callable=ColSplitter(),
+        # Any kwargs to pass to your `DataLoaders`
         dl_kwargs={},
+        # Any kwargs to pass to your task specific `Blearner`
         learner_kwargs={}
     ):
         df = pd.read_csv(csv_file)
@@ -306,13 +366,22 @@ class BlearnerForLM(Blearner):
     @classmethod
     def from_dictionaries(
         cls,
-        ds,
-        pretrained_model_name_or_path,
-        preprocess_func=None,
-        lm_strategy_cls=CausalLMStrategy,
-        text_attr='text',
-        dblock_splitter=RandomSplitter(),
+        # A list of dictionaries
+        ds:List[Dict],
+        # The name or path of the pretrained model you want to fine-tune
+        pretrained_model_name_or_path:Optional[Union[str, os.PathLike]],
+        # A function to perform any preprocessing required for your Dataset
+        preprocess_func:Callable=None,
+        # The language modeling strategy (or objective)
+        lm_strategy_cls:LMStrategy=CausalLMStrategy,
+        # The attribute in your dataset that contains your raw text
+        text_attr:str='text',
+        # A function that will split your Dataset into a training and validation set
+        # See [here](https://docs.fast.ai/data.transforms.html#Split) for a list of fast.ai splitters
+        dblock_splitter:Callable=RandomSplitter(),
+        # Any kwargs to pass to your `DataLoaders`
         dl_kwargs={},
+        # Any kwargs to pass to your task specific `Blearner`
         learner_kwargs={}
     ):
         return cls._create_learner(ds, pretrained_model_name_or_path, preprocess_func,

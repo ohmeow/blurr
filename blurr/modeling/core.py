@@ -107,12 +107,16 @@ class HF_BaseModelCallback(Callback):
 # Cell
 @typedispatch
 def show_results(
-    x:HF_BaseInput, # This typedispatched `show_batch` will be called for `HF_BaseInput` typed inputs
-    y,              # Your targets
-    samples,        # Your raw inputs/targets
-    outs,           # The model's predictions
-    # Your `Learner`. This is required so as to get at the Hugging Face objects for
-    # decoding them into something understandable
+    # This typedispatched `show_results` will be called for `HF_BaseInput` typed inputs
+    x:HF_BaseInput,
+    # Your targets
+    y,
+    # Your raw inputs/targets
+    samples,
+    # The model's predictions
+    outs,
+    # Your `Learner`. This is required so as to get at the Hugging Face objects for decoding them into
+    # something understandable
     learner,
     # Your `show_results` context
     ctxs=None,
@@ -120,7 +124,7 @@ def show_results(
     max_n=6,
      # Any truncation your want applied to your decoded inputs
     trunc_at=None,
-    # Any other keyword arguments you want applied to `show_batch`
+    # Any other keyword arguments you want applied to `show_results`
     **kwargs
 ):
     # grab our tokenizer

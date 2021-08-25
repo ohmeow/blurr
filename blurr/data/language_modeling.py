@@ -13,7 +13,10 @@ from fastai.imports import *
 from fastai.losses import CrossEntropyLossFlat
 from fastai.torch_core import *
 from fastai.torch_imports import *
-from transformers import AutoModelForCausalLM, AutoModelForMaskedLM, logging
+from transformers import (
+    AutoModelForCausalLM, AutoModelForMaskedLM, logging,
+    PretrainedConfig, PreTrainedTokenizerBase, PreTrainedModel
+)
 
 from ..utils import BLURR
 from .core import HF_BaseInput, HF_BeforeBatchTransform, first_blurr_tfm
@@ -27,7 +30,7 @@ class LMType(Enum):
 
 # Cell
 class LMStrategy(ABC):
-    """ABC for various language modeling strategies"""
+    """ABC for various language modeling strategies (e.g., causal, BertMLM, WholeWordMLM, etc...)"""
     def __init__(
         self,
         hf_tokenizer,
@@ -52,18 +55,40 @@ class LMStrategy(ABC):
 class HF_LMBeforeBatchTransform(HF_BeforeBatchTransform):
     def __init__(
         self,
-        hf_arch,
-        hf_config,
-        hf_tokenizer,
-        hf_model,
+        # The abbreviation/name of your Hugging Face transformer architecture (e.b., bert, bart, etc..)
+        hf_arch:str,
+        # A specific configuration instance you want to use
+        hf_config:PretrainedConfig,
+        # A Hugging Face tokenizer
+        hf_tokenizer:PreTrainedTokenizerBase,
+        # A Hugging Face model
+        hf_model:PreTrainedModel,
+        # The language modeling strategy (or objective)
         lm_strategy_cls:LMStrategy,
-        max_length=None,
-        padding=True,
-        truncation=True,
-        is_split_into_words=False,
+        # To control the length of the padding/truncation. It can be an integer or None,
+        # in which case it will default to the maximum length the model can accept. If the model has no
+        # specific maximum input length, truncation/padding to max_length is deactivated.
+        # See [Everything you always wanted to know about padding and truncation](https://huggingface.co/transformers/preprocessing.html#everything-you-always-wanted-to-know-about-padding-and-truncation)
+        max_length:int=None,
+        # To control the `padding` applied to your `hf_tokenizer` during tokenization. If None, will default to
+        # `False` or `'do_not_pad'.
+        # See [Everything you always wanted to know about padding and truncation](https://huggingface.co/transformers/preprocessing.html#everything-you-always-wanted-to-know-about-padding-and-truncation)
+        padding:Union[bool, str]=True,
+        # To control `truncation` applied to your `hf_tokenizer` during tokenization. If None, will default to
+        # `False` or `do_not_truncate`.
+        # See [Everything you always wanted to know about padding and truncation](https://huggingface.co/transformers/preprocessing.html#everything-you-always-wanted-to-know-about-padding-and-truncation)
+        truncation:Union[bool, str]=True,
+        # The token ID that should be ignored when calculating the loss
         ignore_token_id = CrossEntropyLossFlat().ignore_index,
+        # The `is_split_into_words` argument applied to your `hf_tokenizer` during tokenization. Set this to `True`
+        # if your inputs are pre-tokenized (not numericalized)
+        is_split_into_words:bool=False,
+        # Any other keyword arguments you want included when using your `hf_tokenizer` to tokenize your inputs
         tok_kwargs={},
+        # Any keyword arguments you want included when generated text
+        # See [How to generate text](https://huggingface.co/blog/how-to-generate)
         text_gen_kwargs={},
+        # Keyword arguments to apply to `HF_BeforeBatchTransform`
         **kwargs
     ):
         super().__init__(hf_arch, hf_config, hf_tokenizer, hf_model,
@@ -101,19 +126,28 @@ class CausalLMStrategy(LMStrategy):
         return updated_samples
 
     @classmethod
-    def get_lm_type(cls):
+    def get_lm_type(cls:LMType):
         return LMType.CAUSAL
 
 # Cell
 @typedispatch
 def show_batch(
+    # This typedispatched `show_batch` will be called for `HF_CausalLMInput` typed inputs
     x:HF_CausalLMInput,
+    # Your targets
     y,
+    # Your raw inputs/targets
     samples,
+    # Your `DataLoaders`. This is required so as to get at the Hugging Face objects for
+    # decoding them into something understandable
     dataloaders,
+    # Your `show_batch` context
     ctxs=None,
+    # The maximum number of items to show
     max_n=6,
+    # Any truncation your want applied to your decoded inputs
     trunc_at=None,
+    # Any other keyword arguments you want applied to `show_batch`
     **kwargs
 ):
     # grab our tokenizer and ignore token to decode
@@ -187,19 +221,28 @@ class BertMLMStrategy(LMStrategy):
         return updated_samples
 
     @classmethod
-    def get_lm_type(cls):
+    def get_lm_type(cls:LMType):
         return LMType.MASKED
 
 # Cell
 @typedispatch
 def show_batch(
+    # This typedispatched `show_batch` will be called for `HF_MLMInput` typed inputs
     x:HF_MLMInput,
+    # Your targets
     y,
+    # Your raw inputs/targets
     samples,
+    # Your `DataLoaders`. This is required so as to get at the Hugging Face objects for
+    # decoding them into something understandable
     dataloaders,
+    # Your `show_batch` context
     ctxs=None,
+    # The maximum number of items to show
     max_n=6,
+    # Any truncation your want applied to your decoded inputs
     trunc_at=None,
+    # Any other keyword arguments you want applied to `show_batch`
     **kwargs
 ):
     # grab our tokenizer and ignore token to decode
