@@ -196,7 +196,7 @@ if your inputs are pre-tokenized (not numericalized)</p></li>
 
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p><a href="/blurr/data-core.html#HF_BeforeBatchTransform"><code>HF_BeforeBatchTransform</code></a> was inspired by this <a href="http://dev.fast.ai/tutorial.transformers">article</a>.</p>
+<p><a href="/blurr/data-core.html#HF_BeforeBatchTransform"><code>HF_BeforeBatchTransform</code></a> was inspired by this <a href="https://docs.fast.ai/tutorial.transformers.html">article</a>.</p>
 <p>Inputs can come in as a string or a list of tokens, the later being for tasks like Named Entity Recognition (NER), where you want to predict the label of each token.</p>
 <p><strong>Notes re: on-the-fly batch-time tokenization</strong>: The previous version of the library performed the tokenization/numericalization as a type transform when the raw data was read, and included a couple batch transforms to prepare the data for collation (e.g., to be made into a mini-batch). With this update, everything is done in a single batch transform.  Why?  Part of the inspiration had to do with the mechanics of the huggingrace tokenizer, in particular how by default it returns a collated mini-batch of data given a list of sequences. And where do we get a list of examples with fastai? In the batch transforms!  So I thought, hey, why not do everything dynamically at batch time?  And with a bit of tweaking, I got everything to work pretty well.  The result is less code, faster mini-batch creation, less RAM utilization and time spent tokenizing (really helps with very large datasets), and more flexibility.</p>
 

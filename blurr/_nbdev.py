@@ -81,7 +81,8 @@ modules = ["utils.py",
            "examples/blurr_high_level_api.py",
            "examples/glue.py",
            "examples/glue_low_level_api.py",
-           "examples/multilabel_classification.py"]
+           "examples/multilabel_classification.py",
+           "examples/causal_lm_gpt2.py"]
 
 doc_url = "https://ohmeow.github.io/blurr/"
 
