@@ -4,20 +4,24 @@ __all__ = ['HF_QstAndAnsModelCallback', 'MultiTargetLoss', 'BlearnerForQuestionA
 
 # Cell
 import os, ast, inspect
+from typing import Any, Callable, Dict, List, Optional, Union, Type
 
 from fastcore.all import *
 from fastai.callback.all import *
 from fastai.data.block import DataBlock, CategoryBlock, ColReader, ItemGetter, ColSplitter, RandomSplitter
+from fastai.data.core import DataLoader, DataLoaders, TfmdDL
 from fastai.imports import *
 from fastai.learner import *
 from fastai.losses import CrossEntropyLossFlat
 from fastai.optimizer import Adam, OptimWrapper, params
-# from fastai.metrics import perplexity
 from fastai.torch_core import *
 from fastai.torch_imports import *
 from fastprogress.fastprogress import progress_bar,master_bar
 from seqeval import metrics as seq_metrics
-from transformers import AutoModelForQuestionAnswering, logging
+from transformers import (
+    AutoModelForQuestionAnswering, logging,
+    PretrainedConfig, PreTrainedTokenizerBase, PreTrainedModel
+)
 
 from ..utils import BLURR
 from ..data.core import HF_TextBlock, BlurrDataLoader, first_blurr_tfm
@@ -38,10 +42,14 @@ class MultiTargetLoss(Module):
     """Provides the ability to apply different loss functions to multi-modal targets/predictions"""
     def __init__(
         self,
-        loss_classes=[CrossEntropyLossFlat, CrossEntropyLossFlat],
-        loss_classes_kwargs=[{}, {}],
-        weights=[1, 1],
-        reduction='mean'
+        # The loss function for each target
+        loss_classes:List[Callable]=[CrossEntropyLossFlat, CrossEntropyLossFlat],
+        # Any kwargs you want to pass to the loss functions above
+        loss_classes_kwargs:List[dict]=[{}, {}],
+        # The weights you want to apply to each loss (default: [1,1])
+        weights:Union[List[float], List[int]]=[1, 1],
+        # The `reduction` parameter of the lass function (default: 'mean')
+        reduction:str='mean'
     ):
         loss_funcs = [ cls(reduction=reduction, **kwargs) for cls, kwargs in zip(loss_classes, loss_classes_kwargs) ]
         store_attr(self=self, names='loss_funcs, weights')
@@ -79,15 +87,26 @@ class MultiTargetLoss(Module):
 # Cell
 @typedispatch
 def show_results(
+    # This typedispatched `show_results` will be called for `HF_QuestionAnswerInput` typed inputs
     x:HF_QuestionAnswerInput,
+    # The targets
     y,
+    # Your raw inputs/targets
     samples,
+    # The model's predictions
     outs,
+    # Your `Learner`. This is required so as to get at the Hugging Face objects for decoding them into
+    # something understandable
     learner,
+    # Whether you want to remove special tokens during decoding/showing the outputs
     skip_special_tokens=True,
+    # Your `show_results` context
     ctxs=None,
+    # The maximum number of items to show
     max_n=6,
+     # Any truncation your want applied to your decoded inputs
     trunc_at=None,
+    # Any other keyword arguments you want applied to `show_results`
     **kwargs
 ):
     tfm = first_blurr_tfm(learner.dls)
@@ -113,8 +132,8 @@ class BlearnerForQuestionAnswering(Blearner):
 
     def __init__(
         self,
-        dls,
-        hf_model,
+        dls:DataLoaders,
+        hf_model: PreTrainedModel,
         **kwargs
     ):
         kwargs['loss_func'] = kwargs.get('loss_func', MultiTargetLoss())
@@ -137,18 +156,31 @@ class BlearnerForQuestionAnswering(Blearner):
     @classmethod
     def _create_learner(
         cls,
+        # Your raw dataset
         data,
-        pretrained_model_name_or_path,
-        preprocess_func,
-        max_seq_len,
-        context_attr,
-        question_attr,
-        answer_text_attr,
-        tok_ans_start_attr,
-        tok_ans_end_attr,
-        dblock_splitter,
-        dl_kwargs,
-        learner_kwargs
+        # The name or path of the pretrained model you want to fine-tune
+        pretrained_model_name_or_path:Optional[Union[str, os.PathLike]],
+        # A function to perform any preprocessing required for your Dataset
+        preprocess_func:Callable=None,
+        # The maximum sequence length to constrain our data
+        max_seq_len:int=None,
+        # The attribute in your dataset that contains the context (where the answer is included) (default: 'context')
+        context_attr:str='context',
+        # The attribute in your dataset that contains the question being asked (default: 'question')
+        question_attr:str='question',
+        # The attribute in your dataset that contains the actual answer (default: 'answer_text')
+        answer_text_attr:str='answer_text',
+        # The attribute in your dataset that contains the tokenized answer start (default: 'tok_answer_start')
+        tok_ans_start_attr:str='tok_answer_start',
+        # The attribute in your dataset that contains the tokenized answer end(default: 'tok_answer_end')
+        tok_ans_end_attr:str='tok_answer_end',
+        # A function that will split your Dataset into a training and validation set
+        # See [here](https://docs.fast.ai/data.transforms.html#Split) for a list of fast.ai splitters
+        dblock_splitter:Callable=RandomSplitter(),
+        # Any kwargs to pass to your `DataLoaders`
+        dl_kwargs={},
+        # Any kwargs to pass to your task specific `Blearner`
+        learner_kwargs={}
     ):
         hf_arch, hf_config, hf_tokenizer, hf_model = BLURR.get_hf_objects(pretrained_model_name_or_path,
                                                                           model_cls=cls.get_model_cls())
@@ -203,17 +235,30 @@ class BlearnerForQuestionAnswering(Blearner):
     @classmethod
     def from_dataframe(
         cls,
-        df,
-        pretrained_model_name_or_path,
-        preprocess_func=None,
-        max_seq_len=None,
-        context_attr='context',
-        question_attr='question',
-        answer_text_attr='answer_text',
-        tok_ans_start_attr='tok_answer_start',
-        tok_ans_end_attr='tok_answer_end',
-        dblock_splitter=ColSplitter(),
+        # Your pandas DataFrame
+        df:pd.DataFrame,
+        # The name or path of the pretrained model you want to fine-tune
+        pretrained_model_name_or_path:Optional[Union[str, os.PathLike]],
+        # A function to perform any preprocessing required for your Dataset
+        preprocess_func:Callable=None,
+        # The maximum sequence length to constrain our data
+        max_seq_len:int=None,
+        # The attribute in your dataset that contains the context (where the answer is included) (default: 'context')
+        context_attr:str='context',
+        # The attribute in your dataset that contains the question being asked (default: 'question')
+        question_attr:str='question',
+        # The attribute in your dataset that contains the actual answer (default: 'answer_text')
+        answer_text_attr:str='answer_text',
+        # The attribute in your dataset that contains the tokenized answer start (default: 'tok_answer_start')
+        tok_ans_start_attr:str='tok_answer_start',
+        # The attribute in your dataset that contains the tokenized answer end(default: 'tok_answer_end')
+        tok_ans_end_attr:str='tok_answer_end',
+        # A function that will split your Dataset into a training and validation set
+        # See [here](https://docs.fast.ai/data.transforms.html#Split) for a list of fast.ai splitters
+        dblock_splitter:Callable=ColSplitter(),
+        # Any kwargs to pass to your `DataLoaders`
         dl_kwargs={},
+        # Any kwargs to pass to your task specific `Blearner`
         learner_kwargs={}
     ):
         return cls._create_learner(df, pretrained_model_name_or_path, preprocess_func, max_seq_len,
@@ -224,17 +269,30 @@ class BlearnerForQuestionAnswering(Blearner):
     @classmethod
     def from_csv(
         cls,
-        csv_file,
-        pretrained_model_name_or_path,
-        preprocess_func=None,
-        max_seq_len=None,
-        context_attr='context',
-        question_attr='question',
-        answer_text_attr='answer_text',
-        tok_ans_start_attr='tok_answer_start',
-        tok_ans_end_attr='tok_answer_end',
-        dblock_splitter=ColSplitter(),
+        # The path to your csv file
+        csv_file:Union[Path, str],
+        # The name or path of the pretrained model you want to fine-tune
+        pretrained_model_name_or_path:Optional[Union[str, os.PathLike]],
+        # A function to perform any preprocessing required for your Dataset
+        preprocess_func:Callable=None,
+        # The maximum sequence length to constrain our data
+        max_seq_len:int=None,
+        # The attribute in your dataset that contains the context (where the answer is included) (default: 'context')
+        context_attr:str='context',
+        # The attribute in your dataset that contains the question being asked (default: 'question')
+        question_attr:str='question',
+        # The attribute in your dataset that contains the actual answer (default: 'answer_text')
+        answer_text_attr:str='answer_text',
+        # The attribute in your dataset that contains the tokenized answer start (default: 'tok_answer_start')
+        tok_ans_start_attr:str='tok_answer_start',
+        # The attribute in your dataset that contains the tokenized answer end(default: 'tok_answer_end')
+        tok_ans_end_attr:str='tok_answer_end',
+        # A function that will split your Dataset into a training and validation set
+        # See [here](https://docs.fast.ai/data.transforms.html#Split) for a list of fast.ai splitters
+        dblock_splitter:Callable=ColSplitter(),
+        # Any kwargs to pass to your `DataLoaders`
         dl_kwargs={},
+        # Any kwargs to pass to your task specific `Blearner`
         learner_kwargs={}
     ):
         df = pd.read_csv(csv_file)
@@ -247,17 +305,30 @@ class BlearnerForQuestionAnswering(Blearner):
     @classmethod
     def from_dictionaries(
         cls,
-        ds,
-        pretrained_model_name_or_path,
-        preprocess_func=None,
-        max_seq_len=None,
-        context_attr='context',
-        question_attr='question',
-        answer_text_attr='answer_text',
-        tok_ans_start_attr='tok_answer_start',
-        tok_ans_end_attr='tok_answer_end',
-        dblock_splitter=ColSplitter(),
+        # A list of dictionaries
+        ds:List[Dict],
+        # The name or path of the pretrained model you want to fine-tune
+        pretrained_model_name_or_path:Optional[Union[str, os.PathLike]],
+        # A function to perform any preprocessing required for your Dataset
+        preprocess_func:Callable=None,
+        # The maximum sequence length to constrain our data
+        max_seq_len:int=None,
+        # The attribute in your dataset that contains the context (where the answer is included) (default: 'context')
+        context_attr:str='context',
+        # The attribute in your dataset that contains the question being asked (default: 'question')
+        question_attr:str='question',
+        # The attribute in your dataset that contains the actual answer (default: 'answer_text')
+        answer_text_attr:str='answer_text',
+        # The attribute in your dataset that contains the tokenized answer start (default: 'tok_answer_start')
+        tok_ans_start_attr:str='tok_answer_start',
+        # The attribute in your dataset that contains the tokenized answer end(default: 'tok_answer_end')
+        tok_ans_end_attr:str='tok_answer_end',
+        # A function that will split your Dataset into a training and validation set
+        # See [here](https://docs.fast.ai/data.transforms.html#Split) for a list of fast.ai splitters
+        dblock_splitter:Callable=RandomSplitter(),
+        # Any kwargs to pass to your `DataLoaders`
         dl_kwargs={},
+        # Any kwargs to pass to your task specific `Blearner`
         learner_kwargs={}
     ):
         return cls._create_learner(ds, pretrained_model_name_or_path, preprocess_func, max_seq_len,

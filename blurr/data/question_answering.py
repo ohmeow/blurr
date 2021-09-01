@@ -7,11 +7,15 @@ import ast
 from functools import reduce
 
 from fastcore.all import *
+from fastai.data.block import DataBlock, CategoryBlock, ColReader, ColSplitter
 from fastai.imports import *
 from fastai.losses import CrossEntropyLossFlat
 from fastai.torch_core import *
 from fastai.torch_imports import *
-from transformers import AutoModelForQuestionAnswering, logging
+from transformers import (
+    AutoModelForQuestionAnswering, logging,
+    PretrainedConfig, PreTrainedTokenizerBase, PreTrainedModel
+)
 
 from ..utils import BLURR
 from .core import HF_BaseInput, HF_BeforeBatchTransform, first_blurr_tfm
@@ -20,12 +24,18 @@ logging.set_verbosity_error()
 
 # Cell
 def pre_process_squad(
+    # A row in your pd.DataFrame
     row,
-    hf_arch,
-    hf_tokenizer,
-    ctx_attr='context',
-    qst_attr='question',
-    ans_attr='answer_text'
+    # The abbreviation/name of your Hugging Face transformer architecture (e.b., bert, bart, etc..)
+    hf_arch:str,
+    # A Hugging Face tokenizer
+    hf_tokenizer:PreTrainedTokenizerBase,
+    # The attribute in your dataset that contains the context (where the answer is included) (default: 'context')
+    ctx_attr:str='context',
+    # The attribute in your dataset that contains the question being asked (default: 'question')
+    qst_attr:str='question',
+    # The attribute in your dataset that contains the actual answer (default: 'answer_text')
+    ans_attr:str='answer_text'
 ):
     context, qst, ans = row[ctx_attr], row[qst_attr], row[ans_attr]
 
@@ -58,17 +68,38 @@ class HF_QuestionAnswerInput(HF_BaseInput): pass
 
 # Cell
 class HF_QABeforeBatchTransform(HF_BeforeBatchTransform):
+    """Handles everything you need to assemble a mini-batch of inputs and targets, as well as
+    decode the dictionary produced as a byproduct of the tokenization process in the `encodes` method.
+    """
     def __init__(
         self,
-        hf_arch,
-        hf_config,
-        hf_tokenizer,
-        hf_model,
-        max_length=None,
-        padding=True,
-        truncation=True,
-        is_split_into_words=False,
+        # The abbreviation/name of your Hugging Face transformer architecture (e.b., bert, bart, etc..)
+        hf_arch:str,
+        # A specific configuration instance you want to use
+        hf_config:PretrainedConfig,
+        # A Hugging Face tokenizer
+        hf_tokenizer:PreTrainedTokenizerBase,
+        # A Hugging Face model
+        hf_model:PreTrainedModel,
+        # To control the length of the padding/truncation. It can be an integer or None,
+        # in which case it will default to the maximum length the model can accept. If the model has no
+        # specific maximum input length, truncation/padding to max_length is deactivated.
+        # See [Everything you always wanted to know about padding and truncation](https://huggingface.co/transformers/preprocessing.html#everything-you-always-wanted-to-know-about-padding-and-truncation)
+        max_length:int=None,
+        # To control the `padding` applied to your `hf_tokenizer` during tokenization. If None, will default to
+        # `False` or `'do_not_pad'.
+        # See [Everything you always wanted to know about padding and truncation](https://huggingface.co/transformers/preprocessing.html#everything-you-always-wanted-to-know-about-padding-and-truncation)
+        padding:Union[bool, str]=True,
+        # To control `truncation` applied to your `hf_tokenizer` during tokenization. If None, will default to
+        # `False` or `do_not_truncate`.
+        # See [Everything you always wanted to know about padding and truncation](https://huggingface.co/transformers/preprocessing.html#everything-you-always-wanted-to-know-about-padding-and-truncation)
+        truncation:Union[bool, str]=True,
+        # The `is_split_into_words` argument applied to your `hf_tokenizer` during tokenization. Set this to `True`
+        # if your inputs are pre-tokenized (not numericalized)
+        is_split_into_words:bool=False,
+        # Any other keyword arguments you want included when using your `hf_tokenizer` to tokenize your inputs
         tok_kwargs={},
+        # Keyword arguments to apply to `HF_BeforeBatchTransform`
         **kwargs
     ):
         super().__init__(hf_arch, hf_config, hf_tokenizer, hf_model,
@@ -88,13 +119,22 @@ class HF_QABeforeBatchTransform(HF_BeforeBatchTransform):
 # Cell
 @typedispatch
 def show_batch(
+    # This typedispatched `show_batch` will be called for `HF_QuestionAnswerInput` typed inputs
     x:HF_QuestionAnswerInput,
+    # Your targets
     y,
+    # Your raw inputs/targets
     samples,
+    # Your `DataLoaders`. This is required so as to get at the Hugging Face objects for
+    # decoding them into something understandable
     dataloaders,
+    # Your `show_batch` context
     ctxs=None,
+    # The maximum number of items to show
     max_n=6,
+    # Any truncation your want applied to your decoded inputs
     trunc_at=None,
+    # Any other keyword arguments you want applied to `show_batch`
     **kwargs
 ):
     # grab our tokenizer

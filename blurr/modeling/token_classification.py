@@ -9,6 +9,7 @@ from typing import Any, Callable, Dict, List, Optional, Union, Type
 from fastcore.all import *
 from fastai.callback.all import *
 from fastai.data.block import DataBlock, ColReader, ItemGetter, ColSplitter, RandomSplitter
+from fastai.data.core import DataLoader, DataLoaders, TfmdDL
 from fastai.imports import *
 from fastai.learner import *
 from fastai.losses import CrossEntropyLossFlat
@@ -246,7 +247,12 @@ def blurr_predict_tokens(
 @delegates(Blearner.__init__)
 class BlearnerForTokenClassification(Blearner):
 
-    def __init__(self, dls, hf_model, **kwargs):
+    def __init__(
+        self,
+        dls:DataLoaders,
+        hf_model:PreTrainedModel,
+        **kwargs
+    ):
         super().__init__(dls, hf_model, **kwargs)
 
     @classmethod

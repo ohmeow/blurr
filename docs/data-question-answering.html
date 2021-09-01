@@ -63,30 +63,10 @@ nb_path: "nbs/04_data-question-answering.ipynb"
 <div class="output_area">
 
 <div class="output_subarea output_stream output_stdout output_text">
-<pre>torch: 1.7.1
+<pre>What we&#39;re running with at the time this documentation was generated:
+torch: 1.7.1
 fastai: 2.5.0
 transformers: 4.9.2
-</pre>
-</div>
-</div>
-
-</div>
-</div>
-
-</div>
-    {% endraw %}
-
-    {% raw %}
-    
-<div class="cell border-box-sizing code_cell rendered">
-
-<div class="output_wrapper">
-<div class="output">
-
-<div class="output_area">
-
-<div class="output_subarea output_stream output_stdout output_text">
-<pre>Using GPU #1: GeForce GTX 1080 Ti
 </pre>
 </div>
 </div>
@@ -119,22 +99,6 @@ transformers: 4.9.2
 </div>
 </div>
 
-<div class="output_wrapper">
-<div class="output">
-
-<div class="output_area">
-
-
-
-<div class="output_text output_subarea output_execute_result">
-<pre>1000</pre>
-</div>
-
-</div>
-
-</div>
-</div>
-
 </div>
     {% endraw %}
 
@@ -156,74 +120,6 @@ transformers: 4.9.2
 </pre></div>
 
     </div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-<div class="output_area">
-
-
-<div class="output_html rendered_html output_subarea output_execute_result">
-<div>
-<style scoped>
-    .dataframe tbody tr th:only-of-type {
-        vertical-align: middle;
-    }
-
-    .dataframe tbody tr th {
-        vertical-align: top;
-    }
-
-    .dataframe thead th {
-        text-align: right;
-    }
-</style>
-<table border="1" class="dataframe">
-  <thead>
-    <tr style="text-align: right;">
-      <th></th>
-      <th>id</th>
-      <th>title</th>
-      <th>context</th>
-      <th>question</th>
-      <th>answers</th>
-      <th>ds_type</th>
-      <th>answer_text</th>
-      <th>is_impossible</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th>0</th>
-      <td>56be85543aeaaa14008c9063</td>
-      <td>Beyoncé</td>
-      <td>Beyoncé Giselle Knowles-Carter (/biːˈjɒnseɪ/ bee-YON-say) (born September 4, 1981) is an American singer, songwriter, record producer and actress. Born and raised in Houston, Texas, she performed in various singing and dancing competitions as a child, and rose to fame in the late 1990s as lead singer of R&amp;B girl-group Destiny's Child. Managed by her father, Mathew Knowles, the group became one of the world's best-selling girl groups of all time. Their hiatus saw the release of Beyoncé's debut album, Dangerously in Love (2003), which established her as a solo artist worldwide, earned five G...</td>
-      <td>When did Beyonce start becoming popular?</td>
-      <td>{'text': ['in the late 1990s'], 'answer_start': [269]}</td>
-      <td>train</td>
-      <td>in the late 1990s</td>
-      <td>False</td>
-    </tr>
-    <tr>
-      <th>1</th>
-      <td>56be85543aeaaa14008c9065</td>
-      <td>Beyoncé</td>
-      <td>Beyoncé Giselle Knowles-Carter (/biːˈjɒnseɪ/ bee-YON-say) (born September 4, 1981) is an American singer, songwriter, record producer and actress. Born and raised in Houston, Texas, she performed in various singing and dancing competitions as a child, and rose to fame in the late 1990s as lead singer of R&amp;B girl-group Destiny's Child. Managed by her father, Mathew Knowles, the group became one of the world's best-selling girl groups of all time. Their hiatus saw the release of Beyoncé's debut album, Dangerously in Love (2003), which established her as a solo artist worldwide, earned five G...</td>
-      <td>What areas did Beyonce compete in when she was growing up?</td>
-      <td>{'text': ['singing and dancing'], 'answer_start': [207]}</td>
-      <td>train</td>
-      <td>singing and dancing</td>
-      <td>False</td>
-    </tr>
-  </tbody>
-</table>
-</div>
-</div>
-
-</div>
-
 </div>
 </div>
 
@@ -254,6 +150,13 @@ transformers: 4.9.2
     
 <div class="cell border-box-sizing code_cell rendered">
 
+</div>
+    {% endraw %}
+
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+
 <div class="output_wrapper">
 <div class="output">
 
@@ -261,22 +164,26 @@ transformers: 4.9.2
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h4 id="pre_process_squad" class="doc_header"><code>pre_process_squad</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/data/question_answering.py#L22" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>pre_process_squad</code>(<strong><code>row</code></strong>, <strong><code>hf_arch</code></strong>, <strong><code>hf_tokenizer</code></strong>, <strong><code>ctx_attr</code></strong>=<em><code>'context'</code></em>, <strong><code>qst_attr</code></strong>=<em><code>'question'</code></em>, <strong><code>ans_attr</code></strong>=<em><code>'answer_text'</code></em>)</p>
+<h4 id="pre_process_squad" class="doc_header"><code>pre_process_squad</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/data/question_answering.py#L26" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>pre_process_squad</code>(<strong><code>row</code></strong>, <strong><code>hf_arch</code></strong>:<code>str</code>, <strong><code>hf_tokenizer</code></strong>:<code>PreTrainedTokenizerBase</code>, <strong><code>ctx_attr</code></strong>:<code>str</code>=<em><code>'context'</code></em>, <strong><code>qst_attr</code></strong>:<code>str</code>=<em><code>'question'</code></em>, <strong><code>ans_attr</code></strong>:<code>str</code>=<em><code>'answer_text'</code></em>)</p>
 </blockquote>
 <p><strong>Parameters:</strong></p>
 <ul>
-<li><p><strong><code>row</code></strong> : <em><code>&lt;class 'inspect._empty'&gt;</code></em></p>
-</li>
-<li><p><strong><code>hf_arch</code></strong> : <em><code>&lt;class 'inspect._empty'&gt;</code></em></p>
-</li>
-<li><p><strong><code>hf_tokenizer</code></strong> : <em><code>&lt;class 'inspect._empty'&gt;</code></em></p>
-</li>
-<li><p><strong><code>ctx_attr</code></strong> : <em><code>&lt;class 'str'&gt;</code></em>, <em>optional</em></p>
-</li>
-<li><p><strong><code>qst_attr</code></strong> : <em><code>&lt;class 'str'&gt;</code></em>, <em>optional</em></p>
-</li>
-<li><p><strong><code>ans_attr</code></strong> : <em><code>&lt;class 'str'&gt;</code></em>, <em>optional</em></p>
-</li>
+<li><strong><code>row</code></strong> : <em><code>&lt;class 'inspect._empty'&gt;</code></em> <p>A row in your pd.DataFrame</p></li>
+</ul>
+<ul>
+<li><strong><code>hf_arch</code></strong> : <em><code>&lt;class 'str'&gt;</code></em>    <p>The abbreviation/name of your Hugging Face transformer architecture (e.b., bert, bart, etc..)</p></li>
+</ul>
+<ul>
+<li><strong><code>hf_tokenizer</code></strong> : <em><code>&lt;class 'transformers.tokenization_utils_base.PreTrainedTokenizerBase'&gt;</code></em>  <p>A Hugging Face tokenizer</p></li>
+</ul>
+<ul>
+<li><strong><code>ctx_attr</code></strong> : <em><code>&lt;class 'str'&gt;</code></em>, <em>optional</em>   <p>The attribute in your dataset that contains the context (where the answer is included) (default: 'context')</p></li>
+</ul>
+<ul>
+<li><strong><code>qst_attr</code></strong> : <em><code>&lt;class 'str'&gt;</code></em>, <em>optional</em>   <p>The attribute in your dataset that contains the question being asked (default: 'question')</p></li>
+</ul>
+<ul>
+<li><strong><code>ans_attr</code></strong> : <em><code>&lt;class 'str'&gt;</code></em>, <em>optional</em>   <p>The attribute in your dataset that contains the actual answer (default: 'answer_text')</p></li>
 </ul>
 
 </div>
@@ -285,13 +192,6 @@ transformers: 4.9.2
 
 </div>
 </div>
-
-</div>
-    {% endraw %}
-
-    {% raw %}
-    
-<div class="cell border-box-sizing code_cell rendered">
 
 </div>
     {% endraw %}
@@ -382,7 +282,7 @@ transformers: 4.9.2
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h2 id="HF_QuestionAnswerInput" class="doc_header"><code>class</code> <code>HF_QuestionAnswerInput</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/data/question_answering.py#L57" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>HF_QuestionAnswerInput</code>(<strong><code>x</code></strong>, <strong>**<code>kwargs</code></strong>) :: <a href="/blurr/data-core.html#HF_BaseInput"><code>HF_BaseInput</code></a></p>
+<h2 id="HF_QuestionAnswerInput" class="doc_header"><code>class</code> <code>HF_QuestionAnswerInput</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/data/question_answering.py#L67" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>HF_QuestionAnswerInput</code>(<strong><code>x</code></strong>, <strong>**<code>kwargs</code></strong>) :: <a href="/blurr/data-core.html#HF_BaseInput"><code>HF_BaseInput</code></a></p>
 </blockquote>
 <p>The base represenation of your inputs; used by the various fastai <code>show</code> methods</p>
 
@@ -421,32 +321,48 @@ transformers: 4.9.2
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h2 id="HF_QABeforeBatchTransform" class="doc_header"><code>class</code> <code>HF_QABeforeBatchTransform</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/data/question_answering.py#L60" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>HF_QABeforeBatchTransform</code>(<strong><code>hf_arch</code></strong>, <strong><code>hf_config</code></strong>, <strong><code>hf_tokenizer</code></strong>, <strong><code>hf_model</code></strong>, <strong><code>max_length</code></strong>=<em><code>None</code></em>, <strong><code>padding</code></strong>=<em><code>True</code></em>, <strong><code>truncation</code></strong>=<em><code>True</code></em>, <strong><code>is_split_into_words</code></strong>=<em><code>False</code></em>, <strong><code>tok_kwargs</code></strong>=<em><code>{}</code></em>, <strong>**<code>kwargs</code></strong>) :: <a href="/blurr/data-core.html#HF_BeforeBatchTransform"><code>HF_BeforeBatchTransform</code></a></p>
+<h2 id="HF_QABeforeBatchTransform" class="doc_header"><code>class</code> <code>HF_QABeforeBatchTransform</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/data/question_answering.py#L70" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>HF_QABeforeBatchTransform</code>(<strong><code>hf_arch</code></strong>:<code>str</code>, <strong><code>hf_config</code></strong>:<code>PretrainedConfig</code>, <strong><code>hf_tokenizer</code></strong>:<code>PreTrainedTokenizerBase</code>, <strong><code>hf_model</code></strong>:<code>PreTrainedModel</code>, <strong><code>max_length</code></strong>:<code>int</code>=<em><code>None</code></em>, <strong><code>padding</code></strong>:<code>Union</code>[<code>bool</code>, <code>str</code>]=<em><code>True</code></em>, <strong><code>truncation</code></strong>:<code>Union</code>[<code>bool</code>, <code>str</code>]=<em><code>True</code></em>, <strong><code>is_split_into_words</code></strong>:<code>bool</code>=<em><code>False</code></em>, <strong><code>tok_kwargs</code></strong>=<em><code>{}</code></em>, <strong>**<code>kwargs</code></strong>) :: <a href="/blurr/data-core.html#HF_BeforeBatchTransform"><code>HF_BeforeBatchTransform</code></a></p>
 </blockquote>
 <p>Handles everything you need to assemble a mini-batch of inputs and targets, as well as
 decode the dictionary produced as a byproduct of the tokenization process in the <code>encodes</code> method.</p>
 <p><strong>Parameters:</strong></p>
 <ul>
-<li><p><strong><code>hf_arch</code></strong> : <em><code>&lt;class 'inspect._empty'&gt;</code></em></p>
-</li>
-<li><p><strong><code>hf_config</code></strong> : <em><code>&lt;class 'inspect._empty'&gt;</code></em></p>
-</li>
-<li><p><strong><code>hf_tokenizer</code></strong> : <em><code>&lt;class 'inspect._empty'&gt;</code></em></p>
-</li>
-<li><p><strong><code>hf_model</code></strong> : <em><code>&lt;class 'inspect._empty'&gt;</code></em></p>
-</li>
-<li><p><strong><code>max_length</code></strong> : <em><code>&lt;class 'NoneType'&gt;</code></em>, <em>optional</em></p>
-</li>
-<li><p><strong><code>padding</code></strong> : <em><code>&lt;class 'bool'&gt;</code></em>, <em>optional</em></p>
-</li>
-<li><p><strong><code>truncation</code></strong> : <em><code>&lt;class 'bool'&gt;</code></em>, <em>optional</em></p>
-</li>
-<li><p><strong><code>is_split_into_words</code></strong> : <em><code>&lt;class 'bool'&gt;</code></em>, <em>optional</em></p>
-</li>
-<li><p><strong><code>tok_kwargs</code></strong> : <em><code>&lt;class 'dict'&gt;</code></em>, <em>optional</em></p>
-</li>
-<li><p><strong><code>kwargs</code></strong> : <em><code>&lt;class 'inspect._empty'&gt;</code></em></p>
-</li>
+<li><strong><code>hf_arch</code></strong> : <em><code>&lt;class 'str'&gt;</code></em>    <p>The abbreviation/name of your Hugging Face transformer architecture (e.b., bert, bart, etc..)</p></li>
+</ul>
+<ul>
+<li><strong><code>hf_config</code></strong> : <em><code>&lt;class 'transformers.configuration_utils.PretrainedConfig'&gt;</code></em>    <p>A specific configuration instance you want to use</p></li>
+</ul>
+<ul>
+<li><strong><code>hf_tokenizer</code></strong> : <em><code>&lt;class 'transformers.tokenization_utils_base.PreTrainedTokenizerBase'&gt;</code></em>  <p>A Hugging Face tokenizer</p></li>
+</ul>
+<ul>
+<li><strong><code>hf_model</code></strong> : <em><code>&lt;class 'transformers.modeling_utils.PreTrainedModel'&gt;</code></em>   <p>A Hugging Face model</p></li>
+</ul>
+<ul>
+<li><strong><code>max_length</code></strong> : <em><code>&lt;class 'int'&gt;</code></em>, <em>optional</em> <p>To control the length of the padding/truncation. It can be an integer or None,
+in which case it will default to the maximum length the model can accept. If the model has no
+specific maximum input length, truncation/padding to max_length is deactivated.
+See [Everything you always wanted to know about padding and truncation](https://huggingface.co/transformers/preprocessing.html#everything-you-always-wanted-to-know-about-padding-and-truncation)</p></li>
+</ul>
+<ul>
+<li><strong><code>padding</code></strong> : <em><code>typing.Union[bool, str]</code></em>, <em>optional</em>  <p>To control the `padding` applied to your `hf_tokenizer` during tokenization. If None, will default to
+`False` or `'do_not_pad'.
+See [Everything you always wanted to know about padding and truncation](https://huggingface.co/transformers/preprocessing.html#everything-you-always-wanted-to-know-about-padding-and-truncation)</p></li>
+</ul>
+<ul>
+<li><strong><code>truncation</code></strong> : <em><code>typing.Union[bool, str]</code></em>, <em>optional</em>   <p>To control `truncation` applied to your `hf_tokenizer` during tokenization. If None, will default to
+`False` or `do_not_truncate`.
+See [Everything you always wanted to know about padding and truncation](https://huggingface.co/transformers/preprocessing.html#everything-you-always-wanted-to-know-about-padding-and-truncation)</p></li>
+</ul>
+<ul>
+<li><strong><code>is_split_into_words</code></strong> : <em><code>&lt;class 'bool'&gt;</code></em>, <em>optional</em>   <p>The `is_split_into_words` argument applied to your `hf_tokenizer` during tokenization. Set this to `True`
+if your inputs are pre-tokenized (not numericalized)</p></li>
+</ul>
+<ul>
+<li><strong><code>tok_kwargs</code></strong> : <em><code>&lt;class 'dict'&gt;</code></em>, <em>optional</em>    <p>Any other keyword arguments you want included when using your `hf_tokenizer` to tokenize your inputs</p></li>
+</ul>
+<ul>
+<li><strong><code>kwargs</code></strong> : <em><code>&lt;class 'inspect._empty'&gt;</code></em></li>
 </ul>
 
 </div>
@@ -535,22 +451,6 @@ decode the dictionary produced as a byproduct of the tokenization process in the
 </div>
 </div>
 
-<div class="output_wrapper">
-<div class="output">
-
-<div class="output_area">
-
-
-
-<div class="output_text output_subarea output_execute_result">
-<pre>(3, 5, 4, 4)</pre>
-</div>
-
-</div>
-
-</div>
-</div>
-
 </div>
     {% endraw %}
 
@@ -565,22 +465,6 @@ decode the dictionary produced as a byproduct of the tokenization process in the
 </pre></div>
 
     </div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-<div class="output_area">
-
-
-
-<div class="output_text output_subarea output_execute_result">
-<pre>(torch.Size([4, 128]), torch.Size([4, 128]), torch.Size([4]), torch.Size([4]))</pre>
-</div>
-
-</div>
-
 </div>
 </div>
 
@@ -612,44 +496,6 @@ decode the dictionary produced as a byproduct of the tokenization process in the
 </pre></div>
 
     </div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-<div class="output_area">
-
-
-<div class="output_html rendered_html output_subarea ">
-<table border="1" class="dataframe">
-  <thead>
-    <tr style="text-align: right;">
-      <th></th>
-      <th>text</th>
-      <th>start/end</th>
-      <th>answer</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th>0</th>
-      <td>In 2009, Beyonce started her second world tour and grossed how much money? On April 4, 2008, Beyoncé married Jay Z. She publicly revealed their marriage in a video montage at the listening party for her third studio album, I Am... Sasha Fierce, in Manhattan's Sony Club on October 22, 2008. I Am... Sasha Fierce was released on November 18, 2008 in the United States. The album formally introduces Beyoncé's alter ego Sasha Fierce, conceived during the making of her 2003 single "Crazy in Love", sel</td>
-      <td>(0, 0)</td>
-      <td></td>
-    </tr>
-    <tr>
-      <th>1</th>
-      <td>Beyonce got married in 2008 to whom? On April 4, 2008, Beyoncé married Jay Z. She publicly revealed their marriage in a video montage at the listening party for her third studio album, I Am... Sasha Fierce, in Manhattan's Sony Club on October 22, 2008. I Am... Sasha Fierce was released on November 18, 2008 in the United States. The album formally introduces Beyoncé's alter ego Sasha Fierce, conceived during the making of her 2003 single "Crazy in Love", selling 482,000 copies in its first week,</td>
-      <td>(21, 23)</td>
-      <td>Jay Z</td>
-    </tr>
-  </tbody>
-</table>
-</div>
-
-</div>
-
 </div>
 </div>
 
