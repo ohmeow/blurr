@@ -4,6 +4,7 @@ __all__ = ['calculate_token_class_metrics', 'HF_TokenClassMetricsCallback', 'Ble
 
 # Cell
 import os, ast, inspect
+from typing import Any, Callable, Dict, List, Optional, Union, Type
 
 from fastcore.all import *
 from fastai.callback.all import *
@@ -17,7 +18,10 @@ from fastai.torch_core import *
 from fastai.torch_imports import *
 from fastprogress.fastprogress import progress_bar,master_bar
 from seqeval import metrics as seq_metrics
-from transformers import AutoModelForTokenClassification, logging
+from transformers import (
+    AutoModelForTokenClassification, logging,
+    PretrainedConfig, PreTrainedTokenizerBase, PreTrainedModel
+)
 
 from ..utils import BLURR
 from ..data.core import HF_TextBlock, BlurrDataLoader, get_blurr_tfm, first_blurr_tfm
@@ -126,14 +130,24 @@ class HF_TokenClassMetricsCallback(Callback):
 # Cell
 @typedispatch
 def show_results(
+    # This typedispatched `show_results` will be called for `HF_TokenClassInput` typed inputs
     x:HF_TokenClassInput,
+    # This typedispatched `show_results` will be called for `HF_TokenTensorCategory` typed targets
     y:HF_TokenTensorCategory,
+    # Your raw inputs/targets
     samples,
+    # The model's predictions
     outs,
+    # Your `Learner`. This is required so as to get at the Hugging Face objects for decoding them into
+    # something understandable
     learner,
+    # Your `show_results` context
     ctxs=None,
+    # The maximum number of items to show
     max_n=6,
+     # Any truncation your want applied to your decoded inputs
     trunc_at=None,
+    # Any other keyword arguments you want applied to `show_results`
     **kwargs
 ):
     tfm = first_blurr_tfm(learner.dls, before_batch_tfm_class=HF_TokenClassBeforeBatchTransform)
@@ -157,9 +171,12 @@ def show_results(
 
 # Cell
 def _blurr_predict_tokens(
-    predict_func,
-    items,
-    tfm
+    # The function to do the base predictions (default: self.blurr_predict)
+    predict_func:Callable,
+    # The str (or list of strings) you want to get token classification predictions for
+    items:Union[str, List[str]],
+    # The Blurr Transform with information about the Hugging Face objects used in your training
+    tfm:Transform
 ):
     """Remove all the unnecessary predicted tokens after calling `Learner.blurr_predict` or `blurrONNX.predict.
     Aligns the predicted labels, label ids, and probabilities with what you passed in excluding subword tokens
@@ -215,7 +232,13 @@ def _blurr_predict_tokens(
 
 # Cell
 @patch
-def blurr_predict_tokens(self:Learner, items, **kargs):
+def blurr_predict_tokens(
+    self:Learner,
+    # The str (or list of strings) you want to get token classification predictions for
+    items:Union[str, List[str]],
+    # Keyword arguments for `blurr_predict_tokens`
+    **kwargs
+):
     tfm = first_blurr_tfm(self.dls, before_batch_tfm_class=HF_TokenClassBeforeBatchTransform)
     return _blurr_predict_tokens(self.blurr_predict, items, tfm)
 
@@ -241,15 +264,25 @@ class BlearnerForTokenClassification(Blearner):
     @classmethod
     def _create_learner(
         cls,
+        # Your raw dataset
         data,
-        pretrained_model_name_or_path,
-        preprocess_func,
-        tokens_attr,
-        token_labels_attr,
-        labels,
-        dblock_splitter,
-        dl_kwargs,
-        learner_kwargs
+        # The name or path of the pretrained model you want to fine-tune
+        pretrained_model_name_or_path:Optional[Union[str, os.PathLike]],
+        # A function to perform any preprocessing required for your Dataset
+        preprocess_func:Callable=None,
+        # The attribute in your dataset that contains a list of your tokens
+        tokens_attr:List[str]='tokens',
+        # The attribute in your dataset that contains the entity labels for each token in your raw text
+        token_labels_attr:List[str]='token_labels',
+        # The unique entity labels (or vocab) available in your dataset
+        labels:List[str]=None,
+        # A function that will split your Dataset into a training and validation set
+        # See [here](https://docs.fast.ai/data.transforms.html#Split) for a list of fast.ai splitters
+        dblock_splitter:Callable=RandomSplitter(),
+        # Any kwargs to pass to your `DataLoaders`
+        dl_kwargs={},
+        # Any kwargs to pass to your task specific `Blearner`
+        learner_kwargs={}
     ):
         # get our hf objects
         n_labels = len(labels)
@@ -296,15 +329,25 @@ class BlearnerForTokenClassification(Blearner):
 
     @classmethod
     def from_dataframe(
-        cls,
-        df,
-        pretrained_model_name_or_path,
-        preprocess_func=None,
-        tokens_attr='tokens',
-        token_labels_attr='token_labels',
-        labels=None,
-        dblock_splitter=ColSplitter(),
+         cls,
+        # Your pandas DataFrame
+        df:pd.DataFrame,
+        # The name or path of the pretrained model you want to fine-tune
+        pretrained_model_name_or_path:Optional[Union[str, os.PathLike]],
+        # A function to perform any preprocessing required for your Dataset
+        preprocess_func:Callable=None,
+        # The attribute in your dataset that contains a list of your tokens
+        tokens_attr:List[str]='tokens',
+        # The attribute in your dataset that contains the entity labels for each token in your raw text
+        token_labels_attr:List[str]='token_labels',
+        # The unique entity labels (or vocab) available in your dataset
+        labels:List[str]=None,
+        # A function that will split your Dataset into a training and validation set
+        # See [here](https://docs.fast.ai/data.transforms.html#Split) for a list of fast.ai splitters
+        dblock_splitter:Callable=ColSplitter(),
+        # Any kwargs to pass to your `DataLoaders`
         dl_kwargs={},
+        # Any kwargs to pass to your task specific `Blearner`
         learner_kwargs={}
     ):
         # we need to tell transformer how many labels/classes to expect
@@ -319,14 +362,24 @@ class BlearnerForTokenClassification(Blearner):
     @classmethod
     def from_csv(
         cls,
-        csv_file,
-        pretrained_model_name_or_path,
-        preprocess_func=None,
-        tokens_attr='tokens',
-        token_labels_attr='labels',
-        labels=None,
-        dblock_splitter=ColSplitter(),
+        # The path to your csv file
+        csv_file:Union[Path, str],
+        # The name or path of the pretrained model you want to fine-tune
+        pretrained_model_name_or_path:Optional[Union[str, os.PathLike]],
+        # A function to perform any preprocessing required for your Dataset
+        preprocess_func:Callable=None,
+        # The attribute in your dataset that contains a list of your tokens
+        tokens_attr:List[str]='tokens',
+        # The attribute in your dataset that contains the entity labels for each token in your raw text
+        token_labels_attr:List[str]='token_labels',
+        # The unique entity labels (or vocab) available in your dataset
+        labels:List[str]=None,
+        # A function that will split your Dataset into a training and validation set
+        # See [here](https://docs.fast.ai/data.transforms.html#Split) for a list of fast.ai splitters
+        dblock_splitter:Callable=ColSplitter(),
+        # Any kwargs to pass to your `DataLoaders`
         dl_kwargs={},
+        # Any kwargs to pass to your task specific `Blearner`
         learner_kwargs={}
     ):
         df = pd.read_csv(csv_file)
@@ -341,14 +394,24 @@ class BlearnerForTokenClassification(Blearner):
     @classmethod
     def from_dictionaries(
         cls,
-        ds,
-        pretrained_model_name_or_path,
-        preprocess_func=None,
-        tokens_attr='tokens',
-        token_labels_attr='token_labels',
-        labels=None,
-        dblock_splitter=RandomSplitter(),
+        # A list of dictionaries
+        ds:List[Dict],
+        # The name or path of the pretrained model you want to fine-tune
+        pretrained_model_name_or_path:Optional[Union[str, os.PathLike]],
+        # A function to perform any preprocessing required for your Dataset
+        preprocess_func:Callable=None,
+        # The attribute in your dataset that contains a list of your tokens
+        tokens_attr:List[str]='tokens',
+        # The attribute in your dataset that contains the entity labels for each token in your raw text
+        token_labels_attr:List[str]='token_labels',
+        # The unique entity labels (or vocab) available in your dataset
+        labels:List[str]=None,
+        # A function that will split your Dataset into a training and validation set
+        # See [here](https://docs.fast.ai/data.transforms.html#Split) for a list of fast.ai splitters
+        dblock_splitter:Callable=RandomSplitter(),
+        # Any kwargs to pass to your `DataLoaders`
         dl_kwargs={},
+        # Any kwargs to pass to your task specific `Blearner`
         learner_kwargs={}
     ):
 
