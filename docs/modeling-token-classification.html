@@ -53,6 +53,30 @@ nb_path: "nbs/03_modeling-token-classification.ipynb"
 </div>
     {% endraw %}
 
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>What we&#39;re running with at the time this documentation was generated:
+torch: 1.7.1
+fastai: 2.5.2
+transformers: 4.9.2
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+    {% endraw %}
+
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <h2 id="Token-classification">Token classification<a class="anchor-link" href="#Token-classification"> </a></h2><p>The objective of token classification is to predict the correct label for each token provided in the input. In the computer vision world, this is akin to what we do in segmentation tasks whereby we attempt to predict the class/label for each pixel in an image. Named entity recognition (NER) is an example of token classification in the NLP space</p>
@@ -431,6 +455,15 @@ nb_path: "nbs/03_modeling-token-classification.ipynb"
 <div class="output_markdown rendered_html output_subarea ">
 <h4 id="calculate_token_class_metrics" class="doc_header"><code>calculate_token_class_metrics</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/modeling/token_classification.py#L38" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>calculate_token_class_metrics</code>(<strong><code>pred_toks</code></strong>, <strong><code>targ_toks</code></strong>, <strong><code>metric_key</code></strong>)</p>
 </blockquote>
+<p><strong>Parameters:</strong></p>
+<ul>
+<li><p><strong><code>pred_toks</code></strong> : <em><code>&lt;class 'inspect._empty'&gt;</code></em></p>
+</li>
+<li><p><strong><code>targ_toks</code></strong> : <em><code>&lt;class 'inspect._empty'&gt;</code></em></p>
+</li>
+<li><p><strong><code>metric_key</code></strong> : <em><code>&lt;class 'inspect._empty'&gt;</code></em></p>
+</li>
+</ul>
 
 </div>
 
@@ -472,6 +505,13 @@ nb_path: "nbs/03_modeling-token-classification.ipynb"
 <code>seqeval</code> library.  Additionally, this metric knows how to <em>not</em> include your 'ignore_token' in it's
 calculations.</p>
 <p>See <a href="https://github.com/chakki-works/seqeval">here</a> for more information on <code>seqeval</code>.</p>
+<p><strong>Parameters:</strong></p>
+<ul>
+<li><p><strong><code>tok_metrics</code></strong> : <em><code>&lt;class 'list'&gt;</code></em>, <em>optional</em></p>
+</li>
+<li><p><strong><code>kwargs</code></strong> : <em><code>&lt;class 'inspect._empty'&gt;</code></em></p>
+</li>
+</ul>
 
 </div>
 
@@ -946,6 +986,13 @@ calculations.</p>
 <div class="output_markdown rendered_html output_subarea ">
 <h4 id="Learner.blurr_predict_tokens" class="doc_header"><code>Learner.blurr_predict_tokens</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/modeling/token_classification.py#L235" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>Learner.blurr_predict_tokens</code>(<strong><code>items</code></strong>:<code>Union</code>[<code>str</code>, <code>List</code>[<code>str</code>]], <strong>**<code>kwargs</code></strong>)</p>
 </blockquote>
+<p><strong>Parameters:</strong></p>
+<ul>
+<li><strong><code>items</code></strong> : <em><code>typing.Union[str, typing.List[str]]</code></em>    <p>The str (or list of strings) you want to get token classification predictions for</p></li>
+</ul>
+<ul>
+<li><strong><code>kwargs</code></strong> : <em><code>&lt;class 'inspect._empty'&gt;</code></em></li>
+</ul>
 
 </div>
 
@@ -1137,6 +1184,15 @@ calculations.</p>
 <h2 id="BlearnerForTokenClassification" class="doc_header"><code>class</code> <code>BlearnerForTokenClassification</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/modeling/token_classification.py#L247" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>BlearnerForTokenClassification</code>(<strong><code>dls</code></strong>:<code>DataLoaders</code>, <strong><code>hf_model</code></strong>:<code>PreTrainedModel</code>, <strong><code>base_model_cb</code></strong>:<a href="/blurr/modeling-core.html#HF_BaseModelCallback"><code>HF_BaseModelCallback</code></a>=<em><code>HF_BaseModelCallback</code></em>, <strong><code>loss_func</code></strong>=<em><code>None</code></em>, <strong><code>opt_func</code></strong>=<em><code>Adam</code></em>, <strong><code>lr</code></strong>=<em><code>0.001</code></em>, <strong><code>splitter</code></strong>=<em><code>trainable_params</code></em>, <strong><code>cbs</code></strong>=<em><code>None</code></em>, <strong><code>metrics</code></strong>=<em><code>None</code></em>, <strong><code>path</code></strong>=<em><code>None</code></em>, <strong><code>model_dir</code></strong>=<em><code>'models'</code></em>, <strong><code>wd</code></strong>=<em><code>None</code></em>, <strong><code>wd_bn_bias</code></strong>=<em><code>False</code></em>, <strong><code>train_bn</code></strong>=<em><code>True</code></em>, <strong><code>moms</code></strong>=<em><code>(0.95, 0.85, 0.95)</code></em>) :: <a href="/blurr/modeling-core.html#Blearner"><code>Blearner</code></a></p>
 </blockquote>
 <p>Group together a <code>model</code>, some <code>dls</code> and a <code>loss_func</code> to handle training</p>
+<p><strong>Parameters:</strong></p>
+<ul>
+<li><p><strong><code>dls</code></strong> : <em><code>&lt;class 'fastai.data.core.DataLoaders'&gt;</code></em></p>
+</li>
+<li><p><strong><code>hf_model</code></strong> : <em><code>&lt;class 'transformers.modeling_utils.PreTrainedModel'&gt;</code></em></p>
+</li>
+<li><p><strong><code>kwargs</code></strong> : <em><code>&lt;class 'inspect._empty'&gt;</code></em></p>
+</li>
+</ul>
 
 </div>
 
