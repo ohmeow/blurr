@@ -134,7 +134,7 @@ nb_path: "nbs/10_data-seq2seq-core.ipynb"
 <div class="output_markdown rendered_html output_subarea ">
 <h2 id="HF_Seq2SeqInput" class="doc_header"><code>class</code> <code>HF_Seq2SeqInput</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/data/seq2seq/core.py#L19" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>HF_Seq2SeqInput</code>(<strong><code>x</code></strong>, <strong>**<code>kwargs</code></strong>) :: <a href="/blurr/data-core.html#HF_BaseInput"><code>HF_BaseInput</code></a></p>
 </blockquote>
-<p>A <code>Tensor</code> which support subclass pickling, and maintains metadata when casting or after methods</p>
+<p>The base represenation of your inputs; used by the various fastai <code>show</code> methods</p>
 
 </div>
 
@@ -304,9 +304,9 @@ decode the dictionary produced as a byproduct of the tokenization process in the
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h2 id="HF_Seq2SeqAfterBatchTransform" class="doc_header"><code>class</code> <code>HF_Seq2SeqAfterBatchTransform</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/data/seq2seq/core.py#L83" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>HF_Seq2SeqAfterBatchTransform</code>(<strong><code>hf_tokenizer</code></strong>, <strong><code>input_return_type</code></strong>=<em><code>HF_BaseInput</code></em>) :: <a href="/blurr/data-core.html#HF_AfterBatchTransform"><code>HF_AfterBatchTransform</code></a></p>
+<h2 id="HF_Seq2SeqAfterBatchTransform" class="doc_header"><code>class</code> <code>HF_Seq2SeqAfterBatchTransform</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/data/seq2seq/core.py#L83" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>HF_Seq2SeqAfterBatchTransform</code>(<strong><code>hf_tokenizer</code></strong>:<code>PreTrainedTokenizerBase</code>, <strong><code>input_return_type</code></strong>:<code>Type</code>=<em><code>HF_BaseInput</code></em>) :: <a href="/blurr/data-core.html#HF_AfterBatchTransform"><code>HF_AfterBatchTransform</code></a></p>
 </blockquote>
-<p>Delegates (<code>__call__</code>,<code>decode</code>,<code>setup</code>) to (<code>encodes</code>,<code>decodes</code>,<code>setups</code>) if <code>split_idx</code> matches</p>
+<p>A class used to cast your inputs into something understandable in fastai <code>show</code> methods</p>
 
 </div>
 
@@ -331,7 +331,7 @@ decode the dictionary produced as a byproduct of the tokenization process in the
 <div class="output_markdown rendered_html output_subarea ">
 <h2 id="HF_Seq2SeqBlock" class="doc_header"><code>class</code> <code>HF_Seq2SeqBlock</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/data/seq2seq/core.py#L89" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>HF_Seq2SeqBlock</code>(<strong><code>hf_arch</code></strong>=<em><code>None</code></em>, <strong><code>hf_config</code></strong>=<em><code>None</code></em>, <strong><code>hf_tokenizer</code></strong>=<em><code>None</code></em>, <strong><code>hf_model</code></strong>=<em><code>None</code></em>, <strong><code>before_batch_tfm</code></strong>=<em><code>None</code></em>, <strong><code>after_batch_tfm</code></strong>=<em><code>None</code></em>, <strong><code>max_length</code></strong>=<em><code>None</code></em>, <strong><code>max_target_length</code></strong>=<em><code>None</code></em>, <strong><code>padding</code></strong>=<em><code>True</code></em>, <strong><code>truncation</code></strong>=<em><code>True</code></em>, <strong><code>input_return_type</code></strong>=<em><code>HF_Seq2SeqInput</code></em>, <strong><code>dl_type</code></strong>=<em><code>SortedDL</code></em>, <strong><code>tok_kwargs</code></strong>=<em><code>{}</code></em>, <strong><code>text_gen_kwargs</code></strong>=<em><code>{}</code></em>, <strong><code>before_batch_kwargs</code></strong>=<em><code>{}</code></em>, <strong><code>after_batch_kwargs</code></strong>=<em><code>{}</code></em>, <strong>**<code>kwargs</code></strong>) :: <a href="/blurr/data-core.html#HF_TextBlock"><code>HF_TextBlock</code></a></p>
 </blockquote>
-<p>A basic wrapper that links defaults transforms for the data block API</p>
+<p>The core <code>TransformBlock</code> to prepare your data for training in Blurr with fastai's <code>DataBlock</code> API</p>
 
 </div>
 
