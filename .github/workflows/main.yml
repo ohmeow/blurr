@@ -1,33 +1,65 @@
 name: CI
-on: [push, pull_request]
+on:
+  workflow_dispatch:
+  pull_request:
+  push:
+    branches: [master]
+
+defaults:
+  run:
+    shell: bash
+
 jobs:
-  build:
+  nb-sync:
+    env:
+      HOME: /root
     runs-on: ubuntu-latest
+    container: fastai/jekyll
     steps:
-    - uses: actions/checkout@v1
-    - uses: actions/setup-python@v1
+    - uses: actions/checkout@v2
+    - run: pip install -qe .
+    - name: Check if notebooks are synced and cleaned
+      uses: fastai/workflows/nb@master
+
+  nbdev_test_nbs:
+    strategy:
+      fail-fast: false
+      matrix:
+        os:  [ubuntu, windows]
+        py:  [3.6, 3.7, 3.8]
+    runs-on: ${{ matrix.os }}-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python
+      uses: actions/setup-python@v2
       with:
-        python-version: '3.7'
-        architecture: 'x64'
-    - name: Install the library
+        python-version: ${{ matrix.py }}
+    - name: Setup Environment
       run: |
-        pip install nbdev jupyter
-        pip install -e .
-    - name: Read all notebooks
-      run: |
-        nbdev_read_nbs
-    - name: Check if all notebooks are cleaned
-      run: |
-        echo "Check we are starting with clean git checkout"
-        if [ -n "$(git status -uno -s)" ]; then echo "git status is not clean"; false; fi
-        echo "Trying to strip out notebooks"
-        nbdev_clean_nbs
-        echo "Check that strip out was unnecessary"
-        git status -s # display the status to see which nbs need cleaning up
-        if [ -n "$(git status -uno -s)" ]; then echo -e "!!! Detected unstripped out notebooks\n!!!Remember to run nbdev_install_git_hooks"; false; fi
-    - name: Check if there is no diff library/notebooks
-      run: |
-        if [ -n "$(nbdev_diff_nbs)" ]; then echo -e "!!! Detected difference between the notebooks and the library"; false; fi
+        pip install git+https://github.com/fastai/fastcore.git
+        pip install -qe .
     - name: Run tests
+      run: make test
+
+  fastpages-integration:
+    env:
+      HOME: /root
+    runs-on: ubuntu-latest
+    container: fastai/jekyll
+    steps:
+    - uses: actions/checkout@v2
+    - name: Install nbdev
       run: |
-        nbdev_test_nbs
+        pip install -qe .
+        pip install -qU fastcore   
+    - uses: actions/checkout@v2
+      with:
+        repository: "fastai/fastpages"
+        path: "data"
+    - name: convert posts  
+      run: |
+        cd data
+        mkdir -p /fastpages
+        cp -r _action_files/* /fastpages/
+        /fastpages/action_entrypoint.sh
+  
