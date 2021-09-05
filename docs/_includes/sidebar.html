@@ -2,6 +2,7 @@
 {% assign pageurl = page.url  | remove: ".html" %}
 
 <ul id="mysidebar" class="nav">
+  <li>{{relative_url}}</li>
   <li class="sidebarTitle">{{sidebar[0].product}} {{sidebar[0].version}}</li>
   {% for entry in sidebar %}
   {% for folder in entry.folders %}
@@ -16,7 +17,7 @@
           {% elsif pageurl == folderitem.url %}
           <li class="active"><a href="{{folderitem.url | relative_url}}">{{folderitem.title}}</a></li>
           {% elsif folderitem.type == "empty" %}
-          <li><a href="{{folderitem.url | relative_url}}">{{folderitem.title}}</a></li>
+          <li><a href="{{folderitem.url | relative_url}}">{{folderitem.title}}</a> </li>
 
           {% else %}
           <li><a href="{{folderitem.url | relative_url}}">{{folderitem.title}}</a></li>
