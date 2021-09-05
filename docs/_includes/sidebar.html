@@ -8,7 +8,7 @@
   {% for folder in entry.folders %}
   {% if folder.output contains "web" %}
   <li>
-      <a href="#">{{ folder.title }} {{folderitem.url | relative_url}}</a>
+      <a href="#">{{ folder.title }}</a>
       <ul>
           {% for folderitem in folder.folderitems %}
           {% if folderitem.output contains "web" %}
@@ -18,9 +18,8 @@
           <li class="active"><a href="{{folderitem.url | relative_url}}">{{folderitem.title}}</a></li>
           {% elsif folderitem.type == "empty" %}
           <li><a href="{{folderitem.url | relative_url}}">{{folderitem.title}}</a></li>
-
           {% else %}
-          <li><a href="{{folderitem.url | relative_url}}">{{folderitem.title}}</a></li>
+          <li><a href="{{folderitem.url | relative_url}}">{{folderitem.title}}</a> {{folderitem.url | relative_url}}</li>
           {% endif %}
           {% for subfolders in folderitem.subfolders %}
           {% if subfolders.output contains "web" %}
