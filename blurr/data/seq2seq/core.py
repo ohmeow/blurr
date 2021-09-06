@@ -6,12 +6,22 @@ __all__ = ['HF_Seq2SeqInput', 'default_text_gen_kwargs', 'HF_Seq2SeqBeforeBatchT
 # Cell
 from functools import reduce
 
-import torch
-from transformers import *
-from fastai.text.all import *
+from fastcore.all import *
+from fastai.data.block import DataBlock, CategoryBlock, ColReader, ColSplitter
+from fastai.imports import *
+from fastai.losses import CrossEntropyLossFlat
+from fastai.text.data import SortedDL
+from fastai.torch_core import *
+from fastai.torch_imports import *
+from transformers import (
+    AutoModelForCausalLM, AutoModelForMaskedLM, AutoModelForSeq2SeqLM, logging,
+    PretrainedConfig, PreTrainedTokenizerBase, PreTrainedModel
+)
 
-from ...utils import *
-from ..core import *
+from ...utils import BLURR
+from ..core import (
+    HF_TextBlock, HF_BaseInput, HF_BeforeBatchTransform, HF_AfterBatchTransform, first_blurr_tfm
+)
 
 logging.set_verbosity_error()
 
@@ -38,11 +48,46 @@ def default_text_gen_kwargs(hf_config, hf_model, task=None):
 # Cell
 class HF_Seq2SeqBeforeBatchTransform(HF_BeforeBatchTransform):
 
-    def __init__(self, hf_arch, hf_config, hf_tokenizer, hf_model,
-                 ignore_token_id=CrossEntropyLossFlat().ignore_index,
-                 max_length=None, max_target_length=None, padding=True, truncation=True,
-                 tok_kwargs={}, text_gen_kwargs={}, **kwargs):
-
+    def __init__(
+        self,
+        # The abbreviation/name of your Hugging Face transformer architecture (e.b., bert, bart, etc..)
+        hf_arch:str,
+        # A specific configuration instance you want to use
+        hf_config:PretrainedConfig,
+        # A Hugging Face tokenizer
+        hf_tokenizer:PreTrainedTokenizerBase,
+        # A Hugging Face model
+        hf_model:PreTrainedModel,
+        # The token ID that should be ignored when calculating the loss
+        ignore_token_id:int=CrossEntropyLossFlat().ignore_index,
+        # To control the length of the padding/truncation of the input sequence. It can be an integer or None,
+        # in which case it will default to the maximum length the model can accept. If the model has no
+        # specific maximum input length, truncation/padding to max_length is deactivated.
+        # See [Everything you always wanted to know about padding and truncation](https://huggingface.co/transformers/preprocessing.html#everything-you-always-wanted-to-know-about-padding-and-truncation)
+        max_length:int=None,
+        # To control the length of the padding/truncation of the target sequence. It can be an integer or None,
+        # in which case it will default to the maximum length the model can accept. If the model has no
+        # specific maximum input length, truncation/padding to max_length is deactivated.
+        # See [Everything you always wanted to know about padding and truncation](https://huggingface.co/transformers/preprocessing.html#everything-you-always-wanted-to-know-about-padding-and-truncation)
+        max_target_length:int=None,
+        # To control the `padding` applied to your `hf_tokenizer` during tokenization. If None, will default to
+        # `False` or `'do_not_pad'.
+        # See [Everything you always wanted to know about padding and truncation](https://huggingface.co/transformers/preprocessing.html#everything-you-always-wanted-to-know-about-padding-and-truncation)
+        padding:Union[bool, str]=True,
+        # To control `truncation` applied to your `hf_tokenizer` during tokenization. If None, will default to
+        # `False` or `do_not_truncate`.
+        # See [Everything you always wanted to know about padding and truncation](https://huggingface.co/transformers/preprocessing.html#everything-you-always-wanted-to-know-about-padding-and-truncation)
+        truncation:Union[bool, str]=True,
+        # The `is_split_into_words` argument applied to your `hf_tokenizer` during tokenization. Set this to `True`
+        # if your inputs are pre-tokenized (not numericalized)
+        is_split_into_words:bool=False,
+        # Any other keyword arguments you want included when using your `hf_tokenizer` to tokenize your inputs
+        tok_kwargs={},
+        # Any keyword arguments to pass to the `hf_model.generate` method
+        text_gen_kwargs={},
+        # Keyword arguments to apply to `HF_BeforeBatchTransform`
+        **kwargs
+    ):
         super().__init__(hf_arch, hf_config, hf_tokenizer, hf_model,
                          max_length=max_length, padding=padding, truncation=truncation, is_split_into_words=False,
                          tok_kwargs=tok_kwargs.copy(), **kwargs)
@@ -88,12 +133,61 @@ class HF_Seq2SeqAfterBatchTransform(HF_AfterBatchTransform):
 
 class HF_Seq2SeqBlock(HF_TextBlock):
 
-    def __init__(self, hf_arch=None, hf_config=None, hf_tokenizer=None, hf_model=None,
-                 before_batch_tfm=None, after_batch_tfm=None,
-                 max_length=None, max_target_length=None, padding=True, truncation=True,
-                 input_return_type=HF_Seq2SeqInput, dl_type=SortedDL,
-                 tok_kwargs={}, text_gen_kwargs={}, before_batch_kwargs={}, after_batch_kwargs={}, **kwargs):
-
+    def __init__(
+        self,
+        # The abbreviation/name of your Hugging Face transformer architecture (not required if passing in an
+        # instance of `HF_BeforeBatchTransform` to `before_batch_tfm`)
+        hf_arch:str=None,
+        # A Hugging Face configuration object (not required if passing in an
+        # instance of `HF_BeforeBatchTransform` to `before_batch_tfm`)
+        hf_config:PretrainedConfig=None,
+        # A Hugging Face tokenizer (not required if passing in an
+        # instance of `HF_BeforeBatchTransform` to `before_batch_tfm`)
+        hf_tokenizer:PreTrainedTokenizerBase=None,
+        # A Hugging Face model (not required if passing in an
+        # instance of `HF_BeforeBatchTransform` to `before_batch_tfm`)
+        hf_model:PreTrainedModel=None,
+        # The before batch transform you want to use to tokenize your raw data on the fly
+        # (defaults to an instance of `HF_BeforeBatchTransform` created using the Hugging Face objects defined above)
+        before_batch_tfm:HF_BeforeBatchTransform=None,
+        # The batch_tfms to apply to the creation of your DataLoaders,
+        # (defaults to HF_AfterBatchTransform created using the Hugging Face objects defined above)
+        after_batch_tfm:HF_AfterBatchTransform=None,
+        # To control the length of the padding/truncation for the input sequence. It can be an integer or None,
+        # in which case it will default to the maximum length the model can accept. If the model has no
+        # specific maximum input length, truncation/padding to max_length is deactivated.
+        # See [Everything you always wanted to know about padding and truncation](https://huggingface.co/transformers/preprocessing.html#everything-you-always-wanted-to-know-about-padding-and-truncation)
+        max_length:int=None,
+        # To control the length of the padding/truncation for the target sequence. It can be an integer or None,
+        # in which case it will default to the maximum length the model can accept. If the model has no
+        # specific maximum input length, truncation/padding to max_length is deactivated.
+        # See [Everything you always wanted to know about padding and truncation](https://huggingface.co/transformers/preprocessing.html#everything-y
+        max_target_length=None,
+        # To control the `padding` applied to your `hf_tokenizer` during tokenization. If None, will default to
+        # `False` or `'do_not_pad'.
+        # See [Everything you always wanted to know about padding and truncation](https://huggingface.co/transformers/preprocessing.html#everything-you-always-wanted-to-know-about-padding-and-truncation)
+        padding:Union[bool, str]=True,
+        # To control `truncation` applied to your `hf_tokenizer` during tokenization. If None, will default to
+        # `False` or `do_not_truncate`.
+        # See [Everything you always wanted to know about padding and truncation](https://huggingface.co/transformers/preprocessing.html#everything-you-always-wanted-to-know-about-padding-and-truncation)
+        truncation:Union[bool, str]=True,
+        # The return type your decoded inputs should be cast too (used by methods such as `show_batch`)
+        input_return_type=HF_Seq2SeqInput,
+        # The type of `DataLoader` you want created (defaults to `SortedDL`)
+        dl_type=SortedDL,
+        # Any keyword arguments you want your Hugging Face tokenizer to use during tokenization
+        tok_kwargs={},
+        # Any keyword arguments you want to have applied with generating text
+        # (default: default_text_gen_kwargs)
+        text_gen_kwargs={},
+        # Any keyword arguments you want applied to `HF_TextBlock`
+        # Any keyword arguments you want applied to your before batch tfm
+        before_batch_kwargs={},
+        # Any keyword arguments you want applied to your after batch tfm (or referred to in fastai as `batch_tfms`)
+        after_batch_kwargs={},
+        # Any keyword arguments you want applied to `HF_TextBlock`
+        **kwargs
+    ):
         # we need to pass text_gen_kwargs into our HF_Seq2SeqBeforeBatchTransform (use default unless specified)
         if (len(text_gen_kwargs) == 0):
             if (hf_config is None): hf_config = before_batch_tfm.hf_config
@@ -129,12 +223,31 @@ class HF_Seq2SeqBlock(HF_TextBlock):
 
 # Cell
 @typedispatch
-def show_batch(x:HF_Seq2SeqInput, y, samples, dataloaders, ctxs=None, max_n=6,
-               input_trunc_at=None, target_trunc_at=None, **kwargs):
+def show_batch(
+    # This typedispatched `show_batch` will be called for `HF_Seq2SeqInput` typed inputs
+    x:HF_Seq2SeqInput,
+    # Your targets
+    y,
+    # Your raw inputs/targets
+    samples,
+    # Your `DataLoaders`. This is required so as to get at the Hugging Face objects for
+    # decoding them into something understandable
+    dataloaders,
+    # Your `show_batch` context
+    ctxs=None,
+    # The maximum number of items to show
+    max_n=6,
+    # Any truncation your want applied to your decoded inputs
+    input_trunc_at=None,
+    # Any truncation your want applied to your decoded targets
+    target_trunc_at=None,
+    # Any other keyword arguments you want applied to `show_batch`
+    **kwargs
+):
     # grab our tokenizer and ignore token to decode
-    hf_before_batch_tfm = get_blurr_tfm(dataloaders.before_batch)
-    hf_tokenizer = hf_before_batch_tfm.hf_tokenizer
-    ignore_token_id = hf_before_batch_tfm.ignore_token_id
+    tfm = first_blurr_tfm(dataloaders)
+    hf_tokenizer = tfm.hf_tokenizer
+    ignore_token_id = tfm.ignore_token_id
 
     res = L([ (hf_tokenizer.decode(s[0], skip_special_tokens=False)[:input_trunc_at],
                hf_tokenizer.decode(s[1][s[1] != ignore_token_id], skip_special_tokens=True)[:target_trunc_at])

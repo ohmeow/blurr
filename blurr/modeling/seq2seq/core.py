@@ -3,29 +3,20 @@
 __all__ = ['HF_Seq2SeqMetricsCallback', 'seq2seq_splitter']
 
 # Cell
-import ast, inspect, torch
-
-from transformers import *
-from fastai.text.all import *
-from fastai.callback.hook import _print_shapes
-
-from ...utils import *
-from ...data.core import get_blurr_tfm
-from ...data.seq2seq.core import *
-from ..core import *
-
-from datasets import load_metric as hf_load_metric, list_metrics as hf_list_metrics
-
-import nltk
-nltk.download('wordnet', quiet=True)
-
-logging.set_verbosity_error()
-
-# Cell
 class HF_Seq2SeqMetricsCallback(Callback):
-    def __init__(self, custom_metrics=None, ignore_token_id=CrossEntropyLossFlat().ignore_index,
-                 text_gen_kwargs={}, **kwargs):
-
+    """A callback that adds seq2seq metrics"""
+    def __init__(
+        self,
+        # A dictionary of seq2seq metrics we want to use. See below and the various task specific seq2seq docs
+        # for examples of how to configure this per task
+        custom_metrics:dict=None,
+        # The token ID that should be ignored when calculating the loss
+        ignore_token_id=CrossEntropyLossFlat().ignore_index,
+        # Any keyword arguments to pass to the `hf_model.generate` method
+        text_gen_kwargs:dict={},
+        # Keyword arguments to apply to `HF_Seq2SeqMetricsCallback`
+        **kwargs
+    ):
         super().__init__(**kwargs)
         self.order = Recorder.order-1
 
@@ -61,12 +52,12 @@ class HF_Seq2SeqMetricsCallback(Callback):
         if (not self.do_setup): return
 
         # grab the hf_tokenizer from the HF_BeforeBatchTransform (used for rouge metrics)
-        hf_before_batch_tfm = get_blurr_tfm(self.learn.dls.before_batch)
-        self.hf_tokenizer = hf_before_batch_tfm.hf_tokenizer
-        self.tok_kwargs = hf_before_batch_tfm.tok_kwargs
+        tfm = first_blurr_tfm(self.learn.dls)
+        self.hf_tokenizer = tfm.hf_tokenizer
+        self.tok_kwargs = tfm.tok_kwargs
 
         # use before batch tfm's text_gen_kwargs if user doesn't pass in their own kwargs
-        if (len(self.text_gen_kwargs) == 0): self.text_gen_kwargs = hf_before_batch_tfm.text_gen_kwargs
+        if (len(self.text_gen_kwargs) == 0): self.text_gen_kwargs = tfm.text_gen_kwargs
 
         # add seq2seq generation specific metrics (rouge, bertscore, bleu, etc...) to learner metrics
         metric_keys = list(self.custom_metric_vals.keys())
@@ -149,7 +140,12 @@ class HF_Seq2SeqMetricsCallback(Callback):
     def metric_value(self, metric_key): return self.custom_metric_vals[metric_key]
 
 # Cell
-def seq2seq_splitter(m, arch):
+def seq2seq_splitter(
+    # A Hugging Face model
+    m:PreTrainedModel,
+    # The name of the architecture you are working with (e.g., bart, fsmt, pegasus, etc...)
+    arch:str
+):
     """Custom param splitter for summarization models"""
     model = m.hf_model if (hasattr(m, 'hf_model')) else m
 
@@ -206,15 +202,37 @@ def seq2seq_splitter(m, arch):
 
 # Cell
 @typedispatch
-def show_results(x:HF_Seq2SeqInput, y, samples, outs, learner, ctxs=None, max_n=6,
-                 input_trunc_at=None, target_trunc_at=None, text_gen_kwargs={}, **kwargs):
+def show_results(
+    # This typedispatched `show_results` will be called for `HF_Seq2SeqInput` typed inputs
+    x:HF_Seq2SeqInput,
+    # Your targets
+    y,
+    # Your raw inputs/targets
+    samples,
+    # The model's predictions
+    outs,
+    # Your `Learner`. This is required so as to get at the Hugging Face objects for decoding them into
+    # something understandable
+    learner,
+    # Your `show_results` context
+    ctxs=None,
+    # The maximum number of items to show
+    max_n=6,
+    # Any truncation your want applied to your decoded inputs
+    input_trunc_at=None,
+    # Any truncation your want applied to your decoded targets
+    target_trunc_at=None,
+    # If you want to override your Blurr transform's `text_gen_kwargs`, do that here
+    text_gen_kwargs={},
+     # Any other keyword arguments you want applied to `show_results`
+    **kwargs
+):
+    tfm = first_blurr_tfm(learner.dls)
+    hf_config = tfm.hf_config
+    hf_tokenizer = tfm.hf_tokenizer
+    ignore_token_id = tfm.ignore_token_id
 
-    hf_before_batch_tfm = get_blurr_tfm(learner.dls.before_batch)
-    hf_config = hf_before_batch_tfm.hf_config
-    hf_tokenizer = hf_before_batch_tfm.hf_tokenizer
-    ignore_token_id = hf_before_batch_tfm.ignore_token_id
-
-    if (len(text_gen_kwargs) == 0): text_gen_kwargs = hf_before_batch_tfm.text_gen_kwargs
+    if (len(text_gen_kwargs) == 0): text_gen_kwargs = tfm.text_gen_kwargs
 
     gen_text_txts = learner.blurr_generate(x, **text_gen_kwargs)
     res = L([(

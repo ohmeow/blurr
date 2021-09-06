@@ -122,7 +122,7 @@ def show_results(
     ctxs=None,
     # The maximum number of items to show
     max_n=6,
-     # Any truncation your want applied to your decoded inputs
+    # Any truncation your want applied to your decoded inputs
     trunc_at=None,
     # Any other keyword arguments you want applied to `show_results`
     **kwargs
