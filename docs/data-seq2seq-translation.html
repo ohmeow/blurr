@@ -56,17 +56,6 @@ nb_path: "nbs/12_data-seq2seq-translation.ipynb"
     {% raw %}
     
 <div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">set_device</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Using GPU #</span><span class="si">{</span><span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">current_device</span><span class="p">()</span><span class="si">}</span><span class="s1">: </span><span class="si">{</span><span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">get_device_name</span><span class="p">()</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
 
 <div class="output_wrapper">
 <div class="output">
@@ -74,7 +63,10 @@ nb_path: "nbs/12_data-seq2seq-translation.ipynb"
 <div class="output_area">
 
 <div class="output_subarea output_stream output_stdout output_text">
-<pre>Using GPU #1: GeForce GTX 1080 Ti
+<pre>What we&#39;re running with at the time this documentation was generated:
+torch: 1.7.1
+fastai: 2.5.2
+transformers: 4.9.2
 </pre>
 </div>
 </div>
@@ -362,7 +354,7 @@ nb_path: "nbs/12_data-seq2seq-translation.ipynb"
 
 
 <div class="output_text output_subarea output_execute_result">
-<pre>(2, torch.Size([4, 458]), torch.Size([4, 287]))</pre>
+<pre>(2, torch.Size([4, 483]), torch.Size([4, 86]))</pre>
 </div>
 
 </div>
@@ -405,13 +397,13 @@ nb_path: "nbs/12_data-seq2seq-translation.ipynb"
   <tbody>
     <tr>
       <th>0</th>
-      <td>&lt;s&gt; Bericht (A5-0089/2000) von Frau Rühle im Namen des Ausschusses für Haushaltskontrolle über den Aufschub des Beschlusses zur Entlastung der Kommission für die Haushaltsführung des sechsten, siebten und achten Europäischen Entwicklungsfonds für das</td>
-      <td>Report (A5-0089/2000) by Mr Rühle, on behalf of the Committee on Budgetary Control, on postponement of the decision concerning discharge to the Commission in respect of the financial management of the sixth, seventh and eighth European Development F</td>
+      <td>&lt;s&gt; Was nun die Ergebnisse der Verhandlungen über die Anwendung der Artikel 3, 4, 5, 6 und 12 des Interimsabkommens bezüglich Warenhandel, öffentlicher Aufträge, Wettbewerb, Konsultationsmechanismen bei Fragen des geistigen Eigentums und Beilegung vo</td>
+      <td>Although for certain sectors there may be flaws - I am thinking specifically of the textiles sector, where the rules of origin issue causes great concern - the effects will be beneficial for both the European Union and Mexico. For the European Union</td>
     </tr>
     <tr>
       <th>1</th>
-      <td>&lt;s&gt; Aufgrund meinen Vorstellungen vom Aufbau Europas und von regionaler Entwicklungspolitik im besonderen halte ich das für eine Situation, die ich nicht akzeptieren kann. Ich habe die Absicht, im Rahmen meiner Möglichkeiten und mit Ihrer Unterstützu</td>
-      <td>As far as I am concerned - taking into account my own concept of the construction of Europe and regional development policy in particular - this is a situation which I find unacceptable and I have every intention, as far as possible, with your suppo</td>
+      <td>&lt;s&gt; Somit wirkt sich die wissensbasierte Wirtschaft, zu der wir übergehen, umgekehrt bereits auf unseren Denkansatz bezüglich der europäischen Institutionen aus. Denn wie wir bereits wissen, bedeutet diese neue Methode der Koordinierung zwangsläufig,</td>
+      <td>The knowledge economy which we are moving into is thus already having a retroactive effect on our concept of the European institutions, for this new method of coordination must mean, as we already know, that top-down authoritarian integration and un</td>
     </tr>
   </tbody>
 </table>
@@ -441,7 +433,7 @@ nb_path: "nbs/12_data-seq2seq-translation.ipynb"
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="p">[</span> <span class="n">model_type</span> <span class="k">for</span> <span class="n">model_type</span> <span class="ow">in</span> <span class="n">BLURR</span><span class="o">.</span><span class="n">get_models</span><span class="p">(</span><span class="n">task</span><span class="o">=</span><span class="s1">&#39;ConditionalGeneration&#39;</span><span class="p">)</span> 
- <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="n">model_type</span><span class="o">.</span><span class="vm">__name__</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;TF&#39;</span><span class="p">))</span> <span class="p">]</span>
+ <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="n">model_type</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;TF&#39;</span><span class="p">))</span> <span class="p">]</span>
 </pre></div>
 
     </div>
@@ -456,20 +448,20 @@ nb_path: "nbs/12_data-seq2seq-translation.ipynb"
 
 
 <div class="output_text output_subarea output_execute_result">
-<pre>[transformers.models.bart.modeling_bart.BartForConditionalGeneration,
- transformers.models.bigbird_pegasus.modeling_bigbird_pegasus.BigBirdPegasusForConditionalGeneration,
- transformers.models.blenderbot.modeling_blenderbot.BlenderbotForConditionalGeneration,
- transformers.models.blenderbot_small.modeling_blenderbot_small.BlenderbotSmallForConditionalGeneration,
- transformers.models.fsmt.modeling_fsmt.FSMTForConditionalGeneration,
- transformers.models.led.modeling_led.LEDForConditionalGeneration,
- transformers.models.m2m_100.modeling_m2m_100.M2M100ForConditionalGeneration,
- transformers.models.mbart.modeling_mbart.MBartForConditionalGeneration,
- transformers.models.mt5.modeling_mt5.MT5ForConditionalGeneration,
- transformers.models.pegasus.modeling_pegasus.PegasusForConditionalGeneration,
- transformers.models.prophetnet.modeling_prophetnet.ProphetNetForConditionalGeneration,
- transformers.models.speech_to_text.modeling_speech_to_text.Speech2TextForConditionalGeneration,
- transformers.models.t5.modeling_t5.T5ForConditionalGeneration,
- transformers.models.xlm_prophetnet.modeling_xlm_prophetnet.XLMProphetNetForConditionalGeneration]</pre>
+<pre>[&#39;BartForConditionalGeneration&#39;,
+ &#39;BigBirdPegasusForConditionalGeneration&#39;,
+ &#39;BlenderbotForConditionalGeneration&#39;,
+ &#39;BlenderbotSmallForConditionalGeneration&#39;,
+ &#39;FSMTForConditionalGeneration&#39;,
+ &#39;LEDForConditionalGeneration&#39;,
+ &#39;M2M100ForConditionalGeneration&#39;,
+ &#39;MBartForConditionalGeneration&#39;,
+ &#39;MT5ForConditionalGeneration&#39;,
+ &#39;PegasusForConditionalGeneration&#39;,
+ &#39;ProphetNetForConditionalGeneration&#39;,
+ &#39;Speech2TextForConditionalGeneration&#39;,
+ &#39;T5ForConditionalGeneration&#39;,
+ &#39;XLMProphetNetForConditionalGeneration&#39;]</pre>
 </div>
 
 </div>

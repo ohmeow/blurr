@@ -338,7 +338,7 @@ class BlearnerForSequenceClassification(Blearner):
         # The attribute in your dataset that contains your labels/targets
         label_attr:str='label',
         # The number of labels/classes your model should predict
-        n_labels:int=2,
+        n_labels:int=None,
         # A function that will split your Dataset into a training and validation set
         # See [here](https://docs.fast.ai/data.transforms.html#Split) for a list of fast.ai splitters
         dblock_splitter:Callable=ColSplitter(),
@@ -370,7 +370,7 @@ class BlearnerForSequenceClassification(Blearner):
         # The attribute in your dataset that contains your labels/targets
         label_attr:str='label',
         # The number of labels/classes your model should predict
-        n_labels:int=2,
+        n_labels:int=None,
         # A function that will split your Dataset into a training and validation set
         # See [here](https://docs.fast.ai/data.transforms.html#Split) for a list of fast.ai splitters
         dblock_splitter:Callable=ColSplitter(),
@@ -402,7 +402,7 @@ class BlearnerForSequenceClassification(Blearner):
         # The attribute in your dataset that contains your labels/targets
         label_attr:str='label',
         # The number of labels/classes your model should predict
-        n_labels:int=2,
+        n_labels:int=None,
         # A function that will split your Dataset into a training and validation set
         # See [here](https://docs.fast.ai/data.transforms.html#Split) for a list of fast.ai splitters
         dblock_splitter:Callable=RandomSplitter(),

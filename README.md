@@ -91,7 +91,7 @@ dls.show_batch(dataloaders=dls, max_n=2)
     </tr>
     <tr>
       <th>1</th>
-      <td>the shop around the corner is one of the sweetest and most feel - good romantic comedies ever made. there's just no getting around that, and it's hard to actually put one's feeling for this film into words. it's not one of those films that tries too hard, nor does it come up with the oddest possible scenarios to get the two protagonists together in the end. in fact, all its charm is innate, contained within the characters and the setting and the plot... which is highly believable to boot. it's easy to think that such a love story, as beautiful as any other ever told, * could * happen to you... a feeling you don't often get from other romantic comedies, however sweet and heart - warming they may be. &lt; br / &gt; &lt; br / &gt; alfred kralik ( james stewart ) and clara novak ( margaret sullavan ) don't have the most auspicious of first meetings when she arrives in the shop ( matuschek &amp; co. ) he's been working in for the past nine years, asking for a job. they clash from the very beginning, mostly over a cigarette box that plays music when it's opened - - he thinks it's a ludicrous idea ; she makes one big sell of it and gets hired. their bickering takes them through the next six months, even as they both ( unconsciously, of course! ) fall in love with each other when they share their souls and minds in letters passed through po box 237. this would be a pretty thin plotline to base an entire film on, except that the shop around the corner is expertly fleshed - out with a brilliant supporting cast made up of entirely engaging characters, from the fatherly but lonely hugo matuschek ( frank morgan ) himself, who learns that his shop really is his home ; pirovitch ( felix bressart ), kralik's sidekick and friend who always skitters out of the room when faced with the possibility of being asked for his honest opinion ; smarmy pimp - du - jour vadas ( joseph schildkraut ) who ultimately gets his comeuppance from a gloriously righteous kralik ; and ambitious errand boy pepi katona ( william tracy ) who wants nothing more than to be promoted to the position of clerk for matuschek &amp; co. the unpretentious love story between '</td>
+      <td>many neglect that this isn't just a classic due to the fact that it's the first 3d game, or even the first shoot -'em - up. it's also one of the first stealth games, one of the only ( and definitely the first ) truly claustrophobic games, and just a pretty well - rounded gaming experience in general. with graphics that are terribly dated today, the game thrusts you into the role of b. j. ( don't even * think * i'm going to attempt spelling his last name! ), an american p. o. w. caught in an underground bunker. you fight and search your way through tunnels in order to achieve different objectives for the six episodes ( but, let's face it, most of them are just an excuse to hand you a weapon, surround you with nazis and send you out to waste one of the nazi leaders ). the graphics are, as i mentioned before, quite dated and very simple. the least detailed of basically any 3d game released by a professional team of creators. if you can get over that, however ( and some would suggest that this simplicity only adds to the effect the game has on you ), then you've got one heck of a good shooter / sneaking game. the game play consists of searching for keys, health and ammo, blasting enemies ( aforementioned nazis, and a " boss enemy " per chapter ) of varying difficulty ( which, of course, grows as you move further in the game ), unlocking doors and looking for secret rooms. there is a bonus count after each level is beaten... it goes by how fast you were ( basically, if you beat the'par time ', which is the time it took a tester to go through the same level ; this can be quite fun to try and beat, and with how difficult the levels are to find your way in, they are even challenging after many play - throughs ), how much nazi gold ( treasure ) you collected and how many bad guys you killed. basically, if you got 100 % of any of aforementioned, you get a bonus, helping you reach the coveted high score placings. the game ( mostly, but not always ) allows for two contrastingly different methods of playing... stealthily or gunning down anything and everything you see. you can either run or walk, and amongst your weapons is also a knife... running is heard instantly the moment you enter the same room as the guard, as</td>
       <td>positive</td>
     </tr>
   </tbody>
@@ -131,23 +131,23 @@ learn.fit_one_cycle(3, lr_max=1e-3)
   <tbody>
     <tr>
       <td>0</td>
-      <td>0.604477</td>
-      <td>0.498280</td>
-      <td>0.735000</td>
+      <td>0.594905</td>
+      <td>0.374806</td>
+      <td>0.850000</td>
       <td>00:21</td>
     </tr>
     <tr>
       <td>1</td>
-      <td>0.375973</td>
-      <td>0.305246</td>
-      <td>0.905000</td>
+      <td>0.348940</td>
+      <td>0.413091</td>
+      <td>0.830000</td>
       <td>00:21</td>
     </tr>
     <tr>
       <td>2</td>
-      <td>0.266721</td>
-      <td>0.289593</td>
-      <td>0.890000</td>
+      <td>0.288840</td>
+      <td>0.270606</td>
+      <td>0.905000</td>
       <td>00:21</td>
     </tr>
   </tbody>
@@ -221,10 +221,10 @@ learn.fit_one_cycle(1, lr_max=1e-3)
   <tbody>
     <tr>
       <td>0</td>
-      <td>0.680943</td>
-      <td>0.649469</td>
-      <td>0.758621</td>
-      <td>0.755000</td>
+      <td>0.532659</td>
+      <td>0.433739</td>
+      <td>0.819672</td>
+      <td>0.835000</td>
       <td>00:21</td>
     </tr>
   </tbody>
@@ -268,6 +268,13 @@ learn.show_results(learner=learn, max_n=2)
 
 
 ## ❗ Updates
+
+**09/06/2021** - v0.1.0
+
+* Complete overhaul of documentation for entire library (using [nbverbose](https://github.com/muellerzr/nbverbose))
+* Updated all the [nbdev](https://github.com/fastai/nbdev) bits and users now have the ability to open ***any*** doc in colab (H/T Zach Mueller)
+* Added `calc_every` argument to the `HF_Seq2SeqMetricsCallback` so that you can speed up training by NOT calculating the seq2seq metrics on every epoch (this can be time consuming).
+* Misc. bug fixes and addition of other helper methods throughout the library
 
 **08/24/2021** - v0.0.33
 

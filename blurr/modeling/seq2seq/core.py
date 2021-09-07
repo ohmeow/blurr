@@ -3,6 +3,40 @@
 __all__ = ['HF_Seq2SeqMetricsCallback', 'seq2seq_splitter']
 
 # Cell
+import ast, inspect, torch
+from typing import Any, Callable, Dict, List, Optional, Union, Type
+
+from datasets import load_metric as hf_load_metric, list_metrics as hf_list_metrics
+from fastcore.all import *
+from fastai.callback.all import *
+from fastai.data.block import DataBlock, ColReader, CategoryBlock, MultiCategoryBlock, ColSplitter, RandomSplitter
+from fastai.data.core import DataLoader, DataLoaders, TfmdDL
+from fastai.imports import *
+from fastai.learner import *
+from fastai.losses import CrossEntropyLossFlat
+from fastai.optimizer import Adam, OptimWrapper, params
+from fastai.torch_core import *
+from fastai.torch_imports import *
+from fastprogress.fastprogress import progress_bar,master_bar
+from transformers import (
+    AutoModelForSequenceClassification, logging,
+    PretrainedConfig, PreTrainedTokenizerBase, PreTrainedModel
+)
+
+import nltk
+nltk.download('wordnet', quiet=True)
+
+from ...utils import BLURR
+from ...data.core import first_blurr_tfm
+from ...data.seq2seq.core import (
+    HF_Seq2SeqInput, HF_Seq2SeqBeforeBatchTransform, HF_Seq2SeqAfterBatchTransform, HF_Seq2SeqBlock,
+    default_text_gen_kwargs
+)
+from ..core import HF_BaseModelWrapper, HF_BaseModelCallback
+
+logging.set_verbosity_error()
+
+# Cell
 class HF_Seq2SeqMetricsCallback(Callback):
     """A callback that adds seq2seq metrics"""
     def __init__(
@@ -10,6 +44,9 @@ class HF_Seq2SeqMetricsCallback(Callback):
         # A dictionary of seq2seq metrics we want to use. See below and the various task specific seq2seq docs
         # for examples of how to configure this per task
         custom_metrics:dict=None,
+        # Calculation of these metrics requires text generation, which is expensive.  You can choose to calculate
+        # these metrics on every 'epoch', 'other_epoch', or 'last_epoch' instead (default: 'epoch')
+        calc_every:str='epoch',
         # The token ID that should be ignored when calculating the loss
         ignore_token_id=CrossEntropyLossFlat().ignore_index,
         # Any keyword arguments to pass to the `hf_model.generate` method
@@ -20,8 +57,8 @@ class HF_Seq2SeqMetricsCallback(Callback):
         super().__init__(**kwargs)
         self.order = Recorder.order-1
 
-        store_attr(self=self, names='custom_metrics, ignore_token_id, text_gen_kwargs, kwargs')
-        self.custom_metric_funcs, self.custom_metric_vals = {}, {}
+        store_attr(self=self, names='custom_metrics, calc_every, ignore_token_id, text_gen_kwargs, kwargs')
+        self.custom_metric_funcs, self.custom_metric_vals, self.do_calc = {}, {}, True
 
         if (custom_metrics is not None):
             for metric_name, metric_info_dict in custom_metrics.items():
@@ -68,10 +105,21 @@ class HF_Seq2SeqMetricsCallback(Callback):
 
     def before_fit(self): self.setup()
 
+    # --- epoch begin/after phases ---
+    def before_epoch(self):
+        current_epoch_n = self.epoch + 1
+        if (current_epoch_n == self.n_epoch): # we always calc on last epoch
+            self.do_calc = True
+        elif (self.calc_every == 'epoch'):
+            self.do_calc = True
+        elif (self.calc_every == 'other_epoch' and current_epoch_n % 2 == 0):
+            self.do_calc = True
+        else:
+            self.do_calc = False
 
     # --- batch begin/after phases ---
     def after_batch(self):
-        if (self.training or self.learn.y is None or self.custom_metrics is None): return
+        if (self.training or self.learn.y is None or self.custom_metrics is None or not self.do_calc): return
 
         # grab predicted and reference ids for any metrics that need them
         input_ids, attention_mask = self.xb[0]['input_ids'], self.xb[0]['attention_mask']
@@ -86,7 +134,7 @@ class HF_Seq2SeqMetricsCallback(Callback):
     def before_validate(self): self.generated_ids, self.refernce_ids = [], []
 
     def after_validate(self):
-        if (self.learn.y is None or self.custom_metrics is None): return
+        if (self.learn.y is None or self.custom_metrics is None or not self.do_calc): return
 
         # fetch the generated prediction and reference tokens and texts
         gen_toks = [ self.hf_tokenizer.convert_ids_to_tokens(ids, skip_special_tokens=True)

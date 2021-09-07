@@ -14,7 +14,7 @@ from fastai.text.data import SortedDL
 from fastai.torch_core import *
 from fastai.torch_imports import *
 from transformers import (
-    AutoModelForCausalLM, AutoModelForMaskedLM, AutoModelForSeq2SeqLM, logging,
+    AutoModelForSeq2SeqLM, logging,
     PretrainedConfig, PreTrainedTokenizerBase, PreTrainedModel
 )
 
