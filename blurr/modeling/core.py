@@ -24,7 +24,7 @@ from transformers import (
     PretrainedConfig, PreTrainedTokenizerBase, PreTrainedModel
 )
 
-from ..utils import BLURR
+from ..utils import BLURR, set_seed
 from ..data.core import HF_TextBlock, HF_BaseInput, first_blurr_tfm
 
 logging.set_verbosity_error()
