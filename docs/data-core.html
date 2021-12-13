@@ -36,7 +36,7 @@ nb_path: "nbs/01_data-core.ipynb"
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span> 
+<div class=" highlight hl-ipython3"><pre><span></span>
 </pre></div>
 
     </div>
@@ -66,7 +66,7 @@ nb_path: "nbs/01_data-core.ipynb"
 <pre>What we&#39;re running with at the time this documentation was generated:
 torch: 1.7.1
 fastai: 2.5.3
-transformers: 4.12.3
+transformers: 4.13.0
 </pre>
 </div>
 </div>
@@ -94,7 +94,7 @@ transformers: 4.12.3
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h2 id="HF_BaseInput" class="doc_header"><code>class</code> <code>HF_BaseInput</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/data/core.py#L31" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>HF_BaseInput</code>(<strong><code>x</code></strong>, <strong>**<code>kwargs</code></strong>) :: <code>TensorBase</code></p>
+<h2 id="HF_BaseInput" class="doc_header"><code>class</code> <code>HF_BaseInput</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/data/core.py#L29" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>HF_BaseInput</code>(<strong><code>x</code></strong>, <strong>**<code>kwargs</code></strong>) :: <code>TensorBase</code></p>
 </blockquote>
 <p>The base represenation of your inputs; used by the various fastai <code>show</code> methods</p>
 
@@ -133,7 +133,7 @@ transformers: 4.12.3
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h2 id="HF_BeforeBatchTransform" class="doc_header"><code>class</code> <code>HF_BeforeBatchTransform</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/data/core.py#L49" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>HF_BeforeBatchTransform</code>(<strong><code>hf_arch</code></strong>:<code>str</code>, <strong><code>hf_config</code></strong>:<code>PretrainedConfig</code>, <strong><code>hf_tokenizer</code></strong>:<code>PreTrainedTokenizerBase</code>, <strong><code>hf_model</code></strong>:<code>PreTrainedModel</code>, <strong><code>max_length</code></strong>:<code>int</code>=<em><code>None</code></em>, <strong><code>padding</code></strong>:<code>Union</code>[<code>bool</code>, <code>str</code>]=<em><code>True</code></em>, <strong><code>truncation</code></strong>:<code>Union</code>[<code>bool</code>, <code>str</code>]=<em><code>True</code></em>, <strong><code>is_split_into_words</code></strong>:<code>bool</code>=<em><code>False</code></em>, <strong><code>tok_kwargs</code></strong>=<em><code>{}</code></em>, <strong>**<code>kwargs</code></strong>) :: <code>Transform</code></p>
+<h2 id="HF_BeforeBatchTransform" class="doc_header"><code>class</code> <code>HF_BeforeBatchTransform</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/data/core.py#L50" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>HF_BeforeBatchTransform</code>(<strong><code>hf_arch</code></strong>:<code>str</code>, <strong><code>hf_config</code></strong>:<code>PretrainedConfig</code>, <strong><code>hf_tokenizer</code></strong>:<code>PreTrainedTokenizerBase</code>, <strong><code>hf_model</code></strong>:<code>PreTrainedModel</code>, <strong><code>max_length</code></strong>:<code>int</code>=<em><code>None</code></em>, <strong><code>padding</code></strong>:<code>Union</code>[<code>bool</code>, <code>str</code>]=<em><code>True</code></em>, <strong><code>truncation</code></strong>:<code>Union</code>[<code>bool</code>, <code>str</code>]=<em><code>True</code></em>, <strong><code>is_split_into_words</code></strong>:<code>bool</code>=<em><code>False</code></em>, <strong><code>tok_kwargs</code></strong>:<code>dict</code>=<em><code>{}</code></em>, <strong>**<code>kwargs</code></strong>) :: <code>Transform</code></p>
 </blockquote>
 <p>Handles everything you need to assemble a mini-batch of inputs and targets, as well as
 decode the dictionary produced as a byproduct of the tokenization process in the <code>encodes</code> method.</p>
@@ -214,7 +214,7 @@ if your inputs are pre-tokenized (not numericalized)</p></li>
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h2 id="HF_AfterBatchTransform" class="doc_header"><code>class</code> <code>HF_AfterBatchTransform</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/data/core.py#L121" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>HF_AfterBatchTransform</code>(<strong><code>hf_tokenizer</code></strong>:<code>PreTrainedTokenizerBase</code>, <strong><code>input_return_type</code></strong>:<code>Type</code>=<em><code>HF_BaseInput</code></em>) :: <code>Transform</code></p>
+<h2 id="HF_AfterBatchTransform" class="doc_header"><code>class</code> <code>HF_AfterBatchTransform</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/data/core.py#L122" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>HF_AfterBatchTransform</code>(<strong><code>hf_tokenizer</code></strong>:<code>PreTrainedTokenizerBase</code>, <strong><code>input_return_type</code></strong>:<code>Type</code>=<em><code>HF_BaseInput</code></em>) :: <code>Transform</code></p>
 </blockquote>
 <p>A class used to cast your inputs into something understandable in fastai <code>show</code> methods</p>
 <p><strong>Parameters:</strong></p>
@@ -260,7 +260,7 @@ if your inputs are pre-tokenized (not numericalized)</p></li>
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h4 id="blurr_sort_func" class="doc_header"><code>blurr_sort_func</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/data/core.py#L144" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>blurr_sort_func</code>(<strong><code>example</code></strong>, <strong><code>hf_tokenizer</code></strong>:<code>PreTrainedTokenizerBase</code>, <strong><code>is_split_into_words</code></strong>:<code>bool</code>=<em><code>False</code></em>, <strong><code>tok_kwargs</code></strong>=<em><code>{}</code></em>)</p>
+<h4 id="blurr_sort_func" class="doc_header"><code>blurr_sort_func</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/data/core.py#L147" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>blurr_sort_func</code>(<strong><code>example</code></strong>, <strong><code>hf_tokenizer</code></strong>:<code>PreTrainedTokenizerBase</code>, <strong><code>is_split_into_words</code></strong>:<code>bool</code>=<em><code>False</code></em>, <strong><code>tok_kwargs</code></strong>:<code>dict</code>=<em><code>{}</code></em>)</p>
 </blockquote>
 <p>This method is used by the <code>SortedDL</code> to ensure your dataset is sorted <em>after</em> tokenization</p>
 <p><strong>Parameters:</strong></p>
@@ -306,7 +306,7 @@ if your inputs are pre-tokenized (not numericalized)</p></li>
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h2 id="HF_TextBlock" class="doc_header"><code>class</code> <code>HF_TextBlock</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/data/core.py#L159" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>HF_TextBlock</code>(<strong><code>hf_arch</code></strong>:<code>str</code>=<em><code>None</code></em>, <strong><code>hf_config</code></strong>:<code>PretrainedConfig</code>=<em><code>None</code></em>, <strong><code>hf_tokenizer</code></strong>:<code>PreTrainedTokenizerBase</code>=<em><code>None</code></em>, <strong><code>hf_model</code></strong>:<code>PreTrainedModel</code>=<em><code>None</code></em>, <strong><code>before_batch_tfm</code></strong>:<a href="/blurr/data-core.html#HF_BeforeBatchTransform"><code>HF_BeforeBatchTransform</code></a>=<em><code>None</code></em>, <strong><code>after_batch_tfm</code></strong>:<a href="/blurr/data-core.html#HF_AfterBatchTransform"><code>HF_AfterBatchTransform</code></a>=<em><code>None</code></em>, <strong><code>max_length</code></strong>:<code>int</code>=<em><code>None</code></em>, <strong><code>padding</code></strong>:<code>Union</code>[<code>bool</code>, <code>str</code>]=<em><code>True</code></em>, <strong><code>truncation</code></strong>:<code>Union</code>[<code>bool</code>, <code>str</code>]=<em><code>True</code></em>, <strong><code>is_split_into_words</code></strong>:<code>bool</code>=<em><code>False</code></em>, <strong><code>input_return_type</code></strong>=<em><code>HF_BaseInput</code></em>, <strong><code>dl_type</code></strong>:<code>DataLoader</code>=<em><code>None</code></em>, <strong><code>before_batch_kwargs</code></strong>=<em><code>{}</code></em>, <strong><code>after_batch_kwargs</code></strong>=<em><code>{}</code></em>, <strong><code>tok_kwargs</code></strong>=<em><code>{}</code></em>, <strong><code>text_gen_kwargs</code></strong>=<em><code>{}</code></em>, <strong>**<code>kwargs</code></strong>) :: <code>TransformBlock</code></p>
+<h2 id="HF_TextBlock" class="doc_header"><code>class</code> <code>HF_TextBlock</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/data/core.py#L164" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>HF_TextBlock</code>(<strong><code>hf_arch</code></strong>:<code>str</code>=<em><code>None</code></em>, <strong><code>hf_config</code></strong>:<code>PretrainedConfig</code>=<em><code>None</code></em>, <strong><code>hf_tokenizer</code></strong>:<code>PreTrainedTokenizerBase</code>=<em><code>None</code></em>, <strong><code>hf_model</code></strong>:<code>PreTrainedModel</code>=<em><code>None</code></em>, <strong><code>before_batch_tfm</code></strong>:<a href="/blurr/data-core.html#HF_BeforeBatchTransform"><code>HF_BeforeBatchTransform</code></a>=<em><code>None</code></em>, <strong><code>after_batch_tfm</code></strong>:<a href="/blurr/data-core.html#HF_AfterBatchTransform"><code>HF_AfterBatchTransform</code></a>=<em><code>None</code></em>, <strong><code>max_length</code></strong>:<code>int</code>=<em><code>None</code></em>, <strong><code>padding</code></strong>:<code>Union</code>[<code>bool</code>, <code>str</code>]=<em><code>True</code></em>, <strong><code>truncation</code></strong>:<code>Union</code>[<code>bool</code>, <code>str</code>]=<em><code>True</code></em>, <strong><code>is_split_into_words</code></strong>:<code>bool</code>=<em><code>False</code></em>, <strong><code>input_return_type</code></strong>:<code>Type</code>=<em><code>HF_BaseInput</code></em>, <strong><code>dl_type</code></strong>:<code>DataLoader</code>=<em><code>None</code></em>, <strong><code>before_batch_kwargs</code></strong>:<code>dict</code>=<em><code>{}</code></em>, <strong><code>after_batch_kwargs</code></strong>:<code>dict</code>=<em><code>{}</code></em>, <strong><code>tok_kwargs</code></strong>:<code>dict</code>=<em><code>{}</code></em>, <strong><code>text_gen_kwargs</code></strong>:<code>dict</code>=<em><code>{}</code></em>, <strong>**<code>kwargs</code></strong>) :: <code>TransformBlock</code></p>
 </blockquote>
 <p>The core <code>TransformBlock</code> to prepare your data for training in Blurr with fastai's <code>DataBlock</code> API</p>
 <p><strong>Parameters:</strong></p>
@@ -355,7 +355,7 @@ See [Everything you always wanted to know about padding and truncation](https://
 if your inputs are pre-tokenized (not numericalized)</p></li>
 </ul>
 <ul>
-<li><strong><code>input_return_type</code></strong> : <em><code>&lt;class 'type'&gt;</code></em>, <em>optional</em> <p>The return type your decoded inputs should be cast too (used by methods such as `show_batch`)</p></li>
+<li><strong><code>input_return_type</code></strong> : <em><code>typing.Type</code></em>, <em>optional</em>    <p>The return type your decoded inputs should be cast too (used by methods such as `show_batch`)</p></li>
 </ul>
 <ul>
 <li><strong><code>dl_type</code></strong> : <em><code>&lt;class 'fastai.data.load.DataLoader'&gt;</code></em>, <em>optional</em>    <p>The type of `DataLoader` you want created (defaults to `SortedDL`)</p></li>
@@ -425,7 +425,7 @@ if your inputs are pre-tokenized (not numericalized)</p></li>
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h2 id="BlurrBatchCreator" class="doc_header"><code>class</code> <code>BlurrBatchCreator</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/data/core.py#L251" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>BlurrBatchCreator</code>(<strong><code>hf_tokenizer</code></strong>:<code>PreTrainedTokenizerBase</code>, <strong><code>data_collator</code></strong>:<code>Type</code>=<em><code>None</code></em>)</p>
+<h2 id="BlurrBatchCreator" class="doc_header"><code>class</code> <code>BlurrBatchCreator</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/data/core.py#L264" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>BlurrBatchCreator</code>(<strong><code>hf_tokenizer</code></strong>:<code>PreTrainedTokenizerBase</code>, <strong><code>data_collator</code></strong>:<code>Type</code>=<em><code>None</code></em>)</p>
 </blockquote>
 <p>A class that can be assigned to a <code>TfmdDL.create_batch</code> method; used to in Blurr's low-level API
 to create batches that can be used in the Blurr library</p>
@@ -465,7 +465,7 @@ to create batches that can be used in the Blurr library</p>
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h2 id="BlurrBatchTransform" class="doc_header"><code>class</code> <code>BlurrBatchTransform</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/data/core.py#L280" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>BlurrBatchTransform</code>(<strong><code>hf_arch</code></strong>:<code>str</code>=<em><code>None</code></em>, <strong><code>hf_config</code></strong>:<code>PretrainedConfig</code>=<em><code>None</code></em>, <strong><code>hf_tokenizer</code></strong>:<code>PreTrainedTokenizerBase</code>=<em><code>None</code></em>, <strong><code>hf_model</code></strong>:<code>PreTrainedModel</code>=<em><code>None</code></em>, <strong><code>is_split_into_words</code></strong>:<code>bool</code>=<em><code>False</code></em>, <strong><code>ignore_token_id</code></strong>:<code>int</code>=<em><code>-100</code></em>, <strong><code>tok_kwargs</code></strong>=<em><code>{}</code></em>, <strong><code>text_gen_kwargs</code></strong>=<em><code>{}</code></em>, <strong><code>input_return_type</code></strong>=<em><code>HF_BaseInput</code></em>, <strong>**<code>kwargs</code></strong>) :: <a href="/blurr/data-core.html#HF_AfterBatchTransform"><code>HF_AfterBatchTransform</code></a></p>
+<h2 id="BlurrBatchTransform" class="doc_header"><code>class</code> <code>BlurrBatchTransform</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/data/core.py#L292" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>BlurrBatchTransform</code>(<strong><code>hf_arch</code></strong>:<code>str</code>=<em><code>None</code></em>, <strong><code>hf_config</code></strong>:<code>PretrainedConfig</code>=<em><code>None</code></em>, <strong><code>hf_tokenizer</code></strong>:<code>PreTrainedTokenizerBase</code>=<em><code>None</code></em>, <strong><code>hf_model</code></strong>:<code>PreTrainedModel</code>=<em><code>None</code></em>, <strong><code>is_split_into_words</code></strong>:<code>bool</code>=<em><code>False</code></em>, <strong><code>ignore_token_id</code></strong>:<code>int</code>=<em><code>-100</code></em>, <strong><code>tok_kwargs</code></strong>:<code>dict</code>=<em><code>{}</code></em>, <strong><code>text_gen_kwargs</code></strong>:<code>dict</code>=<em><code>{}</code></em>, <strong><code>input_return_type</code></strong>:<code>Type</code>=<em><code>HF_BaseInput</code></em>, <strong>**<code>kwargs</code></strong>) :: <a href="/blurr/data-core.html#HF_AfterBatchTransform"><code>HF_AfterBatchTransform</code></a></p>
 </blockquote>
 <p>A class used to cast your inputs into something understandable in fastai <code>show</code> methods</p>
 <p><strong>Parameters:</strong></p>
@@ -499,7 +499,7 @@ if your inputs are pre-tokenized (not numericalized)</p></li>
 <li><strong><code>text_gen_kwargs</code></strong> : <em><code>&lt;class 'dict'&gt;</code></em>, <em>optional</em>   <p>Any text generation keyword arguments</p></li>
 </ul>
 <ul>
-<li><strong><code>input_return_type</code></strong> : <em><code>&lt;class 'type'&gt;</code></em>, <em>optional</em> <p>The return type your decoded inputs should be cast too (used by methods such as `show_batch`)</p></li>
+<li><strong><code>input_return_type</code></strong> : <em><code>typing.Type</code></em>, <em>optional</em>    <p>The return type your decoded inputs should be cast too (used by methods such as `show_batch`)</p></li>
 </ul>
 <ul>
 <li><strong><code>kwargs</code></strong> : <em><code>&lt;class 'inspect._empty'&gt;</code></em></li>
@@ -533,7 +533,7 @@ if your inputs are pre-tokenized (not numericalized)</p></li>
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h2 id="BlurrDataLoader" class="doc_header"><code>class</code> <code>BlurrDataLoader</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/data/core.py#L316" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>BlurrDataLoader</code>(<strong><code>dataset</code></strong>:<code>Union</code>[<code>Dataset</code>, <code>Datasets</code>], <strong><code>hf_arch</code></strong>:<code>str</code>, <strong><code>hf_config</code></strong>:<code>PretrainedConfig</code>, <strong><code>hf_tokenizer</code></strong>:<code>PreTrainedTokenizerBase</code>, <strong><code>hf_model</code></strong>:<code>PreTrainedModel</code>, <strong><code>batch_creator</code></strong>:<a href="/blurr/data-core.html#BlurrBatchCreator"><code>BlurrBatchCreator</code></a>=<em><code>None</code></em>, <strong><code>batch_tfm</code></strong>:<a href="/blurr/data-core.html#BlurrBatchTransform"><code>BlurrBatchTransform</code></a>=<em><code>None</code></em>, <strong><code>preproccesing_func</code></strong>:<code>Callable</code>[<code>Union</code>[<code>Dataset</code>, <code>Datasets</code>], <code>PreTrainedTokenizerBase</code>, <code>PreTrainedModel</code>, <code>Union</code>[<code>Dataset</code>, <code>Datasets</code>]]=<em><code>None</code></em>, <strong><code>batch_tfm_kwargs</code></strong>=<em><code>{}</code></em>, <strong><code>bs</code></strong>=<em><code>64</code></em>, <strong><code>shuffle</code></strong>=<em><code>False</code></em>, <strong><code>num_workers</code></strong>=<em><code>None</code></em>, <strong><code>verbose</code></strong>=<em><code>False</code></em>, <strong><code>do_setup</code></strong>=<em><code>True</code></em>, <strong><code>pin_memory</code></strong>=<em><code>False</code></em>, <strong><code>timeout</code></strong>=<em><code>0</code></em>, <strong><code>batch_size</code></strong>=<em><code>None</code></em>, <strong><code>drop_last</code></strong>=<em><code>False</code></em>, <strong><code>indexed</code></strong>=<em><code>None</code></em>, <strong><code>n</code></strong>=<em><code>None</code></em>, <strong><code>device</code></strong>=<em><code>None</code></em>, <strong><code>persistent_workers</code></strong>=<em><code>False</code></em>, <strong><code>wif</code></strong>=<em><code>None</code></em>, <strong><code>before_iter</code></strong>=<em><code>None</code></em>, <strong><code>after_item</code></strong>=<em><code>None</code></em>, <strong><code>before_batch</code></strong>=<em><code>None</code></em>, <strong><code>after_batch</code></strong>=<em><code>None</code></em>, <strong><code>after_iter</code></strong>=<em><code>None</code></em>, <strong><code>create_batches</code></strong>=<em><code>None</code></em>, <strong><code>create_item</code></strong>=<em><code>None</code></em>, <strong><code>create_batch</code></strong>=<em><code>None</code></em>, <strong><code>retain</code></strong>=<em><code>None</code></em>, <strong><code>get_idxs</code></strong>=<em><code>None</code></em>, <strong><code>sample</code></strong>=<em><code>None</code></em>, <strong><code>shuffle_fn</code></strong>=<em><code>None</code></em>, <strong><code>do_batch</code></strong>=<em><code>None</code></em>) :: <code>TfmdDL</code></p>
+<h2 id="BlurrDataLoader" class="doc_header"><code>class</code> <code>BlurrDataLoader</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/data/core.py#L331" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>BlurrDataLoader</code>(<strong><code>dataset</code></strong>:<code>Union</code>[<code>Dataset</code>, <code>Datasets</code>], <strong><code>hf_arch</code></strong>:<code>str</code>, <strong><code>hf_config</code></strong>:<code>PretrainedConfig</code>, <strong><code>hf_tokenizer</code></strong>:<code>PreTrainedTokenizerBase</code>, <strong><code>hf_model</code></strong>:<code>PreTrainedModel</code>, <strong><code>batch_creator</code></strong>:<a href="/blurr/data-core.html#BlurrBatchCreator"><code>BlurrBatchCreator</code></a>=<em><code>None</code></em>, <strong><code>batch_tfm</code></strong>:<a href="/blurr/data-core.html#BlurrBatchTransform"><code>BlurrBatchTransform</code></a>=<em><code>None</code></em>, <strong><code>preproccesing_func</code></strong>:<code>Callable</code>[<code>Union</code>[<code>Dataset</code>, <code>Datasets</code>], <code>PreTrainedTokenizerBase</code>, <code>PreTrainedModel</code>, <code>Union</code>[<code>Dataset</code>, <code>Datasets</code>]]=<em><code>None</code></em>, <strong><code>label_names</code></strong>:<code>Optional</code>[<code>list</code>]=<em><code>None</code></em>, <strong><code>batch_tfm_kwargs</code></strong>:<code>dict</code>=<em><code>{}</code></em>, <strong><code>bs</code></strong>=<em><code>64</code></em>, <strong><code>shuffle</code></strong>=<em><code>False</code></em>, <strong><code>num_workers</code></strong>=<em><code>None</code></em>, <strong><code>verbose</code></strong>=<em><code>False</code></em>, <strong><code>do_setup</code></strong>=<em><code>True</code></em>, <strong><code>pin_memory</code></strong>=<em><code>False</code></em>, <strong><code>timeout</code></strong>=<em><code>0</code></em>, <strong><code>batch_size</code></strong>=<em><code>None</code></em>, <strong><code>drop_last</code></strong>=<em><code>False</code></em>, <strong><code>indexed</code></strong>=<em><code>None</code></em>, <strong><code>n</code></strong>=<em><code>None</code></em>, <strong><code>device</code></strong>=<em><code>None</code></em>, <strong><code>persistent_workers</code></strong>=<em><code>False</code></em>, <strong><code>wif</code></strong>=<em><code>None</code></em>, <strong><code>before_iter</code></strong>=<em><code>None</code></em>, <strong><code>after_item</code></strong>=<em><code>None</code></em>, <strong><code>before_batch</code></strong>=<em><code>None</code></em>, <strong><code>after_batch</code></strong>=<em><code>None</code></em>, <strong><code>after_iter</code></strong>=<em><code>None</code></em>, <strong><code>create_batches</code></strong>=<em><code>None</code></em>, <strong><code>create_item</code></strong>=<em><code>None</code></em>, <strong><code>create_batch</code></strong>=<em><code>None</code></em>, <strong><code>retain</code></strong>=<em><code>None</code></em>, <strong><code>get_idxs</code></strong>=<em><code>None</code></em>, <strong><code>sample</code></strong>=<em><code>None</code></em>, <strong><code>shuffle_fn</code></strong>=<em><code>None</code></em>, <strong><code>do_batch</code></strong>=<em><code>None</code></em>) :: <code>TfmdDL</code></p>
 </blockquote>
 <p>A class that makes creating a fast.ai <code>DataLoader</code> that works with Blurr</p>
 <p><strong>Parameters:</strong></p>
@@ -564,6 +564,10 @@ to `before_batch_tfm`)</p></li>
 </ul>
 <ul>
 <li><strong><code>preproccesing_func</code></strong> : <em><code>typing.Callable[[typing.Union[torch.utils.data.dataset.Dataset, fastai.data.core.Datasets], transformers.tokenization_utils_base.PreTrainedTokenizerBase, transformers.modeling_utils.PreTrainedModel], typing.Union[torch.utils.data.dataset.Dataset, fastai.data.core.Datasets]]</code></em>, <em>optional</em>    <p>(optional) A preprocessing function that will be applied to your dataset</p></li>
+</ul>
+<ul>
+<li><strong><code>label_names</code></strong> : <em><code>typing.Optional[list]</code></em>, <em>optional</em>    <p>(optional) list of corresponding labels names for classes; if included then methods like `show_batch` will
+show the name corresponding to the label index vs. just the integer index.</p></li>
 </ul>
 <ul>
 <li><strong><code>batch_tfm_kwargs</code></strong> : <em><code>&lt;class 'dict'&gt;</code></em>, <em>optional</em>  <p>Keyword arguments to be applied to your `batch_tfm`</p></li>
@@ -666,7 +670,7 @@ to `before_batch_tfm`)</p></li>
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h4 id="get_blurr_tfm" class="doc_header"><code>get_blurr_tfm</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/data/core.py#L392" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>get_blurr_tfm</code>(<strong><code>tfms_list</code></strong>:<code>Pipeline</code>, <strong><code>tfm_class</code></strong>:<code>Transform</code>=<em><code>HF_BeforeBatchTransform</code></em>)</p>
+<h4 id="get_blurr_tfm" class="doc_header"><code>get_blurr_tfm</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/data/core.py#L429" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>get_blurr_tfm</code>(<strong><code>tfms_list</code></strong>:<code>Pipeline</code>, <strong><code>tfm_class</code></strong>:<code>Transform</code>=<em><code>HF_BeforeBatchTransform</code></em>)</p>
 </blockquote>
 <p>Given a fastai DataLoaders batch transforms, this method can be used to get at a transform
 instance used in your Blurr DataBlock</p>
@@ -706,7 +710,7 @@ instance used in your Blurr DataBlock</p>
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h4 id="first_blurr_tfm" class="doc_header"><code>first_blurr_tfm</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/data/core.py#L404" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>first_blurr_tfm</code>(<strong><code>dls</code></strong>:<code>DataLoaders</code>, <strong><code>before_batch_tfm_class</code></strong>:<code>Transform</code>=<em><code>HF_BeforeBatchTransform</code></em>, <strong><code>blurr_batch_tfm_class</code></strong>:<code>Transform</code>=<em><code>BlurrBatchTransform</code></em>)</p>
+<h4 id="first_blurr_tfm" class="doc_header"><code>first_blurr_tfm</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/data/core.py#L442" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>first_blurr_tfm</code>(<strong><code>dls</code></strong>:<code>DataLoaders</code>, <strong><code>before_batch_tfm_class</code></strong>:<code>Transform</code>=<em><code>HF_BeforeBatchTransform</code></em>, <strong><code>blurr_batch_tfm_class</code></strong>:<code>Transform</code>=<em><code>BlurrBatchTransform</code></em>)</p>
 </blockquote>
 <p>This convenience method will find the first Blurr transform required for methods such as
 <code>show_batch</code> and <code>show_results</code>. The returned transform should have everything you need to properly
@@ -761,8 +765,8 @@ decode and 'show' your Hugging Face inputs/targets</p>
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">path</span> <span class="o">=</span> <span class="n">untar_data</span><span class="p">(</span><span class="n">URLs</span><span class="o">.</span><span class="n">IMDB_SAMPLE</span><span class="p">)</span>
 
-<span class="n">model_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="s1">&#39;models&#39;</span><span class="p">)</span>
-<span class="n">imdb_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">path</span><span class="o">/</span><span class="s1">&#39;texts.csv&#39;</span><span class="p">)</span>
+<span class="n">model_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="s2">&quot;models&quot;</span><span class="p">)</span>
+<span class="n">imdb_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">path</span> <span class="o">/</span> <span class="s2">&quot;texts.csv&quot;</span><span class="p">)</span>
 </pre></div>
 
     </div>
@@ -875,9 +879,10 @@ decode and 'show' your Hugging Face inputs/targets</p>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="kn">from</span> <span class="nn">transformers</span> <span class="kn">import</span> <span class="n">AutoModelForSequenceClassification</span>
+
 <span class="n">model_cls</span> <span class="o">=</span> <span class="n">AutoModelForSequenceClassification</span>
 
-<span class="n">pretrained_model_name</span> <span class="o">=</span> <span class="s2">&quot;distilroberta-base&quot;</span> <span class="c1"># &quot;distilbert-base-uncased&quot; &quot;bert-base-uncased&quot;</span>
+<span class="n">pretrained_model_name</span> <span class="o">=</span> <span class="s2">&quot;distilroberta-base&quot;</span>  <span class="c1"># &quot;distilbert-base-uncased&quot; &quot;bert-base-uncased&quot;</span>
 <span class="n">hf_arch</span><span class="p">,</span> <span class="n">hf_config</span><span class="p">,</span> <span class="n">hf_tokenizer</span><span class="p">,</span> <span class="n">hf_model</span> <span class="o">=</span> <span class="n">BLURR</span><span class="o">.</span><span class="n">get_hf_objects</span><span class="p">(</span><span class="n">pretrained_model_name</span><span class="p">,</span> <span class="n">model_cls</span><span class="o">=</span><span class="n">model_cls</span><span class="p">)</span>
 </pre></div>
 
@@ -903,7 +908,7 @@ decode and 'show' your Hugging Face inputs/targets</p>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">blocks</span> <span class="o">=</span> <span class="p">(</span><span class="n">HF_TextBlock</span><span class="p">(</span><span class="n">hf_arch</span><span class="p">,</span> <span class="n">hf_config</span><span class="p">,</span> <span class="n">hf_tokenizer</span><span class="p">,</span> <span class="n">hf_model</span><span class="p">),</span> <span class="n">CategoryBlock</span><span class="p">)</span>
-<span class="n">dblock</span> <span class="o">=</span> <span class="n">DataBlock</span><span class="p">(</span><span class="n">blocks</span><span class="o">=</span><span class="n">blocks</span><span class="p">,</span> <span class="n">get_x</span><span class="o">=</span><span class="n">ColReader</span><span class="p">(</span><span class="s1">&#39;text&#39;</span><span class="p">),</span> <span class="n">get_y</span><span class="o">=</span><span class="n">ColReader</span><span class="p">(</span><span class="s1">&#39;label&#39;</span><span class="p">),</span> <span class="n">splitter</span><span class="o">=</span><span class="n">ColSplitter</span><span class="p">())</span>
+<span class="n">dblock</span> <span class="o">=</span> <span class="n">DataBlock</span><span class="p">(</span><span class="n">blocks</span><span class="o">=</span><span class="n">blocks</span><span class="p">,</span> <span class="n">get_x</span><span class="o">=</span><span class="n">ColReader</span><span class="p">(</span><span class="s2">&quot;text&quot;</span><span class="p">),</span> <span class="n">get_y</span><span class="o">=</span><span class="n">ColReader</span><span class="p">(</span><span class="s2">&quot;label&quot;</span><span class="p">),</span> <span class="n">splitter</span><span class="o">=</span><span class="n">ColSplitter</span><span class="p">())</span>
 </pre></div>
 
     </div>
@@ -937,7 +942,8 @@ decode and 'show' your Hugging Face inputs/targets</p>
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">b</span> <span class="o">=</span> <span class="n">dls</span><span class="o">.</span><span class="n">one_batch</span><span class="p">();</span> <span class="nb">len</span><span class="p">(</span><span class="n">b</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">b</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;input_ids&#39;</span><span class="p">]),</span> <span class="n">b</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;input_ids&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">b</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> 
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">b</span> <span class="o">=</span> <span class="n">dls</span><span class="o">.</span><span class="n">one_batch</span><span class="p">()</span>
+<span class="nb">len</span><span class="p">(</span><span class="n">b</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">b</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;input_ids&quot;</span><span class="p">]),</span> <span class="n">b</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;input_ids&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">b</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
 </pre></div>
 
     </div>
@@ -1040,7 +1046,7 @@ decode and 'show' your Hugging Face inputs/targets</p>
     </tr>
     <tr>
       <th>1</th>
-      <td>Now that Che(2008) has finished its relatively short Australian cinema run (extremely limited release:1 screen in Sydney, after 6wks), I can guiltlessly join both hosts of "At The Movies" in taking Steven Soderbergh to task.&lt;br /&gt;&lt;br /&gt;It's usually satisfying to watch a film director change his style/subject, but Soderbergh's most recent stinker, The Girlfriend Experience(2009), was also missing a story, so narrative (and editing?) seem to suddenly be Soderbergh's main challenge. Strange, after</td>
+      <td>I really wanted to love this show. I truly, honestly did.&lt;br /&gt;&lt;br /&gt;For the first time, gay viewers get their own version of the "The Bachelor". With the help of his obligatory "hag" Andra, James, a good looking, well-to-do thirty-something has the chance of love with 15 suitors (or "mates" as they are referred to in the show). The only problem is half of them are straight and James doesn't know this. If James picks a gay one, they get a trip to New Zealand, and If he picks a straight one, str</td>
       <td>negative</td>
     </tr>
   </tbody>
@@ -1106,8 +1112,46 @@ decode and 'show' your Hugging Face inputs/targets</p>
 
 <div class="inner_cell">
     <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">raw_datasets</span><span class="p">[</span><span class="s2">&quot;train&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">features</span>
+<span class="n">raw_datasets</span><span class="p">[</span><span class="s2">&quot;train&quot;</span><span class="p">]</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>Dataset({
+    features: [&#39;sentence1&#39;, &#39;sentence2&#39;, &#39;label&#39;, &#39;idx&#39;],
+    num_rows: 3668
+})</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    {% endraw %}
+
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">tokenize_function</span><span class="p">(</span><span class="n">example</span><span class="p">):</span>
     <span class="k">return</span> <span class="n">hf_tokenizer</span><span class="p">(</span><span class="n">example</span><span class="p">[</span><span class="s2">&quot;sentence1&quot;</span><span class="p">],</span> <span class="n">example</span><span class="p">[</span><span class="s2">&quot;sentence2&quot;</span><span class="p">],</span> <span class="n">truncation</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
 
 <span class="n">tokenized_datasets</span> <span class="o">=</span> <span class="n">raw_datasets</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">tokenize_function</span><span class="p">,</span> <span class="n">batched</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
@@ -1137,7 +1181,7 @@ decode and 'show' your Hugging Face inputs/targets</p>
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h4 id="preproc_hf_dataset" class="doc_header"><code>preproc_hf_dataset</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/data/core.py#L460" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>preproc_hf_dataset</code>(<strong><code>dataset</code></strong>:<code>Union</code>[<code>Dataset</code>, <code>Datasets</code>], <strong><code>hf_tokenizer</code></strong>:<code>PreTrainedTokenizerBase</code>, <strong><code>hf_model</code></strong>:<code>PreTrainedModel</code>)</p>
+<h4 id="preproc_hf_dataset" class="doc_header"><code>preproc_hf_dataset</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/data/core.py#L514" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>preproc_hf_dataset</code>(<strong><code>dataset</code></strong>:<code>Union</code>[<code>Dataset</code>, <code>Datasets</code>], <strong><code>hf_tokenizer</code></strong>:<code>PreTrainedTokenizerBase</code>, <strong><code>hf_model</code></strong>:<code>PreTrainedModel</code>)</p>
 </blockquote>
 <p>This method can be used to preprocess most Hugging Face Datasets for use in Blurr and other training
 libraries</p>
@@ -1183,13 +1227,30 @@ libraries</p>
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">trn_dl</span> <span class="o">=</span> <span class="n">BlurrDataLoader</span><span class="p">(</span><span class="n">tokenized_datasets</span><span class="p">[</span><span class="s2">&quot;train&quot;</span><span class="p">],</span> 
-                         <span class="n">hf_arch</span><span class="p">,</span> <span class="n">hf_config</span><span class="p">,</span> <span class="n">hf_tokenizer</span><span class="p">,</span> <span class="n">hf_model</span><span class="p">,</span>
-                         <span class="n">preproccesing_func</span><span class="o">=</span><span class="n">preproc_hf_dataset</span><span class="p">,</span> <span class="n">shuffle</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">8</span><span class="p">)</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">label_names</span> <span class="o">=</span> <span class="n">raw_datasets</span><span class="p">[</span><span class="s2">&quot;train&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">features</span><span class="p">[</span><span class="s2">&quot;label&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">names</span>
 
-<span class="n">val_dl</span> <span class="o">=</span> <span class="n">BlurrDataLoader</span><span class="p">(</span><span class="n">tokenized_datasets</span><span class="p">[</span><span class="s2">&quot;validation&quot;</span><span class="p">],</span>
-                         <span class="n">hf_arch</span><span class="p">,</span> <span class="n">hf_config</span><span class="p">,</span> <span class="n">hf_tokenizer</span><span class="p">,</span> <span class="n">hf_model</span><span class="p">,</span>
-                         <span class="n">preproccesing_func</span><span class="o">=</span><span class="n">preproc_hf_dataset</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">16</span><span class="p">)</span>
+<span class="n">trn_dl</span> <span class="o">=</span> <span class="n">BlurrDataLoader</span><span class="p">(</span>
+    <span class="n">tokenized_datasets</span><span class="p">[</span><span class="s2">&quot;train&quot;</span><span class="p">],</span>
+    <span class="n">hf_arch</span><span class="p">,</span>
+    <span class="n">hf_config</span><span class="p">,</span>
+    <span class="n">hf_tokenizer</span><span class="p">,</span>
+    <span class="n">hf_model</span><span class="p">,</span>
+    <span class="n">preproccesing_func</span><span class="o">=</span><span class="n">preproc_hf_dataset</span><span class="p">,</span>
+    <span class="n">label_names</span><span class="o">=</span><span class="n">label_names</span><span class="p">,</span>
+    <span class="n">shuffle</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">batch_size</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">val_dl</span> <span class="o">=</span> <span class="n">BlurrDataLoader</span><span class="p">(</span>
+    <span class="n">tokenized_datasets</span><span class="p">[</span><span class="s2">&quot;validation&quot;</span><span class="p">],</span>
+    <span class="n">hf_arch</span><span class="p">,</span>
+    <span class="n">hf_config</span><span class="p">,</span>
+    <span class="n">hf_tokenizer</span><span class="p">,</span>
+    <span class="n">hf_model</span><span class="p">,</span>
+    <span class="n">preproccesing_func</span><span class="o">=</span><span class="n">preproc_hf_dataset</span><span class="p">,</span>
+    <span class="n">label_names</span><span class="o">=</span><span class="n">label_names</span><span class="p">,</span>
+    <span class="n">batch_size</span><span class="o">=</span><span class="mi">16</span><span class="p">,</span>
+<span class="p">)</span>
 
 <span class="n">dls</span> <span class="o">=</span> <span class="n">DataLoaders</span><span class="p">(</span><span class="n">trn_dl</span><span class="p">,</span> <span class="n">val_dl</span><span class="p">)</span>
 </pre></div>
@@ -1209,7 +1270,7 @@ libraries</p>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">b</span> <span class="o">=</span> <span class="n">dls</span><span class="o">.</span><span class="n">one_batch</span><span class="p">()</span>
-<span class="n">b</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;input_ids&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span>
+<span class="n">b</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;input_ids&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span>
 </pre></div>
 
     </div>
@@ -1224,7 +1285,7 @@ libraries</p>
 
 
 <div class="output_text output_subarea output_execute_result">
-<pre>torch.Size([8, 78])</pre>
+<pre>torch.Size([8, 64])</pre>
 </div>
 
 </div>
@@ -1267,13 +1328,13 @@ libraries</p>
   <tbody>
     <tr>
       <th>0</th>
-      <td>The AP quotes a local policeman as saying the British troops were targeted by townspeople angry over civilian deaths during a demonstration yesterday in the town of Majar Al-Kabir. Associated Press quotes a local policeman as saying that the British troops were targeted by townspeople angry over civilian deaths during an earlier demonstration in the town of Majar al-Kabir.</td>
-      <td>1</td>
+      <td>" Frank Quattrone is innocent, " Keker said in a statement. Quattrone lawyer John W. Keker said his client is innocent.</td>
+      <td>equivalent</td>
     </tr>
     <tr>
       <th>1</th>
-      <td>Hundreds of reporters and photographers swamped the courthouse grounds before the hearing, which was carried live on national cable networks. Hundreds of reporters and photographers swamped the town and the short hearing involving the five-time All-Star was carried live on national cable networks.</td>
-      <td>0</td>
+      <td>Jim Eisenbrandt, Wittig's attorney, also was not available for comment immediately ; his secretary said he was reviewing the report. A secretary for James Eisenbrandt, Wittig's attorney, said Eisenbrandt was reviewing the report this morning.</td>
+      <td>not_equivalent</td>
     </tr>
   </tbody>
 </table>

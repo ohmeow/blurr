@@ -61,7 +61,7 @@ nb_path: "nbs/00_utils.ipynb"
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h2 id="Singleton" class="doc_header"><code>class</code> <code>Singleton</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/utils.py#L23" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>Singleton</code>()</p>
+<h2 id="Singleton" class="doc_header"><code>class</code> <code>Singleton</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/utils.py#L21" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>Singleton</code>()</p>
 </blockquote>
 
 </div>
@@ -96,11 +96,13 @@ nb_path: "nbs/00_utils.ipynb"
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="nd">@Singleton</span>
-<span class="k">class</span> <span class="nc">TestSingleton</span><span class="p">:</span> <span class="k">pass</span>
+<span class="k">class</span> <span class="nc">TestSingleton</span><span class="p">:</span>
+    <span class="k">pass</span>
+
 
 <span class="n">a</span> <span class="o">=</span> <span class="n">TestSingleton</span><span class="p">()</span>
 <span class="n">b</span> <span class="o">=</span> <span class="n">TestSingleton</span><span class="p">()</span>
-<span class="n">test_eq</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="n">b</span><span class="p">)</span>
+<span class="n">test_eq</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span>
 </pre></div>
 
     </div>
@@ -133,11 +135,11 @@ nb_path: "nbs/00_utils.ipynb"
 <p>Converts a type represented as a string to the actual class</p>
 <p><strong>Parameters:</strong></p>
 <ul>
-<li><strong><code>typename</code></strong> : <em><code>&lt;class 'str'&gt;</code></em>   <p>The name of a type as a string</p></li>
+<li><strong><code>typename</code></strong> : <em><code>&lt;class 'str'&gt;</code></em></li>
 </ul>
 <p><strong>Returns</strong>:</p>
 <ul>
-<li><em><code>typing.Type</code></em>  <p>Returns the actual type</p></li>
+<li><em><code>typing.Type</code></em>  <p>The name of a type as a string  # Returns the actual type</p></li>
 </ul>
 
 </div>
@@ -164,9 +166,9 @@ nb_path: "nbs/00_utils.ipynb"
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">str_to_type</span><span class="p">(</span><span class="s1">&#39;List&#39;</span><span class="p">))</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">str_to_type</span><span class="p">(</span><span class="s1">&#39;test_eq&#39;</span><span class="p">))</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">str_to_type</span><span class="p">(</span><span class="s1">&#39;TestSingleton&#39;</span><span class="p">))</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">str_to_type</span><span class="p">(</span><span class="s2">&quot;List&quot;</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">str_to_type</span><span class="p">(</span><span class="s2">&quot;test_eq&quot;</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">str_to_type</span><span class="p">(</span><span class="s2">&quot;TestSingleton&quot;</span><span class="p">))</span>
 </pre></div>
 
     </div>
@@ -180,8 +182,8 @@ nb_path: "nbs/00_utils.ipynb"
 
 <div class="output_subarea output_stream output_stdout output_text">
 <pre>typing.List
-&lt;function test_eq at 0x7f3b67beda60&gt;
-&lt;__main__.Singleton object at 0x7f3b675a28b0&gt;
+&lt;function test_eq at 0x7f2288296160&gt;
+&lt;__main__.Singleton object at 0x7f2287db8970&gt;
 </pre>
 </div>
 </div>
@@ -210,7 +212,7 @@ nb_path: "nbs/00_utils.ipynb"
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h4 id="print_versions" class="doc_header"><code>print_versions</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/utils.py#L39" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>print_versions</code>(<strong><code>packages</code></strong>:<code>Union</code>[<code>str</code>, <code>List</code>[<code>str</code>]])</p>
+<h4 id="print_versions" class="doc_header"><code>print_versions</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/utils.py#L38" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>print_versions</code>(<strong><code>packages</code></strong>:<code>Union</code>[<code>str</code>, <code>List</code>[<code>str</code>]])</p>
 </blockquote>
 <p>Prints the name and version of one or more packages in your environment</p>
 <p><strong>Parameters:</strong></p>
@@ -242,9 +244,9 @@ nb_path: "nbs/00_utils.ipynb"
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">print_versions</span><span class="p">(</span><span class="s1">&#39;torch transformers fastai&#39;</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;---&#39;</span><span class="p">)</span>
-<span class="n">print_versions</span><span class="p">([</span><span class="s1">&#39;torch&#39;</span><span class="p">,</span> <span class="s1">&#39;transformers&#39;</span><span class="p">,</span> <span class="s1">&#39;fastai&#39;</span><span class="p">])</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">print_versions</span><span class="p">(</span><span class="s2">&quot;torch transformers fastai&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;---&quot;</span><span class="p">)</span>
+<span class="n">print_versions</span><span class="p">([</span><span class="s2">&quot;torch&quot;</span><span class="p">,</span> <span class="s2">&quot;transformers&quot;</span><span class="p">,</span> <span class="s2">&quot;fastai&quot;</span><span class="p">])</span>
 </pre></div>
 
     </div>
@@ -258,11 +260,11 @@ nb_path: "nbs/00_utils.ipynb"
 
 <div class="output_subarea output_stream output_stdout output_text">
 <pre>torch: 1.7.1
-transformers: 4.12.3
+transformers: 4.13.0
 fastai: 2.5.3
 ---
 torch: 1.7.1
-transformers: 4.12.3
+transformers: 4.13.0
 fastai: 2.5.3
 </pre>
 </div>
@@ -285,7 +287,7 @@ fastai: 2.5.3
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h4 id="set_seed" class="doc_header"><code>set_seed</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/utils.py#L54" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>set_seed</code>(<strong><code>seed_value</code></strong>=<em><code>42</code></em>)</p>
+<h4 id="set_seed" class="doc_header"><code>set_seed</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/utils.py#L54" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>set_seed</code>(<strong><code>seed_value</code></strong>:<code>int</code>=<em><code>42</code></em>)</p>
 </blockquote>
 <p>This needs to be ran before creating your DataLoaders, before creating your Learner, and before each call
 to your fit function to help ensure reproducibility.</p>
@@ -328,7 +330,7 @@ to your fit function to help ensure reproducibility.</p>
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h4 id="Singleton object at 0x7f2c70cb6280>" class="doc_header"><code>Singleton object at 0x7f2c70cb6280></code><a href="" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>Singleton object at 0x7f2c70cb6280></code>(<strong>*<code>args</code></strong>, <strong>**<code>kwargs</code></strong>)</p>
+<h4 id="Singleton object at 0x7ff3ce365190>" class="doc_header"><code>Singleton object at 0x7ff3ce365190></code><a href="" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>Singleton object at 0x7ff3ce365190></code>(<strong>*<code>args</code></strong>, <strong>**<code>kwargs</code></strong>)</p>
 </blockquote>
 
 </div>
@@ -413,13 +415,13 @@ to your fit function to help ensure reproducibility.</p>
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h4 id="BlurrUtil.get_tasks" class="doc_header"><code>BlurrUtil.get_tasks</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/utils.py#L127" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>BlurrUtil.get_tasks</code>(<strong><code>arch</code></strong>:<code>str</code>=<em><code>None</code></em>)</p>
+<h4 id="BlurrUtil.get_tasks" class="doc_header"><code>BlurrUtil.get_tasks</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/utils.py#L122" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>BlurrUtil.get_tasks</code>(<strong><code>arch</code></strong>:<code>str</code>=<em><code>None</code></em>)</p>
 </blockquote>
 <p>This method can be used to get a list of all tasks supported by your transformers install, or
 just those available to a specific architecture</p>
 <p><strong>Parameters:</strong></p>
 <ul>
-<li><strong><code>arch</code></strong> : <em><code>&lt;class 'str'&gt;</code></em>, <em>optional</em>   <p>A transformer architecture (e.g., 'bert')</p></li>
+<li><strong><code>arch</code></strong> : <em><code>&lt;class 'str'&gt;</code></em>, <em>optional</em>   <p>A transformer architecture (e.g., 'bert')  # A list of tasks you can use</p></li>
 </ul>
 
 </div>
@@ -440,8 +442,8 @@ just those available to a specific architecture</p>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">BLURR</span><span class="o">.</span><span class="n">get_tasks</span><span class="p">())</span>
-<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">BLURR</span><span class="o">.</span><span class="n">get_tasks</span><span class="p">(</span><span class="s1">&#39;bart&#39;</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">BLURR</span><span class="o">.</span><span class="n">get_tasks</span><span class="p">(</span><span class="s2">&quot;bart&quot;</span><span class="p">))</span>
 </pre></div>
 
     </div>
@@ -454,7 +456,7 @@ just those available to a specific architecture</p>
 <div class="output_area">
 
 <div class="output_subarea output_stream output_stdout output_text">
-<pre>[&#39;CTC&#39;, &#39;CausalLM&#39;, &#39;Classification&#39;, &#39;ConditionalGeneration&#39;, &#39;EntityClassification&#39;, &#39;EntityPairClassification&#39;, &#39;EntitySpanClassification&#39;, &#39;Generation&#39;, &#39;ImageClassification&#39;, &#39;LMHead&#39;, &#39;LMHeadModel&#39;, &#39;MaskedImageModeling&#39;, &#39;MaskedLM&#39;, &#39;MultipleChoice&#39;, &#39;NextSentencePrediction&#39;, &#39;PreTraining&#39;, &#39;QuestionAnswering&#39;, &#39;QuestionAnsweringSimple&#39;, &#39;RegionToPhraseAlignment&#39;, &#39;SemanticSegmentation&#39;, &#39;SequenceClassification&#39;, &#39;Teacher&#39;, &#39;TokenClassification&#39;, &#39;VisualReasoning&#39;, &#39;merLayer&#39;, &#39;merModel&#39;, &#39;merPreTrainedModel&#39;]
+<pre>[&#39;CTC&#39;, &#39;CausalImageModeling&#39;, &#39;CausalLM&#39;, &#39;Classification&#39;, &#39;ConditionalGeneration&#39;, &#39;EntityClassification&#39;, &#39;EntityPairClassification&#39;, &#39;EntitySpanClassification&#39;, &#39;Generation&#39;, &#39;ImageClassification&#39;, &#39;ImageClassificationConvProcessing&#39;, &#39;ImageClassificationFourier&#39;, &#39;ImageClassificationLearned&#39;, &#39;LMHead&#39;, &#39;LMHeadModel&#39;, &#39;MaskedImageModeling&#39;, &#39;MaskedLM&#39;, &#39;MultimodalAutoencoding&#39;, &#39;MultipleChoice&#39;, &#39;NextSentencePrediction&#39;, &#39;OpticalFlow&#39;, &#39;PreTraining&#39;, &#39;QuestionAnswering&#39;, &#39;QuestionAnsweringSimple&#39;, &#39;RegionToPhraseAlignment&#39;, &#39;SemanticSegmentation&#39;, &#39;SequenceClassification&#39;, &#39;Teacher&#39;, &#39;TokenClassification&#39;, &#39;VisualReasoning&#39;, &#39;merLayer&#39;, &#39;merModel&#39;, &#39;merPreTrainedModel&#39;]
 
 [&#39;CausalLM&#39;, &#39;ConditionalGeneration&#39;, &#39;QuestionAnswering&#39;, &#39;SequenceClassification&#39;]
 </pre>
@@ -485,7 +487,7 @@ just those available to a specific architecture</p>
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h4 id="BlurrUtil.get_architectures" class="doc_header"><code>BlurrUtil.get_architectures</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/utils.py#L139" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>BlurrUtil.get_architectures</code>()</p>
+<h4 id="BlurrUtil.get_architectures" class="doc_header"><code>BlurrUtil.get_architectures</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/utils.py#L132" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>BlurrUtil.get_architectures</code>()</p>
 </blockquote>
 
 </div>
@@ -518,7 +520,7 @@ just those available to a specific architecture</p>
 <div class="output_area">
 
 <div class="output_subarea output_stream output_stdout output_text">
-<pre>[&#39;albert&#39;, &#39;albert_fast&#39;, &#39;bart&#39;, &#39;bart_fast&#39;, &#39;barthez&#39;, &#39;barthez_fast&#39;, &#39;bartpho&#39;, &#39;beit&#39;, &#39;bert&#39;, &#39;bert_fast&#39;, &#39;bert_generation&#39;, &#39;bert_japanese&#39;, &#39;bertweet&#39;, &#39;big_bird&#39;, &#39;big_bird_fast&#39;, &#39;bigbird_pegasus&#39;, &#39;blenderbot&#39;, &#39;blenderbot_small&#39;, &#39;blenderbot_small_fast&#39;, &#39;byt5&#39;, &#39;camembert&#39;, &#39;camembert_fast&#39;, &#39;canine&#39;, &#39;clip&#39;, &#39;clip_fast&#39;, &#39;convbert&#39;, &#39;convbert_fast&#39;, &#39;cpm&#39;, &#39;ctrl&#39;, &#39;deberta&#39;, &#39;deberta_fast&#39;, &#39;deberta_v2&#39;, &#39;deit&#39;, &#39;detr&#39;, &#39;distilbert&#39;, &#39;distilbert_fast&#39;, &#39;dpr&#39;, &#39;dpr_fast&#39;, &#39;electra&#39;, &#39;electra_fast&#39;, &#39;encoder_decoder&#39;, &#39;flaubert&#39;, &#39;fnet&#39;, &#39;fnet_fast&#39;, &#39;fsmt&#39;, &#39;funnel&#39;, &#39;funnel_fast&#39;, &#39;gpt2&#39;, &#39;gpt2_fast&#39;, &#39;gpt_neo&#39;, &#39;gptj&#39;, &#39;herbert&#39;, &#39;herbert_fast&#39;, &#39;hubert&#39;, &#39;ibert&#39;, &#39;layoutlm&#39;, &#39;layoutlm_fast&#39;, &#39;layoutlmv2&#39;, &#39;layoutlmv2_fast&#39;, &#39;led&#39;, &#39;led_fast&#39;, &#39;longformer&#39;, &#39;longformer_fast&#39;, &#39;luke&#39;, &#39;lxmert&#39;, &#39;lxmert_fast&#39;, &#39;m2m_100&#39;, &#39;marian&#39;, &#39;mbart&#39;, &#39;mbart50&#39;, &#39;mbart50_fast&#39;, &#39;mbart_fast&#39;, &#39;megatron_bert&#39;, &#39;mmbt&#39;, &#39;mobilebert&#39;, &#39;mobilebert_fast&#39;, &#39;mpnet&#39;, &#39;mpnet_fast&#39;, &#39;mt5&#39;, &#39;openai&#39;, &#39;openai_fast&#39;, &#39;pegasus&#39;, &#39;pegasus_fast&#39;, &#39;phobert&#39;, &#39;prophetnet&#39;, &#39;rag&#39;, &#39;reformer&#39;, &#39;reformer_fast&#39;, &#39;rembert&#39;, &#39;rembert_fast&#39;, &#39;retribert&#39;, &#39;retribert_fast&#39;, &#39;roberta&#39;, &#39;roberta_fast&#39;, &#39;roformer&#39;, &#39;roformer_fast&#39;, &#39;segformer&#39;, &#39;sew&#39;, &#39;sew_d&#39;, &#39;speech_encoder_decoder&#39;, &#39;speech_to_text&#39;, &#39;speech_to_text_2&#39;, &#39;splinter&#39;, &#39;splinter_fast&#39;, &#39;squeezebert&#39;, &#39;squeezebert_fast&#39;, &#39;t5&#39;, &#39;t5_fast&#39;, &#39;tapas&#39;, &#39;transfo_xl&#39;, &#39;trocr&#39;, &#39;unispeech&#39;, &#39;unispeech_sat&#39;, &#39;vision_encoder_decoder&#39;, &#39;visual_bert&#39;, &#39;vit&#39;, &#39;wav2vec2&#39;, &#39;xlm&#39;, &#39;xlm_prophetnet&#39;, &#39;xlm_roberta&#39;, &#39;xlm_roberta_fast&#39;, &#39;xlnet&#39;, &#39;xlnet_fast&#39;]
+<pre>[&#39;albert&#39;, &#39;albert_fast&#39;, &#39;bart&#39;, &#39;bart_fast&#39;, &#39;barthez&#39;, &#39;barthez_fast&#39;, &#39;bartpho&#39;, &#39;beit&#39;, &#39;bert&#39;, &#39;bert_fast&#39;, &#39;bert_generation&#39;, &#39;bert_japanese&#39;, &#39;bertweet&#39;, &#39;big_bird&#39;, &#39;big_bird_fast&#39;, &#39;bigbird_pegasus&#39;, &#39;blenderbot&#39;, &#39;blenderbot_fast&#39;, &#39;blenderbot_small&#39;, &#39;blenderbot_small_fast&#39;, &#39;byt5&#39;, &#39;camembert&#39;, &#39;camembert_fast&#39;, &#39;canine&#39;, &#39;clip&#39;, &#39;clip_fast&#39;, &#39;convbert&#39;, &#39;convbert_fast&#39;, &#39;cpm&#39;, &#39;ctrl&#39;, &#39;deberta&#39;, &#39;deberta_fast&#39;, &#39;deberta_v2&#39;, &#39;deit&#39;, &#39;detr&#39;, &#39;distilbert&#39;, &#39;distilbert_fast&#39;, &#39;dpr&#39;, &#39;dpr_fast&#39;, &#39;electra&#39;, &#39;electra_fast&#39;, &#39;encoder_decoder&#39;, &#39;flaubert&#39;, &#39;fnet&#39;, &#39;fnet_fast&#39;, &#39;fsmt&#39;, &#39;funnel&#39;, &#39;funnel_fast&#39;, &#39;gpt2&#39;, &#39;gpt2_fast&#39;, &#39;gpt_neo&#39;, &#39;gptj&#39;, &#39;herbert&#39;, &#39;herbert_fast&#39;, &#39;hubert&#39;, &#39;ibert&#39;, &#39;imagegpt&#39;, &#39;layoutlm&#39;, &#39;layoutlm_fast&#39;, &#39;layoutlmv2&#39;, &#39;layoutlmv2_fast&#39;, &#39;layoutxlm&#39;, &#39;layoutxlm_fast&#39;, &#39;led&#39;, &#39;led_fast&#39;, &#39;longformer&#39;, &#39;longformer_fast&#39;, &#39;luke&#39;, &#39;lxmert&#39;, &#39;lxmert_fast&#39;, &#39;m2m_100&#39;, &#39;marian&#39;, &#39;mbart&#39;, &#39;mbart50&#39;, &#39;mbart50_fast&#39;, &#39;mbart_fast&#39;, &#39;megatron_bert&#39;, &#39;mluke&#39;, &#39;mmbt&#39;, &#39;mobilebert&#39;, &#39;mobilebert_fast&#39;, &#39;mpnet&#39;, &#39;mpnet_fast&#39;, &#39;mt5&#39;, &#39;openai&#39;, &#39;openai_fast&#39;, &#39;pegasus&#39;, &#39;pegasus_fast&#39;, &#39;perceiver&#39;, &#39;phobert&#39;, &#39;prophetnet&#39;, &#39;qdqbert&#39;, &#39;rag&#39;, &#39;reformer&#39;, &#39;reformer_fast&#39;, &#39;rembert&#39;, &#39;rembert_fast&#39;, &#39;retribert&#39;, &#39;retribert_fast&#39;, &#39;roberta&#39;, &#39;roberta_fast&#39;, &#39;roformer&#39;, &#39;roformer_fast&#39;, &#39;segformer&#39;, &#39;sew&#39;, &#39;sew_d&#39;, &#39;speech_encoder_decoder&#39;, &#39;speech_to_text&#39;, &#39;speech_to_text_2&#39;, &#39;splinter&#39;, &#39;splinter_fast&#39;, &#39;squeezebert&#39;, &#39;squeezebert_fast&#39;, &#39;t5&#39;, &#39;t5_fast&#39;, &#39;tapas&#39;, &#39;transfo_xl&#39;, &#39;trocr&#39;, &#39;unispeech&#39;, &#39;unispeech_sat&#39;, &#39;vision_encoder_decoder&#39;, &#39;vision_text_dual_encoder&#39;, &#39;visual_bert&#39;, &#39;vit&#39;, &#39;wav2vec2&#39;, &#39;xlm&#39;, &#39;xlm_prophetnet&#39;, &#39;xlm_roberta&#39;, &#39;xlm_roberta_fast&#39;, &#39;xlnet&#39;, &#39;xlnet_fast&#39;]
 </pre>
 </div>
 </div>
@@ -540,7 +542,7 @@ just those available to a specific architecture</p>
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h4 id="BlurrUtil.get_model_architecture" class="doc_header"><code>BlurrUtil.get_model_architecture</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/utils.py#L158" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>BlurrUtil.get_model_architecture</code>(<strong><code>model_name_or_enum</code></strong>)</p>
+<h4 id="BlurrUtil.get_model_architecture" class="doc_header"><code>BlurrUtil.get_model_architecture</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/utils.py#L150" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>BlurrUtil.get_model_architecture</code>(<strong><code>model_name_or_enum</code></strong>)</p>
 </blockquote>
 <p>Get the architecture for a given model name / enum</p>
 <p><strong>Parameters:</strong></p>
@@ -565,7 +567,7 @@ just those available to a specific architecture</p>
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">BLURR</span><span class="o">.</span><span class="n">get_model_architecture</span><span class="p">(</span><span class="s1">&#39;RobertaForSequenceClassification&#39;</span><span class="p">))</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">BLURR</span><span class="o">.</span><span class="n">get_model_architecture</span><span class="p">(</span><span class="s2">&quot;RobertaForSequenceClassification&quot;</span><span class="p">))</span>
 </pre></div>
 
     </div>
@@ -607,7 +609,7 @@ just those available to a specific architecture</p>
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h4 id="BlurrUtil.get_models" class="doc_header"><code>BlurrUtil.get_models</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/utils.py#L145" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>BlurrUtil.get_models</code>(<strong><code>arch</code></strong>:<code>str</code>=<em><code>None</code></em>, <strong><code>task</code></strong>:<code>str</code>=<em><code>None</code></em>)</p>
+<h4 id="BlurrUtil.get_models" class="doc_header"><code>BlurrUtil.get_models</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/utils.py#L135" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>BlurrUtil.get_models</code>(<strong><code>arch</code></strong>:<code>str</code>=<em><code>None</code></em>, <strong><code>task</code></strong>:<code>str</code>=<em><code>None</code></em>)</p>
 </blockquote>
 <p>The transformer models available for use (optional: by architecture | task)</p>
 <p><strong>Parameters:</strong></p>
@@ -666,7 +668,7 @@ just those available to a specific architecture</p>
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">BLURR</span><span class="o">.</span><span class="n">get_models</span><span class="p">(</span><span class="n">arch</span><span class="o">=</span><span class="s1">&#39;bert&#39;</span><span class="p">)[:</span><span class="mi">5</span><span class="p">])</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">BLURR</span><span class="o">.</span><span class="n">get_models</span><span class="p">(</span><span class="n">arch</span><span class="o">=</span><span class="s2">&quot;bert&quot;</span><span class="p">)[:</span><span class="mi">5</span><span class="p">])</span>
 </pre></div>
 
     </div>
@@ -697,7 +699,7 @@ just those available to a specific architecture</p>
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">BLURR</span><span class="o">.</span><span class="n">get_models</span><span class="p">(</span><span class="n">task</span><span class="o">=</span><span class="s1">&#39;TokenClassification&#39;</span><span class="p">)[:</span><span class="mi">5</span><span class="p">])</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">BLURR</span><span class="o">.</span><span class="n">get_models</span><span class="p">(</span><span class="n">task</span><span class="o">=</span><span class="s2">&quot;TokenClassification&quot;</span><span class="p">)[:</span><span class="mi">5</span><span class="p">])</span>
 </pre></div>
 
     </div>
@@ -728,7 +730,7 @@ just those available to a specific architecture</p>
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">BLURR</span><span class="o">.</span><span class="n">get_models</span><span class="p">(</span><span class="n">arch</span><span class="o">=</span><span class="s1">&#39;bert&#39;</span><span class="p">,</span> <span class="n">task</span><span class="o">=</span><span class="s1">&#39;TokenClassification&#39;</span><span class="p">))</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">BLURR</span><span class="o">.</span><span class="n">get_models</span><span class="p">(</span><span class="n">arch</span><span class="o">=</span><span class="s2">&quot;bert&quot;</span><span class="p">,</span> <span class="n">task</span><span class="o">=</span><span class="s2">&quot;TokenClassification&quot;</span><span class="p">))</span>
 </pre></div>
 
     </div>
@@ -773,7 +775,7 @@ just those available to a specific architecture</p>
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s1">&#39;--- all tasks ---&#39;</span><span class="p">)</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;--- all tasks ---&quot;</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">L</span><span class="p">(</span><span class="n">HF_TASKS</span><span class="p">))</span>
 </pre></div>
 
@@ -788,7 +790,7 @@ just those available to a specific architecture</p>
 
 <div class="output_subarea output_stream output_stdout output_text">
 <pre>--- all tasks ---
-[&lt;HF_TASKS_ALL.CTC: 1&gt;, &lt;HF_TASKS_ALL.CausalLM: 2&gt;, &lt;HF_TASKS_ALL.Classification: 3&gt;, &lt;HF_TASKS_ALL.ConditionalGeneration: 4&gt;, &lt;HF_TASKS_ALL.EntityClassification: 5&gt;, &lt;HF_TASKS_ALL.EntityPairClassification: 6&gt;, &lt;HF_TASKS_ALL.EntitySpanClassification: 7&gt;, &lt;HF_TASKS_ALL.Generation: 8&gt;, &lt;HF_TASKS_ALL.ImageClassification: 9&gt;, &lt;HF_TASKS_ALL.LMHead: 10&gt;, &lt;HF_TASKS_ALL.LMHeadModel: 11&gt;, &lt;HF_TASKS_ALL.MaskedImageModeling: 12&gt;, &lt;HF_TASKS_ALL.MaskedLM: 13&gt;, &lt;HF_TASKS_ALL.MultipleChoice: 14&gt;, &lt;HF_TASKS_ALL.NextSentencePrediction: 15&gt;, &lt;HF_TASKS_ALL.PreTraining: 16&gt;, &lt;HF_TASKS_ALL.QuestionAnswering: 17&gt;, &lt;HF_TASKS_ALL.QuestionAnsweringSimple: 18&gt;, &lt;HF_TASKS_ALL.RegionToPhraseAlignment: 19&gt;, &lt;HF_TASKS_ALL.SemanticSegmentation: 20&gt;, &lt;HF_TASKS_ALL.SequenceClassification: 21&gt;, &lt;HF_TASKS_ALL.Teacher: 22&gt;, &lt;HF_TASKS_ALL.TokenClassification: 23&gt;, &lt;HF_TASKS_ALL.VisualReasoning: 24&gt;, &lt;HF_TASKS_ALL.merLayer: 25&gt;, &lt;HF_TASKS_ALL.merModel: 26&gt;, &lt;HF_TASKS_ALL.merPreTrainedModel: 27&gt;]
+[&lt;HF_TASKS_ALL.CTC: 1&gt;, &lt;HF_TASKS_ALL.CausalImageModeling: 2&gt;, &lt;HF_TASKS_ALL.CausalLM: 3&gt;, &lt;HF_TASKS_ALL.Classification: 4&gt;, &lt;HF_TASKS_ALL.ConditionalGeneration: 5&gt;, &lt;HF_TASKS_ALL.EntityClassification: 6&gt;, &lt;HF_TASKS_ALL.EntityPairClassification: 7&gt;, &lt;HF_TASKS_ALL.EntitySpanClassification: 8&gt;, &lt;HF_TASKS_ALL.Generation: 9&gt;, &lt;HF_TASKS_ALL.ImageClassification: 10&gt;, &lt;HF_TASKS_ALL.ImageClassificationConvProcessing: 11&gt;, &lt;HF_TASKS_ALL.ImageClassificationFourier: 12&gt;, &lt;HF_TASKS_ALL.ImageClassificationLearned: 13&gt;, &lt;HF_TASKS_ALL.LMHead: 14&gt;, &lt;HF_TASKS_ALL.LMHeadModel: 15&gt;, &lt;HF_TASKS_ALL.MaskedImageModeling: 16&gt;, &lt;HF_TASKS_ALL.MaskedLM: 17&gt;, &lt;HF_TASKS_ALL.MultimodalAutoencoding: 18&gt;, &lt;HF_TASKS_ALL.MultipleChoice: 19&gt;, &lt;HF_TASKS_ALL.NextSentencePrediction: 20&gt;, &lt;HF_TASKS_ALL.OpticalFlow: 21&gt;, &lt;HF_TASKS_ALL.PreTraining: 22&gt;, &lt;HF_TASKS_ALL.QuestionAnswering: 23&gt;, &lt;HF_TASKS_ALL.QuestionAnsweringSimple: 24&gt;, &lt;HF_TASKS_ALL.RegionToPhraseAlignment: 25&gt;, &lt;HF_TASKS_ALL.SemanticSegmentation: 26&gt;, &lt;HF_TASKS_ALL.SequenceClassification: 27&gt;, &lt;HF_TASKS_ALL.Teacher: 28&gt;, &lt;HF_TASKS_ALL.TokenClassification: 29&gt;, &lt;HF_TASKS_ALL.VisualReasoning: 30&gt;, &lt;HF_TASKS_ALL.merLayer: 31&gt;, &lt;HF_TASKS_ALL.merModel: 32&gt;, &lt;HF_TASKS_ALL.merPreTrainedModel: 33&gt;]
 </pre>
 </div>
 </div>
@@ -821,7 +823,7 @@ just those available to a specific architecture</p>
 
 
 <div class="output_text output_subarea output_execute_result">
-<pre>&lt;HF_TASKS_ALL.Classification: 3&gt;</pre>
+<pre>&lt;HF_TASKS_ALL.Classification: 4&gt;</pre>
 </div>
 
 </div>
@@ -887,7 +889,7 @@ just those available to a specific architecture</p>
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h4 id="BlurrUtil.get_hf_objects" class="doc_header"><code>BlurrUtil.get_hf_objects</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/utils.py#L166" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>BlurrUtil.get_hf_objects</code>(<strong><code>pretrained_model_name_or_path</code></strong>:<code>Union</code>[<code>str</code>, <code>PathLike</code>, <code>NoneType</code>], <strong><code>model_cls</code></strong>:<code>PreTrainedModel</code>, <strong><code>config</code></strong>:<code>Union</code>[<code>PretrainedConfig</code>, <code>str</code>, <code>PathLike</code>]=<em><code>None</code></em>, <strong><code>tokenizer_cls</code></strong>:<code>PreTrainedTokenizerBase</code>=<em><code>None</code></em>, <strong><code>config_kwargs</code></strong>=<em><code>{}</code></em>, <strong><code>tokenizer_kwargs</code></strong>=<em><code>{}</code></em>, <strong><code>model_kwargs</code></strong>=<em><code>{}</code></em>, <strong><code>cache_dir</code></strong>:<code>Union</code>[<code>str</code>, <code>PathLike</code>]=<em><code>None</code></em>)</p>
+<h4 id="BlurrUtil.get_hf_objects" class="doc_header"><code>BlurrUtil.get_hf_objects</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/utils.py#L155" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>BlurrUtil.get_hf_objects</code>(<strong><code>pretrained_model_name_or_path</code></strong>:<code>Union</code>[<code>str</code>, <code>PathLike</code>, <code>NoneType</code>], <strong><code>model_cls</code></strong>:<code>PreTrainedModel</code>, <strong><code>config</code></strong>:<code>Union</code>[<code>PretrainedConfig</code>, <code>str</code>, <code>PathLike</code>]=<em><code>None</code></em>, <strong><code>tokenizer_cls</code></strong>:<code>PreTrainedTokenizerBase</code>=<em><code>None</code></em>, <strong><code>config_kwargs</code></strong>:<code>dict</code>=<em><code>{}</code></em>, <strong><code>tokenizer_kwargs</code></strong>:<code>dict</code>=<em><code>{}</code></em>, <strong><code>model_kwargs</code></strong>:<code>dict</code>=<em><code>{}</code></em>, <strong><code>cache_dir</code></strong>:<code>Union</code>[<code>str</code>, <code>PathLike</code>]=<em><code>None</code></em>)</p>
 </blockquote>
 <p>Given at minimum a <code>pretrained_model_name_or_path</code> and <code>model_cls (such as</code>AutoModelForSequenceClassification"), this method returns all the Hugging Face objects you need to train
 a model using Blurr</p>
@@ -948,8 +950,8 @@ using the AutoTokenizer class along with any supplied `tokenizer_kwargs`</p></li
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="kn">from</span> <span class="nn">transformers</span> <span class="kn">import</span> <span class="n">AutoModelForMaskedLM</span>
-<span class="n">arch</span><span class="p">,</span> <span class="n">config</span><span class="p">,</span> <span class="n">tokenizer</span><span class="p">,</span> <span class="n">model</span> <span class="o">=</span> <span class="n">BLURR</span><span class="o">.</span><span class="n">get_hf_objects</span><span class="p">(</span><span class="s2">&quot;bert-base-cased-finetuned-mrpc&quot;</span><span class="p">,</span>
-                                                      <span class="n">model_cls</span><span class="o">=</span><span class="n">AutoModelForMaskedLM</span><span class="p">)</span>
+
+<span class="n">arch</span><span class="p">,</span> <span class="n">config</span><span class="p">,</span> <span class="n">tokenizer</span><span class="p">,</span> <span class="n">model</span> <span class="o">=</span> <span class="n">BLURR</span><span class="o">.</span><span class="n">get_hf_objects</span><span class="p">(</span><span class="s2">&quot;bert-base-cased-finetuned-mrpc&quot;</span><span class="p">,</span> <span class="n">model_cls</span><span class="o">=</span><span class="n">AutoModelForMaskedLM</span><span class="p">)</span>
 
 <span class="nb">print</span><span class="p">(</span><span class="n">arch</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">config</span><span class="p">))</span>
@@ -989,8 +991,8 @@ using the AutoTokenizer class along with any supplied `tokenizer_kwargs`</p></li
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="kn">from</span> <span class="nn">transformers</span> <span class="kn">import</span> <span class="n">AutoModelForQuestionAnswering</span>
-<span class="n">arch</span><span class="p">,</span> <span class="n">tokenizer</span><span class="p">,</span> <span class="n">config</span><span class="p">,</span> <span class="n">model</span> <span class="o">=</span> <span class="n">BLURR</span><span class="o">.</span><span class="n">get_hf_objects</span><span class="p">(</span><span class="s2">&quot;fmikaelian/flaubert-base-uncased-squad&quot;</span><span class="p">,</span>
-                                                      <span class="n">model_cls</span><span class="o">=</span><span class="n">AutoModelForQuestionAnswering</span><span class="p">)</span>
+
+<span class="n">arch</span><span class="p">,</span> <span class="n">tokenizer</span><span class="p">,</span> <span class="n">config</span><span class="p">,</span> <span class="n">model</span> <span class="o">=</span> <span class="n">BLURR</span><span class="o">.</span><span class="n">get_hf_objects</span><span class="p">(</span><span class="s2">&quot;fmikaelian/flaubert-base-uncased-squad&quot;</span><span class="p">,</span> <span class="n">model_cls</span><span class="o">=</span><span class="n">AutoModelForQuestionAnswering</span><span class="p">)</span>
 
 <span class="nb">print</span><span class="p">(</span><span class="n">arch</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">config</span><span class="p">))</span>
@@ -1030,34 +1032,17 @@ using the AutoTokenizer class along with any supplied `tokenizer_kwargs`</p></li
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="kn">from</span> <span class="nn">transformers</span> <span class="kn">import</span> <span class="n">BertTokenizer</span><span class="p">,</span> <span class="n">BertForNextSentencePrediction</span>
-<span class="n">arch</span><span class="p">,</span> <span class="n">tokenizer</span><span class="p">,</span> <span class="n">config</span><span class="p">,</span> <span class="n">model</span> <span class="o">=</span> <span class="n">BLURR</span><span class="o">.</span><span class="n">get_hf_objects</span><span class="p">(</span><span class="s2">&quot;bert-base-cased-finetuned-mrpc&quot;</span><span class="p">,</span>
-                                                      <span class="n">config</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                                                      <span class="n">tokenizer_cls</span><span class="o">=</span><span class="n">BertTokenizer</span><span class="p">,</span> 
-                                                      <span class="n">model_cls</span><span class="o">=</span><span class="n">BertForNextSentencePrediction</span><span class="p">)</span>
+
+<span class="n">arch</span><span class="p">,</span> <span class="n">tokenizer</span><span class="p">,</span> <span class="n">config</span><span class="p">,</span> <span class="n">model</span> <span class="o">=</span> <span class="n">BLURR</span><span class="o">.</span><span class="n">get_hf_objects</span><span class="p">(</span>
+    <span class="s2">&quot;bert-base-cased-finetuned-mrpc&quot;</span><span class="p">,</span> <span class="n">config</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">tokenizer_cls</span><span class="o">=</span><span class="n">BertTokenizer</span><span class="p">,</span> <span class="n">model_cls</span><span class="o">=</span><span class="n">BertForNextSentencePrediction</span>
+<span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">arch</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">config</span><span class="p">))</span>
-<span class="nb">print</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">tokenizer</span><span class="p">))</span> 
+<span class="nb">print</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">tokenizer</span><span class="p">))</span>
 <span class="nb">print</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">model</span><span class="p">))</span>
 </pre></div>
 
     </div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-<div class="output_area">
-
-<div class="output_subarea output_stream output_stdout output_text">
-<pre>bert
-&lt;class &#39;transformers.models.bert.tokenization_bert.BertTokenizer&#39;&gt;
-&lt;class &#39;transformers.models.bert.configuration_bert.BertConfig&#39;&gt;
-&lt;class &#39;transformers.models.bert.modeling_bert.BertForNextSentencePrediction&#39;&gt;
-</pre>
-</div>
-</div>
-
 </div>
 </div>
 
