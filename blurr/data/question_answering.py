@@ -12,115 +12,129 @@ from fastai.imports import *
 from fastai.losses import CrossEntropyLossFlat
 from fastai.torch_core import *
 from fastai.torch_imports import *
-from transformers import (
-    AutoModelForQuestionAnswering, logging,
-    PretrainedConfig, PreTrainedTokenizerBase, PreTrainedModel
-)
+from transformers import AutoModelForQuestionAnswering, logging, PretrainedConfig, PreTrainedTokenizerBase, PreTrainedModel
 
 from ..utils import BLURR
 from .core import HF_BaseInput, HF_BeforeBatchTransform, first_blurr_tfm
 
 logging.set_verbosity_error()
 
+
 # Cell
 def pre_process_squad(
     # A row in your pd.DataFrame
     row,
     # The abbreviation/name of your Hugging Face transformer architecture (e.b., bert, bart, etc..)
-    hf_arch:str,
+    hf_arch: str,
     # A Hugging Face tokenizer
-    hf_tokenizer:PreTrainedTokenizerBase,
+    hf_tokenizer: PreTrainedTokenizerBase,
     # The attribute in your dataset that contains the context (where the answer is included) (default: 'context')
-    ctx_attr:str='context',
+    ctx_attr: str = "context",
     # The attribute in your dataset that contains the question being asked (default: 'question')
-    qst_attr:str='question',
+    qst_attr: str = "question",
     # The attribute in your dataset that contains the actual answer (default: 'answer_text')
-    ans_attr:str='answer_text'
+    ans_attr: str = "answer_text",
 ):
     context, qst, ans = row[ctx_attr], row[qst_attr], row[ans_attr]
 
     tok_kwargs = {}
 
-    if(hf_tokenizer.padding_side == 'right'):
+    if hf_tokenizer.padding_side == "right":
         tok_input = hf_tokenizer.convert_ids_to_tokens(hf_tokenizer.encode(qst, context, **tok_kwargs))
     else:
         tok_input = hf_tokenizer.convert_ids_to_tokens(hf_tokenizer.encode(context, qst, **tok_kwargs))
 
     tok_ans = hf_tokenizer.tokenize(str(row[ans_attr]), **tok_kwargs)
 
-    start_idx, end_idx = 0,0
+    start_idx, end_idx = 0, 0
     for idx, tok in enumerate(tok_input):
         try:
-            if (tok == tok_ans[0] and tok_input[idx:idx + len(tok_ans)] == tok_ans):
+            if tok == tok_ans[0] and tok_input[idx : idx + len(tok_ans)] == tok_ans:
                 start_idx, end_idx = idx, idx + len(tok_ans)
                 break
-        except: pass
+        except:
+            pass
 
-    row['tokenized_input'] = tok_input
-    row['tokenized_input_len'] = len(tok_input)
-    row['tok_answer_start'] = start_idx
-    row['tok_answer_end'] = end_idx
+    row["tokenized_input"] = tok_input
+    row["tokenized_input_len"] = len(tok_input)
+    row["tok_answer_start"] = start_idx
+    row["tok_answer_end"] = end_idx
 
     return row
 
+
 # Cell
-class HF_QuestionAnswerInput(HF_BaseInput): pass
+class HF_QuestionAnswerInput(HF_BaseInput):
+    pass
+
 
 # Cell
 class HF_QABeforeBatchTransform(HF_BeforeBatchTransform):
-    """Handles everything you need to assemble a mini-batch of inputs and targets, as well as
+    """
+    Handles everything you need to assemble a mini-batch of inputs and targets, as well as
     decode the dictionary produced as a byproduct of the tokenization process in the `encodes` method.
     """
+
     def __init__(
         self,
         # The abbreviation/name of your Hugging Face transformer architecture (e.b., bert, bart, etc..)
-        hf_arch:str,
+        hf_arch: str,
         # A specific configuration instance you want to use
-        hf_config:PretrainedConfig,
+        hf_config: PretrainedConfig,
         # A Hugging Face tokenizer
-        hf_tokenizer:PreTrainedTokenizerBase,
+        hf_tokenizer: PreTrainedTokenizerBase,
         # A Hugging Face model
-        hf_model:PreTrainedModel,
+        hf_model: PreTrainedModel,
         # To control the length of the padding/truncation. It can be an integer or None,
         # in which case it will default to the maximum length the model can accept. If the model has no
         # specific maximum input length, truncation/padding to max_length is deactivated.
         # See [Everything you always wanted to know about padding and truncation](https://huggingface.co/transformers/preprocessing.html#everything-you-always-wanted-to-know-about-padding-and-truncation)
-        max_length:int=None,
+        max_length: int = None,
         # To control the `padding` applied to your `hf_tokenizer` during tokenization. If None, will default to
         # `False` or `'do_not_pad'.
         # See [Everything you always wanted to know about padding and truncation](https://huggingface.co/transformers/preprocessing.html#everything-you-always-wanted-to-know-about-padding-and-truncation)
-        padding:Union[bool, str]=True,
+        padding: Union[bool, str] = True,
         # To control `truncation` applied to your `hf_tokenizer` during tokenization. If None, will default to
         # `False` or `do_not_truncate`.
         # See [Everything you always wanted to know about padding and truncation](https://huggingface.co/transformers/preprocessing.html#everything-you-always-wanted-to-know-about-padding-and-truncation)
-        truncation:Union[bool, str]=True,
+        truncation: Union[bool, str] = True,
         # The `is_split_into_words` argument applied to your `hf_tokenizer` during tokenization. Set this to `True`
         # if your inputs are pre-tokenized (not numericalized)
-        is_split_into_words:bool=False,
+        is_split_into_words: bool = False,
         # Any other keyword arguments you want included when using your `hf_tokenizer` to tokenize your inputs
         tok_kwargs={},
         # Keyword arguments to apply to `HF_BeforeBatchTransform`
         **kwargs
     ):
-        super().__init__(hf_arch, hf_config, hf_tokenizer, hf_model,
-                         max_length=max_length, padding=padding, truncation=truncation,
-                         is_split_into_words=is_split_into_words, tok_kwargs=tok_kwargs, **kwargs)
+        super().__init__(
+            hf_arch,
+            hf_config,
+            hf_tokenizer,
+            hf_model,
+            max_length=max_length,
+            padding=padding,
+            truncation=truncation,
+            is_split_into_words=is_split_into_words,
+            tok_kwargs=tok_kwargs,
+            **kwargs
+        )
 
     def encodes(self, samples):
         samples = super().encodes(samples)
         for s in samples:
             # cls_index: location of CLS token (used by xlnet and xlm); is a list.index(value) for pytorch tensor's
-            s[0]['cls_index'] = (s[0]['input_ids'] == self.hf_tokenizer.cls_token_id).nonzero()[0]
+            s[0]["cls_index"] = (s[0]["input_ids"] == self.hf_tokenizer.cls_token_id).nonzero()[0]
             # p_mask: mask with 1 for token than cannot be in the answer, else 0 (used by xlnet and xlm)
-            s[0]['p_mask'] = s[0]['special_tokens_mask']
+            s[0]["p_mask"] = s[0]["special_tokens_mask"]
 
         return samples
+
 
 # Cell
 @typedispatch
 def show_batch(
     # This typedispatched `show_batch` will be called for `HF_QuestionAnswerInput` typed inputs
-    x:HF_QuestionAnswerInput,
+    x: HF_QuestionAnswerInput,
     # Your targets
     y,
     # Your raw inputs/targets
@@ -146,7 +160,7 @@ def show_batch(
         txt = hf_tokenizer.decode(sample[0], skip_special_tokens=True)[:trunc_at]
 
         ans_toks = hf_tokenizer.convert_ids_to_tokens(input_ids, skip_special_tokens=False)[start:end]
-        res.append((txt, (start.item(),end.item()), hf_tokenizer.convert_tokens_to_string(ans_toks)))
+        res.append((txt, (start.item(), end.item()), hf_tokenizer.convert_tokens_to_string(ans_toks)))
 
-    display_df(pd.DataFrame(res, columns=['text', 'start/end', 'answer'])[:max_n])
+    display_df(pd.DataFrame(res, columns=["text", "start/end", "answer"])[:max_n])
     return ctxs
