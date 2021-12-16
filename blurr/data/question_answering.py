@@ -15,7 +15,7 @@ from fastai.torch_imports import *
 from transformers import AutoModelForQuestionAnswering, logging, PretrainedConfig, PreTrainedTokenizerBase, PreTrainedModel
 
 from ..utils import BLURR
-from .core import HF_BaseInput, HF_BeforeBatchTransform, first_blurr_tfm
+from .core import HF_BaseInput, HF_AfterBatchTransform, HF_BeforeBatchTransform, first_blurr_tfm
 
 logging.set_verbosity_error()
 
@@ -40,9 +40,9 @@ def pre_process_squad(
     tok_kwargs = {}
 
     if hf_tokenizer.padding_side == "right":
-        tok_input = hf_tokenizer.convert_ids_to_tokens(hf_tokenizer.encode(qst, context, **tok_kwargs))
+        tok_input = hf_tokenizer.convert_ids_to_tokens(hf_tokenizer.encode(qst.lstrip(), context, **tok_kwargs))
     else:
-        tok_input = hf_tokenizer.convert_ids_to_tokens(hf_tokenizer.encode(context, qst, **tok_kwargs))
+        tok_input = hf_tokenizer.convert_ids_to_tokens(hf_tokenizer.encode(context, qst.lstrip(), **tok_kwargs))
 
     tok_ans = hf_tokenizer.tokenize(str(row[ans_attr]), **tok_kwargs)
 
@@ -70,64 +70,44 @@ class HF_QuestionAnswerInput(HF_BaseInput):
 
 # Cell
 class HF_QABeforeBatchTransform(HF_BeforeBatchTransform):
-    """
-    Handles everything you need to assemble a mini-batch of inputs and targets, as well as
-    decode the dictionary produced as a byproduct of the tokenization process in the `encodes` method.
-    """
-
-    def __init__(
-        self,
-        # The abbreviation/name of your Hugging Face transformer architecture (e.b., bert, bart, etc..)
-        hf_arch: str,
-        # A specific configuration instance you want to use
-        hf_config: PretrainedConfig,
-        # A Hugging Face tokenizer
-        hf_tokenizer: PreTrainedTokenizerBase,
-        # A Hugging Face model
-        hf_model: PreTrainedModel,
-        # To control the length of the padding/truncation. It can be an integer or None,
-        # in which case it will default to the maximum length the model can accept. If the model has no
-        # specific maximum input length, truncation/padding to max_length is deactivated.
-        # See [Everything you always wanted to know about padding and truncation](https://huggingface.co/transformers/preprocessing.html#everything-you-always-wanted-to-know-about-padding-and-truncation)
-        max_length: int = None,
-        # To control the `padding` applied to your `hf_tokenizer` during tokenization. If None, will default to
-        # `False` or `'do_not_pad'.
-        # See [Everything you always wanted to know about padding and truncation](https://huggingface.co/transformers/preprocessing.html#everything-you-always-wanted-to-know-about-padding-and-truncation)
-        padding: Union[bool, str] = True,
-        # To control `truncation` applied to your `hf_tokenizer` during tokenization. If None, will default to
-        # `False` or `do_not_truncate`.
-        # See [Everything you always wanted to know about padding and truncation](https://huggingface.co/transformers/preprocessing.html#everything-you-always-wanted-to-know-about-padding-and-truncation)
-        truncation: Union[bool, str] = True,
-        # The `is_split_into_words` argument applied to your `hf_tokenizer` during tokenization. Set this to `True`
-        # if your inputs are pre-tokenized (not numericalized)
-        is_split_into_words: bool = False,
-        # Any other keyword arguments you want included when using your `hf_tokenizer` to tokenize your inputs
-        tok_kwargs={},
-        # Keyword arguments to apply to `HF_BeforeBatchTransform`
-        **kwargs
-    ):
-        super().__init__(
-            hf_arch,
-            hf_config,
-            hf_tokenizer,
-            hf_model,
-            max_length=max_length,
-            padding=padding,
-            truncation=truncation,
-            is_split_into_words=is_split_into_words,
-            tok_kwargs=tok_kwargs,
-            **kwargs
-        )
 
     def encodes(self, samples):
-        samples = super().encodes(samples)
-        for s in samples:
+        samples, batch_encoding = super().encodes(samples, return_batch_encoding=True)
+
+        updated_samples = []
+        for idx, s in enumerate(samples):
+            # update the targets: is_found (s[1]), answer start token index (s[2]), and answer end token index (s[3])
+            qst_mask = [i != 1 for i in batch_encoding.sequence_ids(idx)]
+            start, end, has_ans = self.find_start_end(s[1], s[0]["input_ids"], s[0]["offset_mapping"], qst_mask)
+            start_t, end_t, has_ans_t  = TensorCategory(start), TensorCategory(end), TensorCategory(has_ans)
+
             # cls_index: location of CLS token (used by xlnet and xlm); is a list.index(value) for pytorch tensor's
             s[0]["cls_index"] = (s[0]["input_ids"] == self.hf_tokenizer.cls_token_id).nonzero()[0]
             # p_mask: mask with 1 for token than cannot be in the answer, else 0 (used by xlnet and xlm)
             s[0]["p_mask"] = s[0]["special_tokens_mask"]
 
-        return samples
+            updated_samples.append((s[0], has_ans_t, start_t, end_t))
+
+        return updated_samples
+
+    def find_start_end(self, ans_data, input_ids, offset_mapping, qst_mask):
+        # mask the question tokens so they aren't included in the search
+        masked_offset_mapping = offset_mapping.clone()
+        masked_offset_mapping[qst_mask] = tensor([-100, -100])
+
+        # based on the character start/end index, see if we can find the span of tokens in the `offset_mapping`
+        start = torch.where((masked_offset_mapping[:, 0] == ans_data[1]) | (masked_offset_mapping[:, 1] == ans_data[1]))[0]
+        end = torch.where((masked_offset_mapping[:, 0] <= ans_data[2]) & (masked_offset_mapping[:, 1] >= ans_data[2]))[0]
+
+        if len(start) > 0 and len(end) > 0:
+            start = start[-1]
+            end = end[-1]
+
+            if end < len(masked_offset_mapping):
+                return (start, end, tensor(1))
+
+        # if neither star or end is found, or the end token is part of this chunk, consider the answer not found
+        return (tensor(0), tensor(0), tensor(0))
 
 
 # Cell
@@ -152,15 +132,15 @@ def show_batch(
     **kwargs
 ):
     # grab our tokenizer
-    tfm = first_blurr_tfm(dataloaders)
+    tfm = first_blurr_tfm(dataloaders, HF_QABeforeBatchTransform)
     hf_tokenizer = tfm.hf_tokenizer
 
     res = L()
-    for sample, input_ids, start, end in zip(samples, x, *y):
+    for sample, input_ids, has_ans, start, end in zip(samples, x, *y):
         txt = hf_tokenizer.decode(sample[0], skip_special_tokens=True)[:trunc_at]
+        found = has_ans.item() == 1
+        ans_text = hf_tokenizer.decode(input_ids[start:end], skip_special_tokens=False)
+        res.append((txt, found, (start.item(), end.item()), ans_text))
 
-        ans_toks = hf_tokenizer.convert_ids_to_tokens(input_ids, skip_special_tokens=False)[start:end]
-        res.append((txt, (start.item(), end.item()), hf_tokenizer.convert_tokens_to_string(ans_toks)))
-
-    display_df(pd.DataFrame(res, columns=["text", "start/end", "answer"])[:max_n])
+    display_df(pd.DataFrame(res, columns=["text", "found", "start/end", "answer"])[:max_n])
     return ctxs
