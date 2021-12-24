@@ -74,7 +74,6 @@ class HF_BaseModelWrapper(Module):
         )
 
 
-
 # Cell
 class HF_PreCalculatedLoss:
     def __call__(self, inp, targ, **kwargs):
@@ -85,7 +84,6 @@ class HF_PreCalculatedLoss:
 
     def activation(self, x):
         return F.softmax(x, dim=-1)
-
 
 
 # Cell
@@ -142,9 +140,8 @@ def show_results(
     tfm = first_blurr_tfm(learner.dls)
     hf_tokenizer = tfm.hf_tokenizer
 
-    trg_labels = None
-    if hasattr(learner.dls, "label_names"):
-        trg_labels = learner.dls.label_names
+    # if we've included our labels list, we'll use it to look up the value of our target(s)
+    trg_labels = tfm.kwargs['labels'] if ('labels' in tfm.kwargs) else None
 
     res = L()
     n_inp = learner.dls.n_inp
@@ -158,7 +155,7 @@ def show_results(
         # add in the targets
         for item in sample[n_inp:]:
             if not torch.is_tensor(item):
-                trg = item
+                trg = trg_labels[int(item)] if trg_labels else item
             elif is_listy(item.tolist()):
                 trg = [trg_labels[idx] for idx, val in enumerate(label.numpy().tolist()) if (val == 1)] if (trg_labels) else label.item()
             else:
@@ -168,7 +165,7 @@ def show_results(
         # add in the predictions
         for item in pred:
             if not torch.is_tensor(item):
-                p = item
+                p = trg_labels[int(item)] if trg_labels else item
             elif is_listy(item.tolist()):
                 p = [trg_labels[idx] for idx, val in enumerate(item.numpy().tolist()) if (val == 1)] if (trg_labels) else item.item()
             else:
@@ -189,6 +186,7 @@ def show_results(
 def blurr_predict(self: Learner, items, rm_type_tfms=None):
     # grab our blurr tfm with the bits to properly decode/show our inputs/targets
     tfm = first_blurr_tfm(self.dls)
+    trg_labels = tfm.kwargs['labels'] if ('labels' in tfm.kwargs) else None
 
     is_split_str = tfm.is_split_into_words and isinstance(items[0], str)
     is_df = isinstance(items, pd.DataFrame)
@@ -200,7 +198,7 @@ def blurr_predict(self: Learner, items, rm_type_tfms=None):
     with self.no_bar():
         probs, _, decoded_preds = self.get_preds(dl=dl, with_input=False, with_decoded=True)
 
-    trg_tfms = self.dls.tfms[self.dls.n_inp :]
+    trg_tfms = self.dls.tfms[self.dls.n_inp:]
 
     outs = []
     probs, decoded_preds = L(probs), L(decoded_preds)
@@ -208,6 +206,8 @@ def blurr_predict(self: Learner, items, rm_type_tfms=None):
         item_probs = probs.itemgot(i)
         item_dec_preds = decoded_preds.itemgot(i)
         item_dec_labels = tuplify([tfm.decode(item_dec_preds[tfm_idx]) for tfm_idx, tfm in enumerate(trg_tfms)])
+        if trg_labels:
+            item_dec_labels = [trg_labels[int(lbl)] for item in item_dec_labels for lbl in item]
 
         outs.append((item_dec_labels, item_dec_preds, item_probs))
 

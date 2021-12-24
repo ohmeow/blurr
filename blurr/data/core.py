@@ -45,13 +45,12 @@ class HF_BaseInput(TensorBase):
         return show_title(decoded_input, ctx=ctx, label="text")
 
 
-
 # Cell
 class HF_BeforeBatchTransform(Transform):
-    """Handles everything you need to assemble a mini-batch of inputs and targets, as well as
+    """
+    Handles everything you need to assemble a mini-batch of inputs and targets, as well as
     decode the dictionary produced as a byproduct of the tokenization process in the `encodes` method.
     """
-
     def __init__(
         self,
         # The abbreviation/name of your Hugging Face transformer architecture (e.b., bert, bart, etc..)
@@ -62,6 +61,8 @@ class HF_BeforeBatchTransform(Transform):
         hf_tokenizer: PreTrainedTokenizerBase,
         # A Hugging Face model
         hf_model: PreTrainedModel,
+        # The token ID that should be ignored when calculating the loss
+        ignore_token_id=CrossEntropyLossFlat().ignore_index,
         # To control the length of the padding/truncation. It can be an integer or None,
         # in which case it will default to the maximum length the model can accept. If the model has no
         # specific maximum input length, truncation/padding to max_length is deactivated.
@@ -84,11 +85,12 @@ class HF_BeforeBatchTransform(Transform):
         **kwargs
     ):
         store_attr(self=self, names="hf_arch, hf_config, hf_tokenizer, hf_model")
-        store_attr(self=self, names="max_length, padding, truncation, is_split_into_words, tok_kwargs")
+        store_attr(self=self, names="max_length, padding, truncation, is_split_into_words, ignore_token_id, tok_kwargs")
         store_attr(self=self, names="kwargs")
 
-    def encodes(self, samples, return_batch_encoding = False):  # A subset of data to put into a mini-batch
-        """This method peforms on-the-fly, batch-time tokenization of your data. In other words, your raw inputs
+    def encodes(self, samples, return_batch_encoding=False):
+        """
+        This method peforms on-the-fly, batch-time tokenization of your data. In other words, your raw inputs
         are tokenized as needed for each mini-batch of data rather than requiring pre-tokenization of your full
         dataset ahead of time.
         """
@@ -112,17 +114,17 @@ class HF_BeforeBatchTransform(Transform):
         )
 
         # update the samples with tokenized inputs (e.g. input_ids, attention_mask, etc...), ensureing that if
-        # "overflow_to_sample_mapping" = True we include each sample chunk
+        # "overflow_to_sample_mapping = True" we include each sample chunk
         d_keys = tok_d.keys()
         updated_samples = []
-        if ("overflow_to_sample_mapping" in d_keys):
+        if "overflow_to_sample_mapping" in d_keys:
             for idx, seq_idx in enumerate(tok_d["overflow_to_sample_mapping"]):
                 s = (*[{k: tok_d[k][idx] for k in d_keys}], *samples[seq_idx][1:])
                 updated_samples.append(s)
         else:
             updated_samples = [(*[{k: tok_d[k][idx] for k in d_keys}], *sample[1:]) for idx, sample in enumerate(samples)]
 
-        if (return_batch_encoding):
+        if return_batch_encoding:
             return updated_samples, tok_d
 
         return updated_samples
@@ -254,6 +256,8 @@ class HF_TextBlock(TransformBlock):
         # A Hugging Face model (not required if passing in an
         # instance of `HF_BeforeBatchTransform` to `before_batch_tfm`)
         hf_model: PreTrainedModel = None,
+        # The token ID that should be ignored when calculating the loss
+        ignore_token_id=CrossEntropyLossFlat().ignore_index,
         # The before batch transform you want to use to tokenize your raw data on the fly
         # (defaults to an instance of `HF_BeforeBatchTransform` created using the Hugging Face objects defined above)
         before_batch_tfm: HF_BeforeBatchTransform = None,
@@ -299,14 +303,15 @@ class HF_TextBlock(TransformBlock):
 
         if before_batch_tfm is None:
             # if allowing overflow, if we have to ensure mixed batch items are the same shape
-            if ("return_overflowing_tokens" in tok_kwargs):
-                padding = 'max_length'
+            if "return_overflowing_tokens" in tok_kwargs:
+                padding = "max_length"
 
             before_batch_tfm = HF_BeforeBatchTransform(
                 hf_arch,
                 hf_config,
                 hf_tokenizer,
                 hf_model,
+                ignore_token_id=ignore_token_id,
                 max_length=max_length,
                 padding=padding,
                 truncation=truncation,
@@ -330,11 +335,10 @@ class HF_TextBlock(TransformBlock):
 
             # `OverflowDL` is a `DataLoader` that knows how to serve batches of items that are created on the fly as a result
             # of asking the tokenizer to return an input in chunks if the lenght > max_length
-            if ("return_overflowing_tokens" in before_batch_tfm.tok_kwargs):
-              dl_type = partial(OverflowDL, sort_func=dl_sort_func)
+            if "return_overflowing_tokens" in before_batch_tfm.tok_kwargs:
+                dl_type = partial(OverflowDL, sort_func=dl_sort_func)
             else:
                 partial(SortedDL, sort_func=dl_sort_func)
-
 
         # set the TransformBlock's Hugging Face face objects
         self.hf_arch = before_batch_tfm.hf_arch
@@ -349,7 +353,8 @@ class HF_TextBlock(TransformBlock):
 # Cell
 @dataclass
 class BlurrBatchCreator:
-    """A class that can be assigned to a `TfmdDL.create_batch` method; used to in Blurr's low-level API
+    """
+    A class that can be assigned to a `TfmdDL.create_batch` method; used to in Blurr's low-level API
     to create batches that can be used in the Blurr library
     """
 
@@ -392,11 +397,12 @@ class BlurrBatchTransform(HF_AfterBatchTransform):
         # A Hugging Face model (not required if passing in an
         # instance of `HF_BeforeBatchTransform` to `before_batch_tfm`)
         hf_model: PreTrainedModel = None,
+        # The token ID to ignore when calculating loss/metrics
+        ignore_token_id: int = CrossEntropyLossFlat().ignore_index,
         # The `is_split_into_words` argument applied to your `hf_tokenizer` during tokenization. Set this to `True`
         # if your inputs are pre-tokenized (not numericalized)
         is_split_into_words: bool = False,
-        # The token ID to ignore when calculating loss/metrics
-        ignore_token_id: int = CrossEntropyLossFlat().ignore_index,
+
         # Any other keyword arguments you want included when using your `hf_tokenizer` to tokenize your inputs
         tok_kwargs: dict = {},
         # Any text generation keyword arguments
@@ -408,8 +414,8 @@ class BlurrBatchTransform(HF_AfterBatchTransform):
     ):
         super().__init__(hf_tokenizer=hf_tokenizer, input_return_type=input_return_type)
 
-        store_attr(self=self, names="hf_arch, hf_config, hf_model, tok_kwargs, text_gen_kwargs")
-        store_attr(self=self, names="is_split_into_words, ignore_token_id, kwargs")
+        store_attr(self=self, names="hf_arch, hf_config, hf_model, ignore_token_id")
+        store_attr(self=self, names="tok_kwargs, text_gen_kwargs, is_split_into_words, kwargs")
 
 
 
@@ -443,9 +449,6 @@ class BlurrDataLoader(TfmdDL):
             [Union[torch.utils.data.dataset.Dataset, Datasets], PreTrainedTokenizerBase, PreTrainedModel],
             Union[torch.utils.data.dataset.Dataset, Datasets],
         ] = None,
-        # (optional) list of corresponding labels names for classes; if included then methods like `show_batch` will
-        # show the name corresponding to the label index vs. just the integer index.
-        label_names: Optional[list] = None,
         # Keyword arguments to be applied to your `batch_tfm`
         batch_tfm_kwargs: dict = {},
         # Keyword arguments to be applied to `BlurrDataLoader`
@@ -465,7 +468,7 @@ class BlurrDataLoader(TfmdDL):
             batch_tfm = BlurrBatchTransform(hf_arch, hf_config, hf_tokenizer, hf_model, **batch_tfm_kwargs.copy())
 
         super().__init__(dataset=dataset, create_batch=batch_creator, after_batch=batch_tfm, **kwargs)
-        store_attr(self=self, names="hf_arch, hf_config, hf_tokenizer, hf_model, label_names")
+        store_attr(self=self, names="hf_arch, hf_config, hf_tokenizer, hf_model")
 
     def new(
         self,
@@ -518,7 +521,8 @@ def get_blurr_tfm(
     # The transform to find
     tfm_class: Transform = HF_BeforeBatchTransform,
 ):
-    """Given a fastai DataLoaders batch transforms, this method can be used to get at a transform
+    """
+    Given a fastai DataLoaders batch transforms, this method can be used to get at a transform
     instance used in your Blurr DataBlock
     """
     return next(filter(lambda el: issubclass(type(el), tfm_class), tfms_list), None)
@@ -530,7 +534,8 @@ def first_blurr_tfm(
     before_batch_tfm_class: Transform = HF_BeforeBatchTransform,  # The before_batch transform to look for
     blurr_batch_tfm_class: Transform = BlurrBatchTransform,  # The after_batch (or batch_tfm) to look for
 ):
-    """This convenience method will find the first Blurr transform required for methods such as
+    """
+    This convenience method will find the first Blurr transform required for methods such as
     `show_batch` and `show_results`. The returned transform should have everything you need to properly
     decode and 'show' your Hugging Face inputs/targets
     """
@@ -568,9 +573,8 @@ def show_batch(
     tfm = first_blurr_tfm(dataloaders)
     hf_tokenizer = tfm.hf_tokenizer
 
-    trg_labels = None
-    if hasattr(dataloaders, "label_names"):
-        trg_labels = dataloaders.label_names
+    # if we've included our labels list, we'll use it to look up the value of our target(s)
+    trg_labels = tfm.kwargs['labels'] if ('labels' in tfm.kwargs) else None
 
     res = L()
     n_inp = dataloaders.n_inp
@@ -582,7 +586,7 @@ def show_batch(
         rets = [hf_tokenizer.decode(input_ids, skip_special_tokens=True)[:trunc_at]]
         for item in sample[n_inp:]:
             if not torch.is_tensor(item):
-                trg = item
+                trg = trg_labels[int(item)] if trg_labels else item
             elif is_listy(item.tolist()):
                 trg = [trg_labels[idx] for idx, val in enumerate(label.numpy().tolist()) if (val == 1)] if (trg_labels) else label.item()
             else:
