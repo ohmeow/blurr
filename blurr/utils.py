@@ -94,6 +94,8 @@ class BlurrUtil:
         module_part_3_df = self._df.module_part_3.str.split("_", n=1, expand=True)
         self._df[["functional_area", "arch"]] = module_part_3_df
 
+        self._df["arch"] = self._df["arch"].str.replace("_fast", "")
+
         # transformers >=4.5.x does "auto" differently; so remove it and "utils" from "arch" column
         self._df = self._df[~self._df["arch"].isin(["auto", "utils"])]
 
