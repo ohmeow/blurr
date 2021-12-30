@@ -24,10 +24,19 @@ logging.set_verbosity_error()
 
 
 # Cell
-def get_slow_word_ids(hf_tokenizer: PreTrainedTokenizerBase, input_ids: List[int], special_tokens_mask):
-    toks = hf_tokenizer.convert_ids_to_tokens(input_ids, skip_special_tokens=True)
-    word_list = [word for word in hf_tokenizer.convert_tokens_to_string([tok for tok in toks]).split() ]
-    n_tokens_per_word = [len(hf_tokenizer.tokenize(word)) for word in word_list]
+def get_slow_word_ids(hf_arch: str, hf_tokenizer: PreTrainedTokenizerBase, input_ids: List[int], special_tokens_mask):
+
+
+
+
+
+    if hf_arch == 'canine':
+        toks = hf_tokenizer.convert_ids_to_tokens(input_ids, skip_special_tokens=True)
+        word_list = [word for word in hf_tokenizer.convert_tokens_to_string([tok for tok in toks]).split() ]
+        n_tokens_per_word = [len(hf_tokenizer.tokenize(word)) + 1 for word in word_list]
+    else:
+        word_list = hf_tokenizer.decode(input_ids, skip_special_tokens=True).split()
+        n_tokens_per_word = [len(hf_tokenizer.tokenize(word)) for word in word_list]
 
     word_ids, word_idx, tok_idx = [], 0, 0
     while tok_idx < len(special_tokens_mask):
@@ -140,7 +149,7 @@ def align_labels_with_tokens(
     # List of label names from witch the `label` indicies can be used to find the name of the label
     vocab,
     # The token ID that should be ignored when calculating the loss
-    ignore_token_id=CrossEntropyLossFlat().ignore_index
+    ignore_token_id=CrossEntropyLossFlat().ignore_index,
 ) -> List[Tuple[str, str]]:
     """
     Given a list of input IDs, the label ID associated to each, and the labels vocab, this method will return a list of tuples whereby
@@ -150,12 +159,17 @@ def align_labels_with_tokens(
     # convert ids to tokens
     toks = hf_tokenizer.convert_ids_to_tokens(input_ids)
     # align "tokens" with labels
-    tok_labels = [(tok, "xUNKx" if label_id == ignore_token_id else vocab[label_id]) for tok_id, tok, label_id in zip(input_ids, toks, token_label_ids) if tok_id not in hf_tokenizer.all_special_ids]
+    tok_labels = [
+        (tok, "xUNKx" if label_id == ignore_token_id else vocab[label_id])
+        for tok_id, tok, label_id in zip(input_ids, toks, token_label_ids)
+        if tok_id not in hf_tokenizer.all_special_ids
+    ]
     return tok_labels
 
 
 # Cell
 def align_labels_with_words(
+    hf_arch: str,
     # A Hugging Face tokenizer
     hf_tokenizer: PreTrainedTokenizerBase,
     # A list of tuples, where each represents a token and its label (e.g., [('ĠHug', B-ORG), ('ging', B-ORG), ('ĠFace', I-ORG), ...])
@@ -168,7 +182,12 @@ def align_labels_with_words(
     """
     # recreate raw words list (we assume for token classification that the input is a list of words)
     words = hf_tokenizer.convert_tokens_to_string([tok_label[0] for tok_label in tok_labels]).split()
-    word_list = [word for word in words]
+
+    if hf_arch == "canine":
+        word_list = [f"{word} " for word in words]
+    else:
+        word_list = [word for word in words]
+
     # align "words" with labels
     word_labels, idx = [], 0
     for word in word_list:
@@ -182,6 +201,7 @@ def align_labels_with_words(
 def pre_process_token_classification(
     # Your pd.DataFrame
     raw_df,
+    hf_arch: str,
     # A Hugging Face tokenizer
     hf_tokenizer: PreTrainedTokenizerBase,
     # The token ID that should be ignored when calculating the loss
@@ -197,7 +217,7 @@ def pre_process_token_classification(
     # Other column data from the raw DataFrame you want to include in the processed DataFrame
     keep_cols: list = [],
     # Any keyword arguments you want your Hugging Face tokenizer to use during tokenization
-    tok_kwargs: dict = {"is_split_into_words": True},
+    tok_kwargs: dict = {"is_split_into_words": True, "return_special_tokens_mask": True},
 ) -> Tuple[pd.DataFrame, List[str]]:
     """
     This preprocessing routine is designed to work with labels that are a list of label names (e.g., B-PER, I-PER, etc...) or
@@ -210,7 +230,7 @@ def pre_process_token_classification(
     df = raw_df.copy()
     labeling_strategy = labeling_strategy_cls(hf_tokenizer=hf_tokenizer, ignore_token_id=ignore_token_id)
 
-    if (label_names is None):
+    if label_names is None:
         label_names = sorted(list(set([lbls for sublist in df[label_list_attr].tolist() for lbls in sublist])))
 
     proc_data = []
@@ -218,11 +238,15 @@ def pre_process_token_classification(
         # fetch data elements required to build a modelable dataset
         words, word_labels = row[word_list_attr], row[label_list_attr]
 
-        if (not is_listy(words)):
+        if not is_listy(words):
             words = words.split()
 
         encoding = hf_tokenizer(words, truncation=True, **tok_kwargs)
-        word_ids = encoding.word_ids() if hf_tokenizer.is_fast else get_slow_word_ids(hf_tokenizer, words, is_split_into_word=True)
+        word_ids = (
+            encoding.word_ids()
+            if hf_tokenizer.is_fast
+            else get_slow_word_ids(hf_arch, hf_tokenizer, encoding["input_ids"], encoding["special_tokens_mask"])
+        )
         aligned_labels = labeling_strategy.align_labels_with_tokens(label_names, word_ids, word_labels)
 
         row_data = [encoding["input_ids"], aligned_labels, words, word_labels]
@@ -366,7 +390,7 @@ class HF_TokenClassBeforeBatchTransform(HF_BeforeBatchTransform):
             word_ids = (
                 batch_encoding.word_ids(idx)
                 if self.hf_tokenizer.is_fast
-                else get_slow_word_ids(self.hf_tokenizer, s[0]["input_ids"], s[0]["special_tokens_mask"])
+                else get_slow_word_ids(self.hf_arch, self.hf_tokenizer, s[0]["input_ids"], s[0]["special_tokens_mask"])
             )
             targ_ids = target_cls(self.labeling_strategy.align_labels_with_tokens(None, word_ids, s[1].tolist()))
 
@@ -397,7 +421,7 @@ def show_batch(
 ):
     # grab our tokenizer
     tfm = first_blurr_tfm(dataloaders, before_batch_tfm_class=HF_TokenClassBeforeBatchTransform)
-    hf_tokenizer = tfm.hf_tokenizer
+    hf_arch, hf_tokenizer = tfm.hf_arch, tfm.hf_tokenizer
     vocab = dataloaders.vocab
 
     res = L()
@@ -405,7 +429,7 @@ def show_batch(
         # align "tokens" with labels
         tok_labels = align_labels_with_tokens(hf_tokenizer, inp, trg, vocab)
         # align "words" with labels
-        word_labels = align_labels_with_words(hf_tokenizer, tok_labels)
+        word_labels = align_labels_with_words(hf_arch, hf_tokenizer, tok_labels)
         # stringify list of (word,label) for example
         res.append([f"{[ word_targ for idx, word_targ in enumerate(word_labels) if (trunc_at is None or idx < trunc_at) ]}"])
 
