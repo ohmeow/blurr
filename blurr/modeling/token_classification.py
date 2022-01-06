@@ -25,8 +25,8 @@ from ..utils import BLURR
 from ..data.core import HF_TextBlock, BlurrDataLoader, get_blurr_tfm, first_blurr_tfm
 from .core import HF_PreCalculatedLoss, Blearner
 from ..data.token_classification import (
-    align_labels_with_tokens,
-    align_labels_with_words,
+    get_token_labels_from_input_ids,
+    get_word_labels_from_token_labels,
     HF_TokenClassInput,
     HF_TokenTensorCategory,
     HF_TokenCategorize,
@@ -41,10 +41,13 @@ logging.set_verbosity_error()
 def calculate_token_class_metrics(pred_toks, targ_toks, metric_key):
     if metric_key == "accuracy":
         return seq_metrics.accuracy_score(targ_toks, pred_toks)
+
     if metric_key == "precision":
         return seq_metrics.precision_score(targ_toks, pred_toks)
+
     if metric_key == "recall":
         return seq_metrics.recall_score(targ_toks, pred_toks)
+
     if metric_key == "f1":
         return seq_metrics.f1_score(targ_toks, pred_toks)
 
@@ -164,16 +167,16 @@ def show_results(
     **kwargs,
 ):
     tfm = first_blurr_tfm(learner.dls, before_batch_tfm_class=HF_TokenClassBeforeBatchTransform)
-    hf_tokenizer = tfm.hf_tokenizer
+    hf_arch, hf_tokenizer = tfm.hf_arch, tfm.hf_tokenizer
     ignore_token_id = tfm.ignore_token_id
     vocab = learner.dls.vocab
 
     res = L()
     for inp, trg, sample, pred in zip(x, y, samples, outs):
         # align "tokens" with labels
-        tok_labels = align_labels_with_tokens(hf_tokenizer, inp, trg, vocab)
+        tok_labels = get_token_labels_from_input_ids(hf_tokenizer, inp, trg, vocab)
         # align "words" with labels
-        word_labels = align_labels_with_words(hf_tokenizer, tok_labels)
+        word_labels = get_word_labels_from_token_labels(hf_arch, hf_tokenizer, tok_labels)
         # align "words" with "predicted" labels
         word_pred_labels = [pred_lbl for lbl_id, pred_lbl in zip(trg, ast.literal_eval(pred[0])) if lbl_id != ignore_token_id]
 
@@ -217,6 +220,8 @@ def _blurr_predict_tokens(
 
         # very similar to what HF_BatchTransform does with the exception that we are also grabbing the `special_tokens_mask`
         # to help with getting rid or irelevant predicts for any special tokens (e.g., [CLS], [SEP], etc...)
+        tok_kwargs = {**tok_kwargs, **{"return_special_tokens_mask": True}}
+
         res = hf_tokenizer(
             inp,
             None,
