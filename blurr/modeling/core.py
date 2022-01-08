@@ -141,7 +141,7 @@ def show_results(
     hf_tokenizer = tfm.hf_tokenizer
 
     # if we've included our labels list, we'll use it to look up the value of our target(s)
-    trg_labels = tfm.kwargs['labels'] if ('labels' in tfm.kwargs) else None
+    trg_labels = tfm.kwargs["labels"] if ("labels" in tfm.kwargs) else None
 
     res = L()
     n_inp = learner.dls.n_inp
@@ -186,7 +186,7 @@ def show_results(
 def blurr_predict(self: Learner, items, rm_type_tfms=None):
     # grab our blurr tfm with the bits to properly decode/show our inputs/targets
     tfm = first_blurr_tfm(self.dls)
-    trg_labels = tfm.kwargs['labels'] if ('labels' in tfm.kwargs) else None
+    trg_labels = tfm.kwargs["labels"] if ("labels" in tfm.kwargs) else None
 
     is_split_str = tfm.is_split_into_words and isinstance(items[0], str)
     is_df = isinstance(items, pd.DataFrame)
@@ -198,7 +198,7 @@ def blurr_predict(self: Learner, items, rm_type_tfms=None):
     with self.no_bar():
         probs, _, decoded_preds = self.get_preds(dl=dl, with_input=False, with_decoded=True)
 
-    trg_tfms = self.dls.tfms[self.dls.n_inp:]
+    trg_tfms = self.dls.tfms[self.dls.n_inp :]
 
     outs = []
     probs, decoded_preds = L(probs), L(decoded_preds)
@@ -209,7 +209,7 @@ def blurr_predict(self: Learner, items, rm_type_tfms=None):
         if trg_labels:
             item_dec_labels = [trg_labels[int(lbl)] for item in item_dec_labels for lbl in item]
 
-        outs.append((item_dec_labels, item_dec_preds, item_probs))
+        outs.append((item_dec_labels, [p.tolist() if p.dim() > 0 else p.item() for p in item_dec_preds], [p.tolist() for p in item_probs]))
 
     return outs
 
@@ -310,9 +310,9 @@ class BlearnerForSequenceClassification(Blearner):
         # See [here](https://docs.fast.ai/data.transforms.html#Split) for a list of fast.ai splitters
         dblock_splitter: Callable = RandomSplitter(),
         # Any kwargs to pass to your `DataLoaders`
-        dl_kwargs={},
+        dl_kwargs: dict = {},
         # Any kwargs to pass to your task specific `Blearner`
-        learner_kwargs={},
+        learner_kwargs: dict = {},
     ):
         # get our hf objects
         hf_arch, hf_config, hf_tokenizer, hf_model = BLURR.get_hf_objects(
@@ -373,9 +373,9 @@ class BlearnerForSequenceClassification(Blearner):
         # See [here](https://docs.fast.ai/data.transforms.html#Split) for a list of fast.ai splitters
         dblock_splitter: Callable = ColSplitter(),
         # Any kwargs to pass to your `DataLoaders`
-        dl_kwargs={},
+        dl_kwargs: dict = {},
         # Any kwargs to pass to your task specific `Blearner`
-        learner_kwargs={},
+        learner_kwargs: dict = {},
     ):
         # we need to tell transformer how many labels/classes to expect
         if n_labels is None:
@@ -441,9 +441,9 @@ class BlearnerForSequenceClassification(Blearner):
         # See [here](https://docs.fast.ai/data.transforms.html#Split) for a list of fast.ai splitters
         dblock_splitter: Callable = RandomSplitter(),
         # Any kwargs to pass to your `DataLoaders`
-        dl_kwargs={},
+        dl_kwargs: dict = {},
         # Any kwargs to pass to your task specific `Blearner`
-        learner_kwargs={},
+        learner_kwargs: dict = {},
     ):
         # we need to tell transformer how many labels/classes to expect
         if n_labels is None:
@@ -452,4 +452,3 @@ class BlearnerForSequenceClassification(Blearner):
         return cls._create_learner(
             ds, pretrained_model_name_or_path, preprocess_func, text_attr, label_attr, n_labels, dblock_splitter, dl_kwargs, learner_kwargs
         )
-

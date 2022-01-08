@@ -10,7 +10,7 @@ from dataclasses import dataclass
 from functools import reduce, partial
 from typing import Any, Callable, List, Optional, Union, Type
 
-from datasets import Dataset,load_dataset, concatenate_datasets
+from datasets import Dataset, load_dataset, concatenate_datasets
 from fastcore.all import *
 from fastai.data.block import TransformBlock
 from fastai.data.core import Datasets, DataLoader, DataLoaders, TfmdDL
@@ -36,7 +36,15 @@ logging.set_verbosity_error()
 # Cell
 class Preprocessor:
     def __init__(
-        self, hf_tokenizer, batch_size: int = 1000, text_attrs: Union[str, List[str]] = "text", tok_kwargs={}
+        self,
+        # A Hugging Face tokenizer
+        hf_tokenizer: PreTrainedTokenizerBase,
+        # The number of examples to process at a time
+        batch_size: int = 1000,
+        # The attribute holding the text of sequences
+        text_attrs: Union[str, List[str]] = "text",
+        # Tokenization kwargs that will be applied with calling the tokenizer
+        tok_kwargs: dict = {},
     ):
         self.hf_tokenizer = hf_tokenizer
         self.batch_size = batch_size
@@ -84,15 +92,27 @@ class Preprocessor:
 class ClassificationPreprocessor(Preprocessor):
     def __init__(
         self,
-        hf_tokenizer,
+        # A Hugging Face tokenizer
+        hf_tokenizer: PreTrainedTokenizerBase,
+        # The number of examples to process at a time
         batch_size: int = 1000,
+        # Whether the dataset should be processed for multi-label; if True, will ensure `label_attrs` are
+        # converted to a value of either 0 or 1 indiciating the existence of the class in the example
         is_multilabel: bool = False,
+        # The unique identifier in the dataset
         id_attr: Optional[str] = None,
+        # The attribute holding the text of sequences
         text_attrs: Union[str, List[str]] = "text",
+        # The attribute holding the label(s) of the example
         label_attrs: Union[str, List[str]] = "label",
+        # The attribute that should be created if your are processing individual training and validation
+        # datasets into a single dataset, and will indicate to which each example is associated
         is_valid_attr: Optional[str] = "is_valid",
+        # A list indicating the valid labels for the dataset (optional, defaults to the unique set of labels
+        # found in the full dataset)
         label_mapping: Optional[List[str]] = None,
-        tok_kwargs={},
+        # Tokenization kwargs that will be applied with calling the tokenizer
+        tok_kwargs: dict = {},
     ):
         super().__init__(hf_tokenizer, batch_size, text_attrs, tok_kwargs)
 
@@ -190,7 +210,7 @@ class HF_BeforeBatchTransform(Transform):
         # If you are passing in the "input_ids" as your inputs, set `is_pretokenized` = True
         is_pretokenized: bool = False,
         # The token ID that should be ignored when calculating the loss
-        ignore_token_id=CrossEntropyLossFlat().ignore_index,
+        ignore_token_id: int = CrossEntropyLossFlat().ignore_index,
         # To control the length of the padding/truncation. It can be an integer or None,
         # in which case it will default to the maximum length the model can accept. If the model has no
         # specific maximum input length, truncation/padding to max_length is deactivated.
@@ -232,9 +252,9 @@ class HF_BeforeBatchTransform(Transform):
 
         # if passing "input_ids" as your inputs, build the other sequence attributes using `prepare_for_model` since
         # the inputs have already been tokenized/numericalized ... else we tokenize the raw text using `__call__`
-        batch_encoding_func = self.hf_tokenizer.prepare_for_model if self.is_pretokenized else self.hf_tokenizer
+        tokenization_func = self.hf_tokenizer.prepare_for_model if self.is_pretokenized else self.hf_tokenizer
 
-        batch_encoding = batch_encoding_func(
+        inputs = tokenization_func(
             inps,
             max_length=self.max_length,
             padding=self.padding,
@@ -245,11 +265,11 @@ class HF_BeforeBatchTransform(Transform):
         )
 
         # update the samples with tokenized inputs (e.g. input_ids, attention_mask, etc...)
-        d_keys = batch_encoding.keys()
-        updated_samples = [(*[{k: batch_encoding[k][idx] for k in d_keys}], *sample[1:]) for idx, sample in enumerate(samples)]
+        d_keys = inputs.keys()
+        updated_samples = [(*[{k: inputs[k][idx] for k in d_keys}], *sample[1:]) for idx, sample in enumerate(samples)]
 
         if return_batch_encoding:
-            return updated_samples, batch_encoding
+            return updated_samples, inputs
 
         return updated_samples
 

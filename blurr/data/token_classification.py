@@ -7,7 +7,7 @@ __all__ = ['BaseLabelingStrategy', 'OnlyFirstTokenLabelingStrategy', 'SameLabelL
 
 # Cell
 import ast, os
-from typing import List, Tuple
+from typing import Callable, List, Tuple
 
 from datasets import Dataset
 from fastcore.all import *
@@ -78,7 +78,7 @@ class SameLabelLabelingStrategy(BaseLabelingStrategy):
 class BILabelingStrategy(BaseLabelingStrategy):
     """
     If using B/I labels, the first token assoicated to a given word gets the "B" label while all other tokens related
-    to that same word get "I" labels.  If "I" labels don't exist, this strategy behaves like the `SameLabelLabelingStrategy`.
+    to that same word get "I" labels.  If "I" labels don't exist, this strategy behaves like the `OnlyFirstTokenLabelingStrategy`.
     Works where labels are Ids or strings (in the later case we'll use the `label_names` to look up it's Id)
     """
 
@@ -101,7 +101,7 @@ class BILabelingStrategy(BaseLabelingStrategy):
 
                 # append the I-{ENTITY} if it exists in `labels`, else default to the `same_label` strategy
                 iLabel = f"I-{label_name[2:]}"
-                new_labels.append(label_names.index(iLabel) if iLabel in label_names else label)
+                new_labels.append(label_names.index(iLabel) if iLabel in label_names else self.ignore_token_id)
 
         return new_labels
 
@@ -113,13 +113,13 @@ def get_token_labels_from_input_ids(
     # List of input_ids for the tokens in a single piece of processed text
     input_ids: List[int],
     # List of label indexs for each token
-    token_label_ids,
+    token_label_ids: List[int],
     # List of label names from witch the `label` indicies can be used to find the name of the label
-    vocab,
+    vocab: List[str],
     # The token ID that should be ignored when calculating the loss
-    ignore_token_id=CrossEntropyLossFlat().ignore_index,
+    ignore_token_id: int = CrossEntropyLossFlat().ignore_index,
     # The token used to identifiy ignored tokens (default: [xIGNx])
-    ignore_token="[xIGNx]"
+    ignore_token: str = "[xIGNx]",
 ) -> List[Tuple[str, str]]:
     """
     Given a list of input IDs, the label ID associated to each, and the labels vocab, this method will return a list of tuples whereby
@@ -143,7 +143,7 @@ def get_word_labels_from_token_labels(
     # A Hugging Face tokenizer
     hf_tokenizer: PreTrainedTokenizerBase,
     # A list of tuples, where each represents a token and its label (e.g., [('ĠHug', B-ORG), ('ging', B-ORG), ('ĠFace', I-ORG), ...])
-    tok_labels
+    tok_labels,
 ) -> List[Tuple[str, str]]:
     """
     Given a list of tuples where each tuple defines a token and its label, return a list of tuples whereby each tuple defines the
@@ -171,23 +171,35 @@ def get_word_labels_from_token_labels(
 class TokenClassificationPreprocessor(Preprocessor):
     def __init__(
         self,
-        hf_tokenizer,
-         # Set to `True` if the preprocessor should chunk examples that exceed `max_length`
+        # A Hugging Face tokenizer
+        hf_tokenizer: PreTrainedTokenizerBase,
+        # Set to `True` if the preprocessor should chunk examples that exceed `max_length`
         chunk_examples: bool = False,
         # Like "stride" except for words (not tokens)
         word_stride: int = 2,
         # The token ID that should be ignored when calculating the loss
-        ignore_token_id=CrossEntropyLossFlat().ignore_index,
+        ignore_token_id: int = CrossEntropyLossFlat().ignore_index,
         # The label names (if not specified, will build from DataFrame)
         label_names: Optional[List[str]] = None,
+        # The number of examples to process at a time
         batch_size: int = 1000,
+        # The unique identifier in the dataset
         id_attr: Optional[str] = None,
+        # The attribute holding the list of words
         word_list_attr: str = "tokens",
+        # The attribute holding the list of labels (one for each word in `word_list_attr`)
         label_list_attr: str = "labels",
+        # The attribute that should be created if your are processing individual training and validation
+        # datasets into a single dataset, and will indicate to which each example is associated
         is_valid_attr: Optional[str] = "is_valid",
         # The labeling strategy you want to apply when associating labels with word tokens
         labeling_strategy_cls: BaseLabelingStrategy = OnlyFirstTokenLabelingStrategy,
-        tok_kwargs={},
+        # If using a slow tokenizer, users will need to prove a `slow_word_ids_func` that accepts a
+        # tokenizzer, example index, and a batch encoding as arguments and in turn returnes the
+        # equavlient of fast tokenizer's `word_ids`
+        slow_word_ids_func: Optional[Callable] = None,
+        # Tokenization kwargs that will be applied with calling the tokenizer
+        tok_kwargs: dict = {},
     ):
         # tokenizer requires this kwargs when tokenizing text
         tok_kwargs = {**tok_kwargs, **{"is_split_into_words": True}}
@@ -199,6 +211,8 @@ class TokenClassificationPreprocessor(Preprocessor):
         self.is_valid_attr = is_valid_attr
         self.label_names = label_names
         self.chunk_examples, self.word_stride = chunk_examples, word_stride
+
+        self.slow_word_ids_func = slow_word_ids_func
 
         # setup our labeling strategy class
         self.labeling_strategy = labeling_strategy_cls(hf_tokenizer=hf_tokenizer, ignore_token_id=ignore_token_id)
@@ -229,7 +243,10 @@ class TokenClassificationPreprocessor(Preprocessor):
                 # align labels with tokens
                 aligned_labels = []
                 for idx, word_labels in enumerate(batch_df[self.label_list_attr].values):
-                    aligned_labels.append(self.labeling_strategy.align_labels_with_tokens(inputs.word_ids(idx), word_labels, self.label_names))
+                    word_ids = inputs.word_ids(idx) if self.hf_tokenizer.is_fast else self.slow_word_ids_func(self.hf_tokenizer, idx, inputs)
+                    aligned_labels.append(
+                        self.labeling_strategy.align_labels_with_tokens(word_ids, word_labels, self.label_names)
+                    )
 
                 batch_df["aligned_labels"] = aligned_labels
                 inputs_df = pd.DataFrame(dict(inputs))
@@ -249,7 +266,7 @@ class TokenClassificationPreprocessor(Preprocessor):
                 inputs = hf_tokenizer(words, truncation=True, **self.tok_kwargs)
 
                 # grab the inputs "word_ids"
-                word_ids = inputs.word_ids()
+                word_ids = inputs.word_ids() if self.hf_tokenizer.is_fast else self.slow_word_ids_func(0, inputs)
 
                 # align labels with tokens
                 aligned_labels = self.labeling_strategy.align_labels_with_tokens(word_ids, word_labels, self.label_names)
@@ -257,7 +274,7 @@ class TokenClassificationPreprocessor(Preprocessor):
                 if len(word_ids) > max_length:
                     # if the inputs are > max_length, create "chunked" inputs/labels from the existing
                     # input/label ensuring that words are *not* broken up between chunks
-                    non_special_word_ids = [id for id in inputs.word_ids() if id is not None]
+                    non_special_word_ids = [id for id in word_ids if id is not None]
                     max_chunk_length = max_length - self.hf_tokenizer.num_special_tokens_to_add()
 
                     start_idx = 0
@@ -266,15 +283,15 @@ class TokenClassificationPreprocessor(Preprocessor):
                     chunks = []
                     while True:
                         last_idx = len(non_special_word_ids) - 1 - non_special_word_ids[::-1].index(current_word_id)
-                        current_chunk_length = len(non_special_word_ids[start_idx:last_idx+1])
+                        current_chunk_length = len(non_special_word_ids[start_idx : last_idx + 1])
 
                         if current_chunk_length >= max_chunk_length:
                             # we need to add a chunk
                             if current_chunk_length > max_chunk_length:
                                 # only when the current chunk in > the max chunk length do we want to modify the `last_indx` (if
                                 # equal then we want to use the current value)
-                                last_idx = len(non_special_word_ids) - 1 - non_special_word_ids[::-1].index(max(0,current_word_id-1))
-                            chunks.append(non_special_word_ids[start_idx:last_idx + 1])
+                                last_idx = len(non_special_word_ids) - 1 - non_special_word_ids[::-1].index(max(0, current_word_id - 1))
+                            chunks.append(non_special_word_ids[start_idx : last_idx + 1])
 
                             # start a new chunk
                             current_chunk_length = 0
@@ -284,7 +301,7 @@ class TokenClassificationPreprocessor(Preprocessor):
                                 # back beyond the start of the last chunk, we don't `word_stride` ... we just move to next token
                                 start_idx = last_idx + 1
                             else:
-                                current_word_id -= (self.word_stride - 1)
+                                current_word_id -= self.word_stride - 1
                                 start_idx = non_special_word_ids.index(current_word_id)
 
                         current_word_id += 1
@@ -299,15 +316,17 @@ class TokenClassificationPreprocessor(Preprocessor):
                         # we already have the example's full list of words and labels, and from them we'll grab the chunks
                         # they are defined in an replicate the pretokenization and label alignment we used before in order to get the same
                         # data *but* just for the chunk
-                        chunk_words = [words[word_id] for word_id in list(set(chunk)) ]
-                        chunk_labels = [word_labels[word_id] for word_id in list(set(chunk)) ]
+                        chunk_words = [words[word_id] for word_id in list(set(chunk))]
+                        chunk_labels = [word_labels[word_id] for word_id in list(set(chunk))]
                         chunked_inputs = hf_tokenizer(chunk_words, truncation=True, **self.tok_kwargs)
 
                         # grab the inputs "word_ids"
-                        chunk_word_ids = chunked_inputs.word_ids()
+                        chunk_word_ids = chunked_inputs.word_ids() if self.hf_tokenizer.is_fast else self.slow_word_ids_func(self.hf_tokenizer, 0, chunked_inputs)
 
                         # align labels with tokens
-                        chunk_aligned_labels = self.labeling_strategy.align_labels_with_tokens(chunk_word_ids, chunk_labels, self.label_names)
+                        chunk_aligned_labels = self.labeling_strategy.align_labels_with_tokens(
+                            chunk_word_ids, chunk_labels, self.label_names
+                        )
 
                         row_data = list(chunked_inputs.values()) + [chunk_aligned_labels, chunk_words, chunk_labels]
                         if self.id_attr and self.id_attr in row:
@@ -318,7 +337,7 @@ class TokenClassificationPreprocessor(Preprocessor):
                         proc_data.append(row_data)
                 else:
                     # if the inputs are <= max_length, no chunking is necessary
-                    row_data = list(inputs.values()) +  [aligned_labels, words, word_labels]
+                    row_data = list(inputs.values()) + [aligned_labels, words, word_labels]
                     if self.id_attr and self.id_attr in row:
                         row_data.append(row[self.id_attr])
                     if self.is_valid_attr and self.is_valid_attr in row:
@@ -361,15 +380,14 @@ class HF_TokenCategorize(Transform):
     def __init__(
         self,
         # The unique list of entities (e.g., B-LOC) (default: CategoryMap(vocab))
-        vocab=None,
+        vocab: List[str] = None,
         # The token used to identifiy ignored tokens (default: xIGNx)
-        ignore_token=None,
+        ignore_token: str = "[xIGNx]",
         # The token ID that should be ignored when calculating the loss (default: CrossEntropyLossFlat().ignore_index)
-        ignore_token_id=None,
+        ignore_token_id: int = CrossEntropyLossFlat().ignore_index,
     ):
         self.vocab = None if vocab is None else CategoryMap(vocab, sort=False)
-        self.ignore_token = "[xIGNx]" if ignore_token is None else ignore_token
-        self.ignore_token_id = CrossEntropyLossFlat().ignore_index if ignore_token_id is None else ignore_token_id
+        self.ignore_token, self.ignore_token_id = ignore_token, ignore_token_id
 
         self.loss_func, self.order = CrossEntropyLossFlat(ignore_index=self.ignore_token_id), 1
 
@@ -391,11 +409,11 @@ class HF_TokenCategorize(Transform):
 # Cell
 def HF_TokenCategoryBlock(
     # The unique list of entities (e.g., B-LOC) (default: CategoryMap(vocab))
-    vocab=None,
+    vocab: Optional[List[str]] = None,
     # The token used to identifiy ignored tokens (default: xIGNx)
-    ignore_token=None,
+    ignore_token: str = "[xIGNx]",
     # The token ID that should be ignored when calculating the loss (default: CrossEntropyLossFlat().ignore_index)
-    ignore_token_id=None,
+    ignore_token_id: int = CrossEntropyLossFlat().ignore_index,
 ):
     """`TransformBlock` for per-token categorical targets"""
     return TransformBlock(type_tfms=HF_TokenCategorize(vocab=vocab, ignore_token=ignore_token, ignore_token_id=ignore_token_id))
@@ -421,7 +439,7 @@ class HF_TokenClassBeforeBatchTransform(HF_BeforeBatchTransform):
         # If you are passing in the "input_ids" as your inputs, set `is_pretokenized` = True
         is_pretokenized: bool = False,
         # The token ID that should be ignored when calculating the loss
-        ignore_token_id=CrossEntropyLossFlat().ignore_index,
+        ignore_token_id: int = CrossEntropyLossFlat().ignore_index,
         # The labeling strategy you want to apply when associating labels with word tokens
         labeling_strategy_cls: BaseLabelingStrategy = OnlyFirstTokenLabelingStrategy,
         # To control the length of the padding/truncation. It can be an integer or None,
@@ -440,8 +458,12 @@ class HF_TokenClassBeforeBatchTransform(HF_BeforeBatchTransform):
         # The `is_split_into_words` argument applied to your `hf_tokenizer` during tokenization. Set this to `True`
         # if your inputs are pre-tokenized (not numericalized)
         is_split_into_words: bool = True,
+        # If using a slow tokenizer, users will need to prove a `slow_word_ids_func` that accepts a
+        # tokenizzer, example index, and a batch encoding as arguments and in turn returnes the
+        # equavlient of fast tokenizer's `word_ids``
+        slow_word_ids_func: Optional[Callable] = None,
         # Any other keyword arguments you want included when using your `hf_tokenizer` to tokenize your inputs
-        tok_kwargs={},
+        tok_kwargs: dict = {},
         # Keyword arguments to apply to `HF_TokenClassBeforeBatchTransform`
         **kwargs
     ):
@@ -462,9 +484,10 @@ class HF_TokenClassBeforeBatchTransform(HF_BeforeBatchTransform):
         )
 
         self.labeling_strategy = labeling_strategy_cls(hf_tokenizer, ignore_token_id=ignore_token_id)
+        self.slow_word_ids_func = slow_word_ids_func
 
     def encodes(self, samples):
-        encoded_samples, batch_encoding = super().encodes(samples, return_batch_encoding=True)
+        encoded_samples, inputs = super().encodes(samples, return_batch_encoding=True)
 
         # if there are no targets (e.g., when used for inference)
         if len(encoded_samples[0]) == 1:
@@ -480,13 +503,13 @@ class HF_TokenClassBeforeBatchTransform(HF_BeforeBatchTransform):
                 # we implored a`BatchLabelingStrategy` in our preprocessing as we do in the TokenClassificationPreprocessor.
                 batch_length = len(s[0]["input_ids"])
                 if self.hf_tokenizer.padding_side == "right":
-                    targ_ids = nn.ConstantPad1d((0,batch_length-len(s[1])), self.ignore_token_id)(s[1])
+                    targ_ids = nn.ConstantPad1d((0, batch_length - len(s[1])), self.ignore_token_id)(s[1])
                 else:
-                    targ_ids = nn.ConstantPad1d((batch_length-len(s[1]), 0), self.ignore_token_id)(s[1])
+                    targ_ids = nn.ConstantPad1d((batch_length - len(s[1]), 0), self.ignore_token_id)(s[1])
             else:
                 # with batch-time tokenization, we have to align each token with the correct label using the `word_ids` in the
                 # batch encoding object we get from calling our *fast* tokenizer
-                word_ids = batch_encoding.word_ids(idx)
+                word_ids = inputs.word_ids(idx) if self.hf_tokenizer.is_fast else self.slow_word_ids_func(self.hf_tokenizer, idx, inputs)
                 targ_ids = target_cls(self.labeling_strategy.align_labels_with_tokens(word_ids, s[1].tolist(), None))
 
             updated_samples.append((s[0], targ_ids))
@@ -530,44 +553,3 @@ def show_batch(
 
     display_df(pd.DataFrame(res, columns=["word / target label"])[:max_n])
     return ctxs
-
-
-# # export
-# @typedispatch
-# def show_batch(
-#     # This typedispatched `show_batch` will be called for `HF_TokenClassInput` typed inputs
-#     x: HF_TokenClassInput,
-#     y,
-#     # Your raw inputs/targets
-#     samples,
-#     # Your `DataLoaders`. This is required so as to get at the Hugging Face objects for
-#     # decoding them into something understandable
-#     dataloaders,
-#     # Your `show_batch` context
-#     ctxs=None,
-#     # The maximum number of items to show
-#     max_n=6,
-#     # Any truncation your want applied to your decoded inputs
-#     trunc_at=None,
-#     # Any other keyword arguments you want applied to `show_batch`
-#     **kwargs,
-# ):
-#     # grab our tokenizer
-#     tfm = first_blurr_tfm(dataloaders, before_batch_tfm_class=HF_TokenClassBeforeBatchTransform)
-#     hf_tokenizer = tfm.hf_tokenizer
-#     vocab = dataloaders.vocab
-
-#     res = L()
-#     for inp, trg, sample in zip(x, y, samples):
-#         # recontstruct the string and split on space to get back your pre-tokenized list of tokens
-#         toks = hf_tokenizer.convert_ids_to_tokens(inp, skip_special_tokens=True)
-#         pretokenized_toks = hf_tokenizer.convert_tokens_to_string(toks).split()
-
-#         res.append(
-#             [
-#                 f"{[ (tok, lbl) for idx, (tok, lbl) in enumerate(zip(pretokenized_toks, ast.literal_eval(sample[1]))) if (trunc_at is None or idx < trunc_at) ]}"
-#             ]
-#         )
-
-#     display_df(pd.DataFrame(res, columns=["word / target label"])[:max_n])
-#     return ctxs
