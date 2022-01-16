@@ -183,39 +183,6 @@ def show_results(
 
 # Cell
 @patch
-def blurr_predict(self: Learner, items, rm_type_tfms=None):
-    # grab our blurr tfm with the bits to properly decode/show our inputs/targets
-    tfm = first_blurr_tfm(self.dls)
-    trg_labels = tfm.kwargs["labels"] if ("labels" in tfm.kwargs) else None
-
-    is_split_str = tfm.is_split_into_words and isinstance(items[0], str)
-    is_df = isinstance(items, pd.DataFrame)
-
-    if not is_df and (is_split_str or not is_listy(items)):
-        items = [items]
-    dl = self.dls.test_dl(items, rm_type_tfms=rm_type_tfms, num_workers=0)
-
-    with self.no_bar():
-        probs, _, decoded_preds = self.get_preds(dl=dl, with_input=False, with_decoded=True)
-
-    trg_tfms = self.dls.tfms[self.dls.n_inp :]
-
-    outs = []
-    probs, decoded_preds = L(probs), L(decoded_preds)
-    for i in range(len(items)):
-        item_probs = probs.itemgot(i)
-        item_dec_preds = decoded_preds.itemgot(i)
-        item_dec_labels = tuplify([tfm.decode(item_dec_preds[tfm_idx]) for tfm_idx, tfm in enumerate(trg_tfms)])
-        if trg_labels:
-            item_dec_labels = [trg_labels[int(lbl)] for item in item_dec_labels for lbl in item]
-
-        outs.append((item_dec_labels, [p.tolist() if p.dim() > 0 else p.item() for p in item_dec_preds], [p.tolist() for p in item_probs]))
-
-    return outs
-
-
-# Cell
-@patch
 def blurr_generate(self: Learner, inp, **kwargs):
     """Uses the built-in `generate` method to generate the text
     (see [here](https://huggingface.co/transformers/main_classes/model.html#transformers.PreTrainedModel.generate)
