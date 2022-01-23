@@ -82,8 +82,9 @@ class Preprocessor:
         return ds
 
     def _tokenize_function(self, example):
+        truncation = self.tok_kwargs.pop("truncation", True)
         if is_listy(self.text_attrs) and len(self.text_attrs) > 1:
-            return self.hf_tokenizer(example[self.text_attrs[0]], example[self.text_attrs[1]], truncation=True, **self.tok_kwargs)
+            return self.hf_tokenizer(example[self.text_attrs[0]], example[self.text_attrs[1]], truncation=truncation, **self.tok_kwargs)
         else:
             return self.hf_tokenizer(example[self.text_attrs], truncation=True, **self.tok_kwargs)
 
@@ -406,7 +407,7 @@ class HF_TextBlock(TransformBlock):
             dl_sort_func = partial(
                 blurr_sort_func,
                 hf_tokenizer=before_batch_tfm.hf_tokenizer,
-                is_pretokenized=is_pretokenized,
+                is_pretokenized=before_batch_tfm.is_pretokenized,
                 is_split_into_words=before_batch_tfm.is_split_into_words,
                 tok_kwargs=before_batch_tfm.tok_kwargs.copy(),
             )
