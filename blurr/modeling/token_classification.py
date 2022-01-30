@@ -310,8 +310,8 @@ def blurr_predict_tokens(
     inputs_input_ids = inputs["input_ids"]
 
     # run inputs through model
-    model_inputs = {k: v.to(learn.model.hf_model.device) for k, v in inputs.items()}
-    outputs = learn.model(model_inputs)
+    model_inputs = {k: v.to(self.model.hf_model.device) for k, v in inputs.items()}
+    outputs = self.model(model_inputs)
 
     # fetch probabilities and predictions
     probabilities = F.softmax(outputs.logits, dim=-1).tolist()
