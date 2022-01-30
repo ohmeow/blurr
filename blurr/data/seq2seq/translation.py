@@ -7,6 +7,6 @@ from fastai.data.block import DataBlock
 from transformers import AutoModelForSeq2SeqLM, logging
 
 from ...utils import BLURR
-from .core import HF_Seq2SeqBlock, HF_Seq2SeqBeforeBatchTransform
+from .core import Seq2SeqTextBlock, Seq2SeqBatchTokenizeTransform
 
 logging.set_verbosity_error()

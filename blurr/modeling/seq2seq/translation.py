@@ -24,8 +24,8 @@ from transformers import (
 )
 
 from ...utils import BLURR
-from ...data.seq2seq.core import HF_Seq2SeqBlock, HF_Seq2SeqBeforeBatchTransform, default_text_gen_kwargs
-from ..core import HF_BaseModelWrapper, HF_BaseModelCallback, HF_PreCalculatedLoss, Blearner
+from ...data.seq2seq.core import Seq2SeqTextBlock, Seq2SeqBatchTokenizeTransform, default_text_gen_kwargs
+from ..core import BaseModelWrapper, BaseModelCallback, PreCalculatedLoss, Blearner
 from .core import HF_Seq2SeqMetricsCallback, seq2seq_splitter
 
 logging.set_verbosity_error()
@@ -133,12 +133,12 @@ class BlearnerForTranslation(Blearner):
         if (hf_arch == 't5'):
             get_x.add(partial(cls._add_t5_prefix, src_lang_name=src_lang_name, trg_lang_name=trg_lang_name))
 
-        before_batch_tfm = HF_Seq2SeqBeforeBatchTransform(hf_arch, hf_config, hf_tokenizer, hf_model,
+        before_batch_tfm = Seq2SeqBatchTokenizeTransform(hf_arch, hf_config, hf_tokenizer, hf_model,
                                                           max_length=max_length,
                                                           max_target_length=max_target_length,
                                                           text_gen_kwargs=text_gen_kwargs)
 
-        blocks = (HF_Seq2SeqBlock(before_batch_tfm=before_batch_tfm), noop)
+        blocks = (Seq2SeqTextBlock(before_batch_tfm=before_batch_tfm), noop)
         dblock = DataBlock(blocks=blocks,
                            get_x=get_x,
                            get_y=get_y,

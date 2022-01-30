@@ -64,7 +64,7 @@ hf_arch, hf_config, hf_tokenizer, hf_model = BLURR.get_hf_objects(pretrained_mod
 
 ```python
 # single input
-blocks = (HF_TextBlock(hf_arch, hf_config, hf_tokenizer, hf_model), CategoryBlock)
+blocks = (TextBlock(hf_arch, hf_config, hf_tokenizer, hf_model), CategoryBlock)
 dblock = DataBlock(blocks=blocks,  get_x=ColReader('text'), get_y=ColReader('label'), splitter=ColSplitter())
 
 dls = dblock.dataloaders(imdb_df, bs=4)
@@ -102,14 +102,14 @@ dls.show_batch(dataloaders=dls, max_n=2)
 
 ```python
 #slow
-model = HF_BaseModelWrapper(hf_model)
+model = BaseModelWrapper(hf_model)
 
 learn = Learner(dls, 
                 model,
                 opt_func=partial(Adam, decouple_wd=True),
                 loss_func=CrossEntropyLossFlat(),
                 metrics=[accuracy],
-                cbs=[HF_BaseModelCallback],
+                cbs=[BaseModelCallback],
                 splitter=hf_splitter)
 
 learn.freeze()
@@ -364,8 +364,8 @@ As I'm sure there is plenty I can do to make this library better, please don't h
 
 **10/08/2020** 
 * Updated all models to use [ModelOutput](https://huggingface.co/transformers/main_classes/output.html) classes instead of traditional tuples. `ModelOutput` attributes are assigned to the appropriate fastai bits like `Learner.pred` and `Learner.loss` and anything else you've requested the huggingface model to return is available via the `Learner.blurr_model_outputs` dictionary (see next two bullet items)
-* Added ability to grab attentions and hidden state from `Learner`. You can get at them via `Learner.blurr_model_outputs` dictionary if you tell `HF_BaseModelWrapper` to provide them.
-* Added `model_kwargs` to `HF_BaseModelWrapper` should you need to request a huggingface model to return something specific to it's type. These outputs will be available via the `Learner.blurr_model_outputs` dictionary as well.
+* Added ability to grab attentions and hidden state from `Learner`. You can get at them via `Learner.blurr_model_outputs` dictionary if you tell `BaseModelWrapper` to provide them.
+* Added `model_kwargs` to `BaseModelWrapper` should you need to request a huggingface model to return something specific to it's type. These outputs will be available via the `Learner.blurr_model_outputs` dictionary as well.
 
 **09/16/2020** 
 * Major overhaul to do *everything* at batch time (including tokenization/numericalization). If this backfires, I'll roll everything back but as of now, I think this approach not only meshes better with how huggingface tokenization works and reduce RAM utilization for big datasets, but also opens up opportunities for incorporating augmentation, building adversarial models, etc....  Thoughts?
@@ -378,7 +378,7 @@ As I'm sure there is plenty I can do to make this library better, please don't h
 
 **08/20/2020** 
 * Updated everything to work latest version of fastai (tested against 2.0.0)
-* Added batch-time padding, so that by default now, `HF_TokenizerTransform` doesn't add any padding tokens and all huggingface inputs are padded simply to the max sequence length in each batch rather than to the max length (passed in and/or acceptable to the model).  This should create efficiencies across the board, from memory consumption to GPU utilization.  The old tried and true method of padding during tokenization requires you to pass in `padding='max_length` to `HF_TextBlock`.
+* Added batch-time padding, so that by default now, `HF_TokenizerTransform` doesn't add any padding tokens and all huggingface inputs are padded simply to the max sequence length in each batch rather than to the max length (passed in and/or acceptable to the model).  This should create efficiencies across the board, from memory consumption to GPU utilization.  The old tried and true method of padding during tokenization requires you to pass in `padding='max_length` to `TextBlock`.
 * Removed code to remove fastai2 @patched summary methods which had previously conflicted with a couple of the huggingface transformers
 
 **08/13/2020** 
@@ -401,13 +401,13 @@ As I'm sure there is plenty I can do to make this library better, please don't h
 * Major code restructuring to make it easier to build out the library.
 * `HF_TokenizerTransform` replaces `HF_Tokenizer`, handling the tokenization and numericalization in one place.  DataBlock code has been dramatically simplified.
 * Tokenization correctly handles huggingface tokenizers that require `add_prefix_space=True`.
-* `HF_BaseModelCallback` and `HF_BaseModelCallback` are required and work together in order to allow developers to tie into any callback friendly event exposed by fastai2 and also pass in named arguments to the huggingface models.
+* `BaseModelCallback` and `BaseModelCallback` are required and work together in order to allow developers to tie into any callback friendly event exposed by fastai2 and also pass in named arguments to the huggingface models.
 * `show_batch` and `show_results` have been updated for Question/Answer and Token Classification models to represent the data and results in a more easily intepretable manner than the defaults.
 
 **05/06/2020** 
 * Initial support for Token classification (e.g., NER) models now included
 * Extended fastai's `Learner` object with a `predict_tokens` method used specifically in token classification
-* `HF_BaseModelCallback` can be used (or extended) instead of the model wrapper to ensure your inputs into the huggingface model is correct (recommended). See docs for examples (and thanks to fastai's Sylvain for the suggestion!)
+* `BaseModelCallback` can be used (or extended) instead of the model wrapper to ensure your inputs into the huggingface model is correct (recommended). See docs for examples (and thanks to fastai's Sylvain for the suggestion!)
 * `HF_Tokenizer` can work with strings or a string representation of a list (the later helpful for token classification tasks)
 * `show_batch` and `show_results` methods have been updated to allow better control on how huggingface tokenized data is represented in those methods
 

@@ -185,7 +185,7 @@ pip install -e ".[dev]"</code></pre>
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">blocks</span> <span class="o">=</span> <span class="p">(</span><span class="n">HF_TextBlock</span><span class="p">(</span><span class="n">hf_arch</span><span class="p">,</span> <span class="n">hf_config</span><span class="p">,</span> <span class="n">hf_tokenizer</span><span class="p">,</span> <span class="n">hf_model</span><span class="p">),</span> <span class="n">CategoryBlock</span><span class="p">)</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">blocks</span> <span class="o">=</span> <span class="p">(</span><span class="n">TextBlock</span><span class="p">(</span><span class="n">hf_arch</span><span class="p">,</span> <span class="n">hf_config</span><span class="p">,</span> <span class="n">hf_tokenizer</span><span class="p">,</span> <span class="n">hf_model</span><span class="p">),</span> <span class="n">CategoryBlock</span><span class="p">)</span>
 <span class="n">dblock</span> <span class="o">=</span> <span class="n">DataBlock</span><span class="p">(</span><span class="n">blocks</span><span class="o">=</span><span class="n">blocks</span><span class="p">,</span>  <span class="n">get_x</span><span class="o">=</span><span class="n">ColReader</span><span class="p">(</span><span class="s1">&#39;text&#39;</span><span class="p">),</span> <span class="n">get_y</span><span class="o">=</span><span class="n">ColReader</span><span class="p">(</span><span class="s1">&#39;label&#39;</span><span class="p">),</span> <span class="n">splitter</span><span class="o">=</span><span class="n">ColSplitter</span><span class="p">())</span>
 
 <span class="n">dls</span> <span class="o">=</span> <span class="n">dblock</span><span class="o">.</span><span class="n">dataloaders</span><span class="p">(</span><span class="n">imdb_df</span><span class="p">,</span> <span class="n">bs</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
@@ -263,14 +263,14 @@ pip install -e ".[dev]"</code></pre>
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">model</span> <span class="o">=</span> <span class="n">HF_BaseModelWrapper</span><span class="p">(</span><span class="n">hf_model</span><span class="p">)</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">model</span> <span class="o">=</span> <span class="n">BaseModelWrapper</span><span class="p">(</span><span class="n">hf_model</span><span class="p">)</span>
 
 <span class="n">learn</span> <span class="o">=</span> <span class="n">Learner</span><span class="p">(</span><span class="n">dls</span><span class="p">,</span> 
                 <span class="n">model</span><span class="p">,</span>
                 <span class="n">opt_func</span><span class="o">=</span><span class="n">partial</span><span class="p">(</span><span class="n">Adam</span><span class="p">,</span> <span class="n">decouple_wd</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
                 <span class="n">loss_func</span><span class="o">=</span><span class="n">CrossEntropyLossFlat</span><span class="p">(),</span>
                 <span class="n">metrics</span><span class="o">=</span><span class="p">[</span><span class="n">accuracy</span><span class="p">],</span>
-                <span class="n">cbs</span><span class="o">=</span><span class="p">[</span><span class="n">HF_BaseModelCallback</span><span class="p">],</span>
+                <span class="n">cbs</span><span class="o">=</span><span class="p">[</span><span class="n">BaseModelCallback</span><span class="p">],</span>
                 <span class="n">splitter</span><span class="o">=</span><span class="n">hf_splitter</span><span class="p">)</span>
 
 <span class="n">learn</span><span class="o">.</span><span class="n">freeze</span><span class="p">()</span>
@@ -644,8 +644,8 @@ pip install -e ".[dev]"</code></pre>
 <p><strong>10/08/2020</strong></p>
 <ul>
 <li>Updated all models to use <a href="https://huggingface.co/transformers/main_classes/output.html">ModelOutput</a> classes instead of traditional tuples. <code>ModelOutput</code> attributes are assigned to the appropriate fastai bits like <code>Learner.pred</code> and <code>Learner.loss</code> and anything else you've requested the huggingface model to return is available via the <code>Learner.blurr_model_outputs</code> dictionary (see next two bullet items)</li>
-<li>Added ability to grab attentions and hidden state from <code>Learner</code>. You can get at them via <code>Learner.blurr_model_outputs</code> dictionary if you tell <a href="/blurr/modeling-core.html#HF_BaseModelWrapper"><code>HF_BaseModelWrapper</code></a> to provide them.</li>
-<li>Added <code>model_kwargs</code> to <a href="/blurr/modeling-core.html#HF_BaseModelWrapper"><code>HF_BaseModelWrapper</code></a> should you need to request a huggingface model to return something specific to it's type. These outputs will be available via the <code>Learner.blurr_model_outputs</code> dictionary as well.</li>
+<li>Added ability to grab attentions and hidden state from <code>Learner</code>. You can get at them via <code>Learner.blurr_model_outputs</code> dictionary if you tell <a href="/blurr/modeling-core.html#BaseModelWrapper"><code>BaseModelWrapper</code></a> to provide them.</li>
+<li>Added <code>model_kwargs</code> to <a href="/blurr/modeling-core.html#BaseModelWrapper"><code>BaseModelWrapper</code></a> should you need to request a huggingface model to return something specific to it's type. These outputs will be available via the <code>Learner.blurr_model_outputs</code> dictionary as well.</li>
 </ul>
 <p><strong>09/16/2020</strong></p>
 <ul>
@@ -661,7 +661,7 @@ pip install -e ".[dev]"</code></pre>
 <p><strong>08/20/2020</strong></p>
 <ul>
 <li>Updated everything to work latest version of fastai (tested against 2.0.0)</li>
-<li>Added batch-time padding, so that by default now, <code>HF_TokenizerTransform</code> doesn't add any padding tokens and all huggingface inputs are padded simply to the max sequence length in each batch rather than to the max length (passed in and/or acceptable to the model).  This should create efficiencies across the board, from memory consumption to GPU utilization.  The old tried and true method of padding during tokenization requires you to pass in <code>padding='max_length</code> to <a href="/blurr/data-core.html#HF_TextBlock"><code>HF_TextBlock</code></a>.</li>
+<li>Added batch-time padding, so that by default now, <code>HF_TokenizerTransform</code> doesn't add any padding tokens and all huggingface inputs are padded simply to the max sequence length in each batch rather than to the max length (passed in and/or acceptable to the model).  This should create efficiencies across the board, from memory consumption to GPU utilization.  The old tried and true method of padding during tokenization requires you to pass in <code>padding='max_length</code> to <a href="/blurr/data-core.html#TextBlock"><code>TextBlock</code></a>.</li>
 <li>Removed code to remove fastai2 @patched summary methods which had previously conflicted with a couple of the huggingface transformers</li>
 </ul>
 <p><strong>08/13/2020</strong></p>
@@ -689,14 +689,14 @@ pip install -e ".[dev]"</code></pre>
 <li>Major code restructuring to make it easier to build out the library.</li>
 <li><code>HF_TokenizerTransform</code> replaces <code>HF_Tokenizer</code>, handling the tokenization and numericalization in one place.  DataBlock code has been dramatically simplified.</li>
 <li>Tokenization correctly handles huggingface tokenizers that require <code>add_prefix_space=True</code>.</li>
-<li><a href="/blurr/modeling-core.html#HF_BaseModelCallback"><code>HF_BaseModelCallback</code></a> and <a href="/blurr/modeling-core.html#HF_BaseModelCallback"><code>HF_BaseModelCallback</code></a> are required and work together in order to allow developers to tie into any callback friendly event exposed by fastai2 and also pass in named arguments to the huggingface models.</li>
+<li><a href="/blurr/modeling-core.html#BaseModelCallback"><code>BaseModelCallback</code></a> and <a href="/blurr/modeling-core.html#BaseModelCallback"><code>BaseModelCallback</code></a> are required and work together in order to allow developers to tie into any callback friendly event exposed by fastai2 and also pass in named arguments to the huggingface models.</li>
 <li><code>show_batch</code> and <code>show_results</code> have been updated for Question/Answer and Token Classification models to represent the data and results in a more easily intepretable manner than the defaults.</li>
 </ul>
 <p><strong>05/06/2020</strong></p>
 <ul>
 <li>Initial support for Token classification (e.g., NER) models now included</li>
 <li>Extended fastai's <code>Learner</code> object with a <code>predict_tokens</code> method used specifically in token classification</li>
-<li><a href="/blurr/modeling-core.html#HF_BaseModelCallback"><code>HF_BaseModelCallback</code></a> can be used (or extended) instead of the model wrapper to ensure your inputs into the huggingface model is correct (recommended). See docs for examples (and thanks to fastai's Sylvain for the suggestion!)</li>
+<li><a href="/blurr/modeling-core.html#BaseModelCallback"><code>BaseModelCallback</code></a> can be used (or extended) instead of the model wrapper to ensure your inputs into the huggingface model is correct (recommended). See docs for examples (and thanks to fastai's Sylvain for the suggestion!)</li>
 <li><code>HF_Tokenizer</code> can work with strings or a string representation of a list (the later helpful for token classification tasks)</li>
 <li><code>show_batch</code> and <code>show_results</code> methods have been updated to allow better control on how huggingface tokenized data is represented in those methods</li>
 </ul>

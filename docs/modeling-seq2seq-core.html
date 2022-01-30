@@ -203,10 +203,10 @@ transformers: 4.9.2
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">before_batch_tfm</span> <span class="o">=</span> <span class="n">HF_Seq2SeqBeforeBatchTransform</span><span class="p">(</span><span class="n">hf_arch</span><span class="p">,</span> <span class="n">hf_config</span><span class="p">,</span> <span class="n">hf_tokenizer</span><span class="p">,</span> <span class="n">hf_model</span><span class="p">,</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">before_batch_tfm</span> <span class="o">=</span> <span class="n">Seq2SeqBatchTokenizeTransform</span><span class="p">(</span><span class="n">hf_arch</span><span class="p">,</span> <span class="n">hf_config</span><span class="p">,</span> <span class="n">hf_tokenizer</span><span class="p">,</span> <span class="n">hf_model</span><span class="p">,</span>
                                                   <span class="n">max_length</span><span class="o">=</span><span class="mi">256</span><span class="p">,</span> <span class="n">max_target_length</span><span class="o">=</span><span class="mi">130</span><span class="p">)</span>
 
-<span class="n">blocks</span> <span class="o">=</span> <span class="p">(</span><span class="n">HF_Seq2SeqBlock</span><span class="p">(</span><span class="n">before_batch_tfm</span><span class="o">=</span><span class="n">before_batch_tfm</span><span class="p">),</span> <span class="n">noop</span><span class="p">)</span>
+<span class="n">blocks</span> <span class="o">=</span> <span class="p">(</span><span class="n">Seq2SeqTextBlock</span><span class="p">(</span><span class="n">before_batch_tfm</span><span class="o">=</span><span class="n">before_batch_tfm</span><span class="p">),</span> <span class="n">noop</span><span class="p">)</span>
 
 <span class="n">dblock</span> <span class="o">=</span> <span class="n">DataBlock</span><span class="p">(</span><span class="n">blocks</span><span class="o">=</span><span class="n">blocks</span><span class="p">,</span> 
                    <span class="n">get_x</span><span class="o">=</span><span class="n">ColReader</span><span class="p">(</span><span class="s1">&#39;article&#39;</span><span class="p">),</span> 
@@ -342,7 +342,7 @@ transformers: 4.9.2
 
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h3 id="Training">Training<a class="anchor-link" href="#Training"> </a></h3><p>Here we create a Seq2Seq specific subclass of <a href="/blurr/modeling-core.html#HF_BaseModelCallback"><code>HF_BaseModelCallback</code></a> in order to include custom, Seq2Seq specific, metrics, and also handle the pre-calculated loss during training</p>
+<h3 id="Training">Training<a class="anchor-link" href="#Training"> </a></h3><p>Here we create a Seq2Seq specific subclass of <a href="/blurr/modeling-core.html#BaseModelCallback"><code>BaseModelCallback</code></a> in order to include custom, Seq2Seq specific, metrics, and also handle the pre-calculated loss during training</p>
 
 </div>
 </div>
@@ -481,14 +481,14 @@ these metrics on every 'epoch', 'other_epoch', or 'last_epoch' instead (default:
     <span class="s1">&#39;sacrebleu&#39;</span><span class="p">:</span> <span class="p">{</span> <span class="s1">&#39;returns&#39;</span><span class="p">:</span> <span class="s2">&quot;score&quot;</span> <span class="p">}</span>
 <span class="p">}</span>
 
-<span class="n">model</span> <span class="o">=</span> <span class="n">HF_BaseModelWrapper</span><span class="p">(</span><span class="n">hf_model</span><span class="p">)</span>
-<span class="n">learn_cbs</span> <span class="o">=</span> <span class="p">[</span><span class="n">HF_BaseModelCallback</span><span class="p">]</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">BaseModelWrapper</span><span class="p">(</span><span class="n">hf_model</span><span class="p">)</span>
+<span class="n">learn_cbs</span> <span class="o">=</span> <span class="p">[</span><span class="n">BaseModelCallback</span><span class="p">]</span>
 <span class="n">fit_cbs</span> <span class="o">=</span> <span class="p">[</span><span class="n">HF_Seq2SeqMetricsCallback</span><span class="p">(</span><span class="n">custom_metrics</span><span class="o">=</span><span class="n">seq2seq_metrics</span><span class="p">,</span> <span class="n">calc_every</span><span class="o">=</span><span class="s1">&#39;other_epoch&#39;</span><span class="p">)]</span>
 
 <span class="n">learn</span> <span class="o">=</span> <span class="n">Learner</span><span class="p">(</span><span class="n">dls</span><span class="p">,</span> 
                 <span class="n">model</span><span class="p">,</span>
                 <span class="n">opt_func</span><span class="o">=</span><span class="n">partial</span><span class="p">(</span><span class="n">Adam</span><span class="p">),</span>
-                <span class="n">loss_func</span><span class="o">=</span><span class="n">CrossEntropyLossFlat</span><span class="p">(),</span> <span class="c1">#HF_PreCalculatedLoss()</span>
+                <span class="n">loss_func</span><span class="o">=</span><span class="n">CrossEntropyLossFlat</span><span class="p">(),</span> <span class="c1">#PreCalculatedLoss()</span>
                 <span class="n">cbs</span><span class="o">=</span><span class="n">learn_cbs</span><span class="p">,</span>
                 <span class="n">splitter</span><span class="o">=</span><span class="n">partial</span><span class="p">(</span><span class="n">seq2seq_splitter</span><span class="p">,</span> <span class="n">arch</span><span class="o">=</span><span class="n">hf_arch</span><span class="p">))</span> <span class="c1">#.to_native_fp16() #.to_fp16()</span>
 

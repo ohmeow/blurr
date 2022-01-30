@@ -94,7 +94,7 @@ transformers: 4.13.0
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h2 id="HF_BaseInput" class="doc_header"><code>class</code> <code>HF_BaseInput</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/data/core.py#L29" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>HF_BaseInput</code>(<strong><code>x</code></strong>, <strong>**<code>kwargs</code></strong>) :: <code>TensorBase</code></p>
+<h2 id="TextInput" class="doc_header"><code>class</code> <code>TextInput</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/data/core.py#L29" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>TextInput</code>(<strong><code>x</code></strong>, <strong>**<code>kwargs</code></strong>) :: <code>TensorBase</code></p>
 </blockquote>
 <p>The base represenation of your inputs; used by the various fastai <code>show</code> methods</p>
 
@@ -117,7 +117,7 @@ transformers: 4.13.0
 
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>A <a href="/blurr/data-core.html#HF_BaseInput"><code>HF_BaseInput</code></a> object is returned from the decodes method of <a href="/blurr/data-core.html#HF_AfterBatchTransform"><code>HF_AfterBatchTransform</code></a> as a means to customize @typedispatched functions like <code>DataLoaders.show_batch</code> and <code>Learner.show_results</code>. It uses the "input_ids" of a Hugging Face object as the representative tensor for <code>show</code> methods</p>
+<p>A <a href="/blurr/data-core.html#TextInput"><code>TextInput</code></a> object is returned from the decodes method of <a href="/blurr/data-core.html#BatchDecodeTransform"><code>BatchDecodeTransform</code></a> as a means to customize @typedispatched functions like <code>DataLoaders.show_batch</code> and <code>Learner.show_results</code>. It uses the "input_ids" of a Hugging Face object as the representative tensor for <code>show</code> methods</p>
 
 </div>
 </div>
@@ -133,7 +133,7 @@ transformers: 4.13.0
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h2 id="HF_BeforeBatchTransform" class="doc_header"><code>class</code> <code>HF_BeforeBatchTransform</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/data/core.py#L50" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>HF_BeforeBatchTransform</code>(<strong><code>hf_arch</code></strong>:<code>str</code>, <strong><code>hf_config</code></strong>:<code>PretrainedConfig</code>, <strong><code>hf_tokenizer</code></strong>:<code>PreTrainedTokenizerBase</code>, <strong><code>hf_model</code></strong>:<code>PreTrainedModel</code>, <strong><code>max_length</code></strong>:<code>int</code>=<em><code>None</code></em>, <strong><code>padding</code></strong>:<code>Union</code>[<code>bool</code>, <code>str</code>]=<em><code>True</code></em>, <strong><code>truncation</code></strong>:<code>Union</code>[<code>bool</code>, <code>str</code>]=<em><code>True</code></em>, <strong><code>is_split_into_words</code></strong>:<code>bool</code>=<em><code>False</code></em>, <strong><code>tok_kwargs</code></strong>:<code>dict</code>=<em><code>{}</code></em>, <strong>**<code>kwargs</code></strong>) :: <code>Transform</code></p>
+<h2 id="BatchTokenizeTransform" class="doc_header"><code>class</code> <code>BatchTokenizeTransform</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/data/core.py#L50" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>BatchTokenizeTransform</code>(<strong><code>hf_arch</code></strong>:<code>str</code>, <strong><code>hf_config</code></strong>:<code>PretrainedConfig</code>, <strong><code>hf_tokenizer</code></strong>:<code>PreTrainedTokenizerBase</code>, <strong><code>hf_model</code></strong>:<code>PreTrainedModel</code>, <strong><code>max_length</code></strong>:<code>int</code>=<em><code>None</code></em>, <strong><code>padding</code></strong>:<code>Union</code>[<code>bool</code>, <code>str</code>]=<em><code>True</code></em>, <strong><code>truncation</code></strong>:<code>Union</code>[<code>bool</code>, <code>str</code>]=<em><code>True</code></em>, <strong><code>is_split_into_words</code></strong>:<code>bool</code>=<em><code>False</code></em>, <strong><code>tok_kwargs</code></strong>:<code>dict</code>=<em><code>{}</code></em>, <strong>**<code>kwargs</code></strong>) :: <code>Transform</code></p>
 </blockquote>
 <p>Handles everything you need to assemble a mini-batch of inputs and targets, as well as
 decode the dictionary produced as a byproduct of the tokenization process in the <code>encodes</code> method.</p>
@@ -196,7 +196,7 @@ if your inputs are pre-tokenized (not numericalized)</p></li>
 
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p><a href="/blurr/data-core.html#HF_BeforeBatchTransform"><code>HF_BeforeBatchTransform</code></a> was inspired by this <a href="https://docs.fast.ai/tutorial.transformers.html">article</a>.</p>
+<p><a href="/blurr/data-core.html#BatchTokenizeTransform"><code>BatchTokenizeTransform</code></a> was inspired by this <a href="https://docs.fast.ai/tutorial.transformers.html">article</a>.</p>
 <p>Inputs can come in as a string or a list of tokens, the later being for tasks like Named Entity Recognition (NER), where you want to predict the label of each token.</p>
 <p><strong>Notes re: on-the-fly batch-time tokenization</strong>: The previous version of the library performed the tokenization/numericalization as a type transform when the raw data was read, and included a couple batch transforms to prepare the data for collation (e.g., to be made into a mini-batch). With this update, everything is done in a single batch transform.  Why?  Part of the inspiration had to do with the mechanics of the huggingrace tokenizer, in particular how by default it returns a collated mini-batch of data given a list of sequences. And where do we get a list of examples with fastai? In the batch transforms!  So I thought, hey, why not do everything dynamically at batch time?  And with a bit of tweaking, I got everything to work pretty well.  The result is less code, faster mini-batch creation, less RAM utilization and time spent tokenizing (really helps with very large datasets), and more flexibility.</p>
 
@@ -214,7 +214,7 @@ if your inputs are pre-tokenized (not numericalized)</p></li>
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h2 id="HF_AfterBatchTransform" class="doc_header"><code>class</code> <code>HF_AfterBatchTransform</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/data/core.py#L122" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>HF_AfterBatchTransform</code>(<strong><code>hf_tokenizer</code></strong>:<code>PreTrainedTokenizerBase</code>, <strong><code>input_return_type</code></strong>:<code>Type</code>=<em><code>HF_BaseInput</code></em>) :: <code>Transform</code></p>
+<h2 id="BatchDecodeTransform" class="doc_header"><code>class</code> <code>BatchDecodeTransform</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/data/core.py#L122" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>BatchDecodeTransform</code>(<strong><code>hf_tokenizer</code></strong>:<code>PreTrainedTokenizerBase</code>, <strong><code>input_return_type</code></strong>:<code>Type</code>=<em><code>TextInput</code></em>) :: <code>Transform</code></p>
 </blockquote>
 <p>A class used to cast your inputs into something understandable in fastai <code>show</code> methods</p>
 <p><strong>Parameters:</strong></p>
@@ -244,7 +244,7 @@ if your inputs are pre-tokenized (not numericalized)</p></li>
 
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>With fastai 2.1.5, before batch transforms no longer have a <code>decodes</code> method ... and so, I've introduced a standard batch transform here, <a href="/blurr/data-core.html#HF_AfterBatchTransform"><code>HF_AfterBatchTransform</code></a>, that will do the decoding for us.</p>
+<p>With fastai 2.1.5, before batch transforms no longer have a <code>decodes</code> method ... and so, I've introduced a standard batch transform here, <a href="/blurr/data-core.html#BatchDecodeTransform"><code>BatchDecodeTransform</code></a>, that will do the decoding for us.</p>
 
 </div>
 </div>
@@ -306,33 +306,33 @@ if your inputs are pre-tokenized (not numericalized)</p></li>
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h2 id="HF_TextBlock" class="doc_header"><code>class</code> <code>HF_TextBlock</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/data/core.py#L164" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>HF_TextBlock</code>(<strong><code>hf_arch</code></strong>:<code>str</code>=<em><code>None</code></em>, <strong><code>hf_config</code></strong>:<code>PretrainedConfig</code>=<em><code>None</code></em>, <strong><code>hf_tokenizer</code></strong>:<code>PreTrainedTokenizerBase</code>=<em><code>None</code></em>, <strong><code>hf_model</code></strong>:<code>PreTrainedModel</code>=<em><code>None</code></em>, <strong><code>before_batch_tfm</code></strong>:<a href="/blurr/data-core.html#HF_BeforeBatchTransform"><code>HF_BeforeBatchTransform</code></a>=<em><code>None</code></em>, <strong><code>after_batch_tfm</code></strong>:<a href="/blurr/data-core.html#HF_AfterBatchTransform"><code>HF_AfterBatchTransform</code></a>=<em><code>None</code></em>, <strong><code>max_length</code></strong>:<code>int</code>=<em><code>None</code></em>, <strong><code>padding</code></strong>:<code>Union</code>[<code>bool</code>, <code>str</code>]=<em><code>True</code></em>, <strong><code>truncation</code></strong>:<code>Union</code>[<code>bool</code>, <code>str</code>]=<em><code>True</code></em>, <strong><code>is_split_into_words</code></strong>:<code>bool</code>=<em><code>False</code></em>, <strong><code>input_return_type</code></strong>:<code>Type</code>=<em><code>HF_BaseInput</code></em>, <strong><code>dl_type</code></strong>:<code>DataLoader</code>=<em><code>None</code></em>, <strong><code>before_batch_kwargs</code></strong>:<code>dict</code>=<em><code>{}</code></em>, <strong><code>after_batch_kwargs</code></strong>:<code>dict</code>=<em><code>{}</code></em>, <strong><code>tok_kwargs</code></strong>:<code>dict</code>=<em><code>{}</code></em>, <strong><code>text_gen_kwargs</code></strong>:<code>dict</code>=<em><code>{}</code></em>, <strong>**<code>kwargs</code></strong>) :: <code>TransformBlock</code></p>
+<h2 id="TextBlock" class="doc_header"><code>class</code> <code>TextBlock</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/data/core.py#L164" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>TextBlock</code>(<strong><code>hf_arch</code></strong>:<code>str</code>=<em><code>None</code></em>, <strong><code>hf_config</code></strong>:<code>PretrainedConfig</code>=<em><code>None</code></em>, <strong><code>hf_tokenizer</code></strong>:<code>PreTrainedTokenizerBase</code>=<em><code>None</code></em>, <strong><code>hf_model</code></strong>:<code>PreTrainedModel</code>=<em><code>None</code></em>, <strong><code>before_batch_tfm</code></strong>:<a href="/blurr/data-core.html#BatchTokenizeTransform"><code>BatchTokenizeTransform</code></a>=<em><code>None</code></em>, <strong><code>after_batch_tfm</code></strong>:<a href="/blurr/data-core.html#BatchDecodeTransform"><code>BatchDecodeTransform</code></a>=<em><code>None</code></em>, <strong><code>max_length</code></strong>:<code>int</code>=<em><code>None</code></em>, <strong><code>padding</code></strong>:<code>Union</code>[<code>bool</code>, <code>str</code>]=<em><code>True</code></em>, <strong><code>truncation</code></strong>:<code>Union</code>[<code>bool</code>, <code>str</code>]=<em><code>True</code></em>, <strong><code>is_split_into_words</code></strong>:<code>bool</code>=<em><code>False</code></em>, <strong><code>input_return_type</code></strong>:<code>Type</code>=<em><code>TextInput</code></em>, <strong><code>dl_type</code></strong>:<code>DataLoader</code>=<em><code>None</code></em>, <strong><code>before_batch_kwargs</code></strong>:<code>dict</code>=<em><code>{}</code></em>, <strong><code>after_batch_kwargs</code></strong>:<code>dict</code>=<em><code>{}</code></em>, <strong><code>tok_kwargs</code></strong>:<code>dict</code>=<em><code>{}</code></em>, <strong><code>text_gen_kwargs</code></strong>:<code>dict</code>=<em><code>{}</code></em>, <strong>**<code>kwargs</code></strong>) :: <code>TransformBlock</code></p>
 </blockquote>
 <p>The core <code>TransformBlock</code> to prepare your data for training in Blurr with fastai's <code>DataBlock</code> API</p>
 <p><strong>Parameters:</strong></p>
 <ul>
 <li><strong><code>hf_arch</code></strong> : <em><code>&lt;class 'str'&gt;</code></em>, <em>optional</em>    <p>The abbreviation/name of your Hugging Face transformer architecture (not required if passing in an
-instance of `HF_BeforeBatchTransform` to `before_batch_tfm`)</p></li>
+instance of `BatchTokenizeTransform` to `before_batch_tfm`)</p></li>
 </ul>
 <ul>
 <li><strong><code>hf_config</code></strong> : <em><code>&lt;class 'transformers.configuration_utils.PretrainedConfig'&gt;</code></em>, <em>optional</em>    <p>A Hugging Face configuration object (not required if passing in an
-instance of `HF_BeforeBatchTransform` to `before_batch_tfm`)</p></li>
+instance of `BatchTokenizeTransform` to `before_batch_tfm`)</p></li>
 </ul>
 <ul>
 <li><strong><code>hf_tokenizer</code></strong> : <em><code>&lt;class 'transformers.tokenization_utils_base.PreTrainedTokenizerBase'&gt;</code></em>, <em>optional</em>  <p>A Hugging Face tokenizer (not required if passing in an
-instance of `HF_BeforeBatchTransform` to `before_batch_tfm`)</p></li>
+instance of `BatchTokenizeTransform` to `before_batch_tfm`)</p></li>
 </ul>
 <ul>
 <li><strong><code>hf_model</code></strong> : <em><code>&lt;class 'transformers.modeling_utils.PreTrainedModel'&gt;</code></em>, <em>optional</em>   <p>A Hugging Face model (not required if passing in an
-instance of `HF_BeforeBatchTransform` to `before_batch_tfm`)</p></li>
+instance of `BatchTokenizeTransform` to `before_batch_tfm`)</p></li>
 </ul>
 <ul>
-<li><strong><code>before_batch_tfm</code></strong> : <em><code>&lt;class 'blurr.data.core.HF_BeforeBatchTransform'&gt;</code></em>, <em>optional</em>   <p>The before batch transform you want to use to tokenize your raw data on the fly
-(defaults to an instance of `HF_BeforeBatchTransform` created using the Hugging Face objects defined above)</p></li>
+<li><strong><code>before_batch_tfm</code></strong> : <em><code>&lt;class 'blurr.data.core.BatchTokenizeTransform'&gt;</code></em>, <em>optional</em>   <p>The before batch transform you want to use to tokenize your raw data on the fly
+(defaults to an instance of `BatchTokenizeTransform` created using the Hugging Face objects defined above)</p></li>
 </ul>
 <ul>
-<li><strong><code>after_batch_tfm</code></strong> : <em><code>&lt;class 'blurr.data.core.HF_AfterBatchTransform'&gt;</code></em>, <em>optional</em> <p>The batch_tfms to apply to the creation of your DataLoaders,
-(defaults to HF_AfterBatchTransform created using the Hugging Face objects defined above)</p></li>
+<li><strong><code>after_batch_tfm</code></strong> : <em><code>&lt;class 'blurr.data.core.BatchDecodeTransform'&gt;</code></em>, <em>optional</em> <p>The batch_tfms to apply to the creation of your DataLoaders,
+(defaults to BatchDecodeTransform created using the Hugging Face objects defined above)</p></li>
 </ul>
 <ul>
 <li><strong><code>max_length</code></strong> : <em><code>&lt;class 'int'&gt;</code></em>, <em>optional</em> <p>To control the length of the padding/truncation. It can be an integer or None,
@@ -396,7 +396,7 @@ if your inputs are pre-tokenized (not numericalized)</p></li>
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <p>A basic wrapper that links defaults transforms for the data block API</p>
-<p><a href="/blurr/data-core.html#HF_TextBlock"><code>HF_TextBlock</code></a> has been dramatically simplified from it's predecessor. It handles setting up your <a href="/blurr/data-core.html#HF_BeforeBatchTransform"><code>HF_BeforeBatchTransform</code></a> and <a href="/blurr/data-core.html#HF_AfterBatchTransform"><code>HF_AfterBatchTransform</code></a> transforms regardless of data source (e.g., this will work with files, DataFrames, whatever). You must either pass in your own instance of a <a href="/blurr/data-core.html#HF_BeforeBatchTransform"><code>HF_BeforeBatchTransform</code></a> class or the Hugging Face architecture and tokenizer via the <code>hf_arch</code> and <code>hf_tokenizer</code> (the other args are optional).</p>
+<p><a href="/blurr/data-core.html#TextBlock"><code>TextBlock</code></a> has been dramatically simplified from it's predecessor. It handles setting up your <a href="/blurr/data-core.html#BatchTokenizeTransform"><code>BatchTokenizeTransform</code></a> and <a href="/blurr/data-core.html#BatchDecodeTransform"><code>BatchDecodeTransform</code></a> transforms regardless of data source (e.g., this will work with files, DataFrames, whatever). You must either pass in your own instance of a <a href="/blurr/data-core.html#BatchTokenizeTransform"><code>BatchTokenizeTransform</code></a> class or the Hugging Face architecture and tokenizer via the <code>hf_arch</code> and <code>hf_tokenizer</code> (the other args are optional).</p>
 
 </div>
 </div>
@@ -465,25 +465,25 @@ to create batches that can be used in the Blurr library</p>
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h2 id="BlurrBatchTransform" class="doc_header"><code>class</code> <code>BlurrBatchTransform</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/data/core.py#L292" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>BlurrBatchTransform</code>(<strong><code>hf_arch</code></strong>:<code>str</code>=<em><code>None</code></em>, <strong><code>hf_config</code></strong>:<code>PretrainedConfig</code>=<em><code>None</code></em>, <strong><code>hf_tokenizer</code></strong>:<code>PreTrainedTokenizerBase</code>=<em><code>None</code></em>, <strong><code>hf_model</code></strong>:<code>PreTrainedModel</code>=<em><code>None</code></em>, <strong><code>is_split_into_words</code></strong>:<code>bool</code>=<em><code>False</code></em>, <strong><code>ignore_token_id</code></strong>:<code>int</code>=<em><code>-100</code></em>, <strong><code>tok_kwargs</code></strong>:<code>dict</code>=<em><code>{}</code></em>, <strong><code>text_gen_kwargs</code></strong>:<code>dict</code>=<em><code>{}</code></em>, <strong><code>input_return_type</code></strong>:<code>Type</code>=<em><code>HF_BaseInput</code></em>, <strong>**<code>kwargs</code></strong>) :: <a href="/blurr/data-core.html#HF_AfterBatchTransform"><code>HF_AfterBatchTransform</code></a></p>
+<h2 id="BlurrBatchTransform" class="doc_header"><code>class</code> <code>BlurrBatchTransform</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/data/core.py#L292" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>BlurrBatchTransform</code>(<strong><code>hf_arch</code></strong>:<code>str</code>=<em><code>None</code></em>, <strong><code>hf_config</code></strong>:<code>PretrainedConfig</code>=<em><code>None</code></em>, <strong><code>hf_tokenizer</code></strong>:<code>PreTrainedTokenizerBase</code>=<em><code>None</code></em>, <strong><code>hf_model</code></strong>:<code>PreTrainedModel</code>=<em><code>None</code></em>, <strong><code>is_split_into_words</code></strong>:<code>bool</code>=<em><code>False</code></em>, <strong><code>ignore_token_id</code></strong>:<code>int</code>=<em><code>-100</code></em>, <strong><code>tok_kwargs</code></strong>:<code>dict</code>=<em><code>{}</code></em>, <strong><code>text_gen_kwargs</code></strong>:<code>dict</code>=<em><code>{}</code></em>, <strong><code>input_return_type</code></strong>:<code>Type</code>=<em><code>TextInput</code></em>, <strong>**<code>kwargs</code></strong>) :: <a href="/blurr/data-core.html#BatchDecodeTransform"><code>BatchDecodeTransform</code></a></p>
 </blockquote>
 <p>A class used to cast your inputs into something understandable in fastai <code>show</code> methods</p>
 <p><strong>Parameters:</strong></p>
 <ul>
 <li><strong><code>hf_arch</code></strong> : <em><code>&lt;class 'str'&gt;</code></em>, <em>optional</em>    <p>The abbreviation/name of your Hugging Face transformer architecture (not required if passing in an
-instance of `HF_BeforeBatchTransform` to `before_batch_tfm`)</p></li>
+instance of `BatchTokenizeTransform` to `before_batch_tfm`)</p></li>
 </ul>
 <ul>
 <li><strong><code>hf_config</code></strong> : <em><code>&lt;class 'transformers.configuration_utils.PretrainedConfig'&gt;</code></em>, <em>optional</em>    <p>A Hugging Face configuration object (not required if passing in an
-instance of `HF_BeforeBatchTransform` to `before_batch_tfm`)</p></li>
+instance of `BatchTokenizeTransform` to `before_batch_tfm`)</p></li>
 </ul>
 <ul>
 <li><strong><code>hf_tokenizer</code></strong> : <em><code>&lt;class 'transformers.tokenization_utils_base.PreTrainedTokenizerBase'&gt;</code></em>, <em>optional</em>  <p>A Hugging Face tokenizer (not required if passing in an
-instance of `HF_BeforeBatchTransform` to `before_batch_tfm`)</p></li>
+instance of `BatchTokenizeTransform` to `before_batch_tfm`)</p></li>
 </ul>
 <ul>
 <li><strong><code>hf_model</code></strong> : <em><code>&lt;class 'transformers.modeling_utils.PreTrainedModel'&gt;</code></em>, <em>optional</em>   <p>A Hugging Face model (not required if passing in an
-instance of `HF_BeforeBatchTransform` to `before_batch_tfm`)</p></li>
+instance of `BatchTokenizeTransform` to `before_batch_tfm`)</p></li>
 </ul>
 <ul>
 <li><strong><code>is_split_into_words</code></strong> : <em><code>&lt;class 'bool'&gt;</code></em>, <em>optional</em>   <p>The `is_split_into_words` argument applied to your `hf_tokenizer` during tokenization. Set this to `True`
@@ -542,25 +542,25 @@ if your inputs are pre-tokenized (not numericalized)</p></li>
 </ul>
 <ul>
 <li><strong><code>hf_arch</code></strong> : <em><code>&lt;class 'str'&gt;</code></em>    <p>The abbreviation/name of your Hugging Face transformer architecture (not required if passing in an
-instance of `HF_BeforeBatchTransform` to `before_batch_tfm`)</p></li>
+instance of `BatchTokenizeTransform` to `before_batch_tfm`)</p></li>
 </ul>
 <ul>
-<li><strong><code>hf_config</code></strong> : <em><code>&lt;class 'transformers.configuration_utils.PretrainedConfig'&gt;</code></em>    <p>A Hugging Face configuration object (not required if passing in an instance of `HF_BeforeBatchTransform`
+<li><strong><code>hf_config</code></strong> : <em><code>&lt;class 'transformers.configuration_utils.PretrainedConfig'&gt;</code></em>    <p>A Hugging Face configuration object (not required if passing in an instance of `BatchTokenizeTransform`
 to `before_batch_tfm`)</p></li>
 </ul>
 <ul>
-<li><strong><code>hf_tokenizer</code></strong> : <em><code>&lt;class 'transformers.tokenization_utils_base.PreTrainedTokenizerBase'&gt;</code></em>  <p>A Hugging Face tokenizer (not required if passing in an instance of `HF_BeforeBatchTransform` to
+<li><strong><code>hf_tokenizer</code></strong> : <em><code>&lt;class 'transformers.tokenization_utils_base.PreTrainedTokenizerBase'&gt;</code></em>  <p>A Hugging Face tokenizer (not required if passing in an instance of `BatchTokenizeTransform` to
 `before_batch_tfm`)</p></li>
 </ul>
 <ul>
-<li><strong><code>hf_model</code></strong> : <em><code>&lt;class 'transformers.modeling_utils.PreTrainedModel'&gt;</code></em>   <p>A Hugging Face model (not required if passing in an instance of `HF_BeforeBatchTransform` to
+<li><strong><code>hf_model</code></strong> : <em><code>&lt;class 'transformers.modeling_utils.PreTrainedModel'&gt;</code></em>   <p>A Hugging Face model (not required if passing in an instance of `BatchTokenizeTransform` to
 `before_batch_tfm`)</p></li>
 </ul>
 <ul>
 <li><strong><code>batch_creator</code></strong> : <em><code>&lt;class 'blurr.data.core.BlurrBatchCreator'&gt;</code></em>, <em>optional</em>    <p>An instance of `BlurrBatchCreator` or equivalent</p></li>
 </ul>
 <ul>
-<li><strong><code>batch_tfm</code></strong> : <em><code>&lt;class 'blurr.data.core.BlurrBatchTransform'&gt;</code></em>, <em>optional</em>  <p>The batch_tfm used to decode Blurr batches (default: HF_AfterBatchTransform)</p></li>
+<li><strong><code>batch_tfm</code></strong> : <em><code>&lt;class 'blurr.data.core.BlurrBatchTransform'&gt;</code></em>, <em>optional</em>  <p>The batch_tfm used to decode Blurr batches (default: BatchDecodeTransform)</p></li>
 </ul>
 <ul>
 <li><strong><code>preproccesing_func</code></strong> : <em><code>typing.Callable[[typing.Union[torch.utils.data.dataset.Dataset, fastai.data.core.Datasets], transformers.tokenization_utils_base.PreTrainedTokenizerBase, transformers.modeling_utils.PreTrainedModel], typing.Union[torch.utils.data.dataset.Dataset, fastai.data.core.Datasets]]</code></em>, <em>optional</em>    <p>(optional) A preprocessing function that will be applied to your dataset</p></li>
@@ -670,7 +670,7 @@ show the name corresponding to the label index vs. just the integer index.</p></
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h4 id="get_blurr_tfm" class="doc_header"><code>get_blurr_tfm</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/data/core.py#L429" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>get_blurr_tfm</code>(<strong><code>tfms_list</code></strong>:<code>Pipeline</code>, <strong><code>tfm_class</code></strong>:<code>Transform</code>=<em><code>HF_BeforeBatchTransform</code></em>)</p>
+<h4 id="get_blurr_tfm" class="doc_header"><code>get_blurr_tfm</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/data/core.py#L429" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>get_blurr_tfm</code>(<strong><code>tfms_list</code></strong>:<code>Pipeline</code>, <strong><code>tfm_class</code></strong>:<code>Transform</code>=<em><code>BatchTokenizeTransform</code></em>)</p>
 </blockquote>
 <p>Given a fastai DataLoaders batch transforms, this method can be used to get at a transform
 instance used in your Blurr DataBlock</p>
@@ -710,7 +710,7 @@ instance used in your Blurr DataBlock</p>
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h4 id="first_blurr_tfm" class="doc_header"><code>first_blurr_tfm</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/data/core.py#L442" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>first_blurr_tfm</code>(<strong><code>dls</code></strong>:<code>DataLoaders</code>, <strong><code>before_batch_tfm_class</code></strong>:<code>Transform</code>=<em><code>HF_BeforeBatchTransform</code></em>, <strong><code>blurr_batch_tfm_class</code></strong>:<code>Transform</code>=<em><code>BlurrBatchTransform</code></em>)</p>
+<h4 id="first_blurr_tfm" class="doc_header"><code>first_blurr_tfm</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/data/core.py#L442" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>first_blurr_tfm</code>(<strong><code>dls</code></strong>:<code>DataLoaders</code>, <strong><code>before_batch_tfm_class</code></strong>:<code>Transform</code>=<em><code>BatchTokenizeTransform</code></em>, <strong><code>blurr_batch_tfm_class</code></strong>:<code>Transform</code>=<em><code>BlurrBatchTransform</code></em>)</p>
 </blockquote>
 <p>This convenience method will find the first Blurr transform required for methods such as
 <code>show_batch</code> and <code>show_results</code>. The returned transform should have everything you need to properly
@@ -907,7 +907,7 @@ decode and 'show' your Hugging Face inputs/targets</p>
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">blocks</span> <span class="o">=</span> <span class="p">(</span><span class="n">HF_TextBlock</span><span class="p">(</span><span class="n">hf_arch</span><span class="p">,</span> <span class="n">hf_config</span><span class="p">,</span> <span class="n">hf_tokenizer</span><span class="p">,</span> <span class="n">hf_model</span><span class="p">),</span> <span class="n">CategoryBlock</span><span class="p">)</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">blocks</span> <span class="o">=</span> <span class="p">(</span><span class="n">TextBlock</span><span class="p">(</span><span class="n">hf_arch</span><span class="p">,</span> <span class="n">hf_config</span><span class="p">,</span> <span class="n">hf_tokenizer</span><span class="p">,</span> <span class="n">hf_model</span><span class="p">),</span> <span class="n">CategoryBlock</span><span class="p">)</span>
 <span class="n">dblock</span> <span class="o">=</span> <span class="n">DataBlock</span><span class="p">(</span><span class="n">blocks</span><span class="o">=</span><span class="n">blocks</span><span class="p">,</span> <span class="n">get_x</span><span class="o">=</span><span class="n">ColReader</span><span class="p">(</span><span class="s2">&quot;text&quot;</span><span class="p">),</span> <span class="n">get_y</span><span class="o">=</span><span class="n">ColReader</span><span class="p">(</span><span class="s2">&quot;label&quot;</span><span class="p">),</span> <span class="n">splitter</span><span class="o">=</span><span class="n">ColSplitter</span><span class="p">())</span>
 </pre></div>
 

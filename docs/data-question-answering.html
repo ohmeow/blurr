@@ -282,7 +282,7 @@ transformers: 4.9.2
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h2 id="HF_QuestionAnswerInput" class="doc_header"><code>class</code> <code>HF_QuestionAnswerInput</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/data/question_answering.py#L67" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>HF_QuestionAnswerInput</code>(<strong><code>x</code></strong>, <strong>**<code>kwargs</code></strong>) :: <a href="/blurr/data-core.html#HF_BaseInput"><code>HF_BaseInput</code></a></p>
+<h2 id="QuestionAnswerTextInput" class="doc_header"><code>class</code> <code>QuestionAnswerTextInput</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/data/question_answering.py#L67" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>QuestionAnswerTextInput</code>(<strong><code>x</code></strong>, <strong>**<code>kwargs</code></strong>) :: <a href="/blurr/data-core.html#TextInput"><code>TextInput</code></a></p>
 </blockquote>
 <p>The base represenation of your inputs; used by the various fastai <code>show</code> methods</p>
 
@@ -305,7 +305,7 @@ transformers: 4.9.2
 
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>We'll return a <a href="/blurr/data-question-answering.html#HF_QuestionAnswerInput"><code>HF_QuestionAnswerInput</code></a> from our custom <a href="/blurr/data-core.html#HF_BeforeBatchTransform"><code>HF_BeforeBatchTransform</code></a> so that we can customize the show_batch/results methods for this task.</p>
+<p>We'll return a <a href="/blurr/data-question-answering.html#QuestionAnswerTextInput"><code>QuestionAnswerTextInput</code></a> from our custom <a href="/blurr/data-core.html#BatchTokenizeTransform"><code>BatchTokenizeTransform</code></a> so that we can customize the show_batch/results methods for this task.</p>
 
 </div>
 </div>
@@ -321,7 +321,7 @@ transformers: 4.9.2
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h2 id="HF_QABeforeBatchTransform" class="doc_header"><code>class</code> <code>HF_QABeforeBatchTransform</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/data/question_answering.py#L70" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>HF_QABeforeBatchTransform</code>(<strong><code>hf_arch</code></strong>:<code>str</code>, <strong><code>hf_config</code></strong>:<code>PretrainedConfig</code>, <strong><code>hf_tokenizer</code></strong>:<code>PreTrainedTokenizerBase</code>, <strong><code>hf_model</code></strong>:<code>PreTrainedModel</code>, <strong><code>max_length</code></strong>:<code>int</code>=<em><code>None</code></em>, <strong><code>padding</code></strong>:<code>Union</code>[<code>bool</code>, <code>str</code>]=<em><code>True</code></em>, <strong><code>truncation</code></strong>:<code>Union</code>[<code>bool</code>, <code>str</code>]=<em><code>True</code></em>, <strong><code>is_split_into_words</code></strong>:<code>bool</code>=<em><code>False</code></em>, <strong><code>tok_kwargs</code></strong>=<em><code>{}</code></em>, <strong>**<code>kwargs</code></strong>) :: <a href="/blurr/data-core.html#HF_BeforeBatchTransform"><code>HF_BeforeBatchTransform</code></a></p>
+<h2 id="QABatchTokenizeTransform" class="doc_header"><code>class</code> <code>QABatchTokenizeTransform</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/data/question_answering.py#L70" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>QABatchTokenizeTransform</code>(<strong><code>hf_arch</code></strong>:<code>str</code>, <strong><code>hf_config</code></strong>:<code>PretrainedConfig</code>, <strong><code>hf_tokenizer</code></strong>:<code>PreTrainedTokenizerBase</code>, <strong><code>hf_model</code></strong>:<code>PreTrainedModel</code>, <strong><code>max_length</code></strong>:<code>int</code>=<em><code>None</code></em>, <strong><code>padding</code></strong>:<code>Union</code>[<code>bool</code>, <code>str</code>]=<em><code>True</code></em>, <strong><code>truncation</code></strong>:<code>Union</code>[<code>bool</code>, <code>str</code>]=<em><code>True</code></em>, <strong><code>is_split_into_words</code></strong>:<code>bool</code>=<em><code>False</code></em>, <strong><code>tok_kwargs</code></strong>=<em><code>{}</code></em>, <strong>**<code>kwargs</code></strong>) :: <a href="/blurr/data-core.html#BatchTokenizeTransform"><code>BatchTokenizeTransform</code></a></p>
 </blockquote>
 <p>Handles everything you need to assemble a mini-batch of inputs and targets, as well as
 decode the dictionary produced as a byproduct of the tokenization process in the <code>encodes</code> method.</p>
@@ -384,7 +384,7 @@ if your inputs are pre-tokenized (not numericalized)</p></li>
 
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>By overriding <a href="/blurr/data-core.html#HF_BeforeBatchTransform"><code>HF_BeforeBatchTransform</code></a> we can add other inputs to each example for this particular task.</p>
+<p>By overriding <a href="/blurr/data-core.html#BatchTokenizeTransform"><code>BatchTokenizeTransform</code></a> we can add other inputs to each example for this particular task.</p>
 
 </div>
 </div>
@@ -396,12 +396,12 @@ if your inputs are pre-tokenized (not numericalized)</p></li>
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">before_batch_tfm</span> <span class="o">=</span> <span class="n">HF_QABeforeBatchTransform</span><span class="p">(</span><span class="n">hf_arch</span><span class="p">,</span> <span class="n">hf_config</span><span class="p">,</span> <span class="n">hf_tokenizer</span><span class="p">,</span> <span class="n">hf_model</span><span class="p">,</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">before_batch_tfm</span> <span class="o">=</span> <span class="n">QABatchTokenizeTransform</span><span class="p">(</span><span class="n">hf_arch</span><span class="p">,</span> <span class="n">hf_config</span><span class="p">,</span> <span class="n">hf_tokenizer</span><span class="p">,</span> <span class="n">hf_model</span><span class="p">,</span>
                                              <span class="n">max_length</span><span class="o">=</span><span class="n">max_seq_len</span><span class="p">,</span> <span class="n">truncation</span><span class="o">=</span><span class="s1">&#39;only_second&#39;</span><span class="p">,</span> 
                                              <span class="n">tok_kwargs</span><span class="o">=</span><span class="p">{</span> <span class="s1">&#39;return_special_tokens_mask&#39;</span><span class="p">:</span> <span class="kc">True</span> <span class="p">})</span>
 
 <span class="n">blocks</span> <span class="o">=</span> <span class="p">(</span>
-    <span class="n">HF_TextBlock</span><span class="p">(</span><span class="n">before_batch_tfm</span><span class="o">=</span><span class="n">before_batch_tfm</span><span class="p">,</span> <span class="n">input_return_type</span><span class="o">=</span><span class="n">HF_QuestionAnswerInput</span><span class="p">),</span> 
+    <span class="n">TextBlock</span><span class="p">(</span><span class="n">before_batch_tfm</span><span class="o">=</span><span class="n">before_batch_tfm</span><span class="p">,</span> <span class="n">input_return_type</span><span class="o">=</span><span class="n">QuestionAnswerTextInput</span><span class="p">),</span> 
     <span class="n">CategoryBlock</span><span class="p">(</span><span class="n">vocab</span><span class="o">=</span><span class="n">vocab</span><span class="p">),</span>
     <span class="n">CategoryBlock</span><span class="p">(</span><span class="n">vocab</span><span class="o">=</span><span class="n">vocab</span><span class="p">)</span>
 <span class="p">)</span>

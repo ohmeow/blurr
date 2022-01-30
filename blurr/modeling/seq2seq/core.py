@@ -29,10 +29,10 @@ nltk.download('wordnet', quiet=True)
 from ...utils import BLURR
 from ...data.core import first_blurr_tfm
 from ...data.seq2seq.core import (
-    HF_Seq2SeqInput, HF_Seq2SeqBeforeBatchTransform, HF_Seq2SeqAfterBatchTransform, HF_Seq2SeqBlock,
+    Seq2SeqTextInput, Seq2SeqBatchTokenizeTransform, Seq2SeqBatchDecodeTransform, Seq2SeqTextBlock,
     default_text_gen_kwargs
 )
-from ..core import HF_BaseModelWrapper, HF_BaseModelCallback
+from ..core import BaseModelWrapper, BaseModelCallback
 
 logging.set_verbosity_error()
 
@@ -88,7 +88,7 @@ class HF_Seq2SeqMetricsCallback(Callback):
         # one time setup code here.
         if (not self.do_setup): return
 
-        # grab the hf_tokenizer from the HF_BeforeBatchTransform (used for rouge metrics)
+        # grab the hf_tokenizer from the BatchTokenizeTransform (used for rouge metrics)
         tfm = first_blurr_tfm(self.learn.dls)
         self.hf_tokenizer = tfm.hf_tokenizer
         self.tok_kwargs = tfm.tok_kwargs
@@ -251,8 +251,8 @@ def seq2seq_splitter(
 # Cell
 @typedispatch
 def show_results(
-    # This typedispatched `show_results` will be called for `HF_Seq2SeqInput` typed inputs
-    x:HF_Seq2SeqInput,
+    # This typedispatched `show_results` will be called for `Seq2SeqTextInput` typed inputs
+    x:Seq2SeqTextInput,
     # Your targets
     y,
     # Your raw inputs/targets

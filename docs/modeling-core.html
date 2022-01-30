@@ -130,7 +130,7 @@ transformers: 4.13.0
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h2 id="HF_BaseModelWrapper" class="doc_header"><code>class</code> <code>HF_BaseModelWrapper</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/modeling/core.py#L44" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>HF_BaseModelWrapper</code>(<strong><code>hf_model</code></strong>:<code>PreTrainedModel</code>, <strong><code>output_hidden_states</code></strong>:<code>bool</code>=<em><code>False</code></em>, <strong><code>output_attentions</code></strong>:<code>bool</code>=<em><code>False</code></em>, <strong><code>hf_model_kwargs</code></strong>=<em><code>{}</code></em>) :: <code>Module</code></p>
+<h2 id="BaseModelWrapper" class="doc_header"><code>class</code> <code>BaseModelWrapper</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/modeling/core.py#L44" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>BaseModelWrapper</code>(<strong><code>hf_model</code></strong>:<code>PreTrainedModel</code>, <strong><code>output_hidden_states</code></strong>:<code>bool</code>=<em><code>False</code></em>, <strong><code>output_attentions</code></strong>:<code>bool</code>=<em><code>False</code></em>, <strong><code>hf_model_kwargs</code></strong>=<em><code>{}</code></em>) :: <code>Module</code></p>
 </blockquote>
 <p>Same as <code>nn.Module</code>, but no need for subclasses to call <code>super().__init__</code></p>
 <p><strong>Parameters:</strong></p>
@@ -166,7 +166,7 @@ transformers: 4.13.0
 
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>Note that <a href="/blurr/modeling-core.html#HF_BaseModelWrapper"><code>HF_BaseModelWrapper</code></a> includes some nifty code for just passing in the things your model needs, as not all transformer architectures require/use the same information.</p>
+<p>Note that <a href="/blurr/modeling-core.html#BaseModelWrapper"><code>BaseModelWrapper</code></a> includes some nifty code for just passing in the things your model needs, as not all transformer architectures require/use the same information.</p>
 
 </div>
 </div>
@@ -182,7 +182,7 @@ transformers: 4.13.0
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h2 id="HF_PreCalculatedLoss" class="doc_header"><code>class</code> <code>HF_PreCalculatedLoss</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/modeling/core.py#L79" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>HF_PreCalculatedLoss</code>()</p>
+<h2 id="PreCalculatedLoss" class="doc_header"><code>class</code> <code>PreCalculatedLoss</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/modeling/core.py#L79" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>PreCalculatedLoss</code>()</p>
 </blockquote>
 
 </div>
@@ -204,7 +204,7 @@ transformers: 4.13.0
 
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>If you want to let your Hugging Face model calculate the loss for you, make sure you include the <code>labels</code> argument in your inputs and use <a href="/blurr/modeling-core.html#HF_PreCalculatedLoss"><code>HF_PreCalculatedLoss</code></a> as your loss function. Even though we don't really need a loss function per se, we have to provide a custom loss class/function for fastai to function properly (e.g. one with a <code>decodes</code> and <code>activation</code> methods).  Why?  Because these methods will get called in methods like <code>show_results</code> to get the actual predictions.</p>
+<p>If you want to let your Hugging Face model calculate the loss for you, make sure you include the <code>labels</code> argument in your inputs and use <a href="/blurr/modeling-core.html#PreCalculatedLoss"><code>PreCalculatedLoss</code></a> as your loss function. Even though we don't really need a loss function per se, we have to provide a custom loss class/function for fastai to function properly (e.g. one with a <code>decodes</code> and <code>activation</code> methods).  Why?  Because these methods will get called in methods like <code>show_results</code> to get the actual predictions.</p>
 
 </div>
 </div>
@@ -220,7 +220,7 @@ transformers: 4.13.0
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h2 id="HF_BaseModelCallback" class="doc_header"><code>class</code> <code>HF_BaseModelCallback</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/modeling/core.py#L92" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>HF_BaseModelCallback</code>(<strong><code>after_create</code></strong>=<em><code>None</code></em>, <strong><code>before_fit</code></strong>=<em><code>None</code></em>, <strong><code>before_epoch</code></strong>=<em><code>None</code></em>, <strong><code>before_train</code></strong>=<em><code>None</code></em>, <strong><code>before_batch</code></strong>=<em><code>None</code></em>, <strong><code>after_pred</code></strong>=<em><code>None</code></em>, <strong><code>after_loss</code></strong>=<em><code>None</code></em>, <strong><code>before_backward</code></strong>=<em><code>None</code></em>, <strong><code>before_step</code></strong>=<em><code>None</code></em>, <strong><code>after_cancel_step</code></strong>=<em><code>None</code></em>, <strong><code>after_step</code></strong>=<em><code>None</code></em>, <strong><code>after_cancel_batch</code></strong>=<em><code>None</code></em>, <strong><code>after_batch</code></strong>=<em><code>None</code></em>, <strong><code>after_cancel_train</code></strong>=<em><code>None</code></em>, <strong><code>after_train</code></strong>=<em><code>None</code></em>, <strong><code>before_validate</code></strong>=<em><code>None</code></em>, <strong><code>after_cancel_validate</code></strong>=<em><code>None</code></em>, <strong><code>after_validate</code></strong>=<em><code>None</code></em>, <strong><code>after_cancel_epoch</code></strong>=<em><code>None</code></em>, <strong><code>after_epoch</code></strong>=<em><code>None</code></em>, <strong><code>after_cancel_fit</code></strong>=<em><code>None</code></em>, <strong><code>after_fit</code></strong>=<em><code>None</code></em>) :: <code>Callback</code></p>
+<h2 id="BaseModelCallback" class="doc_header"><code>class</code> <code>BaseModelCallback</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/modeling/core.py#L92" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>BaseModelCallback</code>(<strong><code>after_create</code></strong>=<em><code>None</code></em>, <strong><code>before_fit</code></strong>=<em><code>None</code></em>, <strong><code>before_epoch</code></strong>=<em><code>None</code></em>, <strong><code>before_train</code></strong>=<em><code>None</code></em>, <strong><code>before_batch</code></strong>=<em><code>None</code></em>, <strong><code>after_pred</code></strong>=<em><code>None</code></em>, <strong><code>after_loss</code></strong>=<em><code>None</code></em>, <strong><code>before_backward</code></strong>=<em><code>None</code></em>, <strong><code>before_step</code></strong>=<em><code>None</code></em>, <strong><code>after_cancel_step</code></strong>=<em><code>None</code></em>, <strong><code>after_step</code></strong>=<em><code>None</code></em>, <strong><code>after_cancel_batch</code></strong>=<em><code>None</code></em>, <strong><code>after_batch</code></strong>=<em><code>None</code></em>, <strong><code>after_cancel_train</code></strong>=<em><code>None</code></em>, <strong><code>after_train</code></strong>=<em><code>None</code></em>, <strong><code>before_validate</code></strong>=<em><code>None</code></em>, <strong><code>after_cancel_validate</code></strong>=<em><code>None</code></em>, <strong><code>after_validate</code></strong>=<em><code>None</code></em>, <strong><code>after_cancel_epoch</code></strong>=<em><code>None</code></em>, <strong><code>after_epoch</code></strong>=<em><code>None</code></em>, <strong><code>after_cancel_fit</code></strong>=<em><code>None</code></em>, <strong><code>after_fit</code></strong>=<em><code>None</code></em>) :: <code>Callback</code></p>
 </blockquote>
 <p>Basic class handling tweaks of the training loop by changing a <code>Learner</code> in various events</p>
 <p><strong>Parameters:</strong></p>
@@ -291,8 +291,8 @@ transformers: 4.13.0
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <p>We use a <code>Callback</code> for handling what is returned from the Hugging Face model. The return type is (<code>ModelOutput</code>)[<a href="https://huggingface.co/transformers/main_classes/output.html#transformers.file_utils.ModelOutput">https://huggingface.co/transformers/main_classes/output.html#transformers.file_utils.ModelOutput</a>] which makes it easy to return all the goodies we asked for.</p>
-<p>Note that your <code>Learner</code>'s loss will be set for you only if the Hugging Face model returns one <em>and</em> you are using the <a href="/blurr/modeling-core.html#HF_PreCalculatedLoss"><code>HF_PreCalculatedLoss</code></a> loss function.</p>
-<p>Also note that anything else you asked the model to return (for example, last hidden state, etc..) will be available for you via the <code>blurr_model_outputs</code> property attached to your <code>Learner</code>. For example, assuming you are using BERT for a classification task ... if you have told your <a href="/blurr/modeling-core.html#HF_BaseModelWrapper"><code>HF_BaseModelWrapper</code></a> instance to return attentions, you'd be able to access them via <code>learn.blurr_model_outputs['attentions']</code>.</p>
+<p>Note that your <code>Learner</code>'s loss will be set for you only if the Hugging Face model returns one <em>and</em> you are using the <a href="/blurr/modeling-core.html#PreCalculatedLoss"><code>PreCalculatedLoss</code></a> loss function.</p>
+<p>Also note that anything else you asked the model to return (for example, last hidden state, etc..) will be available for you via the <code>blurr_model_outputs</code> property attached to your <code>Learner</code>. For example, assuming you are using BERT for a classification task ... if you have told your <a href="/blurr/modeling-core.html#BaseModelWrapper"><code>BaseModelWrapper</code></a> instance to return attentions, you'd be able to access them via <code>learn.blurr_model_outputs['attentions']</code>.</p>
 
 </div>
 </div>
@@ -444,7 +444,7 @@ transformers: 4.13.0
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">set_seed</span><span class="p">()</span>
-<span class="n">blocks</span> <span class="o">=</span> <span class="p">(</span><span class="n">HF_TextBlock</span><span class="p">(</span><span class="n">hf_arch</span><span class="p">,</span> <span class="n">hf_config</span><span class="p">,</span> <span class="n">hf_tokenizer</span><span class="p">,</span> <span class="n">hf_model</span><span class="p">),</span> <span class="n">CategoryBlock</span><span class="p">)</span>
+<span class="n">blocks</span> <span class="o">=</span> <span class="p">(</span><span class="n">TextBlock</span><span class="p">(</span><span class="n">hf_arch</span><span class="p">,</span> <span class="n">hf_config</span><span class="p">,</span> <span class="n">hf_tokenizer</span><span class="p">,</span> <span class="n">hf_model</span><span class="p">),</span> <span class="n">CategoryBlock</span><span class="p">)</span>
 <span class="n">dblock</span> <span class="o">=</span> <span class="n">DataBlock</span><span class="p">(</span><span class="n">blocks</span><span class="o">=</span><span class="n">blocks</span><span class="p">,</span> <span class="n">get_x</span><span class="o">=</span><span class="n">ColReader</span><span class="p">(</span><span class="s2">&quot;text&quot;</span><span class="p">),</span> <span class="n">get_y</span><span class="o">=</span><span class="n">ColReader</span><span class="p">(</span><span class="s2">&quot;label&quot;</span><span class="p">),</span> <span class="n">splitter</span><span class="o">=</span><span class="n">RandomSplitter</span><span class="p">(</span><span class="n">seed</span><span class="o">=</span><span class="mi">42</span><span class="p">))</span>
 </pre></div>
 
@@ -505,14 +505,14 @@ transformers: 4.13.0
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">set_seed</span><span class="p">()</span>
 
-<span class="n">model</span> <span class="o">=</span> <span class="n">HF_BaseModelWrapper</span><span class="p">(</span><span class="n">hf_model</span><span class="p">)</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">BaseModelWrapper</span><span class="p">(</span><span class="n">hf_model</span><span class="p">)</span>
 <span class="n">learn</span> <span class="o">=</span> <span class="n">Learner</span><span class="p">(</span>
     <span class="n">dls</span><span class="p">,</span>
     <span class="n">model</span><span class="p">,</span>
     <span class="n">opt_func</span><span class="o">=</span><span class="n">partial</span><span class="p">(</span><span class="n">OptimWrapper</span><span class="p">,</span> <span class="n">opt</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">Adam</span><span class="p">),</span>
     <span class="n">loss_func</span><span class="o">=</span><span class="n">CrossEntropyLossFlat</span><span class="p">(),</span>
     <span class="n">metrics</span><span class="o">=</span><span class="p">[</span><span class="n">accuracy</span><span class="p">],</span>
-    <span class="n">cbs</span><span class="o">=</span><span class="p">[</span><span class="n">HF_BaseModelCallback</span><span class="p">],</span>
+    <span class="n">cbs</span><span class="o">=</span><span class="p">[</span><span class="n">BaseModelCallback</span><span class="p">],</span>
     <span class="n">splitter</span><span class="o">=</span><span class="n">hf_splitter</span><span class="p">,</span>
 <span class="p">)</span>
 
@@ -1264,7 +1264,7 @@ for a list of arguments you can pass in)</p>
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h2 id="Blearner" class="doc_header"><code>class</code> <code>Blearner</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/modeling/core.py#L253" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>Blearner</code>(<strong><code>dls</code></strong>:<code>DataLoaders</code>, <strong><code>hf_model</code></strong>:<code>PreTrainedModel</code>, <strong><code>base_model_cb</code></strong>:<a href="/blurr/modeling-core.html#HF_BaseModelCallback"><code>HF_BaseModelCallback</code></a>=<em><code>HF_BaseModelCallback</code></em>, <strong><code>loss_func</code></strong>=<em><code>None</code></em>, <strong><code>opt_func</code></strong>=<em><code>Adam</code></em>, <strong><code>lr</code></strong>=<em><code>0.001</code></em>, <strong><code>splitter</code></strong>=<em><code>trainable_params</code></em>, <strong><code>cbs</code></strong>=<em><code>None</code></em>, <strong><code>metrics</code></strong>=<em><code>None</code></em>, <strong><code>path</code></strong>=<em><code>None</code></em>, <strong><code>model_dir</code></strong>=<em><code>'models'</code></em>, <strong><code>wd</code></strong>=<em><code>None</code></em>, <strong><code>wd_bn_bias</code></strong>=<em><code>False</code></em>, <strong><code>train_bn</code></strong>=<em><code>True</code></em>, <strong><code>moms</code></strong>=<em><code>(0.95, 0.85, 0.95)</code></em>) :: <code>Learner</code></p>
+<h2 id="Blearner" class="doc_header"><code>class</code> <code>Blearner</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/modeling/core.py#L253" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>Blearner</code>(<strong><code>dls</code></strong>:<code>DataLoaders</code>, <strong><code>hf_model</code></strong>:<code>PreTrainedModel</code>, <strong><code>base_model_cb</code></strong>:<a href="/blurr/modeling-core.html#BaseModelCallback"><code>BaseModelCallback</code></a>=<em><code>BaseModelCallback</code></em>, <strong><code>loss_func</code></strong>=<em><code>None</code></em>, <strong><code>opt_func</code></strong>=<em><code>Adam</code></em>, <strong><code>lr</code></strong>=<em><code>0.001</code></em>, <strong><code>splitter</code></strong>=<em><code>trainable_params</code></em>, <strong><code>cbs</code></strong>=<em><code>None</code></em>, <strong><code>metrics</code></strong>=<em><code>None</code></em>, <strong><code>path</code></strong>=<em><code>None</code></em>, <strong><code>model_dir</code></strong>=<em><code>'models'</code></em>, <strong><code>wd</code></strong>=<em><code>None</code></em>, <strong><code>wd_bn_bias</code></strong>=<em><code>False</code></em>, <strong><code>train_bn</code></strong>=<em><code>True</code></em>, <strong><code>moms</code></strong>=<em><code>(0.95, 0.85, 0.95)</code></em>) :: <code>Learner</code></p>
 </blockquote>
 <p>Group together a <code>model</code>, some <code>dls</code> and a <code>loss_func</code> to handle training</p>
 <p><strong>Parameters:</strong></p>
@@ -1275,7 +1275,7 @@ for a list of arguments you can pass in)</p>
 <li><strong><code>hf_model</code></strong> : <em><code>&lt;class 'transformers.modeling_utils.PreTrainedModel'&gt;</code></em>   <p>Your pretrained Hugging Face transformer</p></li>
 </ul>
 <ul>
-<li><strong><code>base_model_cb</code></strong> : <em><code>&lt;class 'blurr.modeling.core.HF_BaseModelCallback'&gt;</code></em>, <em>optional</em> <p>Your `HF_BaseModelCallback`</p></li>
+<li><strong><code>base_model_cb</code></strong> : <em><code>&lt;class 'blurr.modeling.core.BaseModelCallback'&gt;</code></em>, <em>optional</em> <p>Your `BaseModelCallback`</p></li>
 </ul>
 <ul>
 <li><strong><code>kwargs</code></strong> : <em><code>&lt;class 'inspect._empty'&gt;</code></em></li>
@@ -1522,7 +1522,7 @@ for a list of arguments you can pass in)</p>
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h2 id="BlearnerForSequenceClassification" class="doc_header"><code>class</code> <code>BlearnerForSequenceClassification</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/modeling/core.py#L277" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>BlearnerForSequenceClassification</code>(<strong><code>dls</code></strong>:<code>DataLoaders</code>, <strong><code>hf_model</code></strong>:<code>PreTrainedModel</code>, <strong><code>base_model_cb</code></strong>:<a href="/blurr/modeling-core.html#HF_BaseModelCallback"><code>HF_BaseModelCallback</code></a>=<em><code>HF_BaseModelCallback</code></em>, <strong><code>loss_func</code></strong>=<em><code>None</code></em>, <strong><code>opt_func</code></strong>=<em><code>Adam</code></em>, <strong><code>lr</code></strong>=<em><code>0.001</code></em>, <strong><code>splitter</code></strong>=<em><code>trainable_params</code></em>, <strong><code>cbs</code></strong>=<em><code>None</code></em>, <strong><code>metrics</code></strong>=<em><code>None</code></em>, <strong><code>path</code></strong>=<em><code>None</code></em>, <strong><code>model_dir</code></strong>=<em><code>'models'</code></em>, <strong><code>wd</code></strong>=<em><code>None</code></em>, <strong><code>wd_bn_bias</code></strong>=<em><code>False</code></em>, <strong><code>train_bn</code></strong>=<em><code>True</code></em>, <strong><code>moms</code></strong>=<em><code>(0.95, 0.85, 0.95)</code></em>) :: <a href="/blurr/modeling-core.html#Blearner"><code>Blearner</code></a></p>
+<h2 id="BlearnerForSequenceClassification" class="doc_header"><code>class</code> <code>BlearnerForSequenceClassification</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/modeling/core.py#L277" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>BlearnerForSequenceClassification</code>(<strong><code>dls</code></strong>:<code>DataLoaders</code>, <strong><code>hf_model</code></strong>:<code>PreTrainedModel</code>, <strong><code>base_model_cb</code></strong>:<a href="/blurr/modeling-core.html#BaseModelCallback"><code>BaseModelCallback</code></a>=<em><code>BaseModelCallback</code></em>, <strong><code>loss_func</code></strong>=<em><code>None</code></em>, <strong><code>opt_func</code></strong>=<em><code>Adam</code></em>, <strong><code>lr</code></strong>=<em><code>0.001</code></em>, <strong><code>splitter</code></strong>=<em><code>trainable_params</code></em>, <strong><code>cbs</code></strong>=<em><code>None</code></em>, <strong><code>metrics</code></strong>=<em><code>None</code></em>, <strong><code>path</code></strong>=<em><code>None</code></em>, <strong><code>model_dir</code></strong>=<em><code>'models'</code></em>, <strong><code>wd</code></strong>=<em><code>None</code></em>, <strong><code>wd_bn_bias</code></strong>=<em><code>False</code></em>, <strong><code>train_bn</code></strong>=<em><code>True</code></em>, <strong><code>moms</code></strong>=<em><code>(0.95, 0.85, 0.95)</code></em>) :: <a href="/blurr/modeling-core.html#Blearner"><code>Blearner</code></a></p>
 </blockquote>
 <p>Group together a <code>model</code>, some <code>dls</code> and a <code>loss_func</code> to handle training</p>
 <p><strong>Parameters:</strong></p>

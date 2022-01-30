@@ -26,8 +26,8 @@ from transformers import (
 
 
 from ..utils import BLURR
-from ..data.core import HF_TextBlock, BlurrDataLoader, first_blurr_tfm
-from .core import HF_PreCalculatedLoss, Blearner
+from ..data.core import TextBlock, BlurrDataLoader, first_blurr_tfm
+from .core import PreCalculatedLoss, Blearner
 from ..data.language_modeling import (
     HF_LMBeforeBatchTransform, LMType, LMStrategy, HF_CausalLMInput, CausalLMStrategy, HF_MLMInput, BertMLMStrategy
 )
@@ -244,7 +244,7 @@ class BlearnerForLM(Blearner):
         hf_model: PreTrainedModel,
         **kwargs
     ):
-        kwargs['loss_func'] = HF_PreCalculatedLoss()
+        kwargs['loss_func'] = PreCalculatedLoss()
         super().__init__(dls, hf_model, **kwargs)
 
     @classmethod
@@ -303,7 +303,7 @@ class BlearnerForLM(Blearner):
         bbtfm = HF_LMBeforeBatchTransform(hf_arch, hf_config, hf_tokenizer, hf_model, lm_strategy_cls=lm_strategy_cls)
 
         input_return_type = HF_CausalLMInput if (lm_type == LMType.CAUSAL) else HF_MLMInput
-        blocks = (HF_TextBlock(before_batch_tfm=bbtfm, input_return_type=input_return_type), noop)
+        blocks = (TextBlock(before_batch_tfm=bbtfm, input_return_type=input_return_type), noop)
 
         dblock = DataBlock(blocks=blocks, get_x=get_x, splitter=dblock_splitter)
         dls = dblock.dataloaders(data, **dl_kwargs.copy())

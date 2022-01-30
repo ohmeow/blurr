@@ -24,14 +24,14 @@ from transformers import (
 )
 
 from ..utils import BLURR
-from ..data.core import HF_TextBlock, BlurrDataLoader, first_blurr_tfm
-from .core import HF_BaseModelCallback, HF_PreCalculatedLoss, Blearner
-from ..data.question_answering import HF_QuestionAnswerInput, HF_QABeforeBatchTransform
+from ..data.core import TextBlock, BlurrDataLoader, first_blurr_tfm
+from .core import BaseModelCallback, PreCalculatedLoss, Blearner
+from ..data.question_answering import QuestionAnswerTextInput, QABatchTokenizeTransform
 
 logging.set_verbosity_error()
 
 # Cell
-class HF_QstAndAnsModelCallback(HF_BaseModelCallback):
+class HF_QstAndAnsModelCallback(BaseModelCallback):
     """The prediction is a combination start/end logits"""
     def after_pred(self):
         super().after_pred()
@@ -87,8 +87,8 @@ class MultiTargetLoss(Module):
 # Cell
 @typedispatch
 def show_results(
-    # This typedispatched `show_results` will be called for `HF_QuestionAnswerInput` typed inputs
-    x:HF_QuestionAnswerInput,
+    # This typedispatched `show_results` will be called for `QuestionAnswerTextInput` typed inputs
+    x:QuestionAnswerTextInput,
     # The targets
     y,
     # Your raw inputs/targets
@@ -201,7 +201,7 @@ class BlearnerForQuestionAnswering(Blearner):
         padding_side = hf_tokenizer.padding_side
         trunc_strat = 'only_second' if (padding_side == 'right') else 'only_first'
 
-        before_batch_tfm = HF_QABeforeBatchTransform(hf_arch, hf_config, hf_tokenizer, hf_model,
+        before_batch_tfm = QABatchTokenizeTransform(hf_arch, hf_config, hf_tokenizer, hf_model,
                                                      max_length=max_seq_len,
                                                      truncation=trunc_strat,
                                                      tok_kwargs={ 'return_special_tokens_mask': True })
@@ -216,7 +216,7 @@ class BlearnerForQuestionAnswering(Blearner):
 
         # define DataBlock and DataLoaders
         blocks = (
-            HF_TextBlock(before_batch_tfm=before_batch_tfm, input_return_type=HF_QuestionAnswerInput),
+            TextBlock(before_batch_tfm=before_batch_tfm, input_return_type=QuestionAnswerTextInput),
             CategoryBlock(vocab=vocab),
             CategoryBlock(vocab=vocab)
         )

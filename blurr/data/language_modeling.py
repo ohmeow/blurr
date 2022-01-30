@@ -19,7 +19,7 @@ from transformers import (
 )
 
 from ..utils import BLURR
-from .core import HF_BaseInput, HF_BeforeBatchTransform, first_blurr_tfm
+from .core import TextInput, BatchTokenizeTransform, first_blurr_tfm
 
 logging.set_verbosity_error()
 
@@ -52,7 +52,7 @@ class LMStrategy(ABC):
         pass
 
 # Cell
-class HF_LMBeforeBatchTransform(HF_BeforeBatchTransform):
+class HF_LMBeforeBatchTransform(BatchTokenizeTransform):
     def __init__(
         self,
         # The abbreviation/name of your Hugging Face transformer architecture (e.b., bert, bart, etc..)
@@ -88,7 +88,7 @@ class HF_LMBeforeBatchTransform(HF_BeforeBatchTransform):
         # Any keyword arguments you want included when generated text
         # See [How to generate text](https://huggingface.co/blog/how-to-generate)
         text_gen_kwargs={},
-        # Keyword arguments to apply to `HF_BeforeBatchTransform`
+        # Keyword arguments to apply to `BatchTokenizeTransform`
         **kwargs
     ):
         super().__init__(hf_arch, hf_config, hf_tokenizer, hf_model,
@@ -107,7 +107,7 @@ class HF_LMBeforeBatchTransform(HF_BeforeBatchTransform):
         return self.lm_strategy.build_inputs_targets(samples)
 
 # Cell
-class HF_CausalLMInput(HF_BaseInput): pass
+class HF_CausalLMInput(TextInput): pass
 
 # Cell
 class CausalLMStrategy(LMStrategy):
@@ -163,7 +163,7 @@ def show_batch(
     return ctxs
 
 # Cell
-class HF_MLMInput(HF_BaseInput): pass
+class HF_MLMInput(TextInput): pass
 
 # Cell
 class BertMLMStrategy(LMStrategy):

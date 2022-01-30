@@ -125,7 +125,7 @@ transformers: 4.9.2
 </div>
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>Seq2Seq tasks are essentially conditional generation tasks, this applies to specific derived tasks such as summarization and translation.  Given this, we can use the <em>same</em> HF_Seq2Seq transforms, <a href="/blurr/data-seq2seq-core.html#HF_Seq2SeqInput"><code>HF_Seq2SeqInput</code></a>, and <a href="/blurr/data-seq2seq-core.html#HF_Seq2SeqBlock"><code>HF_Seq2SeqBlock</code></a> for these tasks</p>
+<p>Seq2Seq tasks are essentially conditional generation tasks, this applies to specific derived tasks such as summarization and translation.  Given this, we can use the <em>same</em> HF_Seq2Seq transforms, <a href="/blurr/data-seq2seq-core.html#Seq2SeqTextInput"><code>Seq2SeqTextInput</code></a>, and <a href="/blurr/data-seq2seq-core.html#Seq2SeqTextBlock"><code>Seq2SeqTextBlock</code></a> for these tasks</p>
 
 </div>
 </div>
@@ -141,7 +141,7 @@ transformers: 4.9.2
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h2 id="HF_Seq2SeqInput" class="doc_header"><code>class</code> <code>HF_Seq2SeqInput</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/data/seq2seq/core.py#L29" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>HF_Seq2SeqInput</code>(<strong><code>x</code></strong>, <strong>**<code>kwargs</code></strong>) :: <a href="/blurr/data-core.html#HF_BaseInput"><code>HF_BaseInput</code></a></p>
+<h2 id="Seq2SeqTextInput" class="doc_header"><code>class</code> <code>Seq2SeqTextInput</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/data/seq2seq/core.py#L29" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>Seq2SeqTextInput</code>(<strong><code>x</code></strong>, <strong>**<code>kwargs</code></strong>) :: <a href="/blurr/data-core.html#TextInput"><code>TextInput</code></a></p>
 </blockquote>
 <p>The base represenation of your inputs; used by the various fastai <code>show</code> methods</p>
 
@@ -164,7 +164,7 @@ transformers: 4.9.2
 
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>We create a subclass of <a href="/blurr/data-core.html#HF_BeforeBatchTransform"><code>HF_BeforeBatchTransform</code></a> for summarization tasks to add <code>decoder_input_ids</code> and <code>labels</code> to our inputs during training, which will in turn allow the Hugging Face model to calculate the loss for us.  See <a href="https://huggingface.co/transformers/glossary.html#labels">here</a> and <a href="https://huggingface.co/transformers/glossary.html#decoder-input-ids">here</a> for more information on these additional inputs used in summarization, translation, and conversational training tasks. How they should look for particular architectures can be found by looking at those model's <code>forward</code> function's docs (See <a href="https://huggingface.co/transformers/model_doc/bart.html#transformers.BartModel.forward">here</a> for BART for example)</p>
+<p>We create a subclass of <a href="/blurr/data-core.html#BatchTokenizeTransform"><code>BatchTokenizeTransform</code></a> for summarization tasks to add <code>decoder_input_ids</code> and <code>labels</code> to our inputs during training, which will in turn allow the Hugging Face model to calculate the loss for us.  See <a href="https://huggingface.co/transformers/glossary.html#labels">here</a> and <a href="https://huggingface.co/transformers/glossary.html#decoder-input-ids">here</a> for more information on these additional inputs used in summarization, translation, and conversational training tasks. How they should look for particular architectures can be found by looking at those model's <code>forward</code> function's docs (See <a href="https://huggingface.co/transformers/model_doc/bart.html#transformers.BartModel.forward">here</a> for BART for example)</p>
 <p>Note also that <code>labels</code> is simply target_ids shifted to the right by one since the task to is to predict the next token based on the current (and all previous) <code>decoder_input_ids</code>.</p>
 <p>And lastly, we also update our targets to just be the <code>input_ids</code> of our target sequence so that fastai's <code>Learner.show_results</code> works (again, almost all the fastai bits require returning a single tensor to work).</p>
 
@@ -282,7 +282,7 @@ transformers: 4.9.2
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h2 id="HF_Seq2SeqBeforeBatchTransform" class="doc_header"><code>class</code> <code>HF_Seq2SeqBeforeBatchTransform</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/data/seq2seq/core.py#L49" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>HF_Seq2SeqBeforeBatchTransform</code>(<strong><code>hf_arch</code></strong>:<code>str</code>, <strong><code>hf_config</code></strong>:<code>PretrainedConfig</code>, <strong><code>hf_tokenizer</code></strong>:<code>PreTrainedTokenizerBase</code>, <strong><code>hf_model</code></strong>:<code>PreTrainedModel</code>, <strong><code>ignore_token_id</code></strong>:<code>int</code>=<em><code>-100</code></em>, <strong><code>max_length</code></strong>:<code>int</code>=<em><code>None</code></em>, <strong><code>max_target_length</code></strong>:<code>int</code>=<em><code>None</code></em>, <strong><code>padding</code></strong>:<code>Union</code>[<code>bool</code>, <code>str</code>]=<em><code>True</code></em>, <strong><code>truncation</code></strong>:<code>Union</code>[<code>bool</code>, <code>str</code>]=<em><code>True</code></em>, <strong><code>is_split_into_words</code></strong>:<code>bool</code>=<em><code>False</code></em>, <strong><code>tok_kwargs</code></strong>=<em><code>{}</code></em>, <strong><code>text_gen_kwargs</code></strong>=<em><code>{}</code></em>, <strong>**<code>kwargs</code></strong>) :: <a href="/blurr/data-core.html#HF_BeforeBatchTransform"><code>HF_BeforeBatchTransform</code></a></p>
+<h2 id="Seq2SeqBatchTokenizeTransform" class="doc_header"><code>class</code> <code>Seq2SeqBatchTokenizeTransform</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/data/seq2seq/core.py#L49" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>Seq2SeqBatchTokenizeTransform</code>(<strong><code>hf_arch</code></strong>:<code>str</code>, <strong><code>hf_config</code></strong>:<code>PretrainedConfig</code>, <strong><code>hf_tokenizer</code></strong>:<code>PreTrainedTokenizerBase</code>, <strong><code>hf_model</code></strong>:<code>PreTrainedModel</code>, <strong><code>ignore_token_id</code></strong>:<code>int</code>=<em><code>-100</code></em>, <strong><code>max_length</code></strong>:<code>int</code>=<em><code>None</code></em>, <strong><code>max_target_length</code></strong>:<code>int</code>=<em><code>None</code></em>, <strong><code>padding</code></strong>:<code>Union</code>[<code>bool</code>, <code>str</code>]=<em><code>True</code></em>, <strong><code>truncation</code></strong>:<code>Union</code>[<code>bool</code>, <code>str</code>]=<em><code>True</code></em>, <strong><code>is_split_into_words</code></strong>:<code>bool</code>=<em><code>False</code></em>, <strong><code>tok_kwargs</code></strong>=<em><code>{}</code></em>, <strong><code>text_gen_kwargs</code></strong>=<em><code>{}</code></em>, <strong>**<code>kwargs</code></strong>) :: <a href="/blurr/data-core.html#BatchTokenizeTransform"><code>BatchTokenizeTransform</code></a></p>
 </blockquote>
 <p>Handles everything you need to assemble a mini-batch of inputs and targets, as well as
 decode the dictionary produced as a byproduct of the tokenization process in the <code>encodes</code> method.</p>
@@ -373,7 +373,7 @@ if your inputs are pre-tokenized (not numericalized)</p></li>
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h2 id="HF_Seq2SeqAfterBatchTransform" class="doc_header"><code>class</code> <code>HF_Seq2SeqAfterBatchTransform</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/data/seq2seq/core.py#L128" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>HF_Seq2SeqAfterBatchTransform</code>(<strong><code>hf_tokenizer</code></strong>:<code>PreTrainedTokenizerBase</code>, <strong><code>input_return_type</code></strong>:<code>Type</code>=<em><code>HF_BaseInput</code></em>) :: <a href="/blurr/data-core.html#HF_AfterBatchTransform"><code>HF_AfterBatchTransform</code></a></p>
+<h2 id="Seq2SeqBatchDecodeTransform" class="doc_header"><code>class</code> <code>Seq2SeqBatchDecodeTransform</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/data/seq2seq/core.py#L128" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>Seq2SeqBatchDecodeTransform</code>(<strong><code>hf_tokenizer</code></strong>:<code>PreTrainedTokenizerBase</code>, <strong><code>input_return_type</code></strong>:<code>Type</code>=<em><code>TextInput</code></em>) :: <a href="/blurr/data-core.html#BatchDecodeTransform"><code>BatchDecodeTransform</code></a></p>
 </blockquote>
 <p>A class used to cast your inputs into something understandable in fastai <code>show</code> methods</p>
 <p><strong>Parameters:</strong></p>
@@ -405,33 +405,33 @@ if your inputs are pre-tokenized (not numericalized)</p></li>
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h2 id="HF_Seq2SeqBlock" class="doc_header"><code>class</code> <code>HF_Seq2SeqBlock</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/data/seq2seq/core.py#L134" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>HF_Seq2SeqBlock</code>(<strong><code>hf_arch</code></strong>:<code>str</code>=<em><code>None</code></em>, <strong><code>hf_config</code></strong>:<code>PretrainedConfig</code>=<em><code>None</code></em>, <strong><code>hf_tokenizer</code></strong>:<code>PreTrainedTokenizerBase</code>=<em><code>None</code></em>, <strong><code>hf_model</code></strong>:<code>PreTrainedModel</code>=<em><code>None</code></em>, <strong><code>before_batch_tfm</code></strong>:<a href="/blurr/data-core.html#HF_BeforeBatchTransform"><code>HF_BeforeBatchTransform</code></a>=<em><code>None</code></em>, <strong><code>after_batch_tfm</code></strong>:<a href="/blurr/data-core.html#HF_AfterBatchTransform"><code>HF_AfterBatchTransform</code></a>=<em><code>None</code></em>, <strong><code>max_length</code></strong>:<code>int</code>=<em><code>None</code></em>, <strong><code>max_target_length</code></strong>=<em><code>None</code></em>, <strong><code>padding</code></strong>:<code>Union</code>[<code>bool</code>, <code>str</code>]=<em><code>True</code></em>, <strong><code>truncation</code></strong>:<code>Union</code>[<code>bool</code>, <code>str</code>]=<em><code>True</code></em>, <strong><code>input_return_type</code></strong>=<em><code>HF_Seq2SeqInput</code></em>, <strong><code>dl_type</code></strong>=<em><code>SortedDL</code></em>, <strong><code>tok_kwargs</code></strong>=<em><code>{}</code></em>, <strong><code>text_gen_kwargs</code></strong>=<em><code>{}</code></em>, <strong><code>before_batch_kwargs</code></strong>=<em><code>{}</code></em>, <strong><code>after_batch_kwargs</code></strong>=<em><code>{}</code></em>, <strong>**<code>kwargs</code></strong>) :: <a href="/blurr/data-core.html#HF_TextBlock"><code>HF_TextBlock</code></a></p>
+<h2 id="Seq2SeqTextBlock" class="doc_header"><code>class</code> <code>Seq2SeqTextBlock</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/data/seq2seq/core.py#L134" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>Seq2SeqTextBlock</code>(<strong><code>hf_arch</code></strong>:<code>str</code>=<em><code>None</code></em>, <strong><code>hf_config</code></strong>:<code>PretrainedConfig</code>=<em><code>None</code></em>, <strong><code>hf_tokenizer</code></strong>:<code>PreTrainedTokenizerBase</code>=<em><code>None</code></em>, <strong><code>hf_model</code></strong>:<code>PreTrainedModel</code>=<em><code>None</code></em>, <strong><code>before_batch_tfm</code></strong>:<a href="/blurr/data-core.html#BatchTokenizeTransform"><code>BatchTokenizeTransform</code></a>=<em><code>None</code></em>, <strong><code>after_batch_tfm</code></strong>:<a href="/blurr/data-core.html#BatchDecodeTransform"><code>BatchDecodeTransform</code></a>=<em><code>None</code></em>, <strong><code>max_length</code></strong>:<code>int</code>=<em><code>None</code></em>, <strong><code>max_target_length</code></strong>=<em><code>None</code></em>, <strong><code>padding</code></strong>:<code>Union</code>[<code>bool</code>, <code>str</code>]=<em><code>True</code></em>, <strong><code>truncation</code></strong>:<code>Union</code>[<code>bool</code>, <code>str</code>]=<em><code>True</code></em>, <strong><code>input_return_type</code></strong>=<em><code>Seq2SeqTextInput</code></em>, <strong><code>dl_type</code></strong>=<em><code>SortedDL</code></em>, <strong><code>tok_kwargs</code></strong>=<em><code>{}</code></em>, <strong><code>text_gen_kwargs</code></strong>=<em><code>{}</code></em>, <strong><code>before_batch_kwargs</code></strong>=<em><code>{}</code></em>, <strong><code>after_batch_kwargs</code></strong>=<em><code>{}</code></em>, <strong>**<code>kwargs</code></strong>) :: <a href="/blurr/data-core.html#TextBlock"><code>TextBlock</code></a></p>
 </blockquote>
 <p>The core <code>TransformBlock</code> to prepare your data for training in Blurr with fastai's <code>DataBlock</code> API</p>
 <p><strong>Parameters:</strong></p>
 <ul>
 <li><strong><code>hf_arch</code></strong> : <em><code>&lt;class 'str'&gt;</code></em>, <em>optional</em>    <p>The abbreviation/name of your Hugging Face transformer architecture (not required if passing in an
-instance of `HF_BeforeBatchTransform` to `before_batch_tfm`)</p></li>
+instance of `BatchTokenizeTransform` to `before_batch_tfm`)</p></li>
 </ul>
 <ul>
 <li><strong><code>hf_config</code></strong> : <em><code>&lt;class 'transformers.configuration_utils.PretrainedConfig'&gt;</code></em>, <em>optional</em>    <p>A Hugging Face configuration object (not required if passing in an
-instance of `HF_BeforeBatchTransform` to `before_batch_tfm`)</p></li>
+instance of `BatchTokenizeTransform` to `before_batch_tfm`)</p></li>
 </ul>
 <ul>
 <li><strong><code>hf_tokenizer</code></strong> : <em><code>&lt;class 'transformers.tokenization_utils_base.PreTrainedTokenizerBase'&gt;</code></em>, <em>optional</em>  <p>A Hugging Face tokenizer (not required if passing in an
-instance of `HF_BeforeBatchTransform` to `before_batch_tfm`)</p></li>
+instance of `BatchTokenizeTransform` to `before_batch_tfm`)</p></li>
 </ul>
 <ul>
 <li><strong><code>hf_model</code></strong> : <em><code>&lt;class 'transformers.modeling_utils.PreTrainedModel'&gt;</code></em>, <em>optional</em>   <p>A Hugging Face model (not required if passing in an
-instance of `HF_BeforeBatchTransform` to `before_batch_tfm`)</p></li>
+instance of `BatchTokenizeTransform` to `before_batch_tfm`)</p></li>
 </ul>
 <ul>
-<li><strong><code>before_batch_tfm</code></strong> : <em><code>&lt;class 'blurr.data.core.HF_BeforeBatchTransform'&gt;</code></em>, <em>optional</em>   <p>The before batch transform you want to use to tokenize your raw data on the fly
-(defaults to an instance of `HF_BeforeBatchTransform` created using the Hugging Face objects defined above)</p></li>
+<li><strong><code>before_batch_tfm</code></strong> : <em><code>&lt;class 'blurr.data.core.BatchTokenizeTransform'&gt;</code></em>, <em>optional</em>   <p>The before batch transform you want to use to tokenize your raw data on the fly
+(defaults to an instance of `BatchTokenizeTransform` created using the Hugging Face objects defined above)</p></li>
 </ul>
 <ul>
-<li><strong><code>after_batch_tfm</code></strong> : <em><code>&lt;class 'blurr.data.core.HF_AfterBatchTransform'&gt;</code></em>, <em>optional</em> <p>The batch_tfms to apply to the creation of your DataLoaders,
-(defaults to HF_AfterBatchTransform created using the Hugging Face objects defined above)</p></li>
+<li><strong><code>after_batch_tfm</code></strong> : <em><code>&lt;class 'blurr.data.core.BatchDecodeTransform'&gt;</code></em>, <em>optional</em> <p>The batch_tfms to apply to the creation of your DataLoaders,
+(defaults to BatchDecodeTransform created using the Hugging Face objects defined above)</p></li>
 </ul>
 <ul>
 <li><strong><code>max_length</code></strong> : <em><code>&lt;class 'int'&gt;</code></em>, <em>optional</em> <p>To control the length of the padding/truncation for the input sequence. It can be an integer or None,
@@ -469,7 +469,7 @@ See [Everything you always wanted to know about padding and truncation](https://
 (default: default_text_gen_kwargs)</p></li>
 </ul>
 <ul>
-<li><strong><code>before_batch_kwargs</code></strong> : <em><code>&lt;class 'dict'&gt;</code></em>, <em>optional</em>   <p>Any keyword arguments you want applied to `HF_TextBlock`
+<li><strong><code>before_batch_kwargs</code></strong> : <em><code>&lt;class 'dict'&gt;</code></em>, <em>optional</em>   <p>Any keyword arguments you want applied to `TextBlock`
 Any keyword arguments you want applied to your before batch tfm</p></li>
 </ul>
 <ul>

@@ -2,8 +2,8 @@
 
 __all__ = ['BaseLabelingStrategy', 'OnlyFirstTokenLabelingStrategy', 'SameLabelLabelingStrategy', 'BILabelingStrategy',
            'get_token_labels_from_input_ids', 'get_word_labels_from_token_labels', 'TokenClassificationPreprocessor',
-           'HF_TokenTensorCategory', 'HF_TokenCategorize', 'HF_TokenCategoryBlock', 'HF_TokenClassInput',
-           'HF_TokenClassBeforeBatchTransform']
+           'TokenTensorCategory', 'TokenCategorize', 'TokenCategoryBlock', 'TokenClassTextInput',
+           'TokenClassBatchTokenizeTransform']
 
 # Cell
 import ast, os
@@ -19,7 +19,7 @@ from fastai.torch_imports import *
 from transformers import AutoModelForTokenClassification, logging, PretrainedConfig, PreTrainedTokenizerBase, PreTrainedModel
 
 from ..utils import BLURR
-from .core import Preprocessor, HF_BaseInput, HF_BeforeBatchTransform, first_blurr_tfm
+from .core import Preprocessor, TextInput, BatchTokenizeTransform, first_blurr_tfm
 
 logging.set_verbosity_error()
 
@@ -369,12 +369,12 @@ class TokenClassificationPreprocessor(Preprocessor):
 
 
 # Cell
-class HF_TokenTensorCategory(TensorBase):
+class TokenTensorCategory(TensorBase):
     pass
 
 
 # Cell
-class HF_TokenCategorize(Transform):
+class TokenCategorize(Transform):
     """Reversible transform of a list of category string to `vocab` id"""
 
     def __init__(
@@ -400,14 +400,14 @@ class HF_TokenCategorize(Transform):
         # if `val` is the label name (e.g., B-PER, I-PER, etc...), lookup the corresponding index in the vocab using
         # `self.vocab.o2i`
         ids = [val if (isinstance(val, int)) else self.vocab.o2i[val] for val in labels]
-        return HF_TokenTensorCategory(ids)
+        return TokenTensorCategory(ids)
 
     def decodes(self, encoded_labels):
         return Category([(self.vocab[lbl_id]) for lbl_id in encoded_labels if lbl_id != self.ignore_token_id])
 
 
 # Cell
-def HF_TokenCategoryBlock(
+def TokenCategoryBlock(
     # The unique list of entities (e.g., B-LOC) (default: CategoryMap(vocab))
     vocab: Optional[List[str]] = None,
     # The token used to identifiy ignored tokens (default: xIGNx)
@@ -416,16 +416,16 @@ def HF_TokenCategoryBlock(
     ignore_token_id: int = CrossEntropyLossFlat().ignore_index,
 ):
     """`TransformBlock` for per-token categorical targets"""
-    return TransformBlock(type_tfms=HF_TokenCategorize(vocab=vocab, ignore_token=ignore_token, ignore_token_id=ignore_token_id))
+    return TransformBlock(type_tfms=TokenCategorize(vocab=vocab, ignore_token=ignore_token, ignore_token_id=ignore_token_id))
 
 
 # Cell
-class HF_TokenClassInput(HF_BaseInput):
+class TokenClassTextInput(TextInput):
     pass
 
 
 # Cell
-class HF_TokenClassBeforeBatchTransform(HF_BeforeBatchTransform):
+class TokenClassBatchTokenizeTransform(BatchTokenizeTransform):
     def __init__(
         self,
         # The abbreviation/name of your Hugging Face transformer architecture (e.b., bert, bart, etc..)
@@ -446,7 +446,7 @@ class HF_TokenClassBeforeBatchTransform(HF_BeforeBatchTransform):
         # in which case it will default to the maximum length the model can accept. If the model has no
         # specific maximum input length, truncation/padding to max_length is deactivated.
         # See [Everything you always wanted to know about padding and truncation](https://huggingface.co/transformers/preprocessing.html#everything-you-always-wanted-to-know-about-padding-and-truncation)
-        max_length: int = None,
+        max_length: Optional[int] = None,
         # To control the `padding` applied to your `hf_tokenizer` during tokenization. If None, will default to
         # `False` or `'do_not_pad'.
         # See [Everything you always wanted to know about padding and truncation](https://huggingface.co/transformers/preprocessing.html#everything-you-always-wanted-to-know-about-padding-and-truncation)
@@ -464,7 +464,7 @@ class HF_TokenClassBeforeBatchTransform(HF_BeforeBatchTransform):
         slow_word_ids_func: Optional[Callable] = None,
         # Any other keyword arguments you want included when using your `hf_tokenizer` to tokenize your inputs
         tok_kwargs: dict = {},
-        # Keyword arguments to apply to `HF_TokenClassBeforeBatchTransform`
+        # Keyword arguments to apply to `TokenClassBatchTokenizeTransform`
         **kwargs
     ):
 
@@ -493,7 +493,7 @@ class HF_TokenClassBeforeBatchTransform(HF_BeforeBatchTransform):
         if len(encoded_samples[0]) == 1:
             return encoded_samples
 
-        # get the type of our targets (by default will be HF_TokenTensorCategory)
+        # get the type of our targets (by default will be TokenTensorCategory)
         target_cls = type(encoded_samples[0][1])
 
         updated_samples = []
@@ -512,6 +512,7 @@ class HF_TokenClassBeforeBatchTransform(HF_BeforeBatchTransform):
                 word_ids = inputs.word_ids(idx) if self.hf_tokenizer.is_fast else self.slow_word_ids_func(self.hf_tokenizer, idx, inputs)
                 targ_ids = target_cls(self.labeling_strategy.align_labels_with_tokens(word_ids, s[1].tolist(), None))
 
+            s[0]["id"] = tensor([1] *len(s[0]["input_ids"]))
             updated_samples.append((s[0], targ_ids))
 
         return updated_samples
@@ -520,8 +521,8 @@ class HF_TokenClassBeforeBatchTransform(HF_BeforeBatchTransform):
 # Cell
 @typedispatch
 def show_batch(
-    # This typedispatched `show_batch` will be called for `HF_TokenClassInput` typed inputs
-    x: HF_TokenClassInput,
+    # This typedispatched `show_batch` will be called for `TokenClassTextInput` typed inputs
+    x: TokenClassTextInput,
     y,
     # Your raw inputs/targets
     samples,
@@ -538,7 +539,7 @@ def show_batch(
     **kwargs,
 ):
     # grab our tokenizer
-    tfm = first_blurr_tfm(dataloaders, before_batch_tfm_class=HF_TokenClassBeforeBatchTransform)
+    tfm = first_blurr_tfm(dataloaders, tfms=[TokenClassBatchTokenizeTransform])
     hf_arch, hf_tokenizer = tfm.hf_arch, tfm.hf_tokenizer
     vocab = dataloaders.vocab
 

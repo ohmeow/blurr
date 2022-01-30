@@ -345,7 +345,7 @@ transformers: 4.9.2
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h2 id="HF_TokenClassInput" class="doc_header"><code>class</code> <code>HF_TokenClassInput</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/data/token_classification.py#L73" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>HF_TokenClassInput</code>(<strong><code>x</code></strong>, <strong>**<code>kwargs</code></strong>) :: <a href="/blurr/data-core.html#HF_BaseInput"><code>HF_BaseInput</code></a></p>
+<h2 id="HF_TokenClassInput" class="doc_header"><code>class</code> <code>HF_TokenClassInput</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/data/token_classification.py#L73" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>HF_TokenClassInput</code>(<strong><code>x</code></strong>, <strong>**<code>kwargs</code></strong>) :: <a href="/blurr/data-core.html#TextInput"><code>TextInput</code></a></p>
 </blockquote>
 <p>The base represenation of your inputs; used by the various fastai <code>show</code> methods</p>
 
@@ -377,7 +377,7 @@ transformers: 4.9.2
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h2 id="HF_TokenClassBeforeBatchTransform" class="doc_header"><code>class</code> <code>HF_TokenClassBeforeBatchTransform</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/data/token_classification.py#L76" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>HF_TokenClassBeforeBatchTransform</code>(<strong><code>hf_arch</code></strong>:<code>str</code>, <strong><code>hf_config</code></strong>:<code>PretrainedConfig</code>, <strong><code>hf_tokenizer</code></strong>:<code>PreTrainedTokenizerBase</code>, <strong><code>hf_model</code></strong>:<code>PreTrainedModel</code>, <strong><code>ignore_token_id</code></strong>=<em><code>-100</code></em>, <strong><code>max_length</code></strong>:<code>int</code>=<em><code>None</code></em>, <strong><code>padding</code></strong>:<code>Union</code>[<code>bool</code>, <code>str</code>]=<em><code>True</code></em>, <strong><code>truncation</code></strong>:<code>Union</code>[<code>bool</code>, <code>str</code>]=<em><code>True</code></em>, <strong><code>is_split_into_words</code></strong>:<code>bool</code>=<em><code>False</code></em>, <strong><code>tok_kwargs</code></strong>=<em><code>{}</code></em>, <strong>**<code>kwargs</code></strong>) :: <a href="/blurr/data-core.html#HF_BeforeBatchTransform"><code>HF_BeforeBatchTransform</code></a></p>
+<h2 id="HF_TokenClassBeforeBatchTransform" class="doc_header"><code>class</code> <code>HF_TokenClassBeforeBatchTransform</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/data/token_classification.py#L76" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>HF_TokenClassBeforeBatchTransform</code>(<strong><code>hf_arch</code></strong>:<code>str</code>, <strong><code>hf_config</code></strong>:<code>PretrainedConfig</code>, <strong><code>hf_tokenizer</code></strong>:<code>PreTrainedTokenizerBase</code>, <strong><code>hf_model</code></strong>:<code>PreTrainedModel</code>, <strong><code>ignore_token_id</code></strong>=<em><code>-100</code></em>, <strong><code>max_length</code></strong>:<code>int</code>=<em><code>None</code></em>, <strong><code>padding</code></strong>:<code>Union</code>[<code>bool</code>, <code>str</code>]=<em><code>True</code></em>, <strong><code>truncation</code></strong>:<code>Union</code>[<code>bool</code>, <code>str</code>]=<em><code>True</code></em>, <strong><code>is_split_into_words</code></strong>:<code>bool</code>=<em><code>False</code></em>, <strong><code>tok_kwargs</code></strong>=<em><code>{}</code></em>, <strong>**<code>kwargs</code></strong>) :: <a href="/blurr/data-core.html#BatchTokenizeTransform"><code>BatchTokenizeTransform</code></a></p>
 </blockquote>
 <p>Handles everything you need to assemble a mini-batch of inputs and targets, as well as
 decode the dictionary produced as a byproduct of the tokenization process in the <code>encodes</code> method.</p>
@@ -460,7 +460,7 @@ if your inputs are pre-tokenized (not numericalized)</p></li>
                                                      <span class="n">tok_kwargs</span><span class="o">=</span><span class="p">{</span> <span class="s1">&#39;return_special_tokens_mask&#39;</span><span class="p">:</span> <span class="kc">True</span> <span class="p">})</span>
 
 <span class="n">blocks</span> <span class="o">=</span> <span class="p">(</span>
-    <span class="n">HF_TextBlock</span><span class="p">(</span><span class="n">before_batch_tfm</span><span class="o">=</span><span class="n">before_batch_tfm</span><span class="p">,</span> <span class="n">input_return_type</span><span class="o">=</span><span class="n">HF_TokenClassInput</span><span class="p">),</span> 
+    <span class="n">TextBlock</span><span class="p">(</span><span class="n">before_batch_tfm</span><span class="o">=</span><span class="n">before_batch_tfm</span><span class="p">,</span> <span class="n">input_return_type</span><span class="o">=</span><span class="n">HF_TokenClassInput</span><span class="p">),</span> 
     <span class="n">HF_TokenCategoryBlock</span><span class="p">(</span><span class="n">vocab</span><span class="o">=</span><span class="n">labels</span><span class="p">)</span>
 <span class="p">)</span>
 
