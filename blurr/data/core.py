@@ -232,10 +232,17 @@ class BatchTokenizeTransform(Transform):
         samples = L(samples)
 
         # grab inputs
-        if is_listy(samples[0][0]) and not self.is_split_into_words and not self.is_pretokenized:
-            inps = list(zip(samples.itemgot(0, 0), samples.itemgot(0, 1)))
+        is_dict = isinstance(samples[0][0], dict)
+        d_attr = "input_ids" if self.is_pretokenized else "text"
+        test_inp = samples[0][0][d_attr] if is_dict else samples[0][0]
+
+        if is_listy(test_inp) and not self.is_split_into_words and not self.is_pretokenized:
+            if is_dict:
+                inps = [(item[d_attr][0], item[d_attr][1]) for item in samples.itemgot(0).items]
+            else:
+                inps = list(zip(samples.itemgot(0, 0), samples.itemgot(0, 1)))
         else:
-            inps = samples.itemgot(0).items
+            inps = [item[d_attr] for item in samples.itemgot(0).items] if is_dict else samples.itemgot(0).items
 
         # if passing "input_ids" as your inputs, build the other sequence attributes using `prepare_for_model` since
         # the inputs have already been tokenized/numericalized ... else we tokenize the raw text using `__call__`
@@ -251,9 +258,20 @@ class BatchTokenizeTransform(Transform):
             **self.tok_kwargs
         )
 
-        # update the samples with tokenized inputs (e.g. input_ids, attention_mask, etc...)
         d_keys = inputs.keys()
-        updated_samples = [(*[{k: inputs[k][idx] for k in d_keys}], *sample[1:]) for idx, sample in enumerate(samples)]
+
+        # update the samples with tokenized inputs (e.g. input_ids, attention_mask, etc...)
+        updated_samples = []
+        for idx, sample in enumerate(samples):
+            inps = {k: inputs[k][idx] for k in d_keys}
+            if is_dict:
+                inps = {**inps, **{k: v for k,v in sample[0].items() if k not in ['text', 'input_ids']}}
+
+            trgs = sample[1:]
+            updated_samples.append((*[inps], *trgs))
+
+        # (< 2.0.0)
+        # updated_samples = [(*[{k: inputs[k][idx] for k in d_keys}], *sample[1:]) for idx, sample in enumerate(samples)]
 
         if return_batch_encoding:
             return updated_samples, inputs
@@ -287,10 +305,13 @@ def blurr_sort_func(
     tok_kwargs: dict = {},
 ):
     """This method is used by the `SortedDL` to ensure your dataset is sorted *after* tokenization"""
-    if is_split_into_words or is_pretokenized:
-        return len(example[0])
+    d_attr = "input_ids" if is_pretokenized else "text"
+    txt = example[0][d_attr] if isinstance(example[0], dict) else example[0]
 
-    return len(hf_tokenizer.tokenize(example[0], **tok_kwargs))
+    if is_split_into_words or is_pretokenized:
+        return len(txt)
+
+    return len(hf_tokenizer.tokenize(txt, **tok_kwargs))
 
 
 # Cell

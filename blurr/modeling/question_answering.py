@@ -26,7 +26,7 @@ from transformers import (
 from ..utils import BLURR
 from ..data.core import TextBlock, BlurrDataLoader, first_blurr_tfm
 from .core import BaseModelCallback, PreCalculatedLoss, Blearner
-from ..data.question_answering import QuestionAnswerTextInput, QABatchTokenizeTransform
+from ..data.question_answering import QuestionAnswerTextInput, QABatchTokenizeTransform, get_dummy_token_idx
 
 logging.set_verbosity_error()
 
@@ -35,6 +35,7 @@ class HF_QstAndAnsModelCallback(BaseModelCallback):
     """The prediction is a combination start/end logits"""
     def after_pred(self):
         super().after_pred()
+        pdb.set_trace()
         self.learn.pred = (self.pred.start_logits, self.pred.end_logits)
 
 # Cell
@@ -88,7 +89,7 @@ class MultiTargetLoss(Module):
 @typedispatch
 def show_results(
     # This typedispatched `show_results` will be called for `QuestionAnswerTextInput` typed inputs
-    x:QuestionAnswerTextInput,
+    x: QuestionAnswerTextInput,
     # The targets
     y,
     # Your raw inputs/targets
@@ -104,27 +105,28 @@ def show_results(
     ctxs=None,
     # The maximum number of items to show
     max_n=6,
-     # Any truncation your want applied to your decoded inputs
+    # Any truncation your want applied to your decoded inputs
     trunc_at=None,
     # Any other keyword arguments you want applied to `show_results`
     **kwargs
 ):
-    tfm = first_blurr_tfm(learner.dls)
+    tfm = first_blurr_tfm(learner.dls, tfms=[QABatchTokenizeTransform])
     hf_tokenizer = tfm.hf_tokenizer
 
     res = L()
-    for sample, input_ids, start, end, pred in zip(samples, x, *y, outs):
+    for sample, input_ids, has_ans, start, end, pred in zip(samples, x, *y, outs):
         txt = hf_tokenizer.decode(sample[0], skip_special_tokens=True)[:trunc_at]
-        ans_toks = hf_tokenizer.convert_ids_to_tokens(input_ids, skip_special_tokens=False)[start:end]
-        pred_ans_toks = hf_tokenizer.convert_ids_to_tokens(input_ids, skip_special_tokens=False)[int(pred[0]):int(pred[1])]
+        found = has_ans.item() == 1
+        ans_text = hf_tokenizer.decode(input_ids[start:end], skip_special_tokens=False)
 
-        res.append((txt,
-                    (start.item(),end.item()), hf_tokenizer.convert_tokens_to_string(ans_toks),
-                    (int(pred[0]),int(pred[1])), hf_tokenizer.convert_tokens_to_string(pred_ans_toks)))
+        pred_ans_toks = hf_tokenizer.convert_ids_to_tokens(input_ids, skip_special_tokens=False)[int(pred[0]) : int(pred[1])]
+        pred_ans_txt = hf_tokenizer.convert_tokens_to_string(pred_ans_toks)
 
-    df = pd.DataFrame(res, columns=['text', 'start/end', 'answer', 'pred start/end', 'pred answer'])
-    display_df(df[:max_n])
+        res.append((txt, found, (start.item(), end.item()), ans_text), (int(pred[0]), int(pred[1])), pred_ans_txt)
+
+    display_df(pd.DataFrame(res, columns=["text", "found", "start/end", "answer", "pred start/end", "pred answer"]))
     return ctxs
+
 
 # Cell
 @delegates(Blearner.__init__)
