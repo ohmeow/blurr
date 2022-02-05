@@ -41,14 +41,16 @@ class Preprocessor:
         hf_tokenizer: PreTrainedTokenizerBase,
         # The number of examples to process at a time
         batch_size: int = 1000,
-        # The attribute holding the text of sequences
-        text_attrs: Union[str, List[str]] = "text",
+        # The attribute holding the text
+        text_attr: str = "text",
+        # The attribute holding the text_pair
+        text_pair_attr: Optional[str] = None,
         # Tokenization kwargs that will be applied with calling the tokenizer
         tok_kwargs: dict = {},
     ):
         self.hf_tokenizer = hf_tokenizer
         self.batch_size = batch_size
-        self.text_attrs = text_attrs
+        self.text_attr, self.text_pair_attr = text_attr, text_pair_attr
         self.tok_kwargs = tok_kwargs
 
     def process_df(self, training_df: pd.DataFrame, validation_df: Optional[pd.DataFrame] = None):
@@ -83,10 +85,19 @@ class Preprocessor:
 
     def _tokenize_function(self, example):
         truncation = self.tok_kwargs.pop("truncation", True)
-        if is_listy(self.text_attrs) and len(self.text_attrs) > 1:
-            return self.hf_tokenizer(example[self.text_attrs[0]], example[self.text_attrs[1]], truncation=truncation, **self.tok_kwargs)
+
+        if self.text_pair_attr:
+            if isinstance(example, pd.DataFrame):
+                texts = example[self.text_attr].values.tolist()
+                text_pairs = example[self.text_pair_attr].values.tolist()
+            else:
+                texts = example[self.text_attr]
+                text_pairs = example[self.text_pair_attr]
+
+            return self.hf_tokenizer(texts, text_pairs, truncation=truncation, **self.tok_kwargs)
         else:
-            return self.hf_tokenizer(example[self.text_attrs], truncation=True, **self.tok_kwargs)
+            texts = example[self.text_attr].values.tolist() if isinstance(example, pd.DataFrame) else example[self.text_attr]
+            return self.hf_tokenizer(texts, truncation=True, **self.tok_kwargs)
 
 
 # Cell
@@ -102,8 +113,10 @@ class ClassificationPreprocessor(Preprocessor):
         is_multilabel: bool = False,
         # The unique identifier in the dataset
         id_attr: Optional[str] = None,
-        # The attribute holding the text of sequences
-        text_attrs: Union[str, List[str]] = "text",
+        # The attribute holding the text
+        text_attr: str = "text",
+        # The attribute holding the text_pair
+        text_pair_attr: Optional[str] = None,
         # The attribute holding the label(s) of the example
         label_attrs: Union[str, List[str]] = "label",
         # The attribute that should be created if your are processing individual training and validation
@@ -115,7 +128,8 @@ class ClassificationPreprocessor(Preprocessor):
         # Tokenization kwargs that will be applied with calling the tokenizer
         tok_kwargs: dict = {},
     ):
-        super().__init__(hf_tokenizer, batch_size, text_attrs, tok_kwargs)
+        tok_kwargs = {**tok_kwargs, "return_offsets_mapping": True}
+        super().__init__(hf_tokenizer, batch_size, text_attr, text_pair_attr, tok_kwargs)
 
         self.is_multilabel = is_multilabel
         self.id_attr = id_attr
@@ -142,33 +156,29 @@ class ClassificationPreprocessor(Preprocessor):
         # tokenize in batches
         final_df = pd.DataFrame()
         for g, batch_df in df.groupby(np.arange(len(df)) // self.batch_size):
-            inputs_df = batch_df.apply(lambda r: pd.Series(self._tokenize_function(r)), axis=1)
-            final_df = final_df.append(pd.concat([batch_df, inputs_df], axis=1))
+            batch_df.reset_index(drop=True, inplace=True)
+            inputs = self._tokenize_function(batch_df)
+
+            for txt_seq_idx, txt_attr in enumerate([self.text_attr, self.text_pair_attr]):
+                if txt_attr is None:
+                    break
+
+                char_idxs= []
+                for idx, offset_mapping in enumerate(inputs["offset_mapping"]):
+                    text_offsets = [offset_mapping[i] for i, seq_id in enumerate(inputs.sequence_ids(idx)) if seq_id == txt_seq_idx]
+                    char_idxs.append([min(text_offsets)[0], max(text_offsets)[1]])
+
+                batch_df = pd.concat([batch_df, pd.DataFrame(char_idxs, columns=[f'{txt_attr}_start_char_idx', f'{txt_attr}_end_char_idx'])], axis=1)
+                batch_df.insert(0, f"proc_{txt_attr}", batch_df.apply(lambda r: r[txt_attr][r[f"{txt_attr}_start_char_idx"]:r[f"{txt_attr}_end_char_idx"]+1], axis=1))
+
+            final_df = final_df.append(batch_df)
 
         # return the pre-processed DataFrame
         return final_df
 
     def process_hf_dataset(self, training_ds: Dataset, validation_ds: Optional[Dataset] = None):
         ds = super().process_hf_dataset(training_ds, validation_ds)
-
-        # convert even single "labels" to a list to make things easier
-        label_attrs = listify(self.label_attrs)
-
-        # if `is_multilabel`, convert all targets to an int, 0 or 1, rounding floats if necessary
-        if self.is_multilabel:
-            for label_attr in label_attrs:
-                ds = ds.map(lambda example: int(bool(max(0, round(example[label_attr])))))
-
-        # if a `label_mapping` is included, add a "[label_col]_name" field with the label Ids converted to their label names
-        if self.label_mapping:
-            for label_attr in label_attrs:
-                ds = ds.map(lambda example: {f"{label_attr}_name": self.label_mapping[example[label_attr]]})
-
-        # tokenize in batches
-        ds = ds.map(self._tokenize_function, batched=True, batch_size=self.batch_size)
-
-        # return the pre-processed DataFrame
-        return ds
+        return Dataset.from_pandas(self.process_df(pd.DataFrame(ds)))
 
 
 # Cell
@@ -195,8 +205,6 @@ class BatchTokenizeTransform(Transform):
         hf_tokenizer: PreTrainedTokenizerBase,
         # A Hugging Face model
         hf_model: PreTrainedModel,
-        # If you are passing in the "input_ids" as your inputs, set `is_pretokenized` = True
-        is_pretokenized: bool = False,
         # The token ID that should be ignored when calculating the loss
         ignore_token_id: int = CrossEntropyLossFlat().ignore_index,
         # To control the length of the padding/truncation. It can be an integer or None,
@@ -233,22 +241,17 @@ class BatchTokenizeTransform(Transform):
 
         # grab inputs
         is_dict = isinstance(samples[0][0], dict)
-        d_attr = "input_ids" if self.is_pretokenized else "text"
-        test_inp = samples[0][0][d_attr] if is_dict else samples[0][0]
+        test_inp = samples[0][0]["text"] if is_dict else samples[0][0]
 
-        if is_listy(test_inp) and not self.is_split_into_words and not self.is_pretokenized:
+        if is_listy(test_inp) and not self.is_split_into_words:
             if is_dict:
-                inps = [(item[d_attr][0], item[d_attr][1]) for item in samples.itemgot(0).items]
+                inps = [(item["text"][0], item["text"][1]) for item in samples.itemgot(0).items]
             else:
                 inps = list(zip(samples.itemgot(0, 0), samples.itemgot(0, 1)))
         else:
-            inps = [item[d_attr] for item in samples.itemgot(0).items] if is_dict else samples.itemgot(0).items
+            inps = [item["text"] for item in samples.itemgot(0).items] if is_dict else samples.itemgot(0).items
 
-        # if passing "input_ids" as your inputs, build the other sequence attributes using `prepare_for_model` since
-        # the inputs have already been tokenized/numericalized ... else we tokenize the raw text using `__call__`
-        tokenization_func = self.hf_tokenizer.prepare_for_model if self.is_pretokenized else self.hf_tokenizer
-
-        inputs = tokenization_func(
+        inputs = self.hf_tokenizer(
             inps,
             max_length=self.max_length,
             padding=self.padding,
@@ -260,18 +263,17 @@ class BatchTokenizeTransform(Transform):
 
         d_keys = inputs.keys()
 
-        # update the samples with tokenized inputs (e.g. input_ids, attention_mask, etc...)
+        # update the samples with tokenized inputs (e.g. input_ids, attention_mask, etc...), as well as extra information
+        # if the inputs is a dictionary.
+        # (< 2.0.0): updated_samples = [(*[{k: inputs[k][idx] for k in d_keys}], *sample[1:]) for idx, sample in enumerate(samples)]
         updated_samples = []
         for idx, sample in enumerate(samples):
             inps = {k: inputs[k][idx] for k in d_keys}
             if is_dict:
-                inps = {**inps, **{k: v for k,v in sample[0].items() if k not in ['text', 'input_ids']}}
+                inps = {**inps, **{k: v for k,v in sample[0].items() if k not in ['text']}}
 
             trgs = sample[1:]
             updated_samples.append((*[inps], *trgs))
-
-        # (< 2.0.0)
-        # updated_samples = [(*[{k: inputs[k][idx] for k in d_keys}], *sample[1:]) for idx, sample in enumerate(samples)]
 
         if return_batch_encoding:
             return updated_samples, inputs
@@ -296,8 +298,6 @@ def blurr_sort_func(
     example,
     # A Hugging Face tokenizer
     hf_tokenizer: PreTrainedTokenizerBase,
-    # If you are passing in the "input_ids" as your inputs, set `is_pretokenized` = True
-    is_pretokenized: bool = False,
     # The `is_split_into_words` argument applied to your `hf_tokenizer` during tokenization. Set this to `True`
     # if your inputs are pre-tokenized (not numericalized)
     is_split_into_words: bool = False,
@@ -305,13 +305,8 @@ def blurr_sort_func(
     tok_kwargs: dict = {},
 ):
     """This method is used by the `SortedDL` to ensure your dataset is sorted *after* tokenization"""
-    d_attr = "input_ids" if is_pretokenized else "text"
-    txt = example[0][d_attr] if isinstance(example[0], dict) else example[0]
-
-    if is_split_into_words or is_pretokenized:
-        return len(txt)
-
-    return len(hf_tokenizer.tokenize(txt, **tok_kwargs))
+    txt = example[0]["text"] if isinstance(example[0], dict) else example[0]
+    return len(txt) if is_split_into_words else len(hf_tokenizer.tokenize(txt, **tok_kwargs))
 
 
 # Cell
@@ -332,8 +327,6 @@ class TextBlock(TransformBlock):
         # A Hugging Face model (not required if passing in an
         # instance of `BatchTokenizeTransform` to `before_batch_tfm`)
         hf_model: Optional[PreTrainedModel] = None,
-        # If you are passing in the "input_ids" as your inputs, set `is_pretokenized` = True
-        is_pretokenized: bool = False,
         # The token ID that should be ignored when calculating the loss
         ignore_token_id=CrossEntropyLossFlat().ignore_index,
         # The before_batch_tfm you want to use to tokenize your raw data on the fly
@@ -382,7 +375,6 @@ class TextBlock(TransformBlock):
                 hf_config,
                 hf_tokenizer,
                 hf_model,
-                is_pretokenized=is_pretokenized,
                 ignore_token_id=ignore_token_id,
                 max_length=max_length,
                 padding=padding,
@@ -399,7 +391,6 @@ class TextBlock(TransformBlock):
             dl_sort_func = partial(
                 blurr_sort_func,
                 hf_tokenizer=batch_tokenize_tfm.hf_tokenizer,
-                is_pretokenized=batch_tokenize_tfm.is_pretokenized,
                 is_split_into_words=batch_tokenize_tfm.is_split_into_words,
                 tok_kwargs=batch_tokenize_tfm.tok_kwargs.copy(),
             )
@@ -456,8 +447,6 @@ class BlurrBatchDecodeTransform(BatchDecodeTransform):
         # A Hugging Face model (not required if passing in an
         # instance of `BatchTokenizeTransform` to `before_batch_tfm`)
         hf_model: Optional[PreTrainedModel] = None,
-        # If you are passing in the "input_ids" as your inputs, set `is_pretokenized` = True
-        is_pretokenized: bool = False,
         # The token ID to ignore when calculating loss/metrics
         ignore_token_id: int = CrossEntropyLossFlat().ignore_index,
         # The `is_split_into_words` argument applied to your `hf_tokenizer` during tokenization. Set this to `True`

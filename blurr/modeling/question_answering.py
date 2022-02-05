@@ -26,7 +26,7 @@ from transformers import (
 from ..utils import BLURR
 from ..data.core import TextBlock, BlurrDataLoader, first_blurr_tfm
 from .core import BaseModelCallback, PreCalculatedLoss, Blearner
-from ..data.question_answering import QuestionAnswerTextInput, QABatchTokenizeTransform, get_dummy_token_idx
+from ..data.question_answering import QuestionAnsweringPreprocessor, QuestionAnswerTextInput, QABatchTokenizeTransform
 
 logging.set_verbosity_error()
 
@@ -35,7 +35,6 @@ class HF_QstAndAnsModelCallback(BaseModelCallback):
     """The prediction is a combination start/end logits"""
     def after_pred(self):
         super().after_pred()
-        pdb.set_trace()
         self.learn.pred = (self.pred.start_logits, self.pred.end_logits)
 
 # Cell

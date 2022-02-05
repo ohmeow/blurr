@@ -194,10 +194,6 @@ def blurr_predict(self: Learner, items, rm_type_tfms=None):
     if not is_df and (is_split_str or not is_listy(items)):
         items = [items]
 
-    # if pretokenized, we need to grab the "input_ids"
-    if tfm.is_pretokenized:
-        items = tfm.hf_tokenizer(items)["input_ids"]
-
     dl = self.dls.test_dl(items, rm_type_tfms=rm_type_tfms, num_workers=0)
 
     with self.no_bar():

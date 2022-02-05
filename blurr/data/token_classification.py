@@ -204,7 +204,7 @@ class TokenClassificationPreprocessor(Preprocessor):
         # tokenizer requires this kwargs when tokenizing text
         tok_kwargs = {**tok_kwargs, **{"is_split_into_words": True}}
 
-        super().__init__(hf_tokenizer, batch_size, text_attrs=word_list_attr, tok_kwargs=tok_kwargs)
+        super().__init__(hf_tokenizer, batch_size, text_attr=word_list_attr, tok_kwargs=tok_kwargs)
 
         self.id_attr = id_attr
         self.label_list_attr = label_list_attr
@@ -235,29 +235,27 @@ class TokenClassificationPreprocessor(Preprocessor):
             for g, batch_df in df.groupby(np.arange(len(df)) // self.batch_size):
                 batch_df.reset_index(drop=True, inplace=True)
                 # token classification works with lists of words, so if not listy we resort to splitting by spaces
-                batch_df[self.text_attrs] = batch_df[self.text_attrs].apply(lambda v: v if is_listy(v) else v.split())
+                batch_df[self.text_attr] = batch_df[self.text_attr].apply(lambda v: v if is_listy(v) else v.split())
 
                 # get the inputs inputs (e.g., input_ids, attention_mask, etc...)
                 inputs = self._tokenize_function(batch_df.to_dict(orient="list"))
 
-                # align labels with tokens
-                aligned_labels = []
-                for idx, word_labels in enumerate(batch_df[self.label_list_attr].values):
-                    word_ids = inputs.word_ids(idx) if self.hf_tokenizer.is_fast else self.slow_word_ids_func(self.hf_tokenizer, idx, inputs)
-                    aligned_labels.append(
-                        self.labeling_strategy.align_labels_with_tokens(word_ids, word_labels, self.label_names)
-                    )
+                proc_toks, proc_labels = [], []
+                for idx in range(len(inputs["input_ids"])):
+                    word_ids = set([word_id for word_id in inputs.word_ids(idx) if word_id is not None])
+                    proc_toks.append([batch_df.iloc[idx][self.text_attr][word_id] for word_id in word_ids])
+                    proc_labels.append([batch_df.iloc[idx][self.label_list_attr][word_id] for word_id in word_ids])
 
-                batch_df["aligned_labels"] = aligned_labels
-                inputs_df = pd.DataFrame(dict(inputs))
-                final_df = pd.concat([final_df, pd.concat([batch_df, inputs_df], axis=1)])
+                batch_df.insert(0, f"proc_{self.text_attr}", pd.Series(proc_toks))
+                batch_df.insert(1, f"proc_{self.label_list_attr}", pd.Series(proc_labels))
+                final_df = pd.concat([final_df, batch_df])
         else:
             # if chunking is desired, create "chunked" inputs/labels from the existing
             # input/label ensuring that words are *not* broken up between chunks
             proc_data = []
             for row_idx, row in df.iterrows():
                 # fetch word list and words' label list (there should be 1 label per word)
-                words, word_labels = row[self.text_attrs], row[self.label_list_attr]
+                words, word_labels = row[self.text_attr], row[self.label_list_attr]
 
                 # token classification works with lists of words, so if not listy we resort to splitting by spaces
                 if not is_listy(words):
@@ -345,7 +343,7 @@ class TokenClassificationPreprocessor(Preprocessor):
                     proc_data.append(row_data)
 
             # put processed data into a new DataFrame and return
-            cols = list(inputs.keys()) + ["aligned_labels", self.text_attrs, self.label_list_attr]
+            cols = list(inputs.keys()) + ["aligned_labels", self.text_attr, self.label_list_attr]
             if self.id_attr and self.id_attr in list(df.columns):
                 cols.append(self.id_attr)
             if self.is_valid_attr and self.is_valid_attr in list(df.columns):
@@ -353,19 +351,11 @@ class TokenClassificationPreprocessor(Preprocessor):
             final_df = pd.DataFrame(proc_data, columns=cols)
 
         # return the pre-processed DataFrame
-        cols = list(inputs.keys()) + ["aligned_labels", self.text_attrs, self.label_list_attr]
-        if self.id_attr and self.id_attr in list(final_df.columns):
-            cols.append(self.id_attr)
-        if self.is_valid_attr and self.is_valid_attr in list(final_df.columns):
-            cols.append(self.is_valid_attr)
-
-        return final_df[cols]
+        return final_df
 
     def process_hf_dataset(self, training_ds: Dataset, validation_ds: Optional[Dataset] = None):
         ds = super().process_hf_dataset(training_ds, validation_ds)
-
-        # return the pre-processed DataFrame
-        return ds
+        return Dataset.from_pandas(self.process_df(pd.DataFrame(ds)))
 
 
 # Cell
@@ -436,8 +426,6 @@ class TokenClassBatchTokenizeTransform(BatchTokenizeTransform):
         hf_tokenizer: PreTrainedTokenizerBase,
         # A Hugging Face model
         hf_model: PreTrainedModel,
-        # If you are passing in the "input_ids" as your inputs, set `is_pretokenized` = True
-        is_pretokenized: bool = False,
         # The token ID that should be ignored when calculating the loss
         ignore_token_id: int = CrossEntropyLossFlat().ignore_index,
         # The labeling strategy you want to apply when associating labels with word tokens
@@ -473,7 +461,6 @@ class TokenClassBatchTokenizeTransform(BatchTokenizeTransform):
             hf_config,
             hf_tokenizer,
             hf_model,
-            is_pretokenized=is_pretokenized,
             ignore_token_id=ignore_token_id,
             max_length=max_length,
             padding=padding,
@@ -498,21 +485,11 @@ class TokenClassBatchTokenizeTransform(BatchTokenizeTransform):
 
         updated_samples = []
         for idx, s in enumerate(encoded_samples):
-            if self.is_pretokenized:
-                # if the inputs/targets have already been preprocessed, we only need to apply padding to labels assuming
-                # we implored a`BatchLabelingStrategy` in our preprocessing as we do in the TokenClassificationPreprocessor.
-                batch_length = len(s[0]["input_ids"])
-                if self.hf_tokenizer.padding_side == "right":
-                    targ_ids = nn.ConstantPad1d((0, batch_length - len(s[1])), self.ignore_token_id)(s[1])
-                else:
-                    targ_ids = nn.ConstantPad1d((batch_length - len(s[1]), 0), self.ignore_token_id)(s[1])
-            else:
-                # with batch-time tokenization, we have to align each token with the correct label using the `word_ids` in the
-                # batch encoding object we get from calling our *fast* tokenizer
-                word_ids = inputs.word_ids(idx) if self.hf_tokenizer.is_fast else self.slow_word_ids_func(self.hf_tokenizer, idx, inputs)
-                targ_ids = target_cls(self.labeling_strategy.align_labels_with_tokens(word_ids, s[1].tolist(), None))
+            # with batch-time tokenization, we have to align each token with the correct label using the `word_ids` in the
+            # batch encoding object we get from calling our *fast* tokenizer
+            word_ids = inputs.word_ids(idx) if self.hf_tokenizer.is_fast else self.slow_word_ids_func(self.hf_tokenizer, idx, inputs)
+            targ_ids = target_cls(self.labeling_strategy.align_labels_with_tokens(word_ids, s[1].tolist(), None))
 
-            s[0]["id"] = tensor([1] *len(s[0]["input_ids"]))
             updated_samples.append((s[0], targ_ids))
 
         return updated_samples

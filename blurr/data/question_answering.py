@@ -23,7 +23,7 @@ logging.set_verbosity_error()
 
 
 # Cell
-def find_answer_token_idxs(start_char_idx, end_char_idx, offset_mapping, qst_mask):
+def find_answer_token_idxs(hf_tokenizer, ans_text, start_char_idx, end_char_idx, input_ids, offset_mapping, qst_mask):
     # mask the question tokens so they aren't included in the search
     masked_offset_mapping = offset_mapping.clone()
     masked_offset_mapping[qst_mask] = tensor([-100, -100])
@@ -33,16 +33,27 @@ def find_answer_token_idxs(start_char_idx, end_char_idx, offset_mapping, qst_mas
     ends = torch.where((masked_offset_mapping[:, 0] <= end_char_idx) & (masked_offset_mapping[:, 1] >= end_char_idx))[0]
 
     if len(starts) > 0 and len(ends) > 0:
-        for s in starts:
-            if masked_offset_mapping[s][0] <= start_char_idx:
-                start = s
-
-        for e in ends:
-            if e >= s and masked_offset_mapping[e][1] >= end_char_idx:
-                end = e
+        start, end = starts[-1], ends[-1]
+        for s, e in itertools.product(starts, ends):
+            txt = hf_tokenizer.decode(input_ids[s:e])
+            if txt.strip() == ans_text.strip():
+                start, end = s, e
+                break
 
         if end < len(masked_offset_mapping):
             return (start, end)
+
+    # if len(starts) > 0 and len(ends) > 0:
+    #     for s in starts:
+    #         if masked_offset_mapping[s][0] <= start_char_idx:
+    #             start = s
+
+    #     for e in ends:
+    #         if e >= s and masked_offset_mapping[e][1] >= end_char_idx:
+    #             end = e
+
+    #     if end < len(masked_offset_mapping):
+    #         return (start, end)
 
     # if neither star or end is found, or the end token is part of this chunk, consider the answer not found
     return (tensor(0), tensor(0))
@@ -76,9 +87,9 @@ class QuestionAnsweringPreprocessor(Preprocessor):
         tok_kwargs: dict = {"return_overflowing_tokens": True},
     ):
         # these values are mandatory
-        tok_kwargs["return_offsets_mapping"] = True  # allows us to map tokens -> raw characters
+        tok_kwargs = {**tok_kwargs, "return_offsets_mapping": True, "return_tensors": "pt"}
         tok_kwargs["padding"] = tok_kwargs.get("padding", True)
-        tok_kwargs["return_tensors"] = "pt"
+        # tok_kwargs["return_tensors"] = "pt"
 
         # shift the question and context appropriately based on the tokenizers padding strategy
         if hf_tokenizer.padding_side == "right":
@@ -88,7 +99,7 @@ class QuestionAnsweringPreprocessor(Preprocessor):
             tok_kwargs["truncation"] = "only_first"
             text_attrs = [ctx_attr, qst_attr]
 
-        super().__init__(hf_tokenizer, batch_size, text_attrs=text_attrs, tok_kwargs=tok_kwargs)
+        super().__init__(hf_tokenizer, batch_size, text_attr=text_attrs[0], text_pair_attr=text_attrs[1], tok_kwargs=tok_kwargs)
 
         self.id_attr = id_attr
         self.qst_attr, self.ctx_attr = qst_attr, ctx_attr
@@ -103,29 +114,45 @@ class QuestionAnsweringPreprocessor(Preprocessor):
         if self.id_attr is None and self.tok_kwargs.get("return_overflowing_tokens", False):
             df.insert(0, "_id", range(len(df)))
 
+        # tokenize in batches
         proc_data = []
-        for row_idx, row in df.iterrows():
-            # fetch data elements required to build a modelable dataset
-            inputs = self._tokenize_function(row)
-            ans_text, start_char_idx, end_char_idx = row[self.ans_attr], row[self.ans_start_char_idx], row[self.ans_end_char_idx] + 1
+        for g, batch_df in df.groupby(np.arange(len(df)) // self.batch_size):
+            batch_df.reset_index(drop=True, inplace=True)
 
-            # if "return_overflowing_tokens = True", our BatchEncoding will include an "overflow_to_sample_mapping" list
-            overflow_mapping = inputs["overflow_to_sample_mapping"] if ("overflow_to_sample_mapping" in inputs) else [0]
+            for row_idx, row in batch_df.iterrows():
+                ans_text, start_char_idx, end_char_idx = row[self.ans_attr], row[self.ans_start_char_idx], row[self.ans_end_char_idx] + 1
+                inputs = self._tokenize_function(row)
 
-            for idx in range(len(overflow_mapping)):
-                # update the targets: is_found (s[1]), answer start token index (s[2]), and answer end token index (s[3])
-                qst_mask = [i != 1 if self.hf_tokenizer.padding_side == "right" else i != 0 for i in inputs.sequence_ids(idx)]
-                start, end  = find_answer_token_idxs(start_char_idx, end_char_idx, inputs["offset_mapping"][idx], qst_mask)
+                # if "return_overflowing_tokens = True", our BatchEncoding will include an "overflow_to_sample_mapping" list
+                overflow_mapping = inputs["overflow_to_sample_mapping"] if ("overflow_to_sample_mapping" in inputs) else [0]
 
-                overflow_row = row.copy()
-                overflow_row[self.ans_end_char_idx] = end_char_idx
-                overflow_row["ans_start_token_idx"] = start.item()
-                overflow_row["ans_end_token_idx"] = end.item()
+                for item_idx in range(len(overflow_mapping)):
+                    input_ids = inputs["input_ids"][item_idx]
+                    offset_mapping = inputs["offset_mapping"][item_idx]
+                    sequence_ids = inputs.sequence_ids(item_idx)
 
-                for k in inputs.keys():
-                    overflow_row[k] = inputs[k][idx].numpy()
+                    # find the start/end token indicies
+                    qst_mask = [i != 1 if self.hf_tokenizer.padding_side == "right" else i != 0 for i in sequence_ids]
+                    start, end  = find_answer_token_idxs(self.hf_tokenizer, ans_text, start_char_idx, end_char_idx, input_ids, offset_mapping, qst_mask)
 
-                proc_data.append(overflow_row)
+                    # copy raw data into row
+                    overflow_row = row.copy()
+
+                    # build the "processed" question and answers (may be truncated if chunking a long document > max length)
+                    qst_offsets = offset_mapping[[val_idx for val_idx, val in enumerate(qst_mask) if val and sequence_ids[val_idx] is not None]]
+                    ctx_offsets = offset_mapping[[val_idx for val_idx, val in enumerate(qst_mask) if not val and sequence_ids[val_idx] is not None]]
+
+                    overflow_row[f"proc_{self.qst_attr}"] = row[self.qst_attr][min(qst_offsets.tolist())[0]:max(qst_offsets.tolist())[1]]
+                    overflow_row[f"proc_{self.ctx_attr}"] = row[self.ctx_attr][min(ctx_offsets.tolist())[0]:max(ctx_offsets.tolist())[1]]
+
+                    # update the end_char_idx (remember we +1 above so it works with python slicing) and add the start/end
+                    # token indicies as well as a "is_answerable" attribute
+                    # overflow_row[self.ans_end_char_idx] = end_char_idx
+                    overflow_row["ans_start_token_idx"] = start.item()
+                    overflow_row["ans_end_token_idx"] = end.item()
+                    overflow_row["is_answerable"] = start.item() != 0 and end.item() !=0
+
+                    proc_data.append(overflow_row)
 
         return pd.DataFrame(proc_data)
 
@@ -153,9 +180,6 @@ class QABatchTokenizeTransform(BatchTokenizeTransform):
         hf_tokenizer: PreTrainedTokenizerBase,
         # A Hugging Face model
         hf_model: PreTrainedModel,
-        # Contray to other NLP tasks where batch-time tokenization (`is_pretokenized` = False) is the default, with
-        # extractive question answering pre-processing is required, and as such we set it to True here
-        is_pretokenized: bool = True,
         # The token ID that should be ignored when calculating the loss
         ignore_token_id=CrossEntropyLossFlat().ignore_index,
         # To control the length of the padding/truncation. It can be an integer or None,
@@ -175,9 +199,7 @@ class QABatchTokenizeTransform(BatchTokenizeTransform):
         # if your inputs are pre-tokenized (not numericalized)
         is_split_into_words: bool = False,
         # Any other keyword arguments you want included when using your `hf_tokenizer` to tokenize your inputs.
-        # Since extractive requires pre-tokenized input_ids, we default this to not include any "special" tokens as they are already
-        # included in the pre-processed input_ids
-        tok_kwargs: dict = {"add_special_tokens": False},
+        tok_kwargs: dict = {},
         # Keyword arguments to apply to `BatchTokenizeTransform`
         **kwargs
     ):
@@ -190,7 +212,6 @@ class QABatchTokenizeTransform(BatchTokenizeTransform):
             hf_config,
             hf_tokenizer,
             hf_model,
-            is_pretokenized=is_pretokenized,
             ignore_token_id=ignore_token_id,
             max_length=max_length,
             padding=padding,
@@ -202,9 +223,6 @@ class QABatchTokenizeTransform(BatchTokenizeTransform):
 
     def encodes(self, samples):
         samples, batch_encoding = super().encodes(samples, return_batch_encoding=True)
-
-        if self.is_pretokenized:
-            return samples
 
         for idx, s in enumerate(samples):
             # cls_index: location of CLS token (used by xlnet and xlm); is a list.index(value) for pytorch tensor's
@@ -244,7 +262,8 @@ def show_batch(
     for sample, input_ids, start, end in zip(samples, x, *y):
         txt = hf_tokenizer.decode(sample[0], skip_special_tokens=True)[:trunc_at]
         found = (start.item() != 0 and end.item() != 0)
-        ans_text = hf_tokenizer.decode(input_ids[start:end], skip_special_tokens=False)
+        ans_text = hf_tokenizer.decode(input_ids[start.item(): end.item()], skip_special_tokens=False, clean_up_tokenization_spaces=True)
+        # ans_text = hf_tokenizer.decode(inputs["input_ids"][test_example.ans_start_token_idx : test_example.ans_end_token_idx]).strip(),
         res.append((txt, found, (start.item(), end.item()), ans_text))
 
     display_df(pd.DataFrame(res, columns=["text", "found", "start/end", "answer"])[:max_n])
