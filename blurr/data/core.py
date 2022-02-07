@@ -86,18 +86,10 @@ class Preprocessor:
     def _tokenize_function(self, example):
         truncation = self.tok_kwargs.pop("truncation", True)
 
-        if self.text_pair_attr:
-            if isinstance(example, pd.DataFrame):
-                texts = example[self.text_attr].values.tolist()
-                text_pairs = example[self.text_pair_attr].values.tolist()
-            else:
-                texts = example[self.text_attr]
-                text_pairs = example[self.text_pair_attr]
+        txts = example[self.text_attr]
+        txt_pairs = example[self.text_pair_attr] if self.text_pair_attr else None
 
-            return self.hf_tokenizer(texts, text_pairs, truncation=truncation, **self.tok_kwargs)
-        else:
-            texts = example[self.text_attr].values.tolist() if isinstance(example, pd.DataFrame) else example[self.text_attr]
-            return self.hf_tokenizer(texts, truncation=True, **self.tok_kwargs)
+        return self.hf_tokenizer(txts, txt_pairs, truncation=truncation, **self.tok_kwargs)
 
 
 # Cell
@@ -153,28 +145,22 @@ class ClassificationPreprocessor(Preprocessor):
             for label_col in label_cols:
                 df[f"{label_col}_name"] = df[label_col].apply(lambda v: self.label_mapping[v])
 
-        # tokenize in batches
-        final_df = pd.DataFrame()
-        for g, batch_df in df.groupby(np.arange(len(df)) // self.batch_size):
-            batch_df.reset_index(drop=True, inplace=True)
-            inputs = self._tokenize_function(batch_df)
+        # grab our inputs
+        inputs = self._tokenize_function(df.to_dict(orient="list"))
 
-            for txt_seq_idx, txt_attr in enumerate([self.text_attr, self.text_pair_attr]):
-                if txt_attr is None:
-                    break
+        for txt_seq_idx, txt_attr in enumerate([self.text_attr, self.text_pair_attr]):
+            if txt_attr is None:
+                break
 
-                char_idxs= []
-                for idx, offset_mapping in enumerate(inputs["offset_mapping"]):
-                    text_offsets = [offset_mapping[i] for i, seq_id in enumerate(inputs.sequence_ids(idx)) if seq_id == txt_seq_idx]
-                    char_idxs.append([min(text_offsets)[0], max(text_offsets)[1]])
+            char_idxs= []
+            for idx, offset_mapping in enumerate(inputs["offset_mapping"]):
+                text_offsets = [offset_mapping[i] for i, seq_id in enumerate(inputs.sequence_ids(idx)) if seq_id == txt_seq_idx]
+                char_idxs.append([min(text_offsets)[0], max(text_offsets)[1]])
 
-                batch_df = pd.concat([batch_df, pd.DataFrame(char_idxs, columns=[f'{txt_attr}_start_char_idx', f'{txt_attr}_end_char_idx'])], axis=1)
-                batch_df.insert(0, f"proc_{txt_attr}", batch_df.apply(lambda r: r[txt_attr][r[f"{txt_attr}_start_char_idx"]:r[f"{txt_attr}_end_char_idx"]+1], axis=1))
+            df = pd.concat([df, pd.DataFrame(char_idxs, columns=[f'{txt_attr}_start_char_idx', f'{txt_attr}_end_char_idx'])], axis=1)
+            df.insert(0, f"proc_{txt_attr}", df.apply(lambda r: r[txt_attr][r[f"{txt_attr}_start_char_idx"]:r[f"{txt_attr}_end_char_idx"]+1], axis=1))
 
-            final_df = final_df.append(batch_df)
-
-        # return the pre-processed DataFrame
-        return final_df
+        return df
 
     def process_hf_dataset(self, training_ds: Dataset, validation_ds: Optional[Dataset] = None):
         ds = super().process_hf_dataset(training_ds, validation_ds)
