@@ -68,20 +68,37 @@ class QAPreprocessor(Preprocessor):
         # a unique Id for each example is required to properly score question answering results when chunking long
         # documents (e.g., return_overflowing_tokens=True)
         chunk_docs = self.tok_kwargs.get("return_overflowing_tokens", False)
+        max_length = self.tok_kwargs.get("max_length", self.hf_tokenizer.model_max_length)
 
         if self.id_attr is None and chunk_docs:
             df.insert(0, "_id", range(len(df)))
 
+        # process df in mini-batches
+        final_df = pd.DataFrame()
+        for g, batch_df in df.groupby(np.arange(len(df)) // self.batch_size):
+            final_df = final_df.append(self._process_df_batch(batch_df, chunk_docs, max_length))
+
+        final_df.reset_index(drop=True, inplace=True)
+        return final_df
+
+    def process_hf_dataset(self, training_ds: Dataset, validation_ds: Optional[Dataset] = None):
+        ds = super().process_hf_dataset(training_ds, validation_ds)
+        return Dataset.from_pandas(self.process_df(pd.DataFrame(ds)))
+
+    # ----- utility methods -----
+    def _process_df_batch(self, batch_df, is_chunked, max_length):
+        batch_df.reset_index(drop=True, inplace=True)
+
         # grab our inputs
-        inputs = self._tokenize_function(df.to_dict(orient="list"))
+        inputs = self._tokenize_function(batch_df.to_dict(orient="list"))
 
         offset_mapping = inputs.pop("offset_mapping")
-        sample_map = inputs.pop("overflow_to_sample_mapping", df.index.tolist())
+        sample_map = inputs.pop("overflow_to_sample_mapping", batch_df.index.tolist())
 
         proc_data = []
         for idx, offsets in enumerate(offset_mapping):
             example_idx = sample_map[idx]
-            row = df.iloc[example_idx]
+            row = batch_df.iloc[example_idx]
             input_ids = inputs["input_ids"][idx]
             seq_ids = inputs.sequence_ids(idx)
 
@@ -95,7 +112,7 @@ class QAPreprocessor(Preprocessor):
 
             # if we are chunking long documents, we need to tokenize the chunked question, context in order to correctly assign
             # the start/end token indices, else we can just the above since we are only looking at one example at a time
-            if chunk_docs:
+            if is_chunked:
                 chunk_texts = (proc_qst, proc_ctx) if self.hf_tokenizer.padding_side == "right" else (proc_ctx, proc_qst)
                 chunk_inputs = self.hf_tokenizer(chunk_texts[0], chunk_texts[1])
                 chunk_input_ids = chunk_inputs["input_ids"]
@@ -112,7 +129,10 @@ class QAPreprocessor(Preprocessor):
             for idx, (tok, is_qst_tok) in enumerate(zip(tok_input, chunk_qst_mask)):
                 try:
                     if is_qst_tok == False and tok == tok_ans[0] and tok_input[idx : idx + len(tok_ans)] == tok_ans:
-                        start_idx, end_idx = idx, idx + len(tok_ans)
+                        # ensure we are within the max_length
+                        last_idx = idx + len(tok_ans)
+                        if last_idx < max_length:
+                            start_idx, end_idx = idx, idx + len(tok_ans)
                         break
                 except:
                     pass
@@ -129,10 +149,6 @@ class QAPreprocessor(Preprocessor):
             proc_data.append(overflow_row)
 
         return pd.DataFrame(proc_data)
-
-    def process_hf_dataset(self, training_ds: Dataset, validation_ds: Optional[Dataset] = None):
-        ds = super().process_hf_dataset(training_ds, validation_ds)
-        return Dataset.from_pandas(self.process_df(pd.DataFrame(ds)))
 
 
 # Cell

@@ -145,26 +145,44 @@ class ClassificationPreprocessor(Preprocessor):
             for label_col in label_cols:
                 df[f"{label_col}_name"] = df[label_col].apply(lambda v: self.label_mapping[v])
 
+        # process df in mini-batches
+        final_df = pd.DataFrame()
+        for g, batch_df in df.groupby(np.arange(len(df)) // self.batch_size):
+            final_df = final_df.append(self._process_df_batch(batch_df))
+
+        final_df.reset_index(drop=True, inplace=True)
+        return final_df
+
+    def process_hf_dataset(self, training_ds: Dataset, validation_ds: Optional[Dataset] = None):
+        ds = super().process_hf_dataset(training_ds, validation_ds)
+        return Dataset.from_pandas(self.process_df(pd.DataFrame(ds)))
+
+    # ----- utility methods -----
+    def _process_df_batch(self, batch_df):
+        batch_df.reset_index(drop=True, inplace=True)
+
         # grab our inputs
-        inputs = self._tokenize_function(df.to_dict(orient="list"))
+        inputs = self._tokenize_function(batch_df.to_dict(orient="list"))
 
         for txt_seq_idx, txt_attr in enumerate([self.text_attr, self.text_pair_attr]):
             if txt_attr is None:
                 break
 
-            char_idxs= []
+            char_idxs = []
             for idx, offset_mapping in enumerate(inputs["offset_mapping"]):
                 text_offsets = [offset_mapping[i] for i, seq_id in enumerate(inputs.sequence_ids(idx)) if seq_id == txt_seq_idx]
                 char_idxs.append([min(text_offsets)[0], max(text_offsets)[1]])
 
-            df = pd.concat([df, pd.DataFrame(char_idxs, columns=[f'{txt_attr}_start_char_idx', f'{txt_attr}_end_char_idx'])], axis=1)
-            df.insert(0, f"proc_{txt_attr}", df.apply(lambda r: r[txt_attr][r[f"{txt_attr}_start_char_idx"]:r[f"{txt_attr}_end_char_idx"]+1], axis=1))
+            batch_df = pd.concat(
+                [batch_df, pd.DataFrame(char_idxs, columns=[f"{txt_attr}_start_char_idx", f"{txt_attr}_end_char_idx"])], axis=1
+            )
+            batch_df.insert(
+                0,
+                f"proc_{txt_attr}",
+                batch_df.apply(lambda r: r[txt_attr][r[f"{txt_attr}_start_char_idx"] : r[f"{txt_attr}_end_char_idx"] + 1], axis=1),
+            )
 
-        return df
-
-    def process_hf_dataset(self, training_ds: Dataset, validation_ds: Optional[Dataset] = None):
-        ds = super().process_hf_dataset(training_ds, validation_ds)
-        return Dataset.from_pandas(self.process_df(pd.DataFrame(ds)))
+            return batch_df
 
 
 # Cell
