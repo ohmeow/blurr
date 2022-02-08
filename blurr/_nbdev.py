@@ -72,8 +72,8 @@ index = {"Singleton": "00_utils.ipynb",
          "Seq2SeqBatchTokenizeTransform": "10_data-seq2seq-core.ipynb",
          "Seq2SeqBatchDecodeTransform": "10_data-seq2seq-core.ipynb",
          "Seq2SeqTextBlock": "10_data-seq2seq-core.ipynb",
-         "HF_Seq2SeqMetricsCallback": "10_modeling-seq2seq-core.ipynb",
-         "seq2seq_splitter": "10_modeling-seq2seq-core.ipynb",
+         "Seq2SeqMetricsCallback": "10_modeling-seq2seq-core.ipynb",
+         "blurr_seq2seq_splitter": "10_modeling-seq2seq-core.ipynb",
          "BlearnerForSummarization": "11_modeling-seq2seq-summarization.ipynb",
          "BlearnerForTranslation": "12_modeling-seq2seq-translation.ipynb"}
 

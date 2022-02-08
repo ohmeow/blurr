@@ -26,7 +26,7 @@ from transformers import (
 from ...utils import BLURR
 from ...data.seq2seq.core import Seq2SeqTextBlock, Seq2SeqBatchTokenizeTransform, default_text_gen_kwargs
 from ..core import BaseModelWrapper, BaseModelCallback, PreCalculatedLoss, Blearner
-from .core import HF_Seq2SeqMetricsCallback, seq2seq_splitter
+from .core import Seq2SeqMetricsCallback, blurr_seq2seq_splitter
 
 logging.set_verbosity_error()
 
@@ -58,7 +58,7 @@ class BlearnerForTranslation(Blearner):
             'sacrebleu': { 'returns': "score" }
         }
 
-        return HF_Seq2SeqMetricsCallback(custom_metrics=seq2seq_metrics)
+        return Seq2SeqMetricsCallback(custom_metrics=seq2seq_metrics)
 
     @classmethod
     def _create_learner(
@@ -108,7 +108,7 @@ class BlearnerForTranslation(Blearner):
 
         # if we need to preprocess the raw data before creating our DataLoaders
         if (preprocess_func):
-            data = preprocess_func(data, hf_arch, hf_config, hf_tokenizer, hf_model, text_attr, summary_attr)
+            data = preprocess_func(data, hf_arch, hf_config, hf_tokenizer, hf_model, src_lang_attr, trg_lang_attr)
 
         # update text generation kwargs
         text_gen_kwargs = { **text_gen_kwargs, **default_text_gen_kwargs(hf_config, hf_model, task='translation') }
@@ -133,12 +133,12 @@ class BlearnerForTranslation(Blearner):
         if (hf_arch == 't5'):
             get_x.add(partial(cls._add_t5_prefix, src_lang_name=src_lang_name, trg_lang_name=trg_lang_name))
 
-        before_batch_tfm = Seq2SeqBatchTokenizeTransform(hf_arch, hf_config, hf_tokenizer, hf_model,
+        batch_tokenize_tfm = Seq2SeqBatchTokenizeTransform(hf_arch, hf_config, hf_tokenizer, hf_model,
                                                           max_length=max_length,
                                                           max_target_length=max_target_length,
                                                           text_gen_kwargs=text_gen_kwargs)
 
-        blocks = (Seq2SeqTextBlock(before_batch_tfm=before_batch_tfm), noop)
+        blocks = (Seq2SeqTextBlock(batch_tokenize_tfm=batch_tokenize_tfm), noop)
         dblock = DataBlock(blocks=blocks,
                            get_x=get_x,
                            get_y=get_y,
@@ -147,7 +147,7 @@ class BlearnerForTranslation(Blearner):
         dls = dblock.dataloaders(data, **dl_kwargs.copy())
 
         # return BLearner instance
-        learner_kwargs['splitter'] = learner_kwargs.pop('splitter', partial(seq2seq_splitter, arch=hf_arch))
+        learner_kwargs['splitter'] = learner_kwargs.pop('splitter', partial(blurr_seq2seq_splitter, arch=hf_arch))
         learner_kwargs['loss_func'] = learner_kwargs.pop('loss_func', CrossEntropyLossFlat())
         return cls(dls, hf_model, **learner_kwargs.copy())
 
