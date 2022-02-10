@@ -80,7 +80,7 @@ class BlurrUtil:
         self._df = self._df[self._df.class_location.apply(lambda v: isinstance(v, type))]
 
         # add the module each class is included in
-        self._df["module"] = self._df.class_location.apply(lambda v: v.__module__)
+        self._df.loc["module"] = self._df.class_location.apply(lambda v: v.__module__)
 
         # remove class_location (don't need it anymore)
         self._df.drop(labels=["class_location"], axis=1, inplace=True)
