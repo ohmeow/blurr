@@ -209,6 +209,9 @@ class BatchTokenizeTransform(Transform):
         hf_tokenizer: PreTrainedTokenizerBase,
         # A Hugging Face model
         hf_model: PreTrainedModel,
+        # To control whether the "labels" are included in your inputs. If they are, the loss will be calculated in
+        # the model's forward function and you can simply use `PreCalculatedLoss` as your `Learner`'s loss function to use it
+        include_labels: bool = True,
         # The token ID that should be ignored when calculating the loss
         ignore_token_id: int = CrossEntropyLossFlat().ignore_index,
         # To control the length of the padding/truncation. It can be an integer or None,
@@ -277,6 +280,9 @@ class BatchTokenizeTransform(Transform):
                 inps = {**inps, **{k: v for k,v in sample[0].items() if k not in ['text']}}
 
             trgs = sample[1:]
+            if self.include_labels and len(trgs) > 0:
+                inps["labels"] = trgs[0]
+
             updated_samples.append((*[inps], *trgs))
 
         if return_batch_encoding:
@@ -331,6 +337,9 @@ class TextBlock(TransformBlock):
         # A Hugging Face model (not required if passing in an
         # instance of `BatchTokenizeTransform` to `before_batch_tfm`)
         hf_model: Optional[PreTrainedModel] = None,
+        # To control whether the "labels" are included in your inputs. If they are, the loss will be calculated in
+        # the model's forward function and you can simply use `PreCalculatedLoss` as your `Learner`'s loss function to use it
+        include_labels: bool = True,
         # The token ID that should be ignored when calculating the loss
         ignore_token_id=CrossEntropyLossFlat().ignore_index,
         # The before_batch_tfm you want to use to tokenize your raw data on the fly
@@ -379,6 +388,7 @@ class TextBlock(TransformBlock):
                 hf_config,
                 hf_tokenizer,
                 hf_model,
+                include_labels=include_labels,
                 ignore_token_id=ignore_token_id,
                 max_length=max_length,
                 padding=padding,
@@ -451,6 +461,9 @@ class BlurrBatchDecodeTransform(BatchDecodeTransform):
         # A Hugging Face model (not required if passing in an
         # instance of `BatchTokenizeTransform` to `before_batch_tfm`)
         hf_model: Optional[PreTrainedModel] = None,
+        # To control whether the "labels" are included in your inputs. If they are, the loss will be calculated in
+        # the model's forward function and you can simply use `PreCalculatedLoss` as your `Learner`'s loss function to use it
+        include_labels: bool = True,
         # The token ID to ignore when calculating loss/metrics
         ignore_token_id: int = CrossEntropyLossFlat().ignore_index,
         # The `is_split_into_words` argument applied to your `hf_tokenizer` during tokenization. Set this to `True`
@@ -641,7 +654,7 @@ def show_batch(
             if not torch.is_tensor(item):
                 trg = trg_labels[int(item)] if trg_labels else item
             elif is_listy(item.tolist()):
-                trg = [trg_labels[idx] for idx, val in enumerate(label.numpy().tolist()) if (val == 1)] if (trg_labels) else label.item()
+                trg = [trg_labels[idx] for idx, val in enumerate(label.numpy().tolist()) if (val == 1)] if (trg_labels) else label.numpy()
             else:
                 trg = trg_labels[label.item()] if (trg_labels) else label.item()
 
