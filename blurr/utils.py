@@ -12,9 +12,10 @@ import pandas as pd
 
 from enum import Enum
 from fastcore.foundation import L
-from transformers import AutoConfig, AutoTokenizer, logging, PretrainedConfig, PreTrainedTokenizerBase, PreTrainedModel
+from transformers import AutoConfig, AutoTokenizer, PretrainedConfig, PreTrainedTokenizerBase, PreTrainedModel, logging
 
 logging.set_verbosity_error()
+
 
 
 # Cell
@@ -215,4 +216,3 @@ HF_TASKS = Enum("HF_TASKS_ALL", BLURR.get_tasks())
 
 # Cell
 HF_ARCHITECTURES = Enum("HF_ARCHITECTURES", BLURR.get_architectures())
-
