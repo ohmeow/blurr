@@ -29,7 +29,7 @@ class Singleton:
 
 
 # Cell
-def str_to_type(typename: str) -> Type:  # The name of a type as a string  # Returns the actual type
+def str_to_type(typename: str) -> type:  # The name of a type as a string  # Returns the actual type
     "Converts a type represented as a string to the actual class"
     return getattr(sys.modules[__name__], typename)
 
@@ -37,7 +37,7 @@ def str_to_type(typename: str) -> Type:  # The name of a type as a string  # Ret
 # Cell
 def print_versions(
     # A string of space delimited package names or a list of package names
-    packages: Union[str, List[str]]
+    packages: (str, list)
 ):
     """ Prints the name and version of one or more packages in your environment"""
     packages = packages.split(" ") if isinstance(packages, str) else packages

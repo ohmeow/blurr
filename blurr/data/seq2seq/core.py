@@ -7,13 +7,12 @@ __all__ = ['Seq2SeqTextInput', 'default_text_gen_kwargs', 'Seq2SeqBatchTokenizeT
 from functools import reduce
 
 from fastcore.all import *
-from fastai.data.block import DataBlock, CategoryBlock, ColReader, ColSplitter
 from fastai.imports import *
 from fastai.losses import CrossEntropyLossFlat
 from fastai.text.data import SortedDL
 from fastai.torch_core import *
 from fastai.torch_imports import *
-from transformers import AutoModelForSeq2SeqLM, logging, PretrainedConfig, PreTrainedTokenizerBase, PreTrainedModel
+from transformers import logging, PretrainedConfig, PreTrainedTokenizerBase, PreTrainedModel
 
 from ...utils import BLURR
 from ..core import TextBlock, TextInput, BatchTokenizeTransform, BatchDecodeTransform, first_blurr_tfm
@@ -110,13 +109,13 @@ class Seq2SeqBatchTokenizeTransform(BatchTokenizeTransform):
         src_texts = samples.itemgot(0).items
         tgt_texts = samples.itemgot(1).items if (len(samples[0]) > 1) else None
 
-        tok_d = self.hf_tokenizer(
+        inputs = self.hf_tokenizer(
             src_texts, max_length=self.max_length, padding=self.padding, truncation=self.truncation, return_tensors="pt", **self.tok_kwargs
         )
 
         if tgt_texts:
             with self.hf_tokenizer.as_target_tokenizer():
-                tok_d_targs = self.hf_tokenizer(
+                targ_inputs = self.hf_tokenizer(
                     tgt_texts,
                     max_length=self.max_target_length,
                     padding=self.padding,
@@ -125,18 +124,18 @@ class Seq2SeqBatchTokenizeTransform(BatchTokenizeTransform):
                     **self.tok_kwargs
                 )
 
-                tok_d["labels"] = tok_d_targs["input_ids"]
+                inputs["labels"] = targ_inputs["input_ids"]
 
         # add in target ids for us to use if fastai is calculating the loss
         targ_ids = [[]] * len(samples)
-        if "labels" in tok_d:
-            tok_d["labels"].masked_fill_(tok_d["labels"] == self.ignore_token_id, self.hf_tokenizer.pad_token_id)
-            targ_ids = tok_d["labels"].clone()
+        if "labels" in inputs:
+            inputs["labels"].masked_fill_(inputs["labels"] == self.ignore_token_id, self.hf_tokenizer.pad_token_id)
+            targ_ids = inputs["labels"].clone()
 
         # update samples with tokenized inputs (e.g. input_ids, attention_mask, etc...)
-        d_keys = tok_d.keys()
+        d_keys = inputs.keys()
         updated_samples = [
-            (*[{k: tok_d[k][idx] for k in d_keys}], *tuplify(targ_ids[idx]), *sample[2:]) for idx, sample in enumerate(samples)
+            (*[{k: inputs[k][idx] for k in d_keys}], *tuplify(targ_ids[idx]), *sample[2:]) for idx, sample in enumerate(samples)
         ]
 
         return updated_samples

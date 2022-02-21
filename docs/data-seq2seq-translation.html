@@ -64,9 +64,9 @@ nb_path: "nbs/12_data-seq2seq-translation.ipynb"
 
 <div class="output_subarea output_stream output_stdout output_text">
 <pre>What we&#39;re running with at the time this documentation was generated:
-torch: 1.7.1
-fastai: 2.5.2
-transformers: 4.9.2
+torch: 1.10.1+cu111
+fastai: 2.5.3
+transformers: 4.16.2
 </pre>
 </div>
 </div>
@@ -84,7 +84,7 @@ transformers: 4.9.2
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">ds</span> <span class="o">=</span> <span class="n">load_dataset</span><span class="p">(</span><span class="s1">&#39;wmt16&#39;</span><span class="p">,</span> <span class="s1">&#39;de-en&#39;</span><span class="p">,</span> <span class="n">split</span><span class="o">=</span><span class="s1">&#39;train[:1%]&#39;</span><span class="p">)</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">ds</span> <span class="o">=</span> <span class="n">load_dataset</span><span class="p">(</span><span class="s2">&quot;wmt16&quot;</span><span class="p">,</span> <span class="s2">&quot;de-en&quot;</span><span class="p">,</span> <span class="n">split</span><span class="o">=</span><span class="s2">&quot;train[:1%]&quot;</span><span class="p">)</span>
 </pre></div>
 
     </div>
@@ -97,7 +97,7 @@ transformers: 4.9.2
 <div class="output_area">
 
 <div class="output_subarea output_stream output_stderr output_text">
-<pre>Reusing dataset wmt16 (/home/wgilliam/.cache/huggingface/datasets/wmt16/de-en/1.0.0/0d9fb3e814712c785176ad8cdb9f465fbe6479000ee6546725db30ad8a8b5f8a)
+<pre>Reusing dataset wmt16 (/home/wgilliam/.cache/huggingface/datasets/wmt16/de-en/1.0.0/af3c5d746b307726d0de73ebe7f10545361b9cb6f75c83a1734c000e48b6264f)
 </pre>
 </div>
 </div>
@@ -122,8 +122,9 @@ transformers: 4.9.2
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="s1">&#39;./&#39;</span><span class="p">)</span>
-<span class="n">wmt_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">ds</span><span class="p">[</span><span class="s1">&#39;translation&#39;</span><span class="p">],</span> <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;de&#39;</span><span class="p">,</span> <span class="s1">&#39;en&#39;</span><span class="p">]);</span> <span class="nb">len</span><span class="p">(</span><span class="n">wmt_df</span><span class="p">)</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="s2">&quot;./&quot;</span><span class="p">)</span>
+<span class="n">wmt_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">ds</span><span class="p">[</span><span class="s2">&quot;translation&quot;</span><span class="p">],</span> <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;de&quot;</span><span class="p">,</span> <span class="s2">&quot;en&quot;</span><span class="p">])</span>
+<span class="nb">len</span><span class="p">(</span><span class="n">wmt_df</span><span class="p">)</span>
 </pre></div>
 
     </div>
@@ -169,8 +170,7 @@ transformers: 4.9.2
 <div class="output_area">
 
 
-<div class="output_html rendered_html output_subarea output_execute_result">
-<div>
+<div class="output_html rendered_html output_subarea output_execute_result"><div>
 <style scoped>
     .dataframe tbody tr th:only-of-type {
         vertical-align: middle;
@@ -205,8 +205,7 @@ transformers: 4.9.2
     </tr>
   </tbody>
 </table>
-</div>
-</div>
+</div></div>
 
 </div>
 
@@ -264,7 +263,7 @@ transformers: 4.9.2
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">blocks</span> <span class="o">=</span> <span class="p">(</span><span class="n">Seq2SeqTextBlock</span><span class="p">(</span><span class="n">hf_arch</span><span class="p">,</span> <span class="n">hf_config</span><span class="p">,</span> <span class="n">hf_tokenizer</span><span class="p">,</span> <span class="n">hf_model</span><span class="p">),</span> <span class="n">noop</span><span class="p">)</span>
-<span class="n">dblock</span> <span class="o">=</span> <span class="n">DataBlock</span><span class="p">(</span><span class="n">blocks</span><span class="o">=</span><span class="n">blocks</span><span class="p">,</span> <span class="n">get_x</span><span class="o">=</span><span class="n">ColReader</span><span class="p">(</span><span class="s1">&#39;de&#39;</span><span class="p">),</span> <span class="n">get_y</span><span class="o">=</span><span class="n">ColReader</span><span class="p">(</span><span class="s1">&#39;en&#39;</span><span class="p">),</span> <span class="n">splitter</span><span class="o">=</span><span class="n">RandomSplitter</span><span class="p">())</span>
+<span class="n">dblock</span> <span class="o">=</span> <span class="n">DataBlock</span><span class="p">(</span><span class="n">blocks</span><span class="o">=</span><span class="n">blocks</span><span class="p">,</span> <span class="n">get_x</span><span class="o">=</span><span class="n">ColReader</span><span class="p">(</span><span class="s2">&quot;de&quot;</span><span class="p">),</span> <span class="n">get_y</span><span class="o">=</span><span class="n">ColReader</span><span class="p">(</span><span class="s2">&quot;en&quot;</span><span class="p">),</span> <span class="n">splitter</span><span class="o">=</span><span class="n">RandomSplitter</span><span class="p">())</span>
 </pre></div>
 
     </div>
@@ -339,7 +338,7 @@ transformers: 4.9.2
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="nb">len</span><span class="p">(</span><span class="n">b</span><span class="p">),</span> <span class="n">b</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;input_ids&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">b</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="nb">len</span><span class="p">(</span><span class="n">b</span><span class="p">),</span> <span class="n">b</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;input_ids&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">b</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span>
 </pre></div>
 
     </div>
@@ -385,8 +384,7 @@ transformers: 4.9.2
 <div class="output_area">
 
 
-<div class="output_html rendered_html output_subarea ">
-<table border="1" class="dataframe">
+<div class="output_html rendered_html output_subarea "><table border="1" class="dataframe">
   <thead>
     <tr style="text-align: right;">
       <th></th>
@@ -402,12 +400,11 @@ transformers: 4.9.2
     </tr>
     <tr>
       <th>1</th>
-      <td>&lt;s&gt; Somit wirkt sich die wissensbasierte Wirtschaft, zu der wir übergehen, umgekehrt bereits auf unseren Denkansatz bezüglich der europäischen Institutionen aus. Denn wie wir bereits wissen, bedeutet diese neue Methode der Koordinierung zwangsläufig,</td>
-      <td>The knowledge economy which we are moving into is thus already having a retroactive effect on our concept of the European institutions, for this new method of coordination must mean, as we already know, that top-down authoritarian integration and un</td>
+      <td>&lt;s&gt; Es ist sicher nicht meine Aufgabe zu beurteilen, wer mit wem welches Bündnis eingeht, aber wenn der Volkspartei und den Liberalen soviel an der Festigung ihres Bündnisses liegt, dann sollten sie zumindest etwas Positives vorschlagen, etwas, das d</td>
+      <td>It is certainly not my task to judge other people' s alliances but if the People' s Party and the Liberals are so desperate to cement their alliance, let them at least propose something positive, something that has a chance of working, not repeat th</td>
     </tr>
   </tbody>
-</table>
-</div>
+</table></div>
 
 </div>
 
@@ -432,8 +429,7 @@ transformers: 4.9.2
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="p">[</span> <span class="n">model_type</span> <span class="k">for</span> <span class="n">model_type</span> <span class="ow">in</span> <span class="n">BLURR</span><span class="o">.</span><span class="n">get_models</span><span class="p">(</span><span class="n">task</span><span class="o">=</span><span class="s1">&#39;ConditionalGeneration&#39;</span><span class="p">)</span> 
- <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="n">model_type</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;TF&#39;</span><span class="p">))</span> <span class="p">]</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="p">[</span><span class="n">model_type</span> <span class="k">for</span> <span class="n">model_type</span> <span class="ow">in</span> <span class="n">BLURR</span><span class="o">.</span><span class="n">get_models</span><span class="p">(</span><span class="n">task</span><span class="o">=</span><span class="s2">&quot;ConditionalGeneration&quot;</span><span class="p">)</span> <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="n">model_type</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;TF&quot;</span><span class="p">))]</span>
 </pre></div>
 
     </div>
@@ -480,12 +476,12 @@ transformers: 4.9.2
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">pretrained_model_names</span> <span class="o">=</span> <span class="p">[</span>
-    <span class="s1">&#39;facebook/bart-base&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;facebook/wmt19-de-en&#39;</span><span class="p">,</span>                      <span class="c1"># FSMT</span>
-    <span class="s1">&#39;Helsinki-NLP/opus-mt-de-en&#39;</span><span class="p">,</span>                <span class="c1"># MarianMT</span>
-    <span class="s1">&#39;sshleifer/tiny-mbart&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;google/mt5-small&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;t5-small&#39;</span>
+    <span class="s2">&quot;facebook/bart-base&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;facebook/wmt19-de-en&quot;</span><span class="p">,</span>  <span class="c1"># FSMT</span>
+    <span class="s2">&quot;Helsinki-NLP/opus-mt-de-en&quot;</span><span class="p">,</span>  <span class="c1"># MarianMT</span>
+    <span class="s2">&quot;sshleifer/tiny-mbart&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;google/mt5-small&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;t5-small&quot;</span><span class="p">,</span>
 <span class="p">]</span>
 </pre></div>
 
@@ -503,8 +499,8 @@ transformers: 4.9.2
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="s1">&#39;./&#39;</span><span class="p">)</span>
-<span class="n">wmt_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">ds</span><span class="p">[</span><span class="s1">&#39;translation&#39;</span><span class="p">],</span> <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;de&#39;</span><span class="p">,</span> <span class="s1">&#39;en&#39;</span><span class="p">])</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="s2">&quot;./&quot;</span><span class="p">)</span>
+<span class="n">wmt_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">ds</span><span class="p">[</span><span class="s2">&quot;translation&quot;</span><span class="p">],</span> <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;de&quot;</span><span class="p">,</span> <span class="s2">&quot;en&quot;</span><span class="p">])</span>
 </pre></div>
 
     </div>
@@ -521,7 +517,7 @@ transformers: 4.9.2
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="c1">#hide_output</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># hide_output</span>
 <span class="n">model_cls</span> <span class="o">=</span> <span class="n">AutoModelForSeq2SeqLM</span>
 <span class="n">bsz</span> <span class="o">=</span> <span class="mi">2</span>
 <span class="n">seq_sz</span> <span class="o">=</span> <span class="mi">128</span>
@@ -529,58 +525,53 @@ transformers: 4.9.2
 
 <span class="n">test_results</span> <span class="o">=</span> <span class="p">[]</span>
 <span class="k">for</span> <span class="n">model_name</span> <span class="ow">in</span> <span class="n">pretrained_model_names</span><span class="p">:</span>
-    <span class="n">error</span><span class="o">=</span><span class="kc">None</span>
-    
-    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;=== </span><span class="si">{</span><span class="n">model_name</span><span class="si">}</span><span class="s1"> ===</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
-    
-    <span class="n">hf_tok_kwargs</span> <span class="o">=</span> <span class="p">{}</span>
-    <span class="k">if</span> <span class="p">(</span><span class="n">model_name</span> <span class="o">==</span> <span class="s1">&#39;sshleifer/tiny-mbart&#39;</span><span class="p">):</span>
-        <span class="n">hf_tok_kwargs</span><span class="p">[</span><span class="s1">&#39;src_lang&#39;</span><span class="p">],</span> <span class="n">hf_tok_kwargs</span><span class="p">[</span><span class="s1">&#39;tgt_lang&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;de_DE&quot;</span><span class="p">,</span> <span class="s2">&quot;en_XX&quot;</span>
-            
-    <span class="n">hf_arch</span><span class="p">,</span> <span class="n">hf_config</span><span class="p">,</span> <span class="n">hf_tokenizer</span><span class="p">,</span> <span class="n">hf_model</span> <span class="o">=</span> <span class="n">BLURR</span><span class="o">.</span><span class="n">get_hf_objects</span><span class="p">(</span><span class="n">model_name</span><span class="p">,</span> 
-                                                                      <span class="n">model_cls</span><span class="o">=</span><span class="n">model_cls</span><span class="p">,</span> 
-                                                                      <span class="n">tokenizer_kwargs</span><span class="o">=</span><span class="n">hf_tok_kwargs</span><span class="p">)</span>
-    
-    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;architecture:</span><span class="se">\t</span><span class="si">{</span><span class="n">hf_arch</span><span class="si">}</span><span class="se">\n</span><span class="s1">tokenizer:</span><span class="se">\t</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">hf_tokenizer</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
-    
-    <span class="c1"># not all architectures include a native pad_token (e.g., gpt2, ctrl, etc...), so we add one here</span>
-    <span class="k">if</span> <span class="p">(</span><span class="n">hf_tokenizer</span><span class="o">.</span><span class="n">pad_token</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">):</span> 
-        <span class="n">hf_tokenizer</span><span class="o">.</span><span class="n">add_special_tokens</span><span class="p">({</span><span class="s1">&#39;pad_token&#39;</span><span class="p">:</span> <span class="s1">&#39;&lt;pad&gt;&#39;</span><span class="p">})</span>  
-        <span class="n">hf_config</span><span class="o">.</span><span class="n">pad_token_id</span> <span class="o">=</span> <span class="n">hf_tokenizer</span><span class="o">.</span><span class="n">get_vocab</span><span class="p">()[</span><span class="s1">&#39;&lt;pad&gt;&#39;</span><span class="p">]</span>
-        <span class="n">hf_model</span><span class="o">.</span><span class="n">resize_token_embeddings</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">hf_tokenizer</span><span class="p">))</span> 
-    
-    <span class="n">before_batch_tfm</span> <span class="o">=</span> <span class="n">Seq2SeqBatchTokenizeTransform</span><span class="p">(</span><span class="n">hf_arch</span><span class="p">,</span> <span class="n">hf_config</span><span class="p">,</span> <span class="n">hf_tokenizer</span><span class="p">,</span> <span class="n">hf_model</span><span class="p">,</span>
-                                                      <span class="n">padding</span><span class="o">=</span><span class="s1">&#39;max_length&#39;</span><span class="p">,</span> 
-                                                      <span class="n">max_length</span><span class="o">=</span><span class="n">seq_sz</span><span class="p">,</span>
-                                                      <span class="n">max_target_length</span><span class="o">=</span><span class="n">trg_seq_sz</span><span class="p">)</span>
-    
-    <span class="k">def</span> <span class="nf">add_t5_prefix</span><span class="p">(</span><span class="n">inp</span><span class="p">):</span> <span class="k">return</span> <span class="sa">f</span><span class="s1">&#39;translate German to English: </span><span class="si">{</span><span class="n">inp</span><span class="si">}</span><span class="s1">&#39;</span> <span class="k">if</span> <span class="p">(</span><span class="n">hf_arch</span> <span class="o">==</span> <span class="s1">&#39;t5&#39;</span><span class="p">)</span> <span class="k">else</span> <span class="n">inp</span>
-    
-    <span class="n">blocks</span> <span class="o">=</span> <span class="p">(</span><span class="n">Seq2SeqTextBlock</span><span class="p">(</span><span class="n">before_batch_tfm</span><span class="o">=</span><span class="n">before_batch_tfm</span><span class="p">),</span> <span class="n">noop</span><span class="p">)</span>
-    <span class="n">dblock</span> <span class="o">=</span> <span class="n">DataBlock</span><span class="p">(</span><span class="n">blocks</span><span class="o">=</span><span class="n">blocks</span><span class="p">,</span> 
-                   <span class="n">get_x</span><span class="o">=</span><span class="n">Pipeline</span><span class="p">([</span><span class="n">ColReader</span><span class="p">(</span><span class="s1">&#39;de&#39;</span><span class="p">),</span> <span class="n">add_t5_prefix</span><span class="p">]),</span> 
-                   <span class="n">get_y</span><span class="o">=</span><span class="n">ColReader</span><span class="p">(</span><span class="s1">&#39;en&#39;</span><span class="p">),</span> 
-                   <span class="n">splitter</span><span class="o">=</span><span class="n">RandomSplitter</span><span class="p">())</span>
+    <span class="n">error</span> <span class="o">=</span> <span class="kc">None</span>
 
-    <span class="n">dls</span> <span class="o">=</span> <span class="n">dblock</span><span class="o">.</span><span class="n">dataloaders</span><span class="p">(</span><span class="n">wmt_df</span><span class="p">,</span> <span class="n">bs</span><span class="o">=</span><span class="n">bsz</span><span class="p">)</span> 
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;=== </span><span class="si">{</span><span class="n">model_name</span><span class="si">}</span><span class="s2"> ===</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="n">hf_tok_kwargs</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">if</span> <span class="n">model_name</span> <span class="o">==</span> <span class="s2">&quot;sshleifer/tiny-mbart&quot;</span><span class="p">:</span>
+        <span class="n">hf_tok_kwargs</span><span class="p">[</span><span class="s2">&quot;src_lang&quot;</span><span class="p">],</span> <span class="n">hf_tok_kwargs</span><span class="p">[</span><span class="s2">&quot;tgt_lang&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;de_DE&quot;</span><span class="p">,</span> <span class="s2">&quot;en_XX&quot;</span>
+
+    <span class="n">hf_arch</span><span class="p">,</span> <span class="n">hf_config</span><span class="p">,</span> <span class="n">hf_tokenizer</span><span class="p">,</span> <span class="n">hf_model</span> <span class="o">=</span> <span class="n">BLURR</span><span class="o">.</span><span class="n">get_hf_objects</span><span class="p">(</span><span class="n">model_name</span><span class="p">,</span> <span class="n">model_cls</span><span class="o">=</span><span class="n">model_cls</span><span class="p">,</span> <span class="n">tokenizer_kwargs</span><span class="o">=</span><span class="n">hf_tok_kwargs</span><span class="p">)</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;architecture:</span><span class="se">\t</span><span class="si">{</span><span class="n">hf_arch</span><span class="si">}</span><span class="se">\n</span><span class="s2">tokenizer:</span><span class="se">\t</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">hf_tokenizer</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="c1"># not all architectures include a native pad_token (e.g., gpt2, ctrl, etc...), so we add one here</span>
+    <span class="k">if</span> <span class="n">hf_tokenizer</span><span class="o">.</span><span class="n">pad_token</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">hf_tokenizer</span><span class="o">.</span><span class="n">add_special_tokens</span><span class="p">({</span><span class="s2">&quot;pad_token&quot;</span><span class="p">:</span> <span class="s2">&quot;&lt;pad&gt;&quot;</span><span class="p">})</span>
+        <span class="n">hf_config</span><span class="o">.</span><span class="n">pad_token_id</span> <span class="o">=</span> <span class="n">hf_tokenizer</span><span class="o">.</span><span class="n">get_vocab</span><span class="p">()[</span><span class="s2">&quot;&lt;pad&gt;&quot;</span><span class="p">]</span>
+        <span class="n">hf_model</span><span class="o">.</span><span class="n">resize_token_embeddings</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">hf_tokenizer</span><span class="p">))</span>
+
+    <span class="n">batch_tokenize_tfm</span> <span class="o">=</span> <span class="n">Seq2SeqBatchTokenizeTransform</span><span class="p">(</span>
+        <span class="n">hf_arch</span><span class="p">,</span> <span class="n">hf_config</span><span class="p">,</span> <span class="n">hf_tokenizer</span><span class="p">,</span> <span class="n">hf_model</span><span class="p">,</span> <span class="n">padding</span><span class="o">=</span><span class="s2">&quot;max_length&quot;</span><span class="p">,</span> <span class="n">max_length</span><span class="o">=</span><span class="n">seq_sz</span><span class="p">,</span> <span class="n">max_target_length</span><span class="o">=</span><span class="n">trg_seq_sz</span>
+    <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">add_t5_prefix</span><span class="p">(</span><span class="n">inp</span><span class="p">):</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;translate German to English: </span><span class="si">{</span><span class="n">inp</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">if</span> <span class="p">(</span><span class="n">hf_arch</span> <span class="o">==</span> <span class="s2">&quot;t5&quot;</span><span class="p">)</span> <span class="k">else</span> <span class="n">inp</span>
+
+    <span class="n">blocks</span> <span class="o">=</span> <span class="p">(</span><span class="n">Seq2SeqTextBlock</span><span class="p">(</span><span class="n">batch_tokenize_tfm</span><span class="o">=</span><span class="n">batch_tokenize_tfm</span><span class="p">),</span> <span class="n">noop</span><span class="p">)</span>
+    <span class="n">dblock</span> <span class="o">=</span> <span class="n">DataBlock</span><span class="p">(</span><span class="n">blocks</span><span class="o">=</span><span class="n">blocks</span><span class="p">,</span> <span class="n">get_x</span><span class="o">=</span><span class="n">Pipeline</span><span class="p">([</span><span class="n">ColReader</span><span class="p">(</span><span class="s2">&quot;de&quot;</span><span class="p">),</span> <span class="n">add_t5_prefix</span><span class="p">]),</span> <span class="n">get_y</span><span class="o">=</span><span class="n">ColReader</span><span class="p">(</span><span class="s2">&quot;en&quot;</span><span class="p">),</span> <span class="n">splitter</span><span class="o">=</span><span class="n">RandomSplitter</span><span class="p">())</span>
+
+    <span class="n">dls</span> <span class="o">=</span> <span class="n">dblock</span><span class="o">.</span><span class="n">dataloaders</span><span class="p">(</span><span class="n">wmt_df</span><span class="p">,</span> <span class="n">bs</span><span class="o">=</span><span class="n">bsz</span><span class="p">)</span>
     <span class="n">b</span> <span class="o">=</span> <span class="n">dls</span><span class="o">.</span><span class="n">one_batch</span><span class="p">()</span>
-    
+
     <span class="k">try</span><span class="p">:</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;*** TESTING DataLoaders ***</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;*** TESTING DataLoaders ***</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="n">test_eq</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">b</span><span class="p">),</span> <span class="mi">2</span><span class="p">)</span>
-        <span class="n">test_eq</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">b</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;input_ids&#39;</span><span class="p">]),</span> <span class="n">bsz</span><span class="p">)</span>
-        <span class="n">test_eq</span><span class="p">(</span><span class="n">b</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;input_ids&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Size</span><span class="p">([</span><span class="n">bsz</span><span class="p">,</span> <span class="n">seq_sz</span><span class="p">]))</span>
+        <span class="n">test_eq</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">b</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;input_ids&quot;</span><span class="p">]),</span> <span class="n">bsz</span><span class="p">)</span>
+        <span class="n">test_eq</span><span class="p">(</span><span class="n">b</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;input_ids&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Size</span><span class="p">([</span><span class="n">bsz</span><span class="p">,</span> <span class="n">seq_sz</span><span class="p">]))</span>
         <span class="n">test_eq</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">b</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span> <span class="n">bsz</span><span class="p">)</span>
         <span class="n">test_eq</span><span class="p">(</span><span class="n">b</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Size</span><span class="p">([</span><span class="n">bsz</span><span class="p">,</span> <span class="n">trg_seq_sz</span><span class="p">]))</span>
 
-        <span class="k">if</span> <span class="p">(</span><span class="nb">hasattr</span><span class="p">(</span><span class="n">hf_tokenizer</span><span class="p">,</span> <span class="s1">&#39;add_prefix_space&#39;</span><span class="p">)):</span>
-             <span class="n">test_eq</span><span class="p">(</span><span class="n">hf_tokenizer</span><span class="o">.</span><span class="n">add_prefix_space</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
-            
-        <span class="n">test_results</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">hf_arch</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">hf_tokenizer</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="n">model_name</span><span class="p">,</span> <span class="s1">&#39;PASSED&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">))</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">hf_tokenizer</span><span class="p">,</span> <span class="s2">&quot;add_prefix_space&quot;</span><span class="p">):</span>
+            <span class="n">test_eq</span><span class="p">(</span><span class="n">hf_tokenizer</span><span class="o">.</span><span class="n">add_prefix_space</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+
+        <span class="n">test_results</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">hf_arch</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">hf_tokenizer</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="n">model_name</span><span class="p">,</span> <span class="s2">&quot;PASSED&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">))</span>
         <span class="n">dls</span><span class="o">.</span><span class="n">show_batch</span><span class="p">(</span><span class="n">dataloaders</span><span class="o">=</span><span class="n">dls</span><span class="p">,</span> <span class="n">max_n</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">input_trunc_at</span><span class="o">=</span><span class="mi">1000</span><span class="p">)</span>
-        
+
     <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
-        <span class="n">test_results</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">hf_arch</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">hf_tokenizer</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="n">model_name</span><span class="p">,</span> <span class="s1">&#39;FAILED&#39;</span><span class="p">,</span> <span class="n">err</span><span class="p">))</span>
+        <span class="n">test_results</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">hf_arch</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">hf_tokenizer</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="n">model_name</span><span class="p">,</span> <span class="s2">&quot;FAILED&quot;</span><span class="p">,</span> <span class="n">err</span><span class="p">))</span>
 </pre></div>
 
     </div>
@@ -600,8 +591,7 @@ transformers: 4.9.2
 <div class="output_area">
 
 
-<div class="output_html rendered_html output_subarea ">
-<table border="1" class="dataframe">
+<div class="output_html rendered_html output_subarea "><table border="1" class="dataframe">
   <thead>
     <tr style="text-align: right;">
       <th></th>
@@ -662,8 +652,7 @@ transformers: 4.9.2
       <td></td>
     </tr>
   </tbody>
-</table>
-</div>
+</table></div>
 
 </div>
 
