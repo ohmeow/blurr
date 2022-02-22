@@ -393,6 +393,9 @@ class TokenClassBatchTokenizeTransform(BatchTokenizeTransform):
         hf_tokenizer: PreTrainedTokenizerBase,
         # A Hugging Face model
         hf_model: PreTrainedModel,
+        # To control whether the "labels" are included in your inputs. If they are, the loss will be calculated in
+        # the model's forward function and you can simply use `PreCalculatedLoss` as your `Learner`'s loss function to use it
+        include_labels: bool = True,
         # The token ID that should be ignored when calculating the loss
         ignore_token_id: int = CrossEntropyLossFlat().ignore_index,
         # The labeling strategy you want to apply when associating labels with word tokens
@@ -428,6 +431,7 @@ class TokenClassBatchTokenizeTransform(BatchTokenizeTransform):
             hf_config,
             hf_tokenizer,
             hf_model,
+            include_labels=include_labels,
             ignore_token_id=ignore_token_id,
             max_length=max_length,
             padding=padding,
@@ -456,6 +460,9 @@ class TokenClassBatchTokenizeTransform(BatchTokenizeTransform):
             # batch encoding object we get from calling our *fast* tokenizer
             word_ids = inputs.word_ids(idx) if self.hf_tokenizer.is_fast else self.slow_word_ids_func(self.hf_tokenizer, idx, inputs)
             targ_ids = target_cls(self.labeling_strategy.align_labels_with_tokens(word_ids, s[1].tolist(), None))
+
+            if self.include_labels and len(targ_ids) > 0:
+                s[0]["labels"] = targ_ids
 
             updated_samples.append((s[0], targ_ids))
 

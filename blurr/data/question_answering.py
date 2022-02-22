@@ -13,7 +13,7 @@ from fastai.imports import *
 from fastai.losses import CrossEntropyLossFlat
 from fastai.torch_core import *
 from fastai.torch_imports import *
-from transformers import AutoModelForQuestionAnswering, logging, PretrainedConfig, PreTrainedTokenizerBase, PreTrainedModel
+from transformers import AutoModelForQuestionAnswering, PretrainedConfig, PreTrainedTokenizerBase, PreTrainedModel, logging
 
 from ..utils import BLURR
 from .core import TextInput, BatchTokenizeTransform, Preprocessor, first_blurr_tfm
@@ -221,6 +221,12 @@ class QABatchTokenizeTransform(BatchTokenizeTransform):
             s[0]["cls_index"] = (s[0]["input_ids"] == self.hf_tokenizer.cls_token_id).nonzero()[0]
             # p_mask: mask with 1 for token than cannot be in the answer, else 0 (used by xlnet and xlm)
             s[0]["p_mask"] = s[0]["special_tokens_mask"]
+
+            trgs = s[1:]
+            if self.include_labels and len(trgs) > 0:
+                s[0].pop("labels") # this is added by base class, but is not needed for extractive QA
+                s[0]["start_positions"] = trgs[0]
+                s[0]["end_positions"] = trgs[1]
 
         return samples
 

@@ -20,7 +20,7 @@ from fastai.metrics import accuracy, F1Score, accuracy_multi, F1ScoreMulti
 from fastai.torch_core import *
 from fastai.torch_imports import *
 from fastprogress.fastprogress import progress_bar, master_bar
-from transformers import AutoModelForSequenceClassification, PreTrainedModel,logging
+from transformers import AutoModelForSequenceClassification, PreTrainedModel, logging
 
 from ..utils import BLURR, set_seed
 from ..data.core import TextBlock, TextInput, first_blurr_tfm
@@ -80,11 +80,14 @@ class PreCalculatedLoss(BaseLoss):
     def __call__(self, inp, targ, **kwargs):
         return tensor(0.0)
 
+
 class PreCalculatedCrossEntropyLoss(PreCalculatedLoss, CrossEntropyLossFlat):
     pass
 
+
 class PreCalculatedBCELoss(PreCalculatedLoss, BCEWithLogitsLossFlat):
     pass
+
 
 class PreCalculatedMSELossFlat(PreCalculatedLoss):
     def __init__(self, *args, axis=-1, floatify=True, **kwargs):
@@ -303,8 +306,6 @@ class BlearnerForSequenceClassification(Blearner):
         data,
         # The name or path of the pretrained model you want to fine-tune
         pretrained_model_name_or_path: Optional[Union[str, os.PathLike]],
-        # A function to perform any preprocessing required for your Dataset
-        preprocess_func: Optional[Callable] = None,
         # The attribute in your dataset that contains your raw text
         text_attr: str = "text",
         # The attribute in your dataset that contains your labels/targets
@@ -323,10 +324,6 @@ class BlearnerForSequenceClassification(Blearner):
         hf_arch, hf_config, hf_tokenizer, hf_model = BLURR.get_hf_objects(
             pretrained_model_name_or_path, model_cls=cls.get_model_cls(), config_kwargs={"num_labels": n_labels}
         )
-
-        # if we need to preprocess the raw data before creating our DataLoaders
-        if preprocess_func:
-            data = preprocess_func(data, hf_arch, hf_config, hf_tokenizer, hf_model, text_attr, label_attr)
 
         # not all architectures include a native pad_token (e.g., gpt2, ctrl, etc...), so we add one here
         if hf_tokenizer.pad_token is None:
@@ -366,8 +363,6 @@ class BlearnerForSequenceClassification(Blearner):
         df: pd.DataFrame,
         # The name or path of the pretrained model you want to fine-tune
         pretrained_model_name_or_path: Optional[Union[str, os.PathLike]],
-        # A function to perform any preprocessing required for your Dataset
-        preprocess_func: Optional[Callable] = None,
         # The attribute in your dataset that contains your raw text
         text_attr: str = "text",
         # The attribute in your dataset that contains your labels/targets
@@ -387,7 +382,7 @@ class BlearnerForSequenceClassification(Blearner):
             n_labels = len(label_attr) if (is_listy(label_attr)) else len(df[label_attr].unique())
 
         return cls._create_learner(
-            df, pretrained_model_name_or_path, preprocess_func, text_attr, label_attr, n_labels, dblock_splitter, dl_kwargs, learner_kwargs
+            df, pretrained_model_name_or_path, text_attr, label_attr, n_labels, dblock_splitter, dl_kwargs, learner_kwargs
         )
 
     @classmethod
@@ -397,8 +392,6 @@ class BlearnerForSequenceClassification(Blearner):
         csv_file: Union[Path, str],
         # The name or path of the pretrained model you want to fine-tune
         pretrained_model_name_or_path: Optional[Union[str, os.PathLike]],
-        # A function to perform any preprocessing required for your Dataset
-        preprocess_func: Optional[Callable] = None,
         # The attribute in your dataset that contains your raw text
         text_attr: str = "text",
         # The attribute in your dataset that contains your labels/targets
@@ -418,7 +411,6 @@ class BlearnerForSequenceClassification(Blearner):
         return cls.from_dataframe(
             df,
             pretrained_model_name_or_path=pretrained_model_name_or_path,
-            preprocess_func=preprocess_func,
             text_attr=text_attr,
             label_attr=label_attr,
             n_labels=n_labels,
@@ -434,8 +426,6 @@ class BlearnerForSequenceClassification(Blearner):
         ds: List[Dict],
         # The name or path of the pretrained model you want to fine-tune
         pretrained_model_name_or_path: Optional[Union[str, os.PathLike]],
-        # A function to perform any preprocessing required for your Dataset
-        preprocess_func: Callable = Optional[None],
         # The attribute in your dataset that contains your raw text
         text_attr: str = "text",
         # The attribute in your dataset that contains your labels/targets
@@ -455,5 +445,5 @@ class BlearnerForSequenceClassification(Blearner):
             n_labels = len(label_attr) if (is_listy(label_attr)) else len(set([item[label_attr] for item in ds]))
 
         return cls._create_learner(
-            ds, pretrained_model_name_or_path, preprocess_func, text_attr, label_attr, n_labels, dblock_splitter, dl_kwargs, learner_kwargs
+            ds, pretrained_model_name_or_path, text_attr, label_attr, n_labels, dblock_splitter, dl_kwargs, learner_kwargs
         )

@@ -277,7 +277,7 @@ class BatchTokenizeTransform(Transform):
         for idx, sample in enumerate(samples):
             inps = {k: inputs[k][idx] for k in d_keys}
             if is_dict:
-                inps = {**inps, **{k: v for k,v in sample[0].items() if k not in ['text']}}
+                inps = {**inps, **{k: v for k, v in sample[0].items() if k not in ["text"]}}
 
             trgs = sample[1:]
             if self.include_labels and len(trgs) > 0:
@@ -597,7 +597,7 @@ def first_blurr_tfm(
     # Your fast.ai `DataLoaders
     dls: DataLoaders,
     # The Blurr transforms to look for in order
-    tfms: List[Transform] = [BatchTokenizeTransform, BatchDecodeTransform, BlurrBatchDecodeTransform]
+    tfms: List[Transform] = [BatchTokenizeTransform, BatchDecodeTransform, BlurrBatchDecodeTransform],
 ):
     """
     This convenience method will find the first Blurr transform required for methods such as

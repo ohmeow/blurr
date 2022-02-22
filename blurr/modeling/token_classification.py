@@ -20,11 +20,11 @@ from fastai.torch_core import *
 from fastai.torch_imports import *
 from fastprogress.fastprogress import progress_bar, master_bar
 from seqeval import metrics as seq_metrics
-from transformers import AutoModelForTokenClassification, logging, PretrainedConfig, PreTrainedTokenizerBase, PreTrainedModel
+from transformers import AutoModelForTokenClassification, PreTrainedTokenizerBase, PreTrainedModel, logging
 
 from ..utils import BLURR
 from ..data.core import TextBlock, BlurrDataLoader, get_blurr_tfm, first_blurr_tfm
-from .core import PreCalculatedLoss, Blearner
+from .core import PreCalculatedCrossEntropyLoss, Blearner
 from ..data.token_classification import (
     get_token_labels_from_input_ids,
     get_word_labels_from_token_labels,
@@ -183,7 +183,6 @@ def show_results(
         word_labels = get_word_labels_from_token_labels(hf_arch, hf_tokenizer, tok_labels)
         # align "words" with "predicted" labels
         word_pred_labels = [pred_lbl for lbl_id, pred_lbl in zip(trg, ast.literal_eval(pred[0])) if lbl_id != ignore_token_id]
-
         # stringify list of (word,label) for example
         res.append(
             [
@@ -196,11 +195,12 @@ def show_results(
 
 
 # Cell
-class TokenAggregationStrategies():
+class TokenAggregationStrategies:
     """
     Provides the equivalanet of Hugging Face's token classification pipeline's `aggregation_strategy` support across various
     token classication tasks (e.g, NER, POS, chunking, etc...)
     """
+
     def __init__(self, hf_tokenizer: PreTrainedTokenizerBase, labels: List[str], non_entity_label: str = "O") -> None:
         self.hf_tokenizer = hf_tokenizer
         self.labels = labels
@@ -251,10 +251,7 @@ class TokenAggregationStrategies():
             if strategy_name == "average":
                 word_scores[word_ids[idx]] = [probs[idx][pred]]
 
-            while (
-                idx+1 < len(preds)
-                and self.labels[preds[idx+1]] == f"I-{label}"
-            ):
+            while idx + 1 < len(preds) and self.labels[preds[idx + 1]] == f"I-{label}":
                 idx += 1
                 _, end = offsets[idx]
 
@@ -271,9 +268,9 @@ class TokenAggregationStrategies():
 
             # The score is the mean of all the scores of the tokens in that grouped entity
             if strategy_name == "average":
-                score = np.mean([np.mean(v).item() for k,v in word_scores.items()])
+                score = np.mean([np.mean(v).item() for k, v in word_scores.items()])
             else:
-                score = np.max(all_scores).item() if strategy_name == 'max' else np.mean(all_scores).item()
+                score = np.max(all_scores).item() if strategy_name == "max" else np.mean(all_scores).item()
 
             word = text[start:end]
             results.append({"entity_group": label, "score": score, "word": word, "start": start.item(), "end": end.item()})
@@ -281,6 +278,7 @@ class TokenAggregationStrategies():
             idx += 1
 
         return results
+
 
 # Cell
 @patch
@@ -319,7 +317,9 @@ def blurr_predict_tokens(
 
     # build our results
     results = []
-    for input_idx, (text, input_ids, offsets, preds, probs) in enumerate(zip(items, inputs_input_ids, inputs_offsets, predictions, probabilities)):
+    for input_idx, (text, input_ids, offsets, preds, probs) in enumerate(
+        zip(items, inputs_input_ids, inputs_offsets, predictions, probabilities)
+    ):
         # build our results for the current input
         tokens = inputs.tokens(input_idx)
         word_ids = inputs.word_ids(input_idx) if hf_tokenizer.is_fast else slow_word_ids_func(hf_tokenizer, input_idx, inputs)
@@ -352,8 +352,6 @@ class BlearnerForTokenClassification(Blearner):
         data,
         # The name or path of the pretrained model you want to fine-tune
         pretrained_model_name_or_path: Optional[Union[str, os.PathLike]],
-        # A function to perform any preprocessing required for your Dataset
-        preprocess_func: Callable = None,
         # The attribute in your dataset that contains a list of your tokens
         tokens_attr: List[str] = "tokens",
         # The attribute in your dataset that contains the entity labels for each token in your raw text
@@ -366,17 +364,13 @@ class BlearnerForTokenClassification(Blearner):
         # Any kwargs to pass to your `DataLoaders`
         dl_kwargs: dict = {},
         # Any kwargs to pass to your task specific `Blearner`
-        learner_kwargs: dict = {}
+        learner_kwargs: dict = {},
     ):
         # get our hf objects
         n_labels = len(labels)
         hf_arch, hf_config, hf_tokenizer, hf_model = BLURR.get_hf_objects(
             pretrained_model_name_or_path, model_cls=cls.get_model_cls(), config_kwargs={"num_labels": n_labels}
         )
-
-        # if we need to preprocess the raw data before creating our DataLoaders
-        if preprocess_func:
-            data = preprocess_func(data, hf_arch, hf_config, hf_tokenizer, hf_model, tokens_attr, token_labels_attr, labels)
 
         # not all architectures include a native pad_token (e.g., gpt2, ctrl, etc...), so we add one here
         if hf_tokenizer.pad_token is None:
@@ -413,8 +407,6 @@ class BlearnerForTokenClassification(Blearner):
         df: pd.DataFrame,
         # The name or path of the pretrained model you want to fine-tune
         pretrained_model_name_or_path: Optional[Union[str, os.PathLike]],
-        # A function to perform any preprocessing required for your Dataset
-        preprocess_func: Callable = None,
         # The attribute in your dataset that contains a list of your tokens
         tokens_attr: List[str] = "tokens",
         # The attribute in your dataset that contains the entity labels for each token in your raw text
@@ -427,7 +419,7 @@ class BlearnerForTokenClassification(Blearner):
         # Any kwargs to pass to your `DataLoaders`
         dl_kwargs: dict = {},
         # Any kwargs to pass to your task specific `Blearner`
-        learner_kwargs: dict = {}
+        learner_kwargs: dict = {},
     ):
         # we need to tell transformer how many labels/classes to expect
         if labels is None:
@@ -436,7 +428,6 @@ class BlearnerForTokenClassification(Blearner):
         return cls._create_learner(
             df,
             pretrained_model_name_or_path,
-            preprocess_func,
             tokens_attr,
             token_labels_attr,
             labels,
@@ -452,8 +443,6 @@ class BlearnerForTokenClassification(Blearner):
         csv_file: Union[Path, str],
         # The name or path of the pretrained model you want to fine-tune
         pretrained_model_name_or_path: Optional[Union[str, os.PathLike]],
-        # A function to perform any preprocessing required for your Dataset
-        preprocess_func: Callable = None,
         # The attribute in your dataset that contains a list of your tokens
         tokens_attr: List[str] = "tokens",
         # The attribute in your dataset that contains the entity labels for each token in your raw text
@@ -464,16 +453,15 @@ class BlearnerForTokenClassification(Blearner):
         # See [here](https://docs.fast.ai/data.transforms.html#Split) for a list of fast.ai splitters
         dblock_splitter: Callable = ColSplitter(),
         # Any kwargs to pass to your `DataLoaders`
-        dl_kwargs: dict ={},
+        dl_kwargs: dict = {},
         # Any kwargs to pass to your task specific `Blearner`
-        learner_kwargs: dict = {}
+        learner_kwargs: dict = {},
     ):
         df = pd.read_csv(csv_file)
 
         return cls.from_dataframe(
             df,
             pretrained_model_name_or_path=pretrained_model_name_or_path,
-            preprocess_func=preprocess_func,
             tokens_attr=tokens_attr,
             token_labels_attr=token_labels_attr,
             labels=labels,
@@ -489,8 +477,6 @@ class BlearnerForTokenClassification(Blearner):
         ds: List[Dict],
         # The name or path of the pretrained model you want to fine-tune
         pretrained_model_name_or_path: Optional[Union[str, os.PathLike]],
-        # A function to perform any preprocessing required for your Dataset
-        preprocess_func: Callable = None,
         # The attribute in your dataset that contains a list of your tokens
         tokens_attr: List[str] = "tokens",
         # The attribute in your dataset that contains the entity labels for each token in your raw text
@@ -501,9 +487,9 @@ class BlearnerForTokenClassification(Blearner):
         # See [here](https://docs.fast.ai/data.transforms.html#Split) for a list of fast.ai splitters
         dblock_splitter: Callable = RandomSplitter(),
         # Any kwargs to pass to your `DataLoaders`
-        dl_kwargs: dict ={},
+        dl_kwargs: dict = {},
         # Any kwargs to pass to your task specific `Blearner`
-        learner_kwargs: dict ={}
+        learner_kwargs: dict = {},
     ):
 
         # we need to tell transformer how many labels/classes to expect
@@ -516,7 +502,6 @@ class BlearnerForTokenClassification(Blearner):
         return cls._create_learner(
             ds,
             pretrained_model_name_or_path,
-            preprocess_func,
             tokens_attr,
             token_labels_attr,
             labels,

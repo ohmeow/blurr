@@ -17,7 +17,6 @@ from transformers import AutoConfig, AutoTokenizer, PretrainedConfig, PreTrained
 logging.set_verbosity_error()
 
 
-
 # Cell
 class Singleton:
     def __init__(self, cls):
@@ -30,9 +29,7 @@ class Singleton:
 
 
 # Cell
-def str_to_type(
-    typename: str # The name of a type as a string
-) -> type: # Returns the actual type
+def str_to_type(typename: str) -> type:  # The name of a type as a string  # Returns the actual type
     "Converts a type represented as a string to the actual class"
     return getattr(sys.modules[__name__], typename)
 
@@ -42,7 +39,7 @@ def print_versions(
     # A string of space delimited package names or a list of package names
     packages: Union[str, List[str]]
 ):
-    """ Prints the name and version of one or more packages in your environment"""
+    """Prints the name and version of one or more packages in your environment"""
     packages = packages.split(" ") if isinstance(packages, str) else packages
 
     for item in packages:
@@ -211,7 +208,6 @@ BLURR = BlurrUtil()
 
 # Cell
 HF_TASKS = Enum("HF_TASKS_ALL", BLURR.get_tasks())
-
 
 
 # Cell
