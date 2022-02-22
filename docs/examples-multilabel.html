@@ -93,6 +93,7 @@ transformers: 4.16.2
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">raw_datasets</span> <span class="o">=</span> <span class="n">datasets</span><span class="o">.</span><span class="n">load_dataset</span><span class="p">(</span><span class="s2">&quot;civil_comments&quot;</span><span class="p">)</span>
+<span class="n">raw_datasets</span>
 </pre></div>
 
     </div>
@@ -111,6 +112,29 @@ Reusing dataset civil_comments (/home/wgilliam/.cache/huggingface/datasets/civil
 </div>
 </div>
 
+<div class="output_area">
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>DatasetDict({
+    train: Dataset({
+        features: [&#39;identity_attack&#39;, &#39;insult&#39;, &#39;obscene&#39;, &#39;severe_toxicity&#39;, &#39;sexual_explicit&#39;, &#39;text&#39;, &#39;threat&#39;, &#39;toxicity&#39;],
+        num_rows: 1804874
+    })
+    validation: Dataset({
+        features: [&#39;identity_attack&#39;, &#39;insult&#39;, &#39;obscene&#39;, &#39;severe_toxicity&#39;, &#39;sexual_explicit&#39;, &#39;text&#39;, &#39;threat&#39;, &#39;toxicity&#39;],
+        num_rows: 97320
+    })
+    test: Dataset({
+        features: [&#39;identity_attack&#39;, &#39;insult&#39;, &#39;obscene&#39;, &#39;severe_toxicity&#39;, &#39;sexual_explicit&#39;, &#39;text&#39;, &#39;threat&#39;, &#39;toxicity&#39;],
+        num_rows: 97320
+    })
+})</pre>
+</div>
+
+</div>
+
 </div>
 </div>
 
@@ -124,8 +148,8 @@ Reusing dataset civil_comments (/home/wgilliam/.cache/huggingface/datasets/civil
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">raw_train_df</span> <span class="o">=</span> <span class="n">raw_datasets</span><span class="p">[</span><span class="s2">&quot;train&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">10000</span><span class="p">))</span><span class="o">.</span><span class="n">to_pandas</span><span class="p">()</span>
-<span class="n">raw_valid_df</span> <span class="o">=</span> <span class="n">raw_datasets</span><span class="p">[</span><span class="s2">&quot;validation&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">2000</span><span class="p">))</span><span class="o">.</span><span class="n">to_pandas</span><span class="p">()</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">raw_train_df</span> <span class="o">=</span> <span class="n">raw_datasets</span><span class="p">[</span><span class="s2">&quot;train&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">shuffle</span><span class="p">(</span><span class="n">seed</span><span class="o">=</span><span class="mi">42</span><span class="p">)</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">10000</span><span class="p">))</span><span class="o">.</span><span class="n">to_pandas</span><span class="p">()</span>
+<span class="n">raw_valid_df</span> <span class="o">=</span> <span class="n">raw_datasets</span><span class="p">[</span><span class="s2">&quot;validation&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">shuffle</span><span class="p">(</span><span class="n">seed</span><span class="o">=</span><span class="mi">42</span><span class="p">)</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">2000</span><span class="p">))</span><span class="o">.</span><span class="n">to_pandas</span><span class="p">()</span>
 
 <span class="c1"># --- Option 2: Full dataset (using the predefined training and validation sets) ---</span>
 <span class="c1"># raw_train_df = pd.DataFrame(raw_datasets[&#39;train&#39;], columns=list(raw_datasets[&#39;train&#39;].features.keys()))</span>
@@ -144,6 +168,15 @@ Reusing dataset civil_comments (/home/wgilliam/.cache/huggingface/datasets/civil
 
 <div class="output_wrapper">
 <div class="output">
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stderr output_text">
+<pre>Loading cached shuffled indices for dataset at /home/wgilliam/.cache/huggingface/datasets/civil_comments/default/0.9.0/e7a3aacd2ab7d135fa958e7209d10b1fa03807d44c486e3c34897aa08ea8ffab/cache-8b5168c3a65cf5ce.arrow
+Loading cached shuffled indices for dataset at /home/wgilliam/.cache/huggingface/datasets/civil_comments/default/0.9.0/e7a3aacd2ab7d135fa958e7209d10b1fa03807d44c486e3c34897aa08ea8ffab/cache-0ee0733b0b10f4a7.arrow
+</pre>
+</div>
+</div>
 
 <div class="output_area">
 
@@ -211,62 +244,62 @@ Reusing dataset civil_comments (/home/wgilliam/.cache/huggingface/datasets/civil
   <tbody>
     <tr>
       <th>0</th>
-      <td>0.000000</td>
-      <td>0.00000</td>
       <td>0.0</td>
+      <td>0.200000</td>
+      <td>0.300000</td>
       <td>0.000000</td>
       <td>0.0</td>
-      <td>This is so cool. It's like, 'would you want your mother to read this??' Really great idea, well done!</td>
+      <td>Socialists? What the hell does that have to do with climate science? Good grief.</td>
       <td>0.0</td>
-      <td>0.000000</td>
+      <td>0.300000</td>
       <td>False</td>
     </tr>
     <tr>
       <th>1</th>
-      <td>0.000000</td>
-      <td>0.00000</td>
       <td>0.0</td>
-      <td>0.000000</td>
+      <td>0.794118</td>
+      <td>0.088235</td>
+      <td>0.029412</td>
       <td>0.0</td>
-      <td>Thank you!! This would make my life a lot less anxiety-inducing. Keep it up, and don't let anyone get in your way!</td>
+      <td>And I always thought that Eric Trump was the dumbest son.  Sorry, Eric!</td>
       <td>0.0</td>
-      <td>0.000000</td>
+      <td>0.808824</td>
       <td>False</td>
     </tr>
     <tr>
       <th>2</th>
-      <td>0.000000</td>
-      <td>0.00000</td>
       <td>0.0</td>
       <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
       <td>0.0</td>
-      <td>This is such an urgent design problem; kudos to you for taking it on. Very impressive!</td>
+      <td>I’m disappointed there’s no report from CB on the transportation committee meeting today and the discussion about eminent domain.  It centered on the Bloodbank and the HART CEO’s lack of knowledge that HART filed a lawsuit against the Bloodbank the day before Councilmember Anderson asked about the status of that property (May 16).\n\nTo sum it up, Murthy nor the board knew that HART was suing the Bloodbank.  It’s troubling that a lawsuit can be started without explicit authority from the CEO and board.\n\nThe other part of the discussion that was disappointing was the deputy corporation co...</td>
       <td>0.0</td>
       <td>0.000000</td>
       <td>False</td>
     </tr>
     <tr>
       <th>3</th>
-      <td>0.000000</td>
-      <td>0.00000</td>
       <td>0.0</td>
+      <td>0.166667</td>
+      <td>0.000000</td>
       <td>0.000000</td>
       <td>0.0</td>
-      <td>Is this something I'll be able to install on my site? When will you be releasing it?</td>
+      <td>Nothing like subsidizing a country that is threatening trade barriers with us.\n\nBut again we are talking about Kathleen and her cronies.  I do love electric cars, but in a province that still allows gas blowing leaf blowers, classic cars that admit 100 times what normal ICE emit, two cycle outboard marine engines, idiotic two cycle jet skis and snowmobiles....and the list goes on and on. If she wants real easy environmental solutions get rid of these dinosaur beasts. Its easy, politically tough in certain jurisdictions, and quit pandering to the US car companies and wealthy individuals w...</td>
       <td>0.0</td>
-      <td>0.000000</td>
+      <td>0.166667</td>
       <td>False</td>
     </tr>
     <tr>
       <th>4</th>
-      <td>0.021277</td>
-      <td>0.87234</td>
       <td>0.0</td>
-      <td>0.021277</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
       <td>0.0</td>
-      <td>haha you guys are a bunch of losers.</td>
+      <td>The only way to save the rhino is to legalize the trade in horn and allow the farmers to breed the animals and make a profit. Nobody is seriously thinking that legal trade will satisfy the demand or stop the poaching entirely, but farmers will have enough money to jack up security. Rhino numbers will undoubtedly increase, and isn't that the primary consideration? One thing we know: the ban is a disaster. This entire poaching catastrophe has taken place with the BAN INTACT. We can't be entirely sure what will work, but we know without a doubt what is not working: the BAN. Kill the ban or ki...</td>
       <td>0.0</td>
-      <td>0.893617</td>
+      <td>0.000000</td>
       <td>False</td>
     </tr>
   </tbody>
@@ -381,7 +414,7 @@ Reusing dataset civil_comments (/home/wgilliam/.cache/huggingface/datasets/civil
       <td>0</td>
       <td>0</td>
       <td>0</td>
-      <td>This is so cool. It's like, 'would you want your mother to read this??' Really great idea, well done!</td>
+      <td>Socialists? What the hell does that have to do with climate science? Good grief.</td>
       <td>0</td>
       <td>0</td>
       <td>False</td>
@@ -389,13 +422,13 @@ Reusing dataset civil_comments (/home/wgilliam/.cache/huggingface/datasets/civil
     <tr>
       <th>1</th>
       <td>0</td>
+      <td>1</td>
       <td>0</td>
       <td>0</td>
       <td>0</td>
+      <td>And I always thought that Eric Trump was the dumbest son.  Sorry, Eric!</td>
       <td>0</td>
-      <td>Thank you!! This would make my life a lot less anxiety-inducing. Keep it up, and don't let anyone get in your way!</td>
-      <td>0</td>
-      <td>0</td>
+      <td>1</td>
       <td>False</td>
     </tr>
     <tr>
@@ -405,7 +438,11 @@ Reusing dataset civil_comments (/home/wgilliam/.cache/huggingface/datasets/civil
       <td>0</td>
       <td>0</td>
       <td>0</td>
-      <td>This is such an urgent design problem; kudos to you for taking it on. Very impressive!</td>
+      <td>I’m disappointed there’s no report from CB on the transportation committee meeting today and the discussion about eminent domain.  It centered on the Bloodbank and the HART CEO’s lack of knowledge that HART filed a lawsuit against the Bloodbank the day before Councilmember Anderson asked about the status of that property (May 16).
+
+To sum it up, Murthy nor the board knew that HART was suing the Bloodbank.  It’s troubling that a lawsuit can be started without explicit authority from the CEO and board.
+
+The other part of the discussion that was disappointing was the deputy corporation counse...</td>
       <td>0</td>
       <td>0</td>
       <td>False</td>
@@ -417,7 +454,9 @@ Reusing dataset civil_comments (/home/wgilliam/.cache/huggingface/datasets/civil
       <td>0</td>
       <td>0</td>
       <td>0</td>
-      <td>Is this something I'll be able to install on my site? When will you be releasing it?</td>
+      <td>Nothing like subsidizing a country that is threatening trade barriers with us.
+
+But again we are talking about Kathleen and her cronies.  I do love electric cars, but in a province that still allows gas blowing leaf blowers, classic cars that admit 100 times what normal ICE emit, two cycle outboard marine engines, idiotic two cycle jet skis and snowmobiles....and the list goes on and on. If she wants real easy environmental solutions get rid of these dinosaur beasts. Its easy, politically tough in certain jurisdictions, and quit pandering to the US car companies and wealthy individuals who...</td>
       <td>0</td>
       <td>0</td>
       <td>False</td>
@@ -425,13 +464,13 @@ Reusing dataset civil_comments (/home/wgilliam/.cache/huggingface/datasets/civil
     <tr>
       <th>4</th>
       <td>0</td>
-      <td>1</td>
       <td>0</td>
       <td>0</td>
       <td>0</td>
-      <td>haha you guys are a bunch of losers.</td>
       <td>0</td>
-      <td>1</td>
+      <td>The only way to save the rhino is to legalize the trade in horn and allow the farmers to breed the animals and make a profit. Nobody is seriously thinking that legal trade will satisfy the demand or stop the poaching entirely, but farmers will have enough money to jack up security. Rhino numbers will undoubtedly increase, and isn't that the primary consideration? One thing we know: the ban is a disaster. This entire poaching catastrophe has taken place with the BAN INTACT. We can't be entirely sure what will work, but we know without a doubt what is not working: the BAN. Kill the ban or ki...</td>
+      <td>0</td>
+      <td>0</td>
       <td>False</td>
     </tr>
   </tbody>
@@ -607,13 +646,13 @@ Reusing dataset civil_comments (/home/wgilliam/.cache/huggingface/datasets/civil
     <span class="n">dls</span><span class="p">,</span>
     <span class="n">model</span><span class="p">,</span>
     <span class="n">opt_func</span><span class="o">=</span><span class="n">partial</span><span class="p">(</span><span class="n">Adam</span><span class="p">),</span>
-    <span class="n">loss_func</span><span class="o">=</span><span class="n">PreCalculatedBCELoss</span><span class="p">(),</span> <span class="c1"># BCEWithLogitsLossFlat(),</span>
+    <span class="n">loss_func</span><span class="o">=</span><span class="n">BCEWithLogitsLossFlat</span><span class="p">(),</span> <span class="c1">#PreCalculatedBCELoss()</span>
     <span class="n">metrics</span><span class="o">=</span><span class="p">[</span><span class="n">partial</span><span class="p">(</span><span class="n">accuracy_multi</span><span class="p">,</span> <span class="n">thresh</span><span class="o">=</span><span class="mf">0.2</span><span class="p">)],</span>
     <span class="n">cbs</span><span class="o">=</span><span class="p">[</span><span class="n">BaseModelCallback</span><span class="p">],</span>
     <span class="n">splitter</span><span class="o">=</span><span class="n">blurr_splitter</span><span class="p">,</span>
 <span class="p">)</span><span class="o">.</span><span class="n">to_fp16</span><span class="p">()</span>
 
-<span class="n">learn</span><span class="o">.</span><span class="n">loss_func</span><span class="o">.</span><span class="n">thresh</span> <span class="o">=</span> <span class="mf">0.2</span>
+<span class="n">learn</span><span class="o">.</span><span class="n">loss_func</span><span class="o">.</span><span class="n">thresh</span> <span class="o">=</span> <span class="mf">0.15</span>
 <span class="n">learn</span><span class="o">.</span><span class="n">freeze</span><span class="p">()</span>
 </pre></div>
 
@@ -665,10 +704,10 @@ Reusing dataset civil_comments (/home/wgilliam/.cache/huggingface/datasets/civil
 
 <div class="output_text output_subarea output_execute_result">
 <pre>(torch.Size([4, 7]),
- SequenceClassifierOutput(loss=TensorMultiCategory(0.7306, device=&#39;cuda:1&#39;, grad_fn=&lt;AliasBackward0&gt;), logits=tensor([[ 0.1651, -0.0486,  0.1606,  0.0890, -0.0652,  0.0174,  0.1820],
-         [ 0.1949, -0.0781,  0.1461,  0.0850, -0.0577,  0.0305,  0.1821],
-         [ 0.1811, -0.0787,  0.1451,  0.0795, -0.0290,  0.0319,  0.1615],
-         [ 0.1804, -0.0760,  0.1438,  0.0824, -0.0140,  0.0327,  0.1537]],
+ SequenceClassifierOutput(loss=TensorMultiCategory(0.7054, device=&#39;cuda:1&#39;, grad_fn=&lt;AliasBackward0&gt;), logits=tensor([[ 0.0056,  0.0058,  0.0899, -0.0384, -0.0436,  0.1465,  0.0253],
+         [-0.0124, -0.0015,  0.0711, -0.0317, -0.0454,  0.1252,  0.0474],
+         [-0.0108,  0.0043,  0.0814, -0.0313, -0.0343,  0.1184,  0.0344],
+         [-0.0164,  0.0045,  0.0682, -0.0369, -0.0569,  0.1384,  0.0486]],
         device=&#39;cuda:1&#39;, grad_fn=&lt;AddmmBackward0&gt;), hidden_states=None, attentions=None))</pre>
 </div>
 
@@ -715,7 +754,7 @@ Reusing dataset civil_comments (/home/wgilliam/.cache/huggingface/datasets/civil
 
 
 <div class="output_text output_subarea output_execute_result">
-<pre>SuggestedLRs(valley=0.005248074419796467)</pre>
+<pre>SuggestedLRs(valley=0.0012022644514217973)</pre>
 </div>
 
 </div>
@@ -725,7 +764,7 @@ Reusing dataset civil_comments (/home/wgilliam/.cache/huggingface/datasets/civil
 
 
 <div class="output_png output_subarea ">
-<img src="data:image/png;base64,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"
+<img src="data:image/png;base64,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"
 >
 </div>
 
@@ -770,10 +809,70 @@ Reusing dataset civil_comments (/home/wgilliam/.cache/huggingface/datasets/civil
   <tbody>
     <tr>
       <td>0</td>
-      <td>0.058627</td>
-      <td>0.065105</td>
-      <td>0.984999</td>
-      <td>01:10</td>
+      <td>0.063359</td>
+      <td>0.063856</td>
+      <td>0.984928</td>
+      <td>01:12</td>
+    </tr>
+  </tbody>
+</table></div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    {% endraw %}
+
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">learn</span><span class="o">.</span><span class="n">show_results</span><span class="p">(</span><span class="n">learner</span><span class="o">=</span><span class="n">learn</span><span class="p">,</span> <span class="n">max_n</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+<div class="output_html rendered_html output_subarea "></div>
+
+</div>
+
+<div class="output_area">
+
+
+<div class="output_html rendered_html output_subarea "><table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>text</th>
+      <th>target</th>
+      <th>prediction</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>Richard Ellmyer - I think most sane, patriotic Americans hear and agree with your total exasperation at this lawless, ridiculous situation.  However, while I agree I am very disturbed at the approach by the FBI SACs in Nevada and Portland, I think you are missing who is responsible here.  On January 4, the White House made a public announcement that this terrorist takeover of U.S. Federal Government land and buildings was "ultimately a local law enforcement matter."  Then after that, "Obama administration leaders" told Reuters that the Obama administration had "ordered" federal law enforcement not to have a "conflict" with these Sovereign Citizen terrorists in Oregon. So while there is plenty of blame to go around, I think the focus needs to be on the person who is actually making the REAL decisions here, and it is not ultimately FBI Portland SAC.  I urge Oregonians to contact the White House and also presidential candidates and DEMAND a restoral of the rule of law to this anarchic situation.  More children, more citizens are put at risk, and history has shown the failure to act in Nevada in 2014 ultimately cost the lives of other Americans in Las Vegas down the road from such terrorist supporters.  It is time our leadership spends time doing THEIR JOB, not playing political games with media.</td>
+      <td>[]</td>
+      <td>[]</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>"But local economist Paul Brewbaker said the monetary savings of abandoning the project doesn’t take into account how such a move would derail Honolulu’s efforts to achieve higher urban density and improved urban mobility, and would further discourage companies from investing in Hawaii"\n\nAgain, rail was first touted for traffic decongestion, then for affordable housing, but it's  really for TOD - Transit Oriented Development - for corporations to develop in Hawaii. It may sound okay from a business standpoint but Oahu is a small island. \n\nWhat about the small private mom-and-pop property owners along the Honolulu Rail Corridor? Will the city/state abuse its powers of eminent domain to pave the way for bigger private corporate development? When will the public know about this little secret of Honolulu Rail?\n\nThe  Rail powers-that-be acted intransigently to railroad this project.  They grossly UNDER-estimated the projected costs, KNOWING they could blackmail Oahu into this present stage.</td>
+      <td>[]</td>
+      <td>[]</td>
     </tr>
   </tbody>
 </table></div>
@@ -836,10 +935,10 @@ Reusing dataset civil_comments (/home/wgilliam/.cache/huggingface/datasets/civil
   <tbody>
     <tr>
       <td>0</td>
-      <td>0.051616</td>
-      <td>0.065715</td>
-      <td>0.984999</td>
-      <td>02:14</td>
+      <td>0.066212</td>
+      <td>0.063625</td>
+      <td>0.984928</td>
+      <td>02:17</td>
     </tr>
   </tbody>
 </table></div>
@@ -891,13 +990,13 @@ Reusing dataset civil_comments (/home/wgilliam/.cache/huggingface/datasets/civil
   <tbody>
     <tr>
       <th>0</th>
-      <td>Everyone tries to hack everyone else.   I have no doubt Russia would try to hack even canada.   However, the US has been doing the same, if we recall Snowden.\n\nEven Merkel's phone conversations were being tapped by the CIA. \n\nThe real purpose of this issue is political.  Trump is upset because people are trying to imply that he didn't deserve his victory, that the Russians helped him.  It's an ego thing.  Good CEOs sometimes have giant egos.  I have no problem with that as long as they produce results, I gladly buy shares in their company.\n\nOtoh, Russia did invade Crimea recently, and their missile brought down a commercial airliner and killed lots of innocent people.  The world has a right to be annoyed at the Russians.\n\nIf you want to find evidence of Russians hacking, you will find them.  But if you want to find China or some guy in a basement somewhere, I have no doubt you can find the same as well.  Whether they succeeded or not, that's hard to prove, but there's lots of blackhats</td>
+      <td>Richard Ellmyer - I think most sane, patriotic Americans hear and agree with your total exasperation at this lawless, ridiculous situation.  However, while I agree I am very disturbed at the approach by the FBI SACs in Nevada and Portland, I think you are missing who is responsible here.  On January 4, the White House made a public announcement that this terrorist takeover of U.S. Federal Government land and buildings was "ultimately a local law enforcement matter."  Then after that, "Obama administration leaders" told Reuters that the Obama administration had "ordered" federal law enforcement not to have a "conflict" with these Sovereign Citizen terrorists in Oregon. So while there is plenty of blame to go around, I think the focus needs to be on the person who is actually making the REAL decisions here, and it is not ultimately FBI Portland SAC.  I urge Oregonians to contact the White House and also presidential candidates and DEMAND a restoral of the rule of law to this anarchic situation.  More children, more citizens are put at risk, and history has shown the failure to act in Nevada in 2014 ultimately cost the lives of other Americans in Las Vegas down the road from such terrorist supporters.  It is time our leadership spends time doing THEIR JOB, not playing political games with media.</td>
       <td>[]</td>
       <td>[]</td>
     </tr>
     <tr>
       <th>1</th>
-      <td>And, just as expected, it's quite alright to slag Catholics on these pages.  Civil Comments, yeah sure.\n\n1 poster made a sneering reference is very poor taste 'bout Catholics on another thread, and as predicted, rather than apologizing for something made in poor taste just to slag me, that poster doubled down.  Who me?  No way.  It's the victim who can't take a joke, takes things the wrong way.  It's always that way, that's what bullies do, they blame others, their fault.\n\nEven had another poster rush to his defence.  Wasn't that just precious?  Strength in #s.\n\nCoulds done the proper thing, coulda taken the high road, but no, easier just to feign innocence.\n\nThat's fine, no problem, just hope it's OK to do likewise back at that person, some would say he's a bigot, but I won't go there.  A withdraw woulda sufficed, but apparently it's the Catholics fault.\n\nI guess it's OK to use somebody's religion to make a joke and their fault if they can't take the joke.\n\nPretty low, man, pretty low</td>
+      <td>Clearly, Emily is more orientated toward lessening our (locally) homeless problem than Skov, and certainly doesn't advocate situations as you described, nor taking-on the nation's homeless problem.  She's also far more aware of the connection between the big developer tax exemptions and affordable housing.\n\nEmily also opposes rezoning R1 neighborhoods (SW-SAZ), and advocates a community-driven process (refinement plan), rather than a top-down city forced policy.  \n\nMeanwhile Skov has been silent, until the city finally shelved the SW-SAZ.  Then subsequently he followed the city, as expected, and said at the City Club debate on May 15th 2016, the community will need to be “deeply involved”, but he still hasn’t qualified his position on rezoning R-1 neighborhoods.  At the mayor's Sept 19th forum on the matter, Skov testified and I've never heard anybody say so much, and mean so little.\n\nEmily will stand-up against Ruiz and the incompetent city staff far better than a city rubber-stamper.</td>
       <td>[]</td>
       <td>[]</td>
     </tr>
@@ -957,13 +1056,13 @@ Reusing dataset civil_comments (/home/wgilliam/.cache/huggingface/datasets/civil
 <div class="output_text output_subarea output_execute_result">
 <pre>[(((#2) [&#39;insult&#39;,&#39;toxicity&#39;],),
   [[False, True, False, True, False, False, False]],
-  [[0.0007236572564579546,
-    0.028274601325392723,
-    0.0050211502239108086,
-    0.03941638767719269,
-    1.3184367162466515e-06,
-    0.0016613906482234597,
-    0.00014883848780300468]])]</pre>
+  [[0.003469890682026744,
+    0.03926875442266464,
+    0.0035106493160128593,
+    0.05223085731267929,
+    1.6280514500977006e-06,
+    0.001151399570517242,
+    0.0006771942717023194]])]</pre>
 </div>
 
 </div>
@@ -981,8 +1080,8 @@ Reusing dataset civil_comments (/home/wgilliam/.cache/huggingface/datasets/civil
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">preds</span><span class="p">,</span> <span class="n">targs</span> <span class="o">=</span> <span class="n">learn</span><span class="o">.</span><span class="n">get_preds</span><span class="p">(</span><span class="n">with_loss</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-<span class="n">preds</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">targs</span><span class="o">.</span><span class="n">shape</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">preds</span><span class="p">,</span> <span class="n">targs</span><span class="p">,</span> <span class="n">losses</span> <span class="o">=</span> <span class="n">learn</span><span class="o">.</span><span class="n">get_preds</span><span class="p">(</span><span class="n">with_loss</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">preds</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">targs</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">losses</span><span class="o">.</span><span class="n">shape</span>
 </pre></div>
 
     </div>
@@ -1004,7 +1103,7 @@ Reusing dataset civil_comments (/home/wgilliam/.cache/huggingface/datasets/civil
 
 
 <div class="output_text output_subarea output_execute_result">
-<pre>(torch.Size([2000, 7]), torch.Size([2000, 7]))</pre>
+<pre>(torch.Size([2000, 7]), torch.Size([2000, 7]), torch.Size([2000]))</pre>
 </div>
 
 </div>
@@ -1091,7 +1190,7 @@ Reusing dataset civil_comments (/home/wgilliam/.cache/huggingface/datasets/civil
     <span class="n">toxic_df</span><span class="p">,</span> <span class="n">pretrained_model_name</span><span class="p">,</span> <span class="n">text_attr</span><span class="o">=</span><span class="s2">&quot;text&quot;</span><span class="p">,</span> <span class="n">label_attr</span><span class="o">=</span><span class="n">lbl_cols</span><span class="p">,</span> <span class="n">dl_kwargs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;bs&quot;</span><span class="p">:</span> <span class="mi">4</span><span class="p">}</span>
 <span class="p">)</span>
 
-<span class="n">learn</span><span class="o">.</span><span class="n">loss_func</span><span class="o">.</span><span class="n">thresh</span> <span class="o">=</span> <span class="mf">0.02</span>
+<span class="n">learn</span><span class="o">.</span><span class="n">loss_func</span><span class="o">.</span><span class="n">thresh</span> <span class="o">=</span> <span class="mf">0.1</span>
 </pre></div>
 
     </div>
@@ -1141,11 +1240,11 @@ Reusing dataset civil_comments (/home/wgilliam/.cache/huggingface/datasets/civil
   <tbody>
     <tr>
       <td>0</td>
-      <td>0.041047</td>
-      <td>0.066081</td>
+      <td>0.077175</td>
+      <td>0.064086</td>
       <td>0.000000</td>
-      <td>0.984999</td>
-      <td>01:04</td>
+      <td>0.984928</td>
+      <td>01:03</td>
     </tr>
   </tbody>
 </table></div>
@@ -1215,15 +1314,15 @@ Reusing dataset civil_comments (/home/wgilliam/.cache/huggingface/datasets/civil
   <tbody>
     <tr>
       <th>0</th>
-      <td>Everyone tries to hack everyone else.   I have no doubt Russia would try to hack even canada.   However, the US has been doing the same, if we recall Snowden.\n\nEven Merkel's phone conversations were being tapped by the CIA. \n\nThe real purpose of this issue is political.  Trump is upset because people are trying to imply that he didn't deserve his victory, that the Russians helped him.  It's an ego thing.  Good CEOs sometimes have giant egos.  I have no problem with that as long as they produce results, I gladly buy shares in their company.\n\nOtoh, Russia did invade Crimea recently, and their missile brought down a commercial airliner and killed lots of innocent people.  The world has a right to be annoyed at the Russians.\n\nIf you want to find evidence of Russians hacking, you will find them.  But if you want to find China or some guy in a basement somewhere, I have no doubt you can find the same as well.  Whether they succeeded or not, that's hard to prove, but there's lots of blackhats</td>
+      <td>Richard Ellmyer - I think most sane, patriotic Americans hear and agree with your total exasperation at this lawless, ridiculous situation.  However, while I agree I am very disturbed at the approach by the FBI SACs in Nevada and Portland, I think you are missing who is responsible here.  On January 4, the White House made a public announcement that this terrorist takeover of U.S. Federal Government land and buildings was "ultimately a local law enforcement matter."  Then after that, "Obama administration leaders" told Reuters that the Obama administration had "ordered" federal law enforcement not to have a "conflict" with these Sovereign Citizen terrorists in Oregon. So while there is plenty of blame to go around, I think the focus needs to be on the person who is actually making the REAL decisions here, and it is not ultimately FBI Portland SAC.  I urge Oregonians to contact the White House and also presidential candidates and DEMAND a restoral of the rule of law to this anarchic situation.  More children, more citizens are put at risk, and history has shown the failure to act in Nevada in 2014 ultimately cost the lives of other Americans in Las Vegas down the road from such terrorist supporters.  It is time our leadership spends time doing THEIR JOB, not playing political games with media.</td>
       <td>[]</td>
-      <td>[insult, toxicity]</td>
+      <td>[]</td>
     </tr>
     <tr>
       <th>1</th>
-      <td>Continued...\n\nCat:  Once again it is truly difficult to understand what you are attempting to say by your incoherent comments / gibberish. If you posted in plain English and complete sentences, it might.....might but I cannot say for sure.....help get your points across. \nI don't know why you are so concerned about a market downturn. As you've said, you are mostly and have been for years, in cash. A 30% downturn would not bother me whatsoever. And I doubt that it would bother many true income (dividend / distribution) investors. I can see though how such a decline might scare someone who needs a 10%+ return on their money to pay their bills and who relies solely on trading the market to make those returns. Especially when they won't go short. That wuld scare me too. But for those dividend investors who just cash their dividend cheques / checks or better yet don't need that money and reinvest it and who would benefit from a market decline, share prices don't mean a whole lot.\nSFI</td>
+      <td>"The most notable shift during the quarter was the strong increase to real estate – from 30 per cent of the portfolio to 32 per cent, an increase of 6.6 per cent."  If these rich investors are betting on Canadian real estate, they're going to lose a bundle, better to invest in American real estate at this point.  This is what Prem Watsa says about Canadian real estate: "In April of 2017, Watsa brought attention to concerns of a real estate bubble in Toronto. Watsa asserts that most Canadian banks cannot survive a 50% drop in the value of real estate. "It's going to come down, and a lot of people are going to get hurt" said Watsa during Fairfax's annual general meeting."  https://en.wikipedia.org/wiki/Prem_Watsa\n\nSide bar: Home Capital Group is close to bankruptcy and Walton Group files for creditor protection, two major Canadian RE institutions... Equitable is the next one in the batter box of bankruptcy, they had to borrow money too.   Looking awfully like the Canadian Lehman moment.</td>
       <td>[]</td>
-      <td>[insult, toxicity]</td>
+      <td>[]</td>
     </tr>
   </tbody>
 </table></div>
@@ -1262,15 +1361,15 @@ Reusing dataset civil_comments (/home/wgilliam/.cache/huggingface/datasets/civil
 
 
 <div class="output_text output_subarea output_execute_result">
-<pre>[(((#2) [&#39;insult&#39;,&#39;toxicity&#39;],),
-  [[False, True, False, True, False, False, False]],
-  [[0.0002814286563079804,
-    0.034543476998806,
-    0.0029982218984514475,
-    0.042017482221126556,
-    5.5763802464525725e-08,
-    0.0013961137738078833,
-    1.595290632394608e-05]])]</pre>
+<pre>[(((#0) [],),
+  [[False, False, False, False, False, False, False]],
+  [[0.004305047914385796,
+    0.0510530099272728,
+    0.003411045530810952,
+    0.07158450782299042,
+    7.013055665083812e-07,
+    0.0003604147641453892,
+    0.0005645937635563314]])]</pre>
 </div>
 
 </div>
@@ -1468,21 +1567,6 @@ Reusing dataset civil_comments (/home/wgilliam/.cache/huggingface/datasets/civil
 </div>
 </div>
 
-<div class="output_wrapper">
-<div class="output">
-
-<div class="output_area">
-
-<div class="output_subarea output_stream output_stderr output_text">
-<pre>Loading cached processed dataset at /home/wgilliam/.cache/huggingface/datasets/civil_comments/default/0.9.0/e7a3aacd2ab7d135fa958e7209d10b1fa03807d44c486e3c34897aa08ea8ffab/cache-9fafb36afdab0472.arrow
-Loading cached processed dataset at /home/wgilliam/.cache/huggingface/datasets/civil_comments/default/0.9.0/e7a3aacd2ab7d135fa958e7209d10b1fa03807d44c486e3c34897aa08ea8ffab/cache-764f62d98456def5.arrow
-</pre>
-</div>
-</div>
-
-</div>
-</div>
-
 </div>
     {% endraw %}
 
@@ -1558,7 +1642,7 @@ Loading cached processed dataset at /home/wgilliam/.cache/huggingface/datasets/c
 
 
 <div class="output_text output_subarea output_execute_result">
-<pre>(torch.Size([8, 161]), torch.Size([8, 7]))</pre>
+<pre>(torch.Size([8, 109]), torch.Size([8, 7]))</pre>
 </div>
 
 </div>
@@ -1600,13 +1684,13 @@ Loading cached processed dataset at /home/wgilliam/.cache/huggingface/datasets/c
   <tbody>
     <tr>
       <th>0</th>
-      <td>These are terrorists.  They  are not people like me.  They are not Oregonians, but invaders from Arizona, Utah, Idaho, Nevada, Ohio, Tennesee, Alabama, and more.  They are used to being chased by the law in their own jurisdictions, not used to being the law.  They are criminals.</td>
+      <td>The preserve was sold big time to the public, the only version available to the public before the ballot was the version with the preserve. Yes it was deleted from the ballot language, but that is a pull the wool over the eyes trick that gives Metro the excuse to not be accountable. But they and the zoo are accountable for their statements -- which were unequivacally that there would be an offiste preserve for the elephants.  This just proves that we cannot trust our government to tell the trut</td>
       <td>[]</td>
     </tr>
     <tr>
       <th>1</th>
-      <td>Relentless attempts by liberal pundits to prop-up the notion that we live in a nation deranged and distorted by "White racism" is driven, it seems, by their fear that this ideological (sacred) "cash-cow" is dying, and must be resuscitated at all costs. To use a movie review as an excuse to dredge up what amounts to a liberal conceit, with no basis in reality, is particularly offensive. \n\nSince the'reviewer' raised the issue, it's worth mentioning: while systemic "White-racism" went extinct deca</td>
-      <td>[]</td>
+      <td>This is just freaking sad. Another great place lost to greedy developers building more huge apartments in an already crowded area. So long Portland, you are becoming the worst city ever.</td>
+      <td>[obscene, toxicity]</td>
     </tr>
   </tbody>
 </table></div>
@@ -1644,7 +1728,7 @@ Loading cached processed dataset at /home/wgilliam/.cache/huggingface/datasets/c
     <span class="n">splitter</span><span class="o">=</span><span class="n">blurr_splitter</span><span class="p">,</span>
 <span class="p">)</span><span class="o">.</span><span class="n">to_fp16</span><span class="p">()</span>
 
-<span class="n">learn</span><span class="o">.</span><span class="n">loss_func</span><span class="o">.</span><span class="n">thresh</span> <span class="o">=</span> <span class="mf">0.2</span>
+<span class="n">learn</span><span class="o">.</span><span class="n">loss_func</span><span class="o">.</span><span class="n">thresh</span> <span class="o">=</span> <span class="mf">0.1</span>
 <span class="n">learn</span><span class="o">.</span><span class="n">freeze</span><span class="p">()</span>
 </pre></div>
 
@@ -1688,10 +1772,10 @@ Loading cached processed dataset at /home/wgilliam/.cache/huggingface/datasets/c
   <tbody>
     <tr>
       <td>0</td>
-      <td>0.068528</td>
-      <td>0.078455</td>
+      <td>0.085665</td>
+      <td>0.185167</td>
       <td>0.983714</td>
-      <td>00:12</td>
+      <td>00:10</td>
     </tr>
   </tbody>
 </table></div>
@@ -1743,13 +1827,13 @@ Loading cached processed dataset at /home/wgilliam/.cache/huggingface/datasets/c
   <tbody>
     <tr>
       <th>0</th>
-      <td>That's why I qualified my allegation with "odds are very good".</td>
+      <td>Donkeys by 20 yo! 🐴</td>
       <td>[]</td>
       <td>[]</td>
     </tr>
     <tr>
       <th>1</th>
-      <td>If the law forbids him from owning or possessing firearms, why did the court order HPD to give back his weapons after he plead guilty and was convicted of the offense they now say disqualifies him from gun ownership??</td>
+      <td>Why, in your feeble mind both helping and placing flags cannot be done for some reason? These soldiers died under the flag, give them the respect to rest under it. Quit calling displaying the flag littering.</td>
       <td>[]</td>
       <td>[]</td>
     </tr>

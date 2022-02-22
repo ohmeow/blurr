@@ -168,6 +168,9 @@ class QABatchTokenizeTransform(BatchTokenizeTransform):
         hf_tokenizer: PreTrainedTokenizerBase,
         # A Hugging Face model
         hf_model: PreTrainedModel,
+        # To control whether the "labels" are included in your inputs. If they are, the loss will be calculated in
+        # the model's forward function and you can simply use `PreCalculatedLoss` as your `Learner`'s loss function to use it
+        include_labels: bool = True,
         # The token ID that should be ignored when calculating the loss
         ignore_token_id=CrossEntropyLossFlat().ignore_index,
         # To control the length of the padding/truncation. It can be an integer or None,
@@ -200,6 +203,7 @@ class QABatchTokenizeTransform(BatchTokenizeTransform):
             hf_config,
             hf_tokenizer,
             hf_model,
+            include_labels=include_labels,
             ignore_token_id=ignore_token_id,
             max_length=max_length,
             padding=padding,
