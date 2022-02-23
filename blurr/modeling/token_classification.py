@@ -337,6 +337,9 @@ class BlearnerForTokenClassification(Blearner):
     def __init__(self, dls: DataLoaders, hf_model: PreTrainedModel, **kwargs):
         super().__init__(dls, hf_model, **kwargs)
 
+    def predict(self, text):
+        return self.blurr_predict_tokens(text)
+
     @classmethod
     def get_model_cls(self):
         return AutoModelForTokenClassification
@@ -346,10 +349,10 @@ class BlearnerForTokenClassification(Blearner):
         return TokenClassMetricsCallback()
 
     @classmethod
-    def _create_learner(
+    def from_data(
         cls,
         # Your raw dataset
-        data,
+        data: Union[pd.DataFrame, Path, str, List[Dict]],
         # The name or path of the pretrained model you want to fine-tune
         pretrained_model_name_or_path: Optional[Union[str, os.PathLike]],
         # The attribute in your dataset that contains a list of your tokens
@@ -357,15 +360,30 @@ class BlearnerForTokenClassification(Blearner):
         # The attribute in your dataset that contains the entity labels for each token in your raw text
         token_labels_attr: List[str] = "token_labels",
         # The unique entity labels (or vocab) available in your dataset
-        labels: List[str] = None,
+        labels: Optional[List[str]] = None,
         # A function that will split your Dataset into a training and validation set
         # See [here](https://docs.fast.ai/data.transforms.html#Split) for a list of fast.ai splitters
-        dblock_splitter: Callable = RandomSplitter(),
+        dblock_splitter: Optional[Callable] = None,
         # Any kwargs to pass to your `DataLoaders`
         dl_kwargs: dict = {},
         # Any kwargs to pass to your task specific `Blearner`
         learner_kwargs: dict = {},
     ):
+        # if we get a path/str then we're loading something like a .csv file
+        if isinstance(data, Path) or isinstance(data, str):
+            data = pd.read_csv(data)
+
+        # we need to tell transformer how many labels/classes to expect
+        if labels is None:
+            if isinstance(data, pd.DataFrame):
+                labels = sorted(list(set([lbls for sublist in data[token_labels_attr].tolist() for lbls in sublist])))
+            else:
+                labels = sorted(list(set([item[token_labels_attr] for item in data])))
+
+        # infer our datablock splitter if None
+        if dblock_splitter is None:
+            dblock_splitter = ColSplitter() if hasattr(data, "is_valid") else RandomSplitter()
+
         # get our hf objects
         n_labels = len(labels)
         hf_arch, hf_config, hf_tokenizer, hf_model = BLURR.get_hf_objects(
@@ -378,134 +396,14 @@ class BlearnerForTokenClassification(Blearner):
             hf_config.pad_token_id = hf_tokenizer.get_vocab()["<pad>"]
             hf_model.resize_token_embeddings(len(hf_tokenizer))
 
-        # build getters
-        if isinstance(data, pd.DataFrame):
-            get_x = ColReader(tokens_attr)
-            get_y = ColReader(token_labels_attr)
-        else:
-            get_x = ItemGetter(tokens_attr)
-            get_y = ItemGetter(token_labels_attr)
-
         batch_tok_tfm = TokenClassBatchTokenizeTransform(hf_arch, hf_config, hf_tokenizer, hf_model)
-
         blocks = (
             TextBlock(batch_tokenize_tfm=batch_tok_tfm, input_return_type=TokenClassTextInput),
             TokenCategoryBlock(vocab=labels),
         )
 
-        dblock = DataBlock(blocks=blocks, get_x=get_x, get_y=get_y, splitter=dblock_splitter)
-
+        dblock = DataBlock(blocks=blocks, get_x=ItemGetter(tokens_attr), get_y=ItemGetter(token_labels_attr), splitter=dblock_splitter)
         dls = dblock.dataloaders(data, **dl_kwargs.copy())
 
         # return BLearner instance
         return cls(dls, hf_model, **learner_kwargs.copy())
-
-    @classmethod
-    def from_dataframe(
-        cls,
-        # Your pandas DataFrame
-        df: pd.DataFrame,
-        # The name or path of the pretrained model you want to fine-tune
-        pretrained_model_name_or_path: Optional[Union[str, os.PathLike]],
-        # The attribute in your dataset that contains a list of your tokens
-        tokens_attr: List[str] = "tokens",
-        # The attribute in your dataset that contains the entity labels for each token in your raw text
-        token_labels_attr: List[str] = "token_labels",
-        # The unique entity labels (or vocab) available in your dataset
-        labels: List[str] = None,
-        # A function that will split your Dataset into a training and validation set
-        # See [here](https://docs.fast.ai/data.transforms.html#Split) for a list of fast.ai splitters
-        dblock_splitter: Callable = ColSplitter(),
-        # Any kwargs to pass to your `DataLoaders`
-        dl_kwargs: dict = {},
-        # Any kwargs to pass to your task specific `Blearner`
-        learner_kwargs: dict = {},
-    ):
-        # we need to tell transformer how many labels/classes to expect
-        if labels is None:
-            labels = sorted(list(set([lbls for sublist in df[token_labels_attr].tolist() for lbls in sublist])))
-
-        return cls._create_learner(
-            df,
-            pretrained_model_name_or_path,
-            tokens_attr,
-            token_labels_attr,
-            labels,
-            dblock_splitter,
-            dl_kwargs,
-            learner_kwargs,
-        )
-
-    @classmethod
-    def from_csv(
-        cls,
-        # The path to your csv file
-        csv_file: Union[Path, str],
-        # The name or path of the pretrained model you want to fine-tune
-        pretrained_model_name_or_path: Optional[Union[str, os.PathLike]],
-        # The attribute in your dataset that contains a list of your tokens
-        tokens_attr: List[str] = "tokens",
-        # The attribute in your dataset that contains the entity labels for each token in your raw text
-        token_labels_attr: List[str] = "token_labels",
-        # The unique entity labels (or vocab) available in your dataset
-        labels: List[str] = None,
-        # A function that will split your Dataset into a training and validation set
-        # See [here](https://docs.fast.ai/data.transforms.html#Split) for a list of fast.ai splitters
-        dblock_splitter: Callable = ColSplitter(),
-        # Any kwargs to pass to your `DataLoaders`
-        dl_kwargs: dict = {},
-        # Any kwargs to pass to your task specific `Blearner`
-        learner_kwargs: dict = {},
-    ):
-        df = pd.read_csv(csv_file)
-
-        return cls.from_dataframe(
-            df,
-            pretrained_model_name_or_path=pretrained_model_name_or_path,
-            tokens_attr=tokens_attr,
-            token_labels_attr=token_labels_attr,
-            labels=labels,
-            dblock_splitter=dblock_splitter,
-            dl_kwargs=dl_kwargs,
-            learner_kwargs=learner_kwargs,
-        )
-
-    @classmethod
-    def from_dictionaries(
-        cls,
-        # A list of dictionaries
-        ds: List[Dict],
-        # The name or path of the pretrained model you want to fine-tune
-        pretrained_model_name_or_path: Optional[Union[str, os.PathLike]],
-        # The attribute in your dataset that contains a list of your tokens
-        tokens_attr: List[str] = "tokens",
-        # The attribute in your dataset that contains the entity labels for each token in your raw text
-        token_labels_attr: List[str] = "token_labels",
-        # The unique entity labels (or vocab) available in your dataset
-        labels: List[str] = None,
-        # A function that will split your Dataset into a training and validation set
-        # See [here](https://docs.fast.ai/data.transforms.html#Split) for a list of fast.ai splitters
-        dblock_splitter: Callable = RandomSplitter(),
-        # Any kwargs to pass to your `DataLoaders`
-        dl_kwargs: dict = {},
-        # Any kwargs to pass to your task specific `Blearner`
-        learner_kwargs: dict = {},
-    ):
-
-        # we need to tell transformer how many labels/classes to expect
-        if labels is None:
-            all_labels = []
-            for item in ds:
-                all_labels += item[token_labels_attr]
-            labels = sorted(list(set(all_labels)))
-
-        return cls._create_learner(
-            ds,
-            pretrained_model_name_or_path,
-            tokens_attr,
-            token_labels_attr,
-            labels,
-            dblock_splitter,
-            dl_kwargs,
-            learner_kwargs,
-        )
