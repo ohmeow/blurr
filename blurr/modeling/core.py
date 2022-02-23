@@ -14,7 +14,7 @@ from fastai.data.block import DataBlock, ColReader, CategoryBlock, MultiCategory
 from fastai.data.core import DataLoader, DataLoaders, TfmdDL
 from fastai.imports import *
 from fastai.learner import *
-from fastai.losses import BaseLoss, BCEWithLogitsLossFlat, CrossEntropyLossFlat
+from fastai.losses import BaseLoss, BCEWithLogitsLossFlat, CrossEntropyLossFlat, MSELossFlat
 from fastai.optimizer import Adam, OptimWrapper, params
 from fastai.metrics import accuracy, F1Score, accuracy_multi, F1ScoreMulti
 from fastai.torch_core import *
@@ -210,15 +210,32 @@ def blurr_predict(self: Learner, items, rm_type_tfms=None):
     trg_tfms = self.dls.tfms[self.dls.n_inp :]
 
     outs = []
+    is_multilabel = isinstance(self.loss_func, BCEWithLogitsLossFlat)
     probs, decoded_preds = L(probs), L(decoded_preds)
     for i in range(len(items)):
         item_probs = probs.itemgot(i)
         item_dec_preds = decoded_preds.itemgot(i)
-        item_dec_labels = tuplify([tfm.decode(item_dec_preds[tfm_idx]) for tfm_idx, tfm in enumerate(trg_tfms)])
+        item_dec_labels = tuplify([tfm.decode(item_dec_preds[tfm_idx]) for tfm_idx, tfm in enumerate(trg_tfms)])[0]
         if trg_labels:
             item_dec_labels = [trg_labels[int(lbl)] for item in item_dec_labels for lbl in item]
 
-        outs.append((item_dec_labels, [p.tolist() if p.dim() > 0 else p.item() for p in item_dec_preds], [p.tolist() for p in item_probs]))
+        res = {}
+        if is_multilabel:
+            res["labels"] = list(item_dec_labels)
+            msk = item_dec_preds[0]
+            res["scores"] = item_probs[0][msk].tolist()
+            res["class_indices"] = [int(val) for val in item_dec_preds[0]]
+        else:
+            res["label"] = item_dec_labels[0]
+            res["score"] = item_probs[0].tolist()[item_dec_preds[0]]
+            res["class_index"] = item_dec_preds[0].item()
+
+        res["class_labels"] = trg_labels if trg_labels else self.dls.vocab
+        res["probs"] = item_probs[0].tolist()
+
+        outs.append(res)
+
+        # outs.append((item_dec_labels, [p.tolist() if p.dim() > 0 else p.item() for p in item_dec_preds], [p.tolist() for p in item_probs]))
 
     return outs
 
@@ -262,7 +279,7 @@ def blurr_generate(self: Learner, inp, **kwargs):
 class Blearner(Learner):
     def __init__(
         self,
-        # Your fast.ai DataLoaders
+        # Your fastai DataLoaders
         dls: DataLoaders,
         # Your pretrained Hugging Face transformer
         hf_model: PreTrainedModel,
@@ -270,10 +287,24 @@ class Blearner(Learner):
         base_model_cb: BaseModelCallback = BaseModelCallback,
         # Any kwargs you want to pass to your `BLearner`
         **kwargs
-    ):
+    ) -> Learner:
+        """
+        Returns a Blurr friendly `Learner` ready for model training
+        """
         model = kwargs.get("model", BaseModelWrapper(hf_model))
-        loss_func = kwargs.pop("loss_func", dls.loss_func if hasattr(dls, "loss_func") else None)
         splitter = kwargs.pop("splitter", blurr_splitter)
+        loss_func = kwargs.pop("loss_func", dls.loss_func if hasattr(dls, "loss_func") else None)
+
+        # if we are letting the Hugging Face model calculate the loss for us (which is the default), we update
+        # our loss function here to simply used the correct `PrecalculatedLoss`
+        tfm = first_blurr_tfm(dls)
+        if tfm.include_labels:
+            if isinstance(loss_func, CrossEntropyLossFlat):
+                loss_func = PreCalculatedCrossEntropyLoss()
+            elif isinstance(loss_func, BCEWithLogitsLossFlat):
+                loss_func = PreCalculatedBCELoss()
+            elif isinstance(loss_func.func, nn.MSELoss):
+                loss_func = PreCalculatedMSELossFlat()
 
         super().__init__(dls, model=model, loss_func=loss_func, splitter=splitter, **kwargs)
 
@@ -286,6 +317,9 @@ class Blearner(Learner):
 class BlearnerForSequenceClassification(Blearner):
     def __init__(self, dls: DataLoaders, hf_model: PreTrainedModel, **kwargs):
         super().__init__(dls, hf_model, **kwargs)
+
+    def predict(self, text):
+        return self.blurr_predict(text)
 
     @classmethod
     def get_model_cls(self):
@@ -300,10 +334,10 @@ class BlearnerForSequenceClassification(Blearner):
         return r[attr] if (isinstance(attr, str)) else [r[inp] for inp in attr]
 
     @classmethod
-    def _create_learner(
+    def from_data(
         cls,
         # Your raw dataset
-        data,
+        data: Union[pd.DataFrame, Path, str, List[Dict]],
         # The name or path of the pretrained model you want to fine-tune
         pretrained_model_name_or_path: Optional[Union[str, os.PathLike]],
         # The attribute in your dataset that contains your raw text
@@ -311,15 +345,30 @@ class BlearnerForSequenceClassification(Blearner):
         # The attribute in your dataset that contains your labels/targets
         label_attr: str = "label",
         # The number of labels/classes your model should predict
-        n_labels: int = 2,
+        n_labels: Optional[int] = None,
         # A function that will split your Dataset into a training and validation set
         # See [here](https://docs.fast.ai/data.transforms.html#Split) for a list of fast.ai splitters
-        dblock_splitter: Callable = RandomSplitter(),
+        dblock_splitter: Optional[Callable] = None,
         # Any kwargs to pass to your `DataLoaders`
         dl_kwargs: dict = {},
         # Any kwargs to pass to your task specific `Blearner`
         learner_kwargs: dict = {},
     ):
+        # if we get a path/str then we're loading something like a .csv file
+        if isinstance(data, Path) or isinstance(data, str):
+            data = pd.read_csv(data)
+
+        # we need to tell transformer how many labels/classes to expect
+        if n_labels is None:
+            if isinstance(data, pd.DataFrame):
+                n_labels = len(label_attr) if (is_listy(label_attr)) else len(data[label_attr].unique())
+            else:
+                n_labels = len(label_attr) if (is_listy(label_attr)) else len(set([item[label_attr] for item in data]))
+
+        # infer our datablock splitter if None
+        if dblock_splitter is None:
+            dblock_splitter = ColSplitter() if hasattr(data, "is_valid") else RandomSplitter()
+
         # get our hf objects
         hf_arch, hf_config, hf_tokenizer, hf_model = BLURR.get_hf_objects(
             pretrained_model_name_or_path, model_cls=cls.get_model_cls(), config_kwargs={"num_labels": n_labels}
@@ -331,14 +380,6 @@ class BlearnerForSequenceClassification(Blearner):
             hf_config.pad_token_id = hf_tokenizer.get_vocab()["<pad>"]
             hf_model.resize_token_embeddings(len(hf_tokenizer))
 
-        # defin our input/target getters
-        if isinstance(data, pd.DataFrame):
-            get_x = ColReader(text_attr)
-            get_y = ColReader(label_attr)
-        else:
-            get_x = partial(cls._get_x, attr=text_attr)
-            get_y = partial(cls._get_y, attr=label_attr)
-
         # infer loss function and default metrics
         if is_listy(label_attr):
             trg_block = MultiCategoryBlock(encoded=True, vocab=label_attr)
@@ -349,101 +390,11 @@ class BlearnerForSequenceClassification(Blearner):
 
         # build our DataBlock and DataLoaders
         blocks = (TextBlock(hf_arch, hf_config, hf_tokenizer, hf_model), trg_block)
-        dblock = DataBlock(blocks=blocks, get_x=get_x, get_y=get_y, splitter=dblock_splitter)
+        dblock = DataBlock(
+            blocks=blocks, get_x=partial(cls._get_x, attr=text_attr), get_y=partial(cls._get_y, attr=label_attr), splitter=dblock_splitter
+        )
 
         dls = dblock.dataloaders(data, **dl_kwargs.copy())
 
         # return BLearner instance
         return cls(dls, hf_model, **learner_kwargs.copy())
-
-    @classmethod
-    def from_dataframe(
-        cls,
-        # Your pandas DataFrame
-        df: pd.DataFrame,
-        # The name or path of the pretrained model you want to fine-tune
-        pretrained_model_name_or_path: Optional[Union[str, os.PathLike]],
-        # The attribute in your dataset that contains your raw text
-        text_attr: str = "text",
-        # The attribute in your dataset that contains your labels/targets
-        label_attr: str = "label",
-        # The number of labels/classes your model should predict
-        n_labels: Optional[int] = None,
-        # A function that will split your Dataset into a training and validation set
-        # See [here](https://docs.fast.ai/data.transforms.html#Split) for a list of fast.ai splitters
-        dblock_splitter: Callable = ColSplitter(),
-        # Any kwargs to pass to your `DataLoaders`
-        dl_kwargs: dict = {},
-        # Any kwargs to pass to your task specific `Blearner`
-        learner_kwargs: dict = {},
-    ):
-        # we need to tell transformer how many labels/classes to expect
-        if n_labels is None:
-            n_labels = len(label_attr) if (is_listy(label_attr)) else len(df[label_attr].unique())
-
-        return cls._create_learner(
-            df, pretrained_model_name_or_path, text_attr, label_attr, n_labels, dblock_splitter, dl_kwargs, learner_kwargs
-        )
-
-    @classmethod
-    def from_csv(
-        cls,
-        # The path to your csv file
-        csv_file: Union[Path, str],
-        # The name or path of the pretrained model you want to fine-tune
-        pretrained_model_name_or_path: Optional[Union[str, os.PathLike]],
-        # The attribute in your dataset that contains your raw text
-        text_attr: str = "text",
-        # The attribute in your dataset that contains your labels/targets
-        label_attr: str = "label",
-        # The number of labels/classes your model should predict
-        n_labels: int = Optional[None],
-        # A function that will split your Dataset into a training and validation set
-        # See [here](https://docs.fast.ai/data.transforms.html#Split) for a list of fast.ai splitters
-        dblock_splitter: Callable = ColSplitter(),
-        # Any kwargs to pass to your `DataLoaders`
-        dl_kwargs={},
-        # Any kwargs to pass to your task specific `Blearner`
-        learner_kwargs={},
-    ):
-        df = pd.read_csv(csv_file)
-
-        return cls.from_dataframe(
-            df,
-            pretrained_model_name_or_path=pretrained_model_name_or_path,
-            text_attr=text_attr,
-            label_attr=label_attr,
-            n_labels=n_labels,
-            dblock_splitter=dblock_splitter,
-            dl_kwargs=dl_kwargs,
-            learner_kwargs=learner_kwargs,
-        )
-
-    @classmethod
-    def from_dictionaries(
-        cls,
-        # A list of dictionaries
-        ds: List[Dict],
-        # The name or path of the pretrained model you want to fine-tune
-        pretrained_model_name_or_path: Optional[Union[str, os.PathLike]],
-        # The attribute in your dataset that contains your raw text
-        text_attr: str = "text",
-        # The attribute in your dataset that contains your labels/targets
-        label_attr: str = "label",
-        # The number of labels/classes your model should predict
-        n_labels: int = Optional[None],
-        # A function that will split your Dataset into a training and validation set
-        # See [here](https://docs.fast.ai/data.transforms.html#Split) for a list of fast.ai splitters
-        dblock_splitter: Callable = RandomSplitter(),
-        # Any kwargs to pass to your `DataLoaders`
-        dl_kwargs: dict = {},
-        # Any kwargs to pass to your task specific `Blearner`
-        learner_kwargs: dict = {},
-    ):
-        # we need to tell transformer how many labels/classes to expect
-        if n_labels is None:
-            n_labels = len(label_attr) if (is_listy(label_attr)) else len(set([item[label_attr] for item in ds]))
-
-        return cls._create_learner(
-            ds, pretrained_model_name_or_path, text_attr, label_attr, n_labels, dblock_splitter, dl_kwargs, learner_kwargs
-        )
