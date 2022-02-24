@@ -59,7 +59,7 @@ class Preprocessor:
         # concatenate the validation dataset if it is included
         if validation_df is not None:
             valid_df = validation_df.copy()
-            # add an `is_valid_col` column to both training/validation DataFrames to indicate what data is part of the validation set
+            # add an "is_valid_col" column to both training/validation DataFrames to indicate what data is part of the validation set
             if self.is_valid_attr:
                 valid_df[self.is_valid_attr] = True
                 df[self.is_valid_attr] = False
@@ -73,7 +73,7 @@ class Preprocessor:
 
         # concatenate the validation dataset if it is included
         if validation_ds is not None:
-            # add an `is_valid_col` column to both training/validation DataFrames to indicate what data is part of
+            # add an "is_valid_col" column to both training/validation DataFrames to indicate what data is part of
             # the validation set
             if self.is_valid_attr:
                 validation_ds = validation_ds.add_column(self.is_valid_attr, [True] * len(validation_ds))
@@ -135,12 +135,12 @@ class ClassificationPreprocessor(Preprocessor):
         # convert even single "labels" to a list to make things easier
         label_cols = listify(self.label_attrs)
 
-        # if `is_multilabel`, convert all targets to an int, 0 or 1, rounding floats if necessary
+        # if "is_multilabel", convert all targets to an int, 0 or 1, rounding floats if necessary
         if self.is_multilabel:
             for label_col in label_cols:
                 df[label_col] = df[label_col].apply(lambda v: int(bool(max(0, round(v)))))
 
-        # if a `label_mapping` is included, add a "[label_col]_name" field with the label Ids converted to their label names
+        # if a "label_mapping" is included, add a "[label_col]_name" field with the label Ids converted to their label names
         if self.label_mapping:
             for label_col in label_cols:
                 df[f"{label_col}_name"] = df[label_col].apply(lambda v: self.label_mapping[v])

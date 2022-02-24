@@ -6,8 +6,8 @@ title: modeling.token_classification
 keywords: fastai
 sidebar: home_sidebar
 
-summary: "This module contains custom models, loss functions, custom splitters, etc... for token classification tasks like named entity recognition."
-description: "This module contains custom models, loss functions, custom splitters, etc... for token classification tasks like named entity recognition."
+summary: "This module contains custom models, loss functions, custom splitters, etc... for token classification tasks (e.g., Named entity recognition (NER), Part-of-speech tagging (POS), etc...). The objective of token classification is to predict the correct label for each token provided in the input. In the computer vision world, this is akin to what we do in segmentation tasks whereby we attempt to predict the class/label for each pixel in an image."
+description: "This module contains custom models, loss functions, custom splitters, etc... for token classification tasks (e.g., Named entity recognition (NER), Part-of-speech tagging (POS), etc...). The objective of token classification is to predict the correct label for each token provided in the input. In the computer vision world, this is akin to what we do in segmentation tasks whereby we attempt to predict the class/label for each pixel in an image."
 nb_path: "nbs/03_modeling-token-classification.ipynb"
 ---
 <!--
@@ -64,9 +64,9 @@ nb_path: "nbs/03_modeling-token-classification.ipynb"
 
 <div class="output_subarea output_stream output_stdout output_text">
 <pre>What we&#39;re running with at the time this documentation was generated:
-torch: 1.7.1
-fastai: 2.5.2
-transformers: 4.9.2
+torch: 1.10.1+cu111
+fastai: 2.5.3
+transformers: 4.16.2
 </pre>
 </div>
 </div>
@@ -79,7 +79,8 @@ transformers: 4.9.2
 
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Token-classification">Token classification<a class="anchor-link" href="#Token-classification"> </a></h2><p>The objective of token classification is to predict the correct label for each token provided in the input. In the computer vision world, this is akin to what we do in segmentation tasks whereby we attempt to predict the class/label for each pixel in an image. Named entity recognition (NER) is an example of token classification in the NLP space</p>
+<h2 id="Setup">Setup<a class="anchor-link" href="#Setup"> </a></h2><p>We'll use a subset of <code>conll2003</code> to demonstrate how to configure your BLURR code for token classification</p>
+<p><strong>Note</strong>: Make sure you set the <code>config.num_labels</code> attribute to the number of labels your model is predicting. The model will update its last layer accordingly as la transfer learning.</p>
 
 </div>
 </div>
@@ -91,16 +92,13 @@ transformers: 4.9.2
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">df_converters</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;tokens&#39;</span><span class="p">:</span> <span class="n">ast</span><span class="o">.</span><span class="n">literal_eval</span><span class="p">,</span> <span class="s1">&#39;labels&#39;</span><span class="p">:</span> <span class="n">ast</span><span class="o">.</span><span class="n">literal_eval</span><span class="p">,</span> <span class="s1">&#39;nested-labels&#39;</span><span class="p">:</span> <span class="n">ast</span><span class="o">.</span><span class="n">literal_eval</span><span class="p">}</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">raw_datasets</span> <span class="o">=</span> <span class="n">load_dataset</span><span class="p">(</span><span class="s2">&quot;conll2003&quot;</span><span class="p">)</span>
 
-<span class="c1"># full nlp dataset</span>
-<span class="c1"># germ_eval_df = pd.read_csv(&#39;./data/task-token-classification/germeval2014ner_cleaned.csv&#39;, converters=df_converters)</span>
+<span class="n">labels</span> <span class="o">=</span> <span class="n">raw_datasets</span><span class="p">[</span><span class="s2">&quot;train&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">features</span><span class="p">[</span><span class="s2">&quot;ner_tags&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">feature</span><span class="o">.</span><span class="n">names</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Labels: </span><span class="si">{</span><span class="n">labels</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
-<span class="c1"># demo nlp dataset</span>
-<span class="n">germ_eval_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s1">&#39;./germeval2014_sample.csv&#39;</span><span class="p">,</span> <span class="n">converters</span><span class="o">=</span><span class="n">df_converters</span><span class="p">)</span>
-
-<span class="nb">print</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">germ_eval_df</span><span class="p">))</span>
-<span class="n">germ_eval_df</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+<span class="n">conll2003_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">raw_datasets</span><span class="p">[</span><span class="s2">&quot;train&quot;</span><span class="p">])</span>
+<span class="n">conll2003_df</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
 </pre></div>
 
     </div>
@@ -112,8 +110,16 @@ transformers: 4.9.2
 
 <div class="output_area">
 
+<div class="output_subarea output_stream output_stderr output_text">
+<pre>Reusing dataset conll2003 (/home/wgilliam/.cache/huggingface/datasets/conll2003/conll2003/1.0.0/40e7cb6bcc374f7c349c83acd1e9352a4f09474eb691f64f364ee62eb65d0ca6)
+</pre>
+</div>
+</div>
+
+<div class="output_area">
+
 <div class="output_subarea output_stream output_stdout output_text">
-<pre>1000
+<pre>Labels: [&#39;O&#39;, &#39;B-PER&#39;, &#39;I-PER&#39;, &#39;B-ORG&#39;, &#39;I-ORG&#39;, &#39;B-LOC&#39;, &#39;I-LOC&#39;, &#39;B-MISC&#39;, &#39;I-MISC&#39;]
 </pre>
 </div>
 </div>
@@ -121,8 +127,7 @@ transformers: 4.9.2
 <div class="output_area">
 
 
-<div class="output_html rendered_html output_subarea output_execute_result">
-<div>
+<div class="output_html rendered_html output_subarea output_execute_result"><div>
 <style scoped>
     .dataframe tbody tr th:only-of-type {
         vertical-align: middle;
@@ -140,104 +145,58 @@ transformers: 4.9.2
   <thead>
     <tr style="text-align: right;">
       <th></th>
+      <th>chunk_tags</th>
       <th>id</th>
-      <th>source</th>
+      <th>ner_tags</th>
+      <th>pos_tags</th>
       <th>tokens</th>
-      <th>labels</th>
-      <th>nested-labels</th>
-      <th>ds_type</th>
     </tr>
   </thead>
   <tbody>
     <tr>
       <th>0</th>
+      <td>[11, 21, 11, 12, 21, 22, 11, 12, 0]</td>
       <td>0</td>
-      <td>n-tv.de vom 26.02.2005 [2005-02-26]</td>
-      <td>[Schartau, sagte, dem, ", Tagesspiegel, ", vom, Freitag, ,, Fischer, sei, ", in, einer, Weise, aufgetreten, ,, die, alles, andere, als, überzeugend, war, ", .]</td>
-      <td>[B-PER, O, O, O, B-ORG, O, O, O, O, B-PER, O, O, O, O, O, O, O, O, O, O, O, O, O, O, O]</td>
-      <td>[O, O, O, O, O, O, O, O, O, O, O, O, O, O, O, O, O, O, O, O, O, O, O, O, O]</td>
-      <td>train</td>
+      <td>[3, 0, 7, 0, 0, 0, 7, 0, 0]</td>
+      <td>[22, 42, 16, 21, 35, 37, 16, 21, 7]</td>
+      <td>[EU, rejects, German, call, to, boycott, British, lamb, .]</td>
     </tr>
     <tr>
       <th>1</th>
+      <td>[11, 12]</td>
       <td>1</td>
-      <td>welt.de vom 29.10.2005 [2005-10-29]</td>
-      <td>[Firmengründer, Wolf, Peter, Bree, arbeitete, Anfang, der, siebziger, Jahre, als, Möbelvertreter, ,, als, er, einen, fliegenden, Händler, aus, dem, Libanon, traf, .]</td>
-      <td>[O, B-PER, I-PER, I-PER, O, O, O, O, O, O, O, O, O, O, O, O, O, O, O, B-LOC, O, O]</td>
-      <td>[O, O, O, O, O, O, O, O, O, O, O, O, O, O, O, O, O, O, O, O, O, O]</td>
-      <td>train</td>
+      <td>[1, 2]</td>
+      <td>[22, 22]</td>
+      <td>[Peter, Blackburn]</td>
     </tr>
     <tr>
       <th>2</th>
+      <td>[11, 12]</td>
       <td>2</td>
-      <td>http://www.stern.de/sport/fussball/krawalle-in-der-fussball-bundesliga-dfb-setzt-auf-falsche-konzepte-1553657.html#utm_source=standard&amp;utm_medium=rss-feed&amp;utm_campaign=sport [2010-03-25]</td>
-      <td>[Ob, sie, dabei, nach, dem, Runden, Tisch, am, 23., April, in, Berlin, durch, ein, pädagogisches, Konzept, unterstützt, wird, ,, ist, allerdings, zu, bezweifeln, .]</td>
-      <td>[O, O, O, O, O, O, O, O, O, O, O, B-LOC, O, O, O, O, O, O, O, O, O, O, O, O]</td>
-      <td>[O, O, O, O, O, O, O, O, O, O, O, O, O, O, O, O, O, O, O, O, O, O, O, O]</td>
-      <td>train</td>
+      <td>[5, 0]</td>
+      <td>[22, 11]</td>
+      <td>[BRUSSELS, 1996-08-22]</td>
     </tr>
     <tr>
       <th>3</th>
+      <td>[11, 12, 12, 21, 13, 11, 11, 21, 13, 11, 12, 13, 11, 21, 22, 11, 12, 17, 11, 21, 17, 11, 12, 12, 21, 22, 22, 13, 11, 0]</td>
       <td>3</td>
-      <td>stern.de vom 21.03.2006 [2006-03-21]</td>
-      <td>[Bayern, München, ist, wieder, alleiniger, Top-, Favorit, auf, den, Gewinn, der, deutschen, Fußball-Meisterschaft, .]</td>
-      <td>[B-ORG, I-ORG, O, O, O, O, O, O, O, O, O, B-LOCderiv, O, O]</td>
-      <td>[B-LOC, B-LOC, O, O, O, O, O, O, O, O, O, O, O, O]</td>
-      <td>train</td>
+      <td>[0, 3, 4, 0, 0, 0, 0, 0, 0, 7, 0, 0, 0, 0, 0, 7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]</td>
+      <td>[12, 22, 22, 38, 15, 22, 28, 38, 15, 16, 21, 35, 24, 35, 37, 16, 21, 15, 24, 41, 15, 16, 21, 21, 20, 37, 40, 35, 21, 7]</td>
+      <td>[The, European, Commission, said, on, Thursday, it, disagreed, with, German, advice, to, consumers, to, shun, British, lamb, until, scientists, determine, whether, mad, cow, disease, can, be, transmitted, to, sheep, .]</td>
     </tr>
     <tr>
       <th>4</th>
+      <td>[11, 11, 12, 13, 11, 12, 12, 11, 12, 12, 12, 12, 21, 13, 11, 12, 21, 22, 11, 13, 11, 1, 13, 11, 17, 11, 12, 12, 21, 1, 0]</td>
       <td>4</td>
-      <td>http://www.fr-online.de/in_und_ausland/sport/aktuell/1618625_Frings-schaut-finster-in-die-Zukunft.html [2008-10-24]</td>
-      <td>[Dabei, hätte, der, tapfere, Schlussmann, allen, Grund, gehabt, ,, sich, viel, früher, aufzuregen, .]</td>
-      <td>[O, O, O, O, O, O, O, O, O, O, O, O, O, O]</td>
-      <td>[O, O, O, O, O, O, O, O, O, O, O, O, O, O]</td>
-      <td>train</td>
+      <td>[5, 0, 0, 0, 0, 3, 4, 0, 0, 0, 1, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 0]</td>
+      <td>[22, 27, 21, 35, 12, 22, 22, 27, 16, 21, 22, 22, 38, 15, 22, 24, 20, 37, 21, 15, 24, 16, 15, 22, 15, 12, 16, 21, 38, 17, 7]</td>
+      <td>[Germany, 's, representative, to, the, European, Union, 's, veterinary, committee, Werner, Zwingmann, said, on, Wednesday, consumers, should, buy, sheepmeat, from, countries, other, than, Britain, until, the, scientific, advice, was, clearer, .]</td>
     </tr>
   </tbody>
 </table>
-</div>
-</div>
+</div></div>
 
-</div>
-
-</div>
-</div>
-
-</div>
-    {% endraw %}
-
-<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<p>We are only going to be working with small sample from the <a href="https://sites.google.com/site/germeval2014ner/data">GermEval 2014</a> data set ... so the results might not be all that great :).</p>
-
-</div>
-</div>
-</div>
-    {% raw %}
-    
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">labels</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">([</span><span class="n">lbls</span> <span class="k">for</span> <span class="n">sublist</span> <span class="ow">in</span> <span class="n">germ_eval_df</span><span class="o">.</span><span class="n">labels</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span> <span class="k">for</span> <span class="n">lbls</span> <span class="ow">in</span> <span class="n">sublist</span><span class="p">])))</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">labels</span><span class="p">)</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-<div class="output_area">
-
-<div class="output_subarea output_stream output_stdout output_text">
-<pre>[&#39;B-LOC&#39;, &#39;B-LOCderiv&#39;, &#39;B-LOCpart&#39;, &#39;B-ORG&#39;, &#39;B-ORGpart&#39;, &#39;B-OTH&#39;, &#39;B-OTHderiv&#39;, &#39;B-OTHpart&#39;, &#39;B-PER&#39;, &#39;B-PERderiv&#39;, &#39;B-PERpart&#39;, &#39;I-LOC&#39;, &#39;I-LOCderiv&#39;, &#39;I-ORG&#39;, &#39;I-ORGpart&#39;, &#39;I-OTH&#39;, &#39;I-PER&#39;, &#39;O&#39;]
-</pre>
-</div>
 </div>
 
 </div>
@@ -254,36 +213,11 @@ transformers: 4.9.2
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">model_cls</span> <span class="o">=</span> <span class="n">AutoModelForTokenClassification</span>
-<span class="n">pretrained_model_name</span> <span class="o">=</span> <span class="s2">&quot;bert-base-multilingual-cased&quot;</span>
+<span class="n">pretrained_model_name</span> <span class="o">=</span> <span class="s2">&quot;roberta-base&quot;</span>
 <span class="n">config</span> <span class="o">=</span> <span class="n">AutoConfig</span><span class="o">.</span><span class="n">from_pretrained</span><span class="p">(</span><span class="n">pretrained_model_name</span><span class="p">)</span>
 
 <span class="n">config</span><span class="o">.</span><span class="n">num_labels</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">labels</span><span class="p">)</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-</div>
-    {% endraw %}
-
-<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<p>Notice above how I set the <code>config.num_labels</code> attribute to the number of labels we want <em>our</em> model to be able to predict. The model will update its last layer accordingly (this concept is essentially transfer learning).</p>
-
-</div>
-</div>
-</div>
-    {% raw %}
-    
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">hf_arch</span><span class="p">,</span> <span class="n">hf_config</span><span class="p">,</span> <span class="n">hf_tokenizer</span><span class="p">,</span> <span class="n">hf_model</span> <span class="o">=</span> <span class="n">BLURR</span><span class="o">.</span><span class="n">get_hf_objects</span><span class="p">(</span><span class="n">pretrained_model_name</span><span class="p">,</span> 
-                                                                  <span class="n">model_cls</span><span class="o">=</span><span class="n">model_cls</span><span class="p">,</span> 
-                                                                  <span class="n">config</span><span class="o">=</span><span class="n">config</span><span class="p">)</span>
+<span class="n">hf_arch</span><span class="p">,</span> <span class="n">hf_config</span><span class="p">,</span> <span class="n">hf_tokenizer</span><span class="p">,</span> <span class="n">hf_model</span> <span class="o">=</span> <span class="n">BLURR</span><span class="o">.</span><span class="n">get_hf_objects</span><span class="p">(</span><span class="n">pretrained_model_name</span><span class="p">,</span> <span class="n">model_cls</span><span class="o">=</span><span class="n">model_cls</span><span class="p">,</span> <span class="n">config</span><span class="o">=</span><span class="n">config</span><span class="p">)</span>
 <span class="n">hf_arch</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">hf_config</span><span class="p">),</span> <span class="nb">type</span><span class="p">(</span><span class="n">hf_tokenizer</span><span class="p">),</span> <span class="nb">type</span><span class="p">(</span><span class="n">hf_model</span><span class="p">)</span>
 </pre></div>
 
@@ -299,10 +233,10 @@ transformers: 4.9.2
 
 
 <div class="output_text output_subarea output_execute_result">
-<pre>(&#39;bert&#39;,
- transformers.models.bert.configuration_bert.BertConfig,
- transformers.models.bert.tokenization_bert_fast.BertTokenizerFast,
- transformers.models.bert.modeling_bert.BertForTokenClassification)</pre>
+<pre>(&#39;roberta&#39;,
+ transformers.models.roberta.configuration_roberta.RobertaConfig,
+ transformers.models.roberta.tokenization_roberta_fast.RobertaTokenizerFast,
+ transformers.models.roberta.modeling_roberta.RobertaForTokenClassification)</pre>
 </div>
 
 </div>
@@ -337,22 +271,10 @@ transformers: 4.9.2
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">before_batch_tfm</span> <span class="o">=</span> <span class="n">HF_TokenClassBeforeBatchTransform</span><span class="p">(</span><span class="n">hf_arch</span><span class="p">,</span> <span class="n">hf_config</span><span class="p">,</span> <span class="n">hf_tokenizer</span><span class="p">,</span> <span class="n">hf_model</span><span class="p">,</span>
-                                                     <span class="n">is_split_into_words</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> 
-                                                     <span class="n">tok_kwargs</span><span class="o">=</span><span class="p">{</span> <span class="s1">&#39;return_special_tokens_mask&#39;</span><span class="p">:</span> <span class="kc">True</span> <span class="p">})</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">batch_tok_tfm</span> <span class="o">=</span> <span class="n">TokenClassBatchTokenizeTransform</span><span class="p">(</span><span class="n">hf_arch</span><span class="p">,</span> <span class="n">hf_config</span><span class="p">,</span> <span class="n">hf_tokenizer</span><span class="p">,</span> <span class="n">hf_model</span><span class="p">)</span>
+<span class="n">blocks</span> <span class="o">=</span> <span class="p">(</span><span class="n">TextBlock</span><span class="p">(</span><span class="n">batch_tokenize_tfm</span><span class="o">=</span><span class="n">batch_tok_tfm</span><span class="p">,</span> <span class="n">input_return_type</span><span class="o">=</span><span class="n">TokenClassTextInput</span><span class="p">),</span> <span class="n">TokenCategoryBlock</span><span class="p">(</span><span class="n">vocab</span><span class="o">=</span><span class="n">labels</span><span class="p">))</span>
 
-<span class="n">blocks</span> <span class="o">=</span> <span class="p">(</span>
-    <span class="n">TextBlock</span><span class="p">(</span><span class="n">before_batch_tfm</span><span class="o">=</span><span class="n">before_batch_tfm</span><span class="p">,</span> <span class="n">input_return_type</span><span class="o">=</span><span class="n">HF_TokenClassInput</span><span class="p">),</span> 
-    <span class="n">HF_TokenCategoryBlock</span><span class="p">(</span><span class="n">vocab</span><span class="o">=</span><span class="n">labels</span><span class="p">)</span>
-<span class="p">)</span>
-
-<span class="k">def</span> <span class="nf">get_y</span><span class="p">(</span><span class="n">inp</span><span class="p">):</span>
-    <span class="k">return</span> <span class="p">[</span> <span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">hf_tokenizer</span><span class="o">.</span><span class="n">tokenize</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">entity</span><span class="p">))))</span> <span class="k">for</span> <span class="n">entity</span><span class="p">,</span> <span class="n">label</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">inp</span><span class="o">.</span><span class="n">tokens</span><span class="p">,</span> <span class="n">inp</span><span class="o">.</span><span class="n">labels</span><span class="p">)</span> <span class="p">]</span>
-
-<span class="n">dblock</span> <span class="o">=</span> <span class="n">DataBlock</span><span class="p">(</span><span class="n">blocks</span><span class="o">=</span><span class="n">blocks</span><span class="p">,</span> 
-                   <span class="n">get_x</span><span class="o">=</span><span class="n">ColReader</span><span class="p">(</span><span class="s1">&#39;tokens&#39;</span><span class="p">),</span>
-                   <span class="n">get_y</span><span class="o">=</span><span class="n">get_y</span><span class="p">,</span>
-                   <span class="n">splitter</span><span class="o">=</span><span class="n">RandomSplitter</span><span class="p">())</span>
+<span class="n">dblock</span> <span class="o">=</span> <span class="n">DataBlock</span><span class="p">(</span><span class="n">blocks</span><span class="o">=</span><span class="n">blocks</span><span class="p">,</span> <span class="n">get_x</span><span class="o">=</span><span class="n">ColReader</span><span class="p">(</span><span class="s2">&quot;tokens&quot;</span><span class="p">),</span> <span class="n">get_y</span><span class="o">=</span><span class="n">ColReader</span><span class="p">(</span><span class="s2">&quot;ner_tags&quot;</span><span class="p">),</span> <span class="n">splitter</span><span class="o">=</span><span class="n">RandomSplitter</span><span class="p">())</span>
 </pre></div>
 
     </div>
@@ -362,13 +284,6 @@ transformers: 4.9.2
 </div>
     {% endraw %}
 
-<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<p>We have to define a <code>get_y</code> that creates the same number of labels as there are subtokens for a particular token. For example, my name "Wayde" gets split up into two subtokens, "Way" and "##de". The label for "Wayde" is "B-PER" and we just repeat it for the subtokens.  This all get cleaned up when we show results and get predictions.</p>
-
-</div>
-</div>
-</div>
     {% raw %}
     
 <div class="cell border-box-sizing code_cell rendered">
@@ -376,7 +291,24 @@ transformers: 4.9.2
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">dls</span> <span class="o">=</span> <span class="n">dblock</span><span class="o">.</span><span class="n">dataloaders</span><span class="p">(</span><span class="n">germ_eval_df</span><span class="p">,</span> <span class="n">bs</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">dls</span> <span class="o">=</span> <span class="n">dblock</span><span class="o">.</span><span class="n">dataloaders</span><span class="p">(</span><span class="n">conll2003_df</span><span class="p">,</span> <span class="n">bs</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    {% endraw %}
+
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">b</span> <span class="o">=</span> <span class="n">dls</span><span class="o">.</span><span class="n">one_batch</span><span class="p">()</span>
 </pre></div>
 
     </div>
@@ -406,26 +338,24 @@ transformers: 4.9.2
 <div class="output_area">
 
 
-<div class="output_html rendered_html output_subarea ">
-<table border="1" class="dataframe">
+<div class="output_html rendered_html output_subarea "><table border="1" class="dataframe">
   <thead>
     <tr style="text-align: right;">
       <th></th>
-      <th>token / target label</th>
+      <th>word / target label</th>
     </tr>
   </thead>
   <tbody>
     <tr>
       <th>0</th>
-      <td>[('Helbig', 'B-OTH'), ('et', 'I-OTH'), ('al.', 'I-OTH'), ('(', 'O'), ('1994', 'O'), (')', 'O'), ('S.', 'O'), ('593.', 'O'), ('Wink', 'O'), ('&amp;', 'B-OTH'), ('Seibold', 'I-OTH'), ('et', 'I-OTH'), ('al.', 'I-OTH'), ('(', 'I-OTH'), ('1998', 'O'), (')', 'O'), ('S.', 'O'), ('32', 'O'), ('Inwieweit', 'O'), ('noch', 'O'), ('andere', 'O'), ('Falken,', 'O'), ('wie', 'O'), ('der', 'O'), ('Afrikanische', 'O'), ('Baumfalke', 'O'), ('(', 'O'), ('Falco', 'B-LOCderiv'), ('cuvieri', 'O'), (')', 'O'), ('oder', 'O'), ('der', 'O'), ('Malaienbaumfalke', 'O'), ('(', 'O'), ('Falco', 'O'), ('serverus', 'O'), (')', 'O'), ('dieser', 'O'), ('Gruppe', 'O'), ('zuzuzählen', 'O'), ('sind,', 'O'), ('ist', 'O'), ('Gegenstand', 'O'), ('der', 'O'), ('Forschung.', 'O')]</td>
+      <td>[('MARKET', 'O'), ('TALK', 'O'), ('-', 'O'), ('USDA', 'B-ORG'), ('net', 'O'), ('change', 'O'), ('in', 'O'), ('weekly', 'O'), ('export', 'O'), ('commitments', 'O'), ('for', 'O'), ('the', 'O'), ('week', 'O'), ('ended', 'O'), ('August', 'O'), ('22', 'O'), (',', 'O'), ('includes', 'O'), ('old', 'O'), ('crop', 'O'), ('and', 'O'), ('new', 'O'), ('crop', 'O'), (',', 'O'), ('were', 'O'), (':', 'O'), ('wheat', 'O'), ('up', 'O'), ('595,400', 'O'), ('tonnes', 'O'), ('old', 'O'), (',', 'O'), ('nil', 'O'), ('new', 'O'), (';', 'O'), ('corn', 'O'), ('up', 'O'), ('1,900', 'O'), ('old', 'O'), (',', 'O'), ('up', 'O'), ('319,600', 'O'), ('new', 'O'), (';', 'O'), ('soybeans', 'O'), ('down', 'O'), ('12,300', 'O'), ('old', 'O'), (',', 'O'), ('up', 'O'), ('300,800', 'O'), ('new', 'O'), (';', 'O'), ('upland', 'O'), ('cotton', 'O'), ('up', 'O'), ('50,400', 'O'), ('bales', 'O'), ('new', 'O'), (',', 'O'), ('nil', 'O'), ('old', 'O'), (';', 'O'), ('soymeal', 'O'), ('54,800', 'O'), ('old', 'O'), (',', 'O'), ('up', 'O'), ('100,600', 'O'), ('new', 'O'), (',', 'O'), ('soyoil', 'O'), ('nil', 'O'), ('old', 'O'), (',', 'O'), ('up', 'O'), ('75,000', 'O'), ('new', 'O'), (';', 'O'), ('barley', 'O'), ('up', 'O'), ('1,700', 'O'), ('old', 'O'), (',', 'O'), ('nil', 'O'), ('new', 'O'), (';', 'O'), ('sorghum', 'O'), ('6,200', 'O'), ('old', 'O'), (',', 'O'), ('up', 'O'), ('156,700', 'O'), ('new', 'O'), (';', 'O'), ('pima', 'O'), ('cotton', 'O'), ('up', 'O'), ('4,000', 'O'), ('bales', 'O'), ('old', 'O'), (',', 'O'), ('nil', 'O'), ('new', 'O'), (';', 'O'), ('rice', 'O'), ('up', 'O'), ('49,900', 'O'), ('old', 'O'), (',', 'O'), ('nil', 'O'), ('new', 'O'), ('...', 'O')]</td>
     </tr>
     <tr>
       <th>1</th>
-      <td>[('Zugang', 'O'), ('und', 'O'), ('Engagement', 'O'), (':', 'O'), ('das', 'O'), ('eigentlich', 'O'), ('Neue', 'O'), ('an', 'O'), ('der', 'O'), ('Netz', 'O'), ('(', 'O'), ('werk', 'O'), (')', 'O'), ('kunst,', 'O'), ('in', 'O'), (':', 'O'), ('Medien', 'O'), ('Kunst', 'O'), ('Netz,', 'O'), ('2004,', 'O'), ('URL', 'O'), (':', 'O'), ('*', 'O'), ('Arns,', 'B-PER'), ('Inke', 'O'), (':', 'B-PER'), ('Netzkulturen,', 'O'), ('Hamburg', 'O'), ('(', 'O'), ('eva', 'B-LOC'), ('),', 'O'), ('2002,', 'O'), ('S.', 'O'), ('46', 'O'), ('und', 'O'), ('81', 'O'), ('*', 'O'), ('Armin', 'O'), ('Medosch', 'O'), (':', 'O'), ('Public', 'B-PER'), ('Netbase', 'I-PER'), ('Wien.', 'O')]</td>
+      <td>[('At', 'O'), ('California', 'B-LOC'), (',', 'O'), ('Tim', 'B-PER'), ('Wakefield', 'I-PER'), ('pitched', 'O'), ('a', 'O'), ('six-hitter', 'O'), ('for', 'O'), ('his', 'O'), ('third', 'O'), ('complete', 'O'), ('game', 'O'), ('of', 'O'), ('the', 'O'), ('season', 'O'), ('and', 'O'), ('Mo', 'B-PER'), ('Vaughn', 'I-PER'), ('and', 'O'), ('Troy', 'B-PER'), ("O'Leary", 'I-PER'), ('hit', 'O'), ('solo', 'O'), ('home', 'O'), ('runs', 'O'), ('in', 'O'), ('the', 'O'), ('second', 'O'), ('inning', 'O'), ('as', 'O'), ('the', 'O'), ('surging', 'O'), ('Boston', 'B-ORG'), ('Red', 'I-ORG'), ('Sox', 'I-ORG'), ('won', 'O'), ('their', 'O'), ('third', 'O'), ('straight', 'O'), ('4-1', 'O'), ('over', 'O'), ('the', 'O'), ('California', 'B-ORG'), ('Angels', 'I-ORG'), ('.', 'O')]</td>
     </tr>
   </tbody>
-</table>
-</div>
+</table></div>
 
 </div>
 
@@ -437,7 +367,7 @@ transformers: 4.9.2
 
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h3 id="Metrics">Metrics<a class="anchor-link" href="#Metrics"> </a></h3><p>In this section, we'll add helpful metrics for token classification tasks</p>
+<h2 id="Mid-level-API">Mid-level API<a class="anchor-link" href="#Mid-level-API"> </a></h2><p>In this section, we'll add helpful metrics for token classification tasks</p>
 
 </div>
 </div>
@@ -453,17 +383,8 @@ transformers: 4.9.2
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h4 id="calculate_token_class_metrics" class="doc_header"><code>calculate_token_class_metrics</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/modeling/token_classification.py#L38" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>calculate_token_class_metrics</code>(<strong><code>pred_toks</code></strong>, <strong><code>targ_toks</code></strong>, <strong><code>metric_key</code></strong>)</p>
+<h4 id="calculate_token_class_metrics" class="doc_header"><code>calculate_token_class_metrics</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/modeling/token_classification.py#L42" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>calculate_token_class_metrics</code>(<strong><code>pred_toks</code></strong>, <strong><code>targ_toks</code></strong>, <strong><code>metric_key</code></strong>)</p>
 </blockquote>
-<p><strong>Parameters:</strong></p>
-<ul>
-<li><p><strong><code>pred_toks</code></strong> : <em><code>&lt;class 'inspect._empty'&gt;</code></em></p>
-</li>
-<li><p><strong><code>targ_toks</code></strong> : <em><code>&lt;class 'inspect._empty'&gt;</code></em></p>
-</li>
-<li><p><strong><code>metric_key</code></strong> : <em><code>&lt;class 'inspect._empty'&gt;</code></em></p>
-</li>
-</ul>
 
 </div>
 
@@ -484,7 +405,7 @@ transformers: 4.9.2
 
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h3 id="Training">Training<a class="anchor-link" href="#Training"> </a></h3>
+<h3 id="TokenClassMetricsCallback"><a href="/blurr/modeling-token-classification.html#TokenClassMetricsCallback"><code>TokenClassMetricsCallback</code></a><a class="anchor-link" href="#TokenClassMetricsCallback"> </a></h3>
 </div>
 </div>
 </div>
@@ -499,19 +420,12 @@ transformers: 4.9.2
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h2 id="HF_TokenClassMetricsCallback" class="doc_header"><code>class</code> <code>HF_TokenClassMetricsCallback</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/modeling/token_classification.py#L48" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>HF_TokenClassMetricsCallback</code>(<strong><code>tok_metrics</code></strong>=<em><code>['accuracy', 'precision', 'recall', 'f1']</code></em>, <strong>**<code>kwargs</code></strong>) :: <code>Callback</code></p>
+<h2 id="TokenClassMetricsCallback" class="doc_header"><code>class</code> <code>TokenClassMetricsCallback</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/modeling/token_classification.py#L60" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>TokenClassMetricsCallback</code>(<strong><code>tok_metrics</code></strong>=<em><code>['accuracy', 'precision', 'recall', 'f1']</code></em>, <strong>**<code>kwargs</code></strong>) :: <code>Callback</code></p>
 </blockquote>
 <p>A fastai friendly callback that includes accuracy, precision, recall, and f1 metrics using the
 <code>seqeval</code> library.  Additionally, this metric knows how to <em>not</em> include your 'ignore_token' in it's
 calculations.</p>
 <p>See <a href="https://github.com/chakki-works/seqeval">here</a> for more information on <code>seqeval</code>.</p>
-<p><strong>Parameters:</strong></p>
-<ul>
-<li><p><strong><code>tok_metrics</code></strong> : <em><code>&lt;class 'list'&gt;</code></em>, <em>optional</em></p>
-</li>
-<li><p><strong><code>kwargs</code></strong> : <em><code>&lt;class 'inspect._empty'&gt;</code></em></p>
-</li>
-</ul>
 
 </div>
 
@@ -530,6 +444,18 @@ calculations.</p>
 </div>
     {% endraw %}
 
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="Example">Example<a class="anchor-link" href="#Example"> </a></h3>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h4 id="Training">Training<a class="anchor-link" href="#Training"> </a></h4>
+</div>
+</div>
+</div>
     {% raw %}
     
 <div class="cell border-box-sizing code_cell rendered">
@@ -539,9 +465,9 @@ calculations.</p>
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">model</span> <span class="o">=</span> <span class="n">BaseModelWrapper</span><span class="p">(</span><span class="n">hf_model</span><span class="p">)</span>
 <span class="n">learn_cbs</span> <span class="o">=</span> <span class="p">[</span><span class="n">BaseModelCallback</span><span class="p">]</span>
-<span class="n">fit_cbs</span> <span class="o">=</span> <span class="p">[</span><span class="n">HF_TokenClassMetricsCallback</span><span class="p">()]</span>
+<span class="n">fit_cbs</span> <span class="o">=</span> <span class="p">[</span><span class="n">TokenClassMetricsCallback</span><span class="p">()]</span>
 
-<span class="n">learn</span> <span class="o">=</span> <span class="n">Learner</span><span class="p">(</span><span class="n">dls</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">opt_func</span><span class="o">=</span><span class="n">partial</span><span class="p">(</span><span class="n">Adam</span><span class="p">),</span><span class="n">cbs</span><span class="o">=</span><span class="n">learn_cbs</span><span class="p">,</span><span class="n">splitter</span><span class="o">=</span><span class="n">hf_splitter</span><span class="p">)</span>
+<span class="n">learn</span> <span class="o">=</span> <span class="n">Learner</span><span class="p">(</span><span class="n">dls</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">opt_func</span><span class="o">=</span><span class="n">partial</span><span class="p">(</span><span class="n">Adam</span><span class="p">),</span> <span class="n">loss_func</span><span class="o">=</span><span class="n">PreCalculatedCrossEntropyLoss</span><span class="p">(),</span> <span class="n">cbs</span><span class="o">=</span><span class="n">learn_cbs</span><span class="p">,</span> <span class="n">splitter</span><span class="o">=</span><span class="n">blurr_splitter</span><span class="p">)</span>
 
 <span class="n">learn</span><span class="o">.</span><span class="n">freeze</span><span class="p">()</span>
 </pre></div>
@@ -560,7 +486,7 @@ calculations.</p>
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">learn</span><span class="o">.</span><span class="n">summary</span><span class="p">()</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># learn.summary()</span>
 </pre></div>
 
     </div>
@@ -579,7 +505,7 @@ calculations.</p>
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">b</span> <span class="o">=</span> <span class="n">dls</span><span class="o">.</span><span class="n">one_batch</span><span class="p">()</span>
 <span class="n">preds</span> <span class="o">=</span> <span class="n">learn</span><span class="o">.</span><span class="n">model</span><span class="p">(</span><span class="n">b</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
-<span class="nb">len</span><span class="p">(</span><span class="n">preds</span><span class="p">),</span><span class="n">preds</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span>
+<span class="nb">len</span><span class="p">(</span><span class="n">preds</span><span class="p">),</span> <span class="nb">type</span><span class="p">(</span><span class="n">preds</span><span class="p">),</span> <span class="n">preds</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
 </pre></div>
 
     </div>
@@ -594,7 +520,9 @@ calculations.</p>
 
 
 <div class="output_text output_subarea output_execute_result">
-<pre>(1, torch.Size([2, 76, 18]))</pre>
+<pre>(2,
+ transformers.modeling_outputs.TokenClassifierOutput,
+ odict_keys([&#39;loss&#39;, &#39;logits&#39;]))</pre>
 </div>
 
 </div>
@@ -612,7 +540,7 @@ calculations.</p>
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="nb">len</span><span class="p">(</span><span class="n">b</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">b</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="n">b</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;input_ids&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">b</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span> <span class="n">b</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="nb">len</span><span class="p">(</span><span class="n">b</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">b</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="n">b</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;input_ids&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">b</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span> <span class="n">b</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span>
 </pre></div>
 
     </div>
@@ -627,7 +555,7 @@ calculations.</p>
 
 
 <div class="output_text output_subarea output_execute_result">
-<pre>(2, 3, torch.Size([2, 76]), 2, torch.Size([2, 76]))</pre>
+<pre>(2, 3, torch.Size([4, 156]), 4, torch.Size([4, 156]))</pre>
 </div>
 
 </div>
@@ -645,8 +573,41 @@ calculations.</p>
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">preds</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">preds</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">b</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
-<span class="n">test_eq</span><span class="p">(</span><span class="n">preds</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">preds</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">b</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">preds</span><span class="o">.</span><span class="n">logits</span><span class="o">.</span><span class="n">shape</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>torch.Size([4, 156, 9])</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    {% endraw %}
+
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">preds</span><span class="o">.</span><span class="n">logits</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">preds</span><span class="o">.</span><span class="n">logits</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">b</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+<span class="n">test_eq</span><span class="p">(</span><span class="n">preds</span><span class="o">.</span><span class="n">logits</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">preds</span><span class="o">.</span><span class="n">logits</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">b</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
 </pre></div>
 
     </div>
@@ -659,7 +620,7 @@ calculations.</p>
 <div class="output_area">
 
 <div class="output_subarea output_stream output_stdout output_text">
-<pre>torch.Size([152, 18]) torch.Size([152])
+<pre>torch.Size([624, 9]) torch.Size([624])
 </pre>
 </div>
 </div>
@@ -722,19 +683,8 @@ calculations.</p>
 <div class="output_area">
 
 
-<div class="output_html rendered_html output_subarea ">
+<div class="output_html rendered_html output_subarea "></div>
 
-</div>
-
-</div>
-
-<div class="output_area">
-
-<div class="output_subarea output_stream output_stderr output_text">
-<pre>/home/wgilliam/miniconda3/envs/blurr/lib/python3.9/site-packages/fastai/callback/schedule.py:270: UserWarning: color is redundantly defined by the &#39;color&#39; keyword argument and the fmt string &#34;ro&#34; (-&gt; color=&#39;r&#39;). The keyword argument will take precedence.
-  ax.plot(val, idx, &#39;ro&#39;, label=nm, c=color)
-</pre>
-</div>
 </div>
 
 <div class="output_area">
@@ -742,7 +692,7 @@ calculations.</p>
 
 
 <div class="output_text output_subarea output_execute_result">
-<pre>SuggestedLRs(minimum=0.005754399299621582, steep=3.630780702224001e-05, valley=0.0002290867705596611, slide=0.0020892962347716093)</pre>
+<pre>SuggestedLRs(minimum=0.00043651582673192023, steep=9.120108734350652e-05, valley=9.120108734350652e-05, slide=0.002511886414140463)</pre>
 </div>
 
 </div>
@@ -752,8 +702,7 @@ calculations.</p>
 
 
 <div class="output_png output_subarea ">
-<img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAjcAAAG1CAYAAAAFuNXgAAAAOXRFWHRTb2Z0d2FyZQBNYXRwbG90bGliIHZlcnNpb24zLjQuMSwgaHR0cHM6Ly9tYXRwbG90bGliLm9yZy/Z1A+gAAAACXBIWXMAAA9hAAAPYQGoP6dpAABhJElEQVR4nO3deVxU9f7H8dcMO7KDLAooCu77lnua5Vam2V7XssU2W72Vbbdf2722WNlyWyzLrGzVyq7mVu77vouoIIogIgICss78/kCnSFTQgTMD7+fjMY+aM+fMvOcwMh++2zFZrVYrIiIiIrWE2egAIiIiIvak4kZERERqFRU3IiIiUquouBEREZFaRcWNiIiI1CoqbkRERKRWUXEjIiIitYqKGxEREalVXI0OUNMsFguHDx/G19cXk8lkdBwRERGpBKvVyokTJ2jQoAFm87nbZupccXP48GGioqKMjiEiIiIX4ODBg0RGRp5znzpX3Pj6+gJlJ8fPz8/gNCIiIlIZOTk5REVF2b7Hz6XOFTenu6L8/PxU3IiIiDiZygwp0YBiERERqVVU3IiIiEitUue6pUREpHayWCwUFRUZHUMugru7+3lnQlWGihsREXF6RUVFJCYmYrFYjI4iF8FsNhMTE4O7u/tFPY+KGxERcWpWq5XU1FRcXFyIioqyy1/+UvNOr0OXmppKdHT0Ra1Fp+JGREScWklJCfn5+TRo0ABvb2+j48hFqF+/PocPH6akpAQ3N7cLfh6VtyIi4tRKS0sBLrorQ4x3+md4+md6oVTciIhIraBL6jg/e/0MVdyIiIhIraLiRkRERGoVFTciIiIAllJIXAbbfiz7r+Xixn3Y2+LFizGZTGRlZVX6mNGjRzNixIhqy+SoNFtKRERk5yyYOx5yDv+5za8BDH4NWl1tXK6/6NmzJ6mpqfj7+1f6mHfeeQer1VqNqRyTihs7sVisjPhgBbGhPnSKDqRTdCDNw31xMWuAm4iIQ9s5C76/DfhbEZCTWrb9hmkOUeC4u7sTHh5epWOqUgjVJuqWspP9GblsPZTNzI0pPPfzdoa+u4x2L8zjlk9W8+b8eI6eKDQ6ooiI/J2ltKzF5u+FDfy5be5T1dJF1a9fPx566CEeffRRAgMDCQsLY/LkyeTl5XHHHXfg6+tL06ZN+e2334Azu6WmTp1KQEAA8+bNo2XLlvj4+DB48GBSU1Ntr/H3bqmqvuZfX+evfv7553Izm1544QU6dOjAZ599RnR0ND4+Ptx///2Ulpby+uuvEx4eTmhoKP/+97/tfh4rouLGThoEePH56K48dFksvWKD8fFwJa+olJX7jvHeH3uZMGeX0RFFROTvDqws3xV1BivkpJTtVw2++OILQkJCWLt2LQ899BD3338/119/PT179mTjxo0MGjSIUaNGkZ+fX+Hx+fn5TJw4kS+//JKlS5eSnJzM448/Xq2veTb79u3jt99+Y+7cuXzzzTd89tlnXHnllRw6dIglS5bw2muv8dxzz7F69eoqPe+FUHFjJ97urvRvEco/Bzbn67u7s+X/BjL30T6Mu6IZAIvi0ym11L1+TxERh5Z7xL77VVH79u157rnniIuL4+mnn8bLy4uQkBDGjBlDXFwczz//PMeOHWPr1q0VHl9cXMxHH31Ely5d6NSpEw8++CC///57tb7m2VgsFj777DNatWrFsGHD6N+/P/Hx8UyaNInmzZtzxx130Lx5cxYvXlyl570QKm6qiYvZRItwP+7v1xQfD1eO5xezPSXb6FgiIvJXPmH23a+K2rVrZ/t/FxcXgoODadu2rW1bWFjZ66anp1d4vLe3N02bNrXdj4iIOOu+9nrNs2ncuDG+vr7lnqdVq1blrvUVFhZW5ee9ECpuqpmbi5lescEALN1z1OA0IiJSTqOeZbOiONvkDxP4NSzbrxr8/fpJJpOp3LbT41rOdrXzio4/3+yoqr6m2Ww+4zmLi4ur/Lynt9XEldtV3NSAvs3qA7A0QcWNiIhDMbuUTfcGzixwTt0f/GrZfnVU/fr1OXHiBHl5ebZtmzdvNi5QJai4qQF948qKm43JWeQUnFntioiIgVpdXTbd2y+i/Ha/Bg4zDdxIl1xyCd7e3jzzzDPs3buX6dOnM3XqVKNjnZOKmxoQFeRNk/r1KLVYWbk3w+g4IiLyd62uhke3w+3/g2unlP330W11vrABCAoK4quvvmLOnDm0bduWb775hhdeeMHoWOdkstaxpQtzcnLw9/cnOzsbPz+/GnvdF2btYOrKJG7uFsWEke3Of4CIiFRKQUEBiYmJxMTE4OnpaXQcuQjn+llW5ftbLTc15NLmp8bd7Mmok0thi4iI1BQVNzWke0ww7q5mUrJOsu9ortFxREREai0VNzXEy92FS2KCAFiyR+NuREREqouKmxp0etbUEq13IyIiUm1U3NSg0+Nu1uw/RkGx/S/CJiIiIipualRcqA/hfp4UllhYk5hpdBwREZFaScVNDTKZTFx6erVidU2JiIhUCxU3Nez0pRg07kZERKR6qLipYb1jQzCbYG96LilZJ42OIyIiUuuouKlh/t5udIgKANQ1JSLiSEotpaxLW8ec/XNYl7aOUotxEz9Gjx7NiBEjDHt9Z+dqdIC66NJmoWxMzmLpnqPc3C3a6DjnZbVa2Zuey+rETFKzTtIxOpBLmgTh5+l2/oNFRJzAwgMLeXXtqxzJP2LbFuYdxlPdnuLyRpcbmEwuhFpuDNC3WQgAy/dmUFJqMThNxfYdzeWLlUk88PUGuryykCveXsq/ft7OB4v3MWbaejq+tIBrPljBxHnxrNp3jMISTW0XEee08MBCxi0eV66wAUjPT2fc4nEsPLCw2l77xx9/pG3btnh5eREcHMzll1/OE088wRdffMEvv/yCyWTCZDKxePFiAFJSUrjxxhsJDAwkODiY4cOHk5SUVO45P//8c1q2bImnpyctWrTggw8+sD2WlJSEyWTi22+/pWfPnnh6etK6dWvb89cWarkxQLvIAAK83cjKL2ZpwlEuaxFmdCQbq9XKpIUJvPN7Qrntnm5mOkUHEhnoxbqk4yRm5LEpOYtNyVm8v2gvwfXcua1HY0b1aERQPXeD0ouIVE2ppZRX176KlTOv+WfFigkTr619jf5R/XExu9j1tVNTU7n55pt5/fXXueaaazhx4gTLli3jtttuIzk5mZycHD7//HOg7Mrc+fn59O/fnz59+rB06VJcXV155ZVXGDx4MFu3bsXd3Z1PPvmE//u//+P999+nY8eObNq0iTFjxlCvXj1uv/1222s/8cQTTJo0iVatWvHWW29x9dVXk5iYSHBwsF3fo1FU3BjAxWzi2k6RTFmeyIQ5u+kbVx9XF+Mb0YpLLTwzcxs/bDgEQM+mwfRsGkz3JsG0iwzA3fXPjClZJ1mxN8N2y8gt4u2Fe/hg8V6u6xzJXb1jaFLfx6i3IiJSKRvTN57RYvNXVqyk5aexMX0jXcO72vW1U1NTKSkpYeTIkTRq1AiAtm3bAuDl5UVhYSHh4eG2/b/66ivMZjOffvopJpMJKGulCQgIYPHixQwcOJCXX36ZN998k5EjRwIQExPDzp07+fjjj8sVNw8++CDXXnstAB9++CFz585lypQpPPnkk3Z9j0ZRcWOQhy+LY8bGQySk5/LNuoOM6t6oSscXl1rYeiibk0WldGoUgLf7xf0ocwtLeODrjSzdcxSzCV4e0YZbLzl7poYBXtzQJYobukRRUmrht+1pTF66n20p2Xy9Jpnpa5O5omUYN18STe/YENwcoHgTEfm7o/mVm9hR2f2qon379gwYMIC2bdsyaNAgBg4cyHXXXUdgYGCF+2/YsIG9e/fi6+tbbntBQQH79u3j6NGjHDx4kLvuuosxY8bYHi8pKcHf37/cMT169LD9v6urK126dGHXrl12fHfGMrS4+fDDD/nwww9t/YWtW7fm+eefZ8iQIWc9ZsmSJYwbN44dO3bQoEEDnnzySe67774aSmw//t5ujLuiGc//soO35sdzdfsG+HudfYBuqcXKzsM5rNyXwar9x1iXmEleUdk4FzcXE50bBdInrj594kJo08Afs9lU6SzpOQXcMXUdOw7n4OXmwvu3dGRAy8p3lbm6mBnWvgFXtYtgTWImnyzdz++705m/8wjzdx4huJ47V7aLYHiHBnSKDrT9xSEiYrT63vXtul9VuLi4sGDBAlauXMn8+fN57733ePbZZ1mzZk2F+1ssFjp37szXX399Zr769SkoKADgk08+4ZJLLjnjtc6nNv1uNrS4iYyM5NVXXyU2NhaAL774guHDh7Np0yZat259xv6JiYkMHTqUMWPG8NVXX7FixQoeeOAB6tevb2tecya3dIvmy1UHSEjP5b3fE3juqlYV7vfL5hT+b9YOsvKLy20P9HbD292VlKyTrN6fyer9mbwxL55AbzfiQn0J8XUnxMeD+j4ehPh6EFTPHXcXMy5mE64uJlzNZgqKS3l65jZSsk4SXM+dKaO72qaqV5XJZKJ7k7JurL3pJ/hqdTK/bjnMsbwipq06wLRVB4gM9GJw63DiwnyIDqpH4xBvwnw9q1SMiYjYS6fQToR5h5Gen17huBsTJsK8w+gU2qlaXt9kMtGrVy969erF888/T6NGjfjpp59wd3entLT8RI1OnTrx3XffERoaip+f3xnP5e/vT8OGDdm/fz+33nrrOV939erV9O3bFyhr2dmwYQMPPvig/d6YwUxWq/XMn6aBgoKCeOONN7jrrrvOeGz8+PHMmjWrXNPZfffdx5YtW1i1alWlnj8nJwd/f3+ys7Mr/HDUtCV7jnL7Z2txNZuY/1jfM8apfL/uIONnbsVqBV8PVy5pEkT3JsH0bBpCi3BfTCZIOpbPsoSjLEvIYNW+Y+QWllQ5R+Ngb764sxuNguvZ660BUFJqYfneDGZtPsy8HWm21qa/8nA1Ex3kzWUtQ3nosjh8PNRbKiKVV1BQQGJiIjExMXh6elb5+NOzpYByBY6Jsj+63ur3VrVMB1+zZg2///47AwcOJDQ0lDVr1vCPf/yDn3/+mU2bNvHxxx8zf/58goOD8ff3p7i4mA4dOtCwYUNeeuklIiMjSU5OZubMmTzxxBNERkby6aef8vDDDzNhwgSGDBlCYWEh69ev5/jx44wbN46kpCRiYmKIjo5m0qRJtGzZkrfffpvp06eTmJhISEiI3d9nVZzrZ1mV72+H+RYpLS3lhx9+IC8vr1xf4F+tWrWKgQMHlts2aNAgpkyZQnFxMW5uZ3brFBYWUlhYaLufk5Nj3+AX6dJm9enfvD6L4o/ynzm7+fT2LrbHvl5zgGd/2g7AP7pH88Kw1hUOPI4JqUdMSD1u69GY4lIL21OySck6ScaJQo7mFpJxooiM3EIy84soKbVSYrFSUmqh1FL2/y0jfPnPNW0J9vGw+/tzdTHTr3ko/ZqHcrKolIW7jrAuKZMDx/I5cCyPQ8dPUlhiISE9l4T0XGZtPswLV7dmUOvw8z+5iIgdXN7oct7q91aF69yM7za+2ta58fPzY+nSpUyaNImcnBwaNWrEm2++yZAhQ+jSpQuLFy+mS5cu5ObmsmjRIvr168fSpUsZP348I0eO5MSJEzRs2JABAwbYvuzvvvtuvL29eeONN3jyySepV68ebdu25dFHHy332q+++iqvvfYamzZtomnTpvzyyy+GFzb2ZHjLzbZt2+jRowcFBQX4+Pgwffp0hg4dWuG+zZo1Y/To0TzzzDO2bStXrqRXr14cPnyYiIiIM4554YUXePHFF8/Y7igtN1B2KYZBk5ZSarHy1V2X0DsuhKkrEnnh150A3NGrMc9f1apW9YeeVlJq4XBWAdtSsnlt7m6SM/MBuLxlGC8Ob03DAC+DE4qIo7vYlpvTSi2lbEzfyNH8o9T3rk+n0E52n/5ttNMtN5s2baJDhw5GxzmDvVpuDJ/C0rx5czZv3szq1au5//77uf3229m5c+dZ9//7F/zp2uxsX/xPP/002dnZttvBgwftF95OYkN9bLOlXv7fTj5ess9W2NzTt0mtLWygrGUnOtibK9tFMP+xvjzYPxY3FxMLdx3hireW8MnS/ZysoCtLRMTeXMwudA3vytAmQ+ka3rXWFTZ1ieHFjbu7O7GxsXTp0oUJEybQvn173nnnnQr3DQ8PJy0trdy29PR0XF1dz7rwkIeHB35+fuVujujRy+Pw93Ij/sgJJvy2G4Cx/Zvy9JAWtbaw+TtPNxceH9ScOQ/3oVvjIPKLSvn3nF10enkBY7/eyOytqeQXVX08kYiI1C0OM+bmNKvVWm6MzF/16NGDX3/9tdy2+fPn06VLlwrH2ziTAG93Hrs8ztZi8+jlcTwyIK7OFDZ/FRfmy7f3dOfHDYd4948EDh0/yextqczeloqnm5n+zUMZ3CacvnH1CdRqyCIilda4cWMcbB5RtTC0uHnmmWcYMmQIUVFRnDhxgm+//ZbFixczd+5coKxLKSUlhWnTpgFlM6Pef/99xo0bx5gxY1i1ahVTpkzhm2++MfJt2M2t3RuRfbKEqCAvRnaKNDqOocxmEzd0jeL6LpFsS8lmzrY05mxLJTkzn9+2p/Hb9jRMprJLWVwaF8KlzevTPjLAIVZ6FhERYxla3Bw5coRRo0aRmpqKv78/7dq1Y+7cuVxxxRVA2dLUycnJtv1jYmKYM2cOjz32GP/9739p0KAB7777rlOucVMRNxczj1weZ3QMh2IymWgXGUC7yADGD27OjsM5zN6WyqLd6exOO8GWg1lsOZjFu3/sxc/TlavaN+CePk1oHGLfKe0iIuI8DJ8tVdMcbZ0buXBp2QUsTTjKkj1HWZ6QQfbJskUOzSYY2jaC+y5tSpuG/ud5FhFxdvaaLSXGq3Xr3IhUVbi/p+36VqUWK2sSj/HJ0v0sij/K/7am8r+tqVzarD539Y4hOsgbb3cXvNxd8HZ3xUUrIouI1FoqbqRWcDGb6Nk0hJ5NQ9h5OIePl+7j1y2HWbKnrGXn7zxczbRt6M/E69urC0tEpJbR6EupdVo18OOdmzqy+PH+/KN7NGF+HtRzd+GvE88KSyysP3CcYe8v54/dR87+ZCIi4nTUciO1VnSwN6+MaMsrI9oCp5YZKLGQX1RKRm4hT83YysbkLO76Yj2PDIjj4cvidAFPEXEqjRs35tFHH7VdXsFkMvHTTz8xYsQIQ3MZTS03UmeYTCY83VwIqudOszBfvr2nB6O6N8JqhUkLExgzbb1tULKI1D3W0lLy1qwl+3+zyVuzFmupVkd3Vmq5kTrL3dXMyyPa0C7Sn2d/3s7vu9MZ/v5y3r25I+0iA4yOJyI1KGf+fI78ZwIlf1kF3zU8nLBnnsbvbxdsFsenlhup867vEsXM+3vSMMCLpGP5XP3+Ch7+ZhMHT13EU0Rqt5z580l55NFyhQ1AyZEjpDzyKDnz51fL63788cc0bNgQi8VSbvvVV1/N7bffzr59+xg+fDhhYWH4+PjQtWtXFi5cWKXXSElJ4cYbbyQwMJDg4GCGDx9OUlISAEuXLsXNze2Myxr985//pG/fvhf13oym4kYEaNPQn18f6s2IDg0AmLXlMJe9uZiXft3J8bwig9OJSHWxlpZy5D8ToKIl305tO/KfCdXSRXX99deTkZHBokWLbNuOHz/OvHnzuPXWW8nNzWXo0KEsXLiQTZs2MWjQIIYNG1Zucdtzyc/Pp3///vj4+LB06VKWL1+Oj48PgwcPpqioiL59+9KkSRO+/PJL2zElJSV89dVX3HHHHXZ/vzVJxY3IKUH13Jl0U0f+91Bv+sSFUFxq5bMVifR9fREfLN5Lcanl/E8iIk4lf/2GM1psyrFaKUlLI3/9Bru/dlBQEIMHD2b69Om2bT/88ANBQUEMGDCA9u3bc++999K2bVvi4uJ45ZVXaNKkCbNmzarU83/77beYzWY+/fRT2rZtS8uWLfn8889JTk5m8eLFANx11118/vnntmNmz55Nfn4+N9xwg13fa01TcSPyN20a+vPlXZcw7c5utIrw40RhCa/Pjee2KWvJVCuOSK1ScvTMdbAuZr+quvXWW5kxY4btgtFff/01N910Ey4uLuTl5fHkk0/SqlUrAgIC8PHxYffu3ZVuudmwYQN79+7F19cXHx8ffHx8CAoKoqCggH379gEwevRo9u7dy+rVqwH47LPPuOGGG6hXz7nX/9KAYpGz6NusPr1jQ5i5KYX/+2U7q/YfY/h/l/PpbV1pHu5rdDwRsQPX+vXtul9VDRs2DIvFwuzZs+natSvLli3jrbfeAuCJJ55g3rx5TJw4kdjYWLy8vLjuuusoKqrcH1kWi4XOnTvz9ddfn/FY/VPvJzQ0lGHDhvH555/TpEkT5syZY2vVcWYqbkTOwWw2cV3nSNpF+nP3F+tJzsxn5AcrePvGDgxsHW50PBG5SN5dOuMaHk7JkSMVj7sxmXANC8O7S+dqeX0vLy9GjhzJ119/zd69e2nWrBmdO5e91rJlyxg9ejTXXHMNALm5ubbBwJXRqVMnvvvuO0JDQ895Laa7776bm266icjISJo2bUqvXr0u6j05AnVLiVRCszBffhnbi55Ng8krKuWeLzfw/h8J1LHrzorUOiYXF8KeefrUnb8t4nnqftgzT2Nycam2DLfeeiuzZ8/ms88+4x//+Idte2xsLDNnzmTz5s1s2bKFW2655YyZVed73pCQEIYPH86yZctITExkyZIlPPLIIxw6dMi236BBg/D39+eVV15x+oHEp6m4EamkwHrufHFnN0b3bAzAxPl7GDt9IzkFWvhPxJn5DRxIw3cm4RoWVm67a1gYDd+ZVO3r3Fx22WUEBQURHx/PLbfcYtv+9ttvExgYSM+ePRk2bBiDBg2iU6dOlX5eb29vli5dSnR0NCNHjqRly5bceeednDx5slxLjtlsZvTo0ZSWlnLbbbfZ9b0ZxWStY396VuWS6SJn883aZJ7/ZTvFpVaigrx47+ZOdIgKMDqWSJ1UUFBAYmIiMTExeHp6XvDzWEtLy2ZPHT2Ka/36eHfpXK0tNo5kzJgxHDlypNIzsarLuX6WVfn+1pgbkQtwc7doWoT78tA3mziYeZLrPlzJE4OaM6ZPE12fSsRJmVxcqHdJN6Nj1Kjs7GzWrVvH119/zS+//GJ0HLtRt5TIBeoYHcjsh/twZdsISixWJvy2m9FT13H0RKHR0UREKmX48OFcffXV3HvvvVxxxRVGx7EbtdyIXAR/Lzfev6UjvdeF8MKsHSzdc5Qh7yzj41Gd6dwo0Oh4IiLnVBumfVdELTciF8lkMnFzt2h+fag3zcJ8yMgtZMy09bo2lYiIQVTciNhJ2XTx3rRt6E9mXhFjpq0nr7DE6FgiInWOihsRO/Jyd2HybZ0J8fFgd9oJxn2/GYulTk1IFBExnIobETuL8Pfi41GdcXcxM2/HEd75PcHoSCIidYqKG5Fq0LlRIK9c0waAd35P4LdtqQYnEhGpO1TciFSTG7pEcVfvGADGfb+FnYdzDE4kIlI3qLgRqUZPD2lBn7gQThaXMmbaejJytQaOiJzf6NGjGTFihO1+v379ePTRR895TOPGjZk0aVK15nIWKm5EqpGri5n3b+5ETEg9UrJOMmbaegqKS42OJSIVsFispMQfZ8+6NFLijzvUZICZM2fy8ssvGx3DaWgRP5Fq5u/txpTbu3DNByvZlJzFP3/Ywns3ddRlGkQcyL5N6Sz7LoG8rD9bV+sFeNDnxjiadgw1MFmZoKAgoyM4FbXciNSAJvV9+HhUZ9xcTMzemsqbC+KNjiQip+zblM7cj7eXK2wA8rIKmfvxdvZtSq+21/7xxx9p27YtXl5eBAcHc/nll5OXl3fGfn/vlkpPT2fYsGF4eXkRExPD119/fcYx2dnZ3HPPPYSGhuLn58dll13Gli1bqu29OBIVNyI1pHuTYCaMbAfAfxft44f1Bw1OJCIWi5Vl3517uYbl3ydUSxdVamoqN998M3feeSe7du1i8eLFjBw5Eqv1/K81evRokpKS+OOPP/jxxx/54IMPSE//swizWq1ceeWVpKWlMWfOHDZs2ECnTp0YMGAAmZmZdn8vjkbdUiI16LrOkSRl5PH+or0889M2IgO96dE02OhYInVWakLWGS02f5d7vJDUhCwaNrfv9eJSU1MpKSlh5MiRNGrUCIC2bdue97g9e/bw22+/sXr1ai655BIApkyZQsuWLW37LFq0iG3btpGeno6HhwcAEydO5Oeff+bHH3/knnvuset7cTRquRGpYeOuaMaV7SIoLrVy31cb2Hc01+hIInVWXk7lZjBWdr+qaN++PQMGDKBt27Zcf/31fPLJJxw/fvy8x+3atQtXV1e6dOli29aiRQsCAgJs9zds2EBubi7BwcH4+PjYbomJiezbt8/u78XRqOVGpIaZzSbevL49h7NOsik5i7u/WM+vD/XGx0P/HEVqWj0/D7vuVxUuLi4sWLCAlStXMn/+fN577z2effZZ1qxZc87jTndbmUxnn5RgsViIiIio8Krffy2Caiu13IgYwNPNhU9u60KEvyeJGXk8/8t2oyOJ1EkRcQHUCzh34eIT6EFEXEC1vL7JZKJXr168+OKLbNq0CXd3d3766adzHtOyZUtKSkpYv369bVt8fDxZWVm2+506dSItLQ1XV1diY2PL3UJCQqrlvTgSFTciBgnx8eCdmzpiNsHMjSnM3HjI6EgidY7ZbKLPjXHn3Kf3DXHVsnTDmjVr+M9//sP69etJTk5m5syZHD16tNzYmYo0b96cwYMHM2bMGNasWcOGDRu4++678fLysu1z+eWX06NHD0aMGMG8efNISkpi5cqVPPfcc+WKotpKxY2IgbrFBPHIgGYAPPfzdvZr/I1IjWvaMZTB97Y5owXHJ9CDwfe2qbZ1bvz8/Fi6dClDhw6lWbNmPPfcc7z55psMGTLkvMd+/vnnREVFcemllzJy5EjblO/TTCYTc+bMoW/fvtx55500a9aMm266iaSkJMLCwqrl/TgSk7Uyc85qkZycHPz9/cnOzsbPz8/oOCKUWqzc8slq1iRm0rqBHzMf6ImHq4vRsUScRkFBAYmJicTExODp6XnBz2OxWMtmT+UUUs+vrCtKi23WrHP9LKvy/a2WGxGDuZhNvHNTRwK93dhxOIfXftMCfyJGMJtNNGweSLOu4TRsHqjCxompuBFxAOH+nky8vj0An61I5PddRwxOJCLivFTciDiIAS3DuLNXDACP/7CFtOwCgxOJiDgnFTciDmT8kOa0buDH8fxiXvrfDqPjiIg4JRU3Ig7Ew9WFide3x2yCOdvS2HDg/KuViohIeSpuRBxMywg/ru8cBcArs3dW6iJ6IoL+rdQC9voZar13EQc0bmAzZm05zKbkLOZsS+PKdhFGRxJxWG5ubphMJo4ePUr9+vXPeVkCcVxWq5WjR49iMplwc3O7qOdScSPigML8PLn30iZMWpjAq3N3cXmrUK19I3IWLi4uREZGcujQIZKSkoyOIxfBZDIRGRmJi8vF/b5TcSPioO7p24Tpa5I5mHmSL1cd4O4+TYyOJOKwfHx8iIuLo7i42OgochHc3NwuurABFTciDsvb3ZV/DmzG+BnbePf3BK7rHEmAt7vRsUQclouLi12+GMX5aUCxiAO7rnMULcJ9ySko4d3f9xodR0TEKai4EXFgLmYTzwwtu0Lwl6uTSMrIMziRiIjjU3Ej4uD6NqtP32b1KS618vq83UbHERFxeCpuRJzAs0Nb2hb2W7kvw+g4IiIOTcWNiBNoHu7LLZdEA/DcT9spLCk1OJGIiONScSPiJJ4Y1IL6vh7sz8jjw8X7jI4jIuKwVNyIOAl/Lzeev6oVAB8s2sf+o7kGJxIRcUwqbkScyFXtIri0WX2KSi089/N2XUtHRKQCKm5EnIjJZOLl4W3wcDWzct8xftqUYnQkERGHo+JGxMlEB3vz8IA4AF6ZvYvjeUUGJxIRcSwqbkSc0Jg+TWgW5kNmXhGv/qa1b0RE/krFjYgTcnc1859r2gLw3fqDrE3MNDiRiIjjUHEj4qS6NA7i5m5RADz/y3ZKLRpcLCICKm5EnNr4wS3w83Rld9oJZm3R4GIREVBxI+LUArzdua9fUwDenL+HohKLwYlERIyn4kbEyd3RM4ZQXw8OHT/JN2uTjY4jImI4FTciTs7L3cU2Nfy9PxLIKywxOJGIiLFU3IjUAjd2jaJRsDcZuUV8tjzR6DgiIoZScSNSC7i5mPnnwOYATF66n0wt7CcidZiKG5Fa4qq2EbRu4MeJwhI+WLTX6DgiIoZRcSNSS5jNJp4c3AKAaasPkJJ10uBEIiLGUHEjUov0jQuhe5MgikosvLNwj9FxREQMoeJGpBYxmf5svflxwyH2pp8wOJGISM1TcSNSy3SKDuSKVmFYrPDRkv1GxxERqXGGFjcTJkyga9eu+Pr6EhoayogRI4iPjz/nMYsXL8ZkMp1x271bV0YWOe3+U6sWz9p8mPQTBQanERGpWYYWN0uWLGHs2LGsXr2aBQsWUFJSwsCBA8nLyzvvsfHx8aSmptpucXFxNZBYxDl0ig6kY3QARaUWvlqtVYtFpG5xNfLF586dW+7+559/TmhoKBs2bKBv377nPDY0NJSAgIBqTCfi3O7qHcOD0zfx9eoDPNCvKZ5uLkZHEhGpEQ415iY7OxuAoKCg8+7bsWNHIiIiGDBgAIsWLTrrfoWFheTk5JS7idQFg1uH0zDAi2N5RfyyWVcMF5G6w2GKG6vVyrhx4+jduzdt2rQ5634RERFMnjyZGTNmMHPmTJo3b86AAQNYunRphftPmDABf39/2y0qKqq63oKIQ3F1MXN7z0YATFmeiNVqNTiRiEjNMFkd5Dfe2LFjmT17NsuXLycyMrJKxw4bNgyTycSsWbPOeKywsJDCwkLb/ZycHKKiosjOzsbPz++ic4s4suyTxfSc8Dt5RaVMu7MbfZvVNzqSiMgFycnJwd/fv1Lf3w7RcvPQQw8xa9YsFi1aVOXCBqB79+4kJCRU+JiHhwd+fn7lbiJ1hb+XG9d3KWutnKILaopIHWFocWO1WnnwwQeZOXMmf/zxBzExMRf0PJs2bSIiIsLO6URqhzt6NcZkgiV7jmpRPxGpEwydLTV27FimT5/OL7/8gq+vL2lpaQD4+/vj5eUFwNNPP01KSgrTpk0DYNKkSTRu3JjWrVtTVFTEV199xYwZM5gxY4Zh70PEkTUKrscVLcOYv/MIU5YnMWFkW6MjiYhUK0Nbbj788EOys7Pp168fERERttt3331n2yc1NZXk5D/X6SgqKuLxxx+nXbt29OnTh+XLlzN79mxGjhxpxFsQcQp39S5rFZ258RCZeUUGpxERqV4OM6C4plRlQJJIbWG1Whn2/nK2p+Tw+MBmPHiZFr0UEefidAOKRaR6mUwmW+vNF6sOkFtYYnAiEZHqo+JGpI64sm0DIgO9OHqikBdm7TA6johItVFxI1JHuLuaeeuGDphN8OOGQ/y65bDRkUREqoWKG5E6pFtMEA/2jwXgmZ+2ceh4vsGJRETsT8WNSB3z8IA4OkYHcKKghMe+20xJqcXoSCIidqXiRqSOcXUx886NHfHxcGVd0nE+WLzP6EgiInal4kakDooO9ublEa0BeOf3BDYcOG5wIhER+1FxI1JHXdMxkuEdGlBqsfLIt5vIKSg2OpKIiF2ouBGpw14e0YbIQC8OHT/Jf2bvMjqOiIhdqLgRqcP8PN1464YOAHy//iD7j+YaG0hExA5U3IjUcd1igri8ZSgWK0xamGB0HBGRi6biRkR47IpmAPy69TC703IMTiMicnFU3IgIrRv4c2XbCKxWeHvBHqPjiIhcFBU3IgLAY1fEYTbBvB1H2HYo2+g4IiIXTMWNiAAQG+rLiA4NAXhzQbzBaURELpyKGxGxeeTyOFzMJhbHH+Grzb8zZ/8c1qWto9RSanQ0EZFKczU6gIg4jkbB9ejdPpX1Jz7ntS1/dk2FeYfxVLenuLzR5QamExGpHLXciIjNwgML2VgwCZNr+TE36fnpjFs8joUHFhqUTESk8lTciAgApZZSXl37KgAmU/nHrFgBeG3ta+qiEhGHp+JGRADYmL6RI/lHzvq4FStp+WlsTN9Yg6lERKpOxY2IAHA0/6hd9xMRMYqKGxEBoL53fbvuJyJiFBU3IgJAp9BOhHmHYcJU4eMmTIR7h9MptFMNJxMRqRoVNyICgIvZhae6PQVwZoFTNp6Y8d3G42J2qeFkIiJVo+JGRGwub3Q5b/V7i1Dv0HLbLSX+3NPiBa1zIyJOQYv4iUg5lze6nP5R/dmYvpGj+Uf5ZcMJ5m3wJr5eJFxidDoRkfNTcSMiZ3Axu9A1vCsA0R7ZzNuwnHnb08jMKyKonrvB6UREzk3dUiJyTm0a+tO2oT9FpRZmbjxkdBwRkfNScSMi53VTtygAvlmbjNVqNTiNiMi5qbgRkfO6un0DvNxc2Hc0j/UHjhsdR0TknFTciMh5+Xq6Max9BFDWeiMi4shU3IhIpdzULRqA2VtTyc4vNjiNiMjZqbgRkUrpGBVAi3BfCkss/Lw5xeg4IiJnpeJGRCrFZDJxU9eygcXT1yRTatHAYhFxTCpuRKTSrukYiY+HK/FHTvDlqiSj44iIVEjFjYhUmr+3G+OHtADg9XnxHMzMNziRiMiZVNyISJXc2i2abjFB5BeV8sxP27TujYg4HBU3IlIlZrOJV0e2xcPVzLKEDH7coFWLRcSxqLgRkSprUt+Hx65oBsDL/9tJ+okCgxOJiPxJxY2IXJC7e8fQpqEfOQUlPP/zDqPjiIjYqLgRkQvi6mLm9Wvb42o2MXdHGr9tSzU6kogIcIHFzcGDBzl06M9+9rVr1/Loo48yefJkuwUTEcfXqoEf9/drCsC/ftlBVn6RwYlERC6wuLnllltYtGgRAGlpaVxxxRWsXbuWZ555hpdeesmuAUXEsT14WSxN69cjI7eQtxfsMTqOiMiFFTfbt2+nW7duAHz//fe0adOGlStXMn36dKZOnWrPfCLi4DxcXXjh6tYA/LDhEDkFuu6UiBjrgoqb4uJiPDw8AFi4cCFXX301AC1atCA1Vf3uInVN79gQmoX5kF9Uyg/rNTVcRIx1QcVN69at+eijj1i2bBkLFixg8ODBABw+fJjg4GC7BhQRx2cymbitR2MAvlyVhEXXnRIRA11QcfPaa6/x8ccf069fP26++Wbat28PwKxZs2zdVSJSt1zTsSG+nq4kHctnyZ6jRscREQMUlVg4cCyP43nGTi5wvZCD+vXrR0ZGBjk5OQQGBtq233PPPXh7e9stnIg4j3oertzQJYopyxOZujKJ/i1CjY4kIjUsOTOPy99aSoC3G5ufH2hYjgtquTl58iSFhYW2wubAgQNMmjSJ+Ph4QkP1C02krrqtRyNMJliy5yj7j+YaHUdEalj2yRIA/DzdDM1xQcXN8OHDmTZtGgBZWVlccsklvPnmm4wYMYIPP/zQrgFFxHk0Cq5H/+Zlf+BMW3XA4DQiUtNOz5b087qgjiG7uaDiZuPGjfTp0weAH3/8kbCwMA4cOMC0adN499137RpQRJzL7T0bA/DjhkPkFpYYG0ZEalTOyVPFjTO23OTn5+Pr6wvA/PnzGTlyJGazme7du3PggP5aE6nL+sSG0CSkHrmFJczcqGnhInVJToETd0vFxsby888/c/DgQebNm8fAgWWDhtLT0/Hz87NrQBFxLmazidt6NALgi5VJWK2aFi5SV9habpyxW+r555/n8ccfp3HjxnTr1o0ePXoAZa04HTt2tGtAEXE+13aOpJ67C/uO5rF8b4bRcUSkhtjG3Dhjy811111HcnIy69evZ968ebbtAwYM4O2337ZbOBFxTr6eblzXORKAL1aqq1qkrviz5cYJixuA8PBwOnbsyOHDh0lJSQGgW7dutGjRwm7hRMR53XZqYPHvu4+QmJFnbBgRqRE5tqngTtgtZbFYeOmll/D396dRo0ZER0cTEBDAyy+/jMVisXdGEXFCTev7cFmLUKxW+PfsnUbHEZEa8OdUcGNbbi6otHr22WeZMmUKr776Kr169cJqtbJixQpeeOEFCgoK+Pe//23vnCLihJ4Z2pKle46ycFc6i+LTbWvgiEjt5ChTwS+ouPniiy/49NNPbVcDB2jfvj0NGzbkgQceUHEjIgDEhvpwR6/GfLIskZd/3UmvpiG4u15wb7iIODjbVHBnHHOTmZlZ4diaFi1akJmZedGhRKT2eHhAHCE+HuzPyOOzFYlGxxGRanS65cbfGYub9u3b8/7775+x/f3336ddu3YXHUpEag9fTzeeGlL2x9B7vydwJKfA4EQiUh2sVqvDXH7hgl799ddf58orr2ThwoX06NEDk8nEypUrOXjwIHPmzLF3RhFxciM7NuTrNQfYlJzFq7/t5u0bOxgdSUTsrKDYQnFp2aKdRo+5uaCWm0svvZQ9e/ZwzTXXkJWVRWZmJiNHjmTHjh18/vnn9s4oIk7ObDbx4tWtMZngp00prE9S97VIbXO61cbFbMLb3cXQLCarHddG37JlC506daK0tNReT2l3OTk5+Pv7k52drUtFiNSwp2Zs5dt1B2ndwI9ZD/bGxWwyOpKI2EnCkRNc8fZSAr3d2PT8QLs/f1W+vzVtQURqzBODmuPr6cqOwzl8uy7Z6DgiYkeOssYNqLgRkRoU7OPBuCuaATBxXjzZp2ZWiIjz+3N1YhU3IlLHjOreiNhQH47nF/PBor1GxxERO3GUmVJQxdlSI0eOPOfjWVlZF5NFROoAVxczzwxtwZ1T1/P5iiT+0b0RUUHeRscSkYvkKKsTQxWLG39///M+ftttt11UIBGp/fo3D6VXbDAr9h7j9XnxvHdzR6MjichFsq1O7GzFjaZ5i4g9mEwmnh3aiivfW8avWw5zZ6/GdIwONDqWiFwEW8uNA3RLGTrmZsKECXTt2hVfX19CQ0MZMWIE8fHx5z1uyZIldO7cGU9PT5o0acJHH31UA2lFxJ5aNfDjuk6RALwyexd2XJVCRAxgG3PjAC03hhY3S5YsYezYsaxevZoFCxZQUlLCwIEDycvLO+sxiYmJDB06lD59+rBp0yaeeeYZHn74YWbMmFGDyUXEHv45sDlebi5sOHCc37anGR1HRC6CbbaUA0wFN7TtaO7cueXuf/7554SGhrJhwwb69u1b4TEfffQR0dHRTJo0CYCWLVuyfv16Jk6cyLXXXlvdkUXEjsL9PRnTtwnv/p7Aq7/tZkDLUDxcjV3ZVEQujCPNlnKoqeDZ2dkABAUFnXWfVatWMXBg+ZUPBw0axPr16ykuPnPNjMLCQnJycsrdRMRx3Nu3CfV9PUjOzOfLVQeMjiMiF8iRZks5THFjtVoZN24cvXv3pk2bNmfdLy0tjbCwsHLbwsLCKCkpISMj44z9J0yYgL+/v+0WFRVl9+wicuHqebjy+MCyhf3e/T2B43lFBicSkQthmy3lAN1SDlPcPPjgg2zdupVvvvnmvPuaTOWvR3N6IOLftwM8/fTTZGdn224HDx60T2ARsZvrOkfRItyXnIISJs4//6QCEXE8arn5m4ceeohZs2axaNEiIiMjz7lveHg4aWnlBx6mp6fj6upKcHDwGft7eHjg5+dX7iYijsXFbOL/hrUG4Os1yaxN1FXDRZyJ1WrVmJvTrFYrDz74IDNnzuSPP/4gJibmvMf06NGDBQsWlNs2f/58unTpgpub8dWiiFyYHk2DualrWbfxUzO2UlBcanAiEamsgmILxaVlvSh1vuVm7NixfPXVV0yfPh1fX1/S0tJIS0vj5MmTtn2efvrpcqse33fffRw4cIBx48axa9cuPvvsM6ZMmcLjjz9uxFsQETt6emhLQn092J+Rx3t/JBgdR0Qq6XSrjYvZhLe78TMeDS1uPvzwQ7Kzs+nXrx8RERG223fffWfbJzU1leTkZNv9mJgY5syZw+LFi+nQoQMvv/wy7777rqaBi9QC/l5uvDS8bELBx0v2s/OwZjeKOIM/x9u4Vjj+taYZ2jFWmRVJp06desa2Sy+9lI0bN1ZDIhEx2uA24QxpE85v29MYP2MrPz3QE1cXhxgeKCJn8ed4G+O7pMBBBhSLiPzVi1e3xs/TlW0p2Xy+IsnoOCJyHrbViR1gvA2ouBERBxTq58mzV7YE4M0F8Rw4dvZLsoiI8RxpphSouBERB3VDlyh6Ng2moNjC0zO36cKaIg7Mkda4ARU3IuKgTCYTE0a2xdPNzMp9x1iw84jRkUTkLGyrE6u4ERE5t0bB9bird9n6V28vTMBiUeuNiCOytdyoW0pE5PzG9GmCj4cru1JzmLsj7fwHiEiNs425UcuNiMj5BXi7c+fp1psFeyhV642Iw8k+qangIiJVclfvGPw8XUlIz+V/Ww8bHUdE/sY2FVzdUiIilePv5caYPk0AeGdhAiWlFoMTichfqVtKROQC3NE7hgBvN/Zn5PHLZrXeiDiSHHVLiYhUnY+HK/f2bQrAu38kUKzWGxGHoangIiIX6PaejQiu586BY/nM3HjI6DgiQtl1IjUVXETkAnm7u3J/v1OtN7/vpahErTciRjtZXErJqVmMarkREbkA/+jeiPq+HqRkneT79QeNjiNS552eKeViNuHt7mJwmjIqbkTEqXi6uTD2VOvNm/PjScsuMDiRSN12eqaUv5cbJpPJ4DRlVNyIiNO55ZJGtGnox/H8Yh77brMW9hMx0J8XzXSM8Tag4kZEnJC7q5l3b+qIt7sLq/Yf46Ml+4yOJFJn2da4cZBp4KDiRkScVJP6PrxwdWsA3lqwh03Jxw1OJFI32VYndpDBxKDiRkSc2PWdI7mqXQSlFisPf7uJE6f+ghSRmvNny426pURELprJZOLf17SlYYAXBzNP8tzP27FaNf5GpCb9OeZGLTciInbh7+XGuzd3wMVs4pfNh5m5McXoSCJ1im11Yo25ERGxn86Ngnh0QBwAz/+ynS0Hs4wNJFKHaLaUiEg1eaB/LJfEBJFXVMq1H67kv4v2aoq4SA3QbCkRkWriYjYxeVQXhrYNp8Ri5Y158dw0eRUHM/ONjiZSq2m2lIhINfL3duO/t3Tizevb4+Phyrqk4wx5Zxk/bjikgcYi1USzpUREqpnJZOLazpH89kgfujQKJLewhMd/2MJj323Gom4qEbvTbCkRkRoSFeTNd/f24IlBzXE1m/h582F+3qyZVCL2ptlSIiI1yMVsYmz/WP45sDkAr83dTX5RicGpRGoPq9WqlhsRESPc0asxUUFeHMkp5KMl+42OI1JrnCwupeRUd6/G3IiI1CBPNxeeGdISgI+X7CMl66TBiURqh9MzpVzNJrzcXAxO8ycVNyJSJwxuE063mCAKSyy8Pne30XFEaoW/rnFjMpkMTvMnFTciUieYTCaev6oVJhP8svkwG/ZnkLdmLdn/m03emrVYS0uNjijidBxxdWIAx0ojIlKN2jT05/rOkRya9RtFN/yb5Nzjtsdcw8MJe+Zp/AYONDChiHNxxNWJQS03IlLHPOR2iOfWfoH/XwobgJIjR0h55FFy5s83KJmI83HE1YlBxY2I1CHW0lIK3p4IwBmjA06tYHzkPxPURSVSSY64OjGouBGROiR//QZK0tLOLGxOs1opSUsjf/2Gmowl4rQccY0bUHEjInVIydGjdt1PpK5zxNWJQcWNiNQhrvXr23U/kbrOUWdLqbgRkTrDu0tnXMPD4WzrcZhMuIaH492lc80GE3FS2Sc1W0pExFAmFxfCnnn61J3yBc7p64WHPfM0JhfHWWlVxJHZBhRrzI2IiHH8Bg6k4TuTcA0LK7f9qFcAm+8ar3VuRKrANhXcwWZLOVYaEZEa4DdwIL4DBpTNnjp6lHU5Ju7ZUopbliu9M/OJCvI2OqKIU1DLjYiIAzG5uFDvkm74X3UlA24eQvfY+hSWWHjx151GRxNxGjkacyMi4phMJhMvDW+Nq9nEwl1H+GP3EaMjiTg8q9X651RwtdyIiDie2FBf7uodA8ALs3ZyskirFIucS35RKaWWsqH4jjbmRsWNiMgpDw2II8zPg+TMfG6avIq07AKjI4k4rNPjbVzNJrzcHGuGoYobEZFTfDxcef+WTgR4u7HlUDbD3l/OxuTj5z9QpA76c6aUG6azrR1lEBU3IiJ/0bVxELPG9qZ5mC9HTxRy08er+WH9QaNjiTicP2dKOVaXFKi4ERE5Q3SwNzMf6Mmg1mEUlVp44setvPjrDkpKLUZHE3EYjjpTClTciIhUqJ6HKx/e2plHBsQB8PmKJO78Yj0FxRpoLAKOu8YNqLgRETkrs9nEY1c046N/dMLb3YWle47y8Deb1IIjguOuTgwqbkREzmtwmwg+vb0L7q5m5u88wlMzt2GxWM9/oEgtdrpbyl/dUiIizqln0xDev7kjLmYTP244xL/n7MJqVYEjdZe6pUREaoGBrcN57dp2AExZnsh/F+01OJGIcf46FdzRqLgREamC6zpH8vxVrQCYOH8PX65KMjaQiEE0FVxEpBa5s3cMD18WC8Dzs3Ywa8thgxOJ1DxbcaOWGxGR2uGxK5pxW49GWK3wz+83s3JfhtGRRGpU9qkBxb5quRERqR1MJhMvDGvN0LbhFJdauXfaBnan5RgdS6RGFJda2JueC0B0kLfBac6k4kZE5AKZzSbeuqED3RoHcaKwhNGfreNw1kmjY4lUu92pJygotuDn6UqTEB+j45xBxY2IyEXwdHNh8m2diQ31IS2ngNGfr7U114vUVpsOll1QtkN0IGazY100E1TciIhctABvd764sxuhvh7sOZLLPdPWU1iiyzRI7bXxQFlx0yk6wNggZ6HiRkTEDhoGeDH1jm74eLiyJjGTcd9v4WSRChypnTYmZwHQKTrQ2CBnoeJGRMROWjXw46N/dMbVbGL21lT6vL6IKcsTdbFNqVUycgtJzszHZIIOarkREan9eseFMPm2zkQHeZORW8jL/9tJ39cXMXWFihypHTadarWJre/jkJdeABU3IiJ2d1mLMH7/56W8dm1bGgZ4kX6ikBd+3Um/NxYzZ1uq0fFELsrG5NPjbRyzSwpU3IiIVAs3FzM3do1m0eP9+Pc1bYjw9yQtp4CHv9lk+3IQcUa2wcSNAowNcg4qbkREqpG7q5lbL2nE4if6cWXbCEosVh6avonsfE0XF+dTUmph66FsADqq5UZEpG7zcHXh1WvbEh3kTUrWScbP2IrVajU6lkiV7E47wcniUnw9XYmt73iL952m4kZEpIb4errx/i0dcXMxMXdHGl+tPmB0JJEq2XSqS7VDVIBDLt53moobEZEa1C4ygPGDWwDw8uxd7DicbXAikco7vb6NI3dJgcHFzdKlSxk2bBgNGjTAZDLx888/n3P/xYsXYzKZzrjt3r27ZgKLiNjBXb1jGNAilKISCw9N30ReYYnRkUQqZVOyY69MfJqhxU1eXh7t27fn/fffr9Jx8fHxpKam2m5xcXHVlFBExP5MJhNvXN+ecD9P9mfk8a9fthsdSeS8juUWknQsH4COUY7dcuNq5IsPGTKEIUOGVPm40NBQAgIC7B9IRKSGBNVz592bO3LT5FXM3JhCz6YhXNc50uhYImdlW7wv1Ad/b8dcvO80pxxz07FjRyIiIhgwYACLFi06576FhYXk5OSUu4mIOIJuMUE8enkzAP7183YSjpwwOJHI2Z2+EnjHqABjg1SCUxU3ERERTJ48mRkzZjBz5kyaN2/OgAEDWLp06VmPmTBhAv7+/rZbVFRUDSYWETm3sf1j6R0bwsniUh74eiP5RRp/I45p44EsADo1cuwuKQCT1UEWWjCZTPz000+MGDGiSscNGzYMk8nErFmzKny8sLCQwsJC2/2cnByioqLIzs7Gz8/vYiKLiNhFRm4hQ99ZRvqJQkZ2asib17fHZHLcabZS95SUWmj34nzyi0qZ92hfmof71niGnJwc/P39K/X97VQtNxXp3r07CQkJZ33cw8MDPz+/cjcREUcS4uPBuzd3xGyCmRtT+GH9IaMjiZQTf+QE+UWl+Hi4EhvquIv3neb0xc2mTZuIiIgwOoaIyEXp3iSYfw5sDsC/ftnO7jSNDxTHcXowcYeoAFwcePG+0wydLZWbm8vevXtt9xMTE9m8eTNBQUFER0fz9NNPk5KSwrRp0wCYNGkSjRs3pnXr1hQVFfHVV18xY8YMZsyYYdRbEBGxm/svbcraxEyW7DnKA19vZNaDvfHxMPTXtAjw1yuBBxgbpJIMbblZv349HTt2pGPHjgCMGzeOjh078vzzzwOQmppKcnKybf+ioiIef/xx2rVrR58+fVi+fDmzZ89m5MiRhuQXEbEns9nE2zd2KFv/5mgeT83YSmFJqdGxRGwtN46+MvFpDjOguKZUZUCSiIgR1idlcuPk1ZRarDQM8OKxK5pxTceGTtEdILXP8bwiOr68AIDNz19BgLe7ITnq1IBiEZHapkvjIN67uSNhfh6kZJ3k8R+2MOSdpSzYeURXEpcad3p9myb16xlW2FSVihsREQc0tG0ES57oz9NDWuDv5caeI7mMmbaeaz9cyfYUXWxTas6Wg2Wftw5OsHjfaSpuREQclKebC/de2pSlT/bngX5N8XQzszE5i1s/XUNiRp7R8aSO2JlaNnOvTQN/g5NUnoobEREH5+/lxpODW7D0if50jA4g+2QxY6atJ6eg2OhoUgfsPFxW3LRq4DzjVFXciIg4iVA/Tz4e1ZlwP0/2pufy6LebKbVoDI5Un+z8YlKyTgLQMlzFjYiIVINQX08m39YZD1czf+xO54158UZHklps16nFJBsGeDn8lcD/SsWNiIiTaRcZwOvXtQPgoyX7+HlTisGJpLZyxi4pUHEjIuKUhndoyAP9mgLw5IytbD6YZWwgqZVODyZuFaHiRkREasDjA5tzectQikos3DNtPanZJ42OJLXMrlPFTUsVNyIiUhNOX64hLtSH9BOF3Dx5tQocsZuiEgsJR3IBaK1uKRERqSm+nm58fkdXIgO9SDqWz02TV3M4SwWOXLx9R3MpKrXg6+FKZKCX0XGqRMWNiIiTiwz05tt7uhMV5MWBUwVOigocuUh/7ZIymZzrumYqbkREaoGyAqcH0UHeJGfmc9PkVRw6nm90LHFizjpTClTciIjUGg0DvPj2nu40CvbmYOZJbpq8WgWOXDBnnSkFKm5ERGqVBqcKnMbB3hw6fpJrP1zJnG2pupq4VInVanXamVKg4kZEpNaJ8Pfi23t60LR+PY7kFPLA1xv5x5Q1JBw5YXQ0cRJpOQUczy/GxWwiLszH6DhVpuJGRKQWCvf35H8P9eGRAXG4u5pZsfcYQ95Zxiv/28kJXXBTzuN0q01sfR883VwMTlN1Km5ERGopL3cXHruiGQsfu5QrWoVRYrHy6fJE+k9cwsyNh2xdVRaLlZT44+xZl0ZK/HEsuhhnnXd6MHHLCF+Dk1wYV6MDiIhI9YoO9uaT27qwOD6dF3/dSWJGHuO+38J36w7yYLMG7Jt3iLysQtv+9QI86HNjHE07hhqYWoxkG0zshDOlQC03IiJ1Rr/mocx7tC9PDm6Ol5sLmfFZbPluL7l/KWwA8rIKmfvxdvZtSjcoqRhtV2rZ+KxWEf4GJ7kwKm5EROoQd1czD/SLZf6jfRha4gnA2ZZnW/59grqo6qDcwhKSjuUBztstpeJGRKQOMmcU4V5kxXTW0gZyjxeSmpBV6ee0Wq0qhmqB+LQcrFYI8/Mg2MfD6DgXRGNuRETqoLycwvPvBGzbl0mDZgFnXX4/I7eQFXszWLong+V7j3KyqJQpo7vStXGQPeNKDdpp65JyzvE2oOJGRKROqudXub/I//37Hp5cu5cQHw+C6rkTWM+d4HrueLq5sC4pkx2nZtX81Z2fr2P6mO60jXTO8Rp13Z8zpVTciIiIE4mIC6BegEe5WVJ/V+JhJsMLThaUkFNQwv6MvAr3axnhR9+4EHrGhvDBor2sSczkts/W8P29PYgLc84xG3WZs8+UAhU3IiJ1ktlsos+Nccz9ePtZ97lqdCvGtA4i5fhJMvOKyMwr4lheEcfzijhRWELLCF96xYYQ6utpO6ZTdAD/+HQNWw5lc+una/jxvp5EB3vXxFsSOyi1WIlPc95rSp2m4kZEpI5q2jGUwfe2Ydl3CeVacHwCPeh9w5/r3FSl9cXX042pd3TjpsmriT9ygls+Xc2P9/Uk3N/z/AdLpXy3LplX/reLfi1CubdvE9o0PHf3n9VqPeuYqb9LzMijoNiCl5sLjYLr2SOuIVTciIjUYU07hhLTvj6pCVnk5RRSz8+DiLgAzObKfRlWJLCeO1/e1Y0bPl5F0rF8bv10Nd/d24MQJ51542hmbkzhRGEJv245zK9bDtMnLoR7+zalV2wwJpMJi8XKztQcFsensyj+KJsPZtGmoT/39W3CwNbhuJzjZ3u6S6pFhO8593N0Km5EROo4s9lEw+aBdn3OUD9Pvrr7Eq7/aBX7juYxaspapt99CYH13O36OnWN1Wpld1rZbKY+cSGs3HeMZQkZLEvIoE1DP5qF+bJ0TwYZueXHUm05mMX9X2+kcbA3d/dpwnWdIyu8ZtTpa0o5c5cUaJ0bERGpJpGB3nx99yWE+HiwKzWHf0xZQ1Z+kdGxnFpaTgHZJ4txNZv49PYuLH68H6N7NsbLzYXtKTnM3JhCRm4h3u4uXNEqjH9f04bfHunDw5fF4u/lRtKxfJ77eTu9Xv2Dt+bHszwhg8y8P38mp2dKOfNgYgCT9fSV0+qInJwc/P39yc7Oxs/PuX94IiLOIOHICW6avJpjeUW0buDH13dfQoC3WnAuxKLd6dwxdR3Nw3yZ91hf2/bjeUV8t/4g2SeL6R0bQpfGgXi4lm+ZySss4fv1B/l0WSIpWSfLPRbh70mrCD/WJmVyoqCEmQ/0pFO0fVvzLlZVvr/VLSUiItUqLsyXb+7pzs2TV7PjcA6jpqzlq7suwd/bzehoTmdX2p9jYv4qsJ47913a9JzH1vNw5Y5eMYzq3ojZ21KZtyONnYdzSDqWT2p2AanZBQC4mE20CHfuKfwqbkREpNo1C/Nl+pju3PzJaralZDPqszV8edcl+HupwKmK3adWD24RfuE9D64uZoZ3aMjwDg2BsmtJ7U7NYWdqDrtST9ApOgBvd+cuD5w7vYiIOI3m4b5MH3MJt3yyhq2Hshk1ZQ1f3NFNg4yrYPdZWm4uho+HK10aB9GlFl0yQwOKRUSkxrQILxtzE+jtxtZD2Qx4awkzNhyijg3/vCCFJaXsO3rqat0X0XJTF6i4ERGRGtUywo9v7ulOXKgPmXlF/POHLdw0eTV7008YHc2h7U3PpdRiJcDbjbBKXhusrlJxIyIiNa5FuB+zH+7D+MEt8HQzsyYxkyHvLOONebs5WVRqdDyH9Od4G99KrzhcV6m4ERERQ7i7mrm/X1MWPHYpA1qEUlxq5b+L9tHn9UWM+34zMzYcIu3UDB75y3gbdUmdlwYUi4iIoaKCvPn09i7M33mEF2btIDW7gJkbU5i5MQWApvXr0Ss2hAh/L8ymsqnKJpMJF1PZ9OaBrcPrxKyr0ysTt7TjYOLaSsWNiIgYzmQyMah1OJc2q8/6pOOs2JfBir0ZbEvJZt/RPNtA2oq8+OtORvVoxJ29YqjvW3vHouyywzTwukLFjYiIOAxPNxd6x4XQOy4EgOz8YlbtP8baxExyCoqxWK1YLFYsVii1WtmTdoKE9Fw+XLyPz5YncnO3aMb0bULDAC+D34l9HT1RSEZuISZT2ZpBcm4qbkRExGH5e7sxuE04g9uEV/i4xWLl993pvL9oL1sOZjF1ZRJfrT7ADV2jeGZoS3w8asfXXPypLqmY4Hp4uZ95wUspTwOKRUTEaZnNJq5oFcbPD/Tk67svoWfTYEosVqavSWbYe8vZnpJtdES7qI7F+2ozFTciIuL0TCYTvWJDmD6mO9+M6U4Df08SM/IY+cFKpq5IdPpFAjXepmpU3IiISK3So2kwcx7pw+UtwygqtfDCrzu598sNZOUXGR3tgv05DVwtN5Wh4kZERGqdAG93PrmtM/83rBXuLmbm7zzCle8uZ8meo07XilNSaiHhSC5QtrqznJ+KGxERqZVMJhN39Iph5gM9aRzsTUrWSW7/bC03Tl7Nmv3HjI5XaYkZeRSVWvDxcK11s8Cqi4obERGp1do09Od/D/fhrt4xuLuaWZuYyY2TVzNqyho2H8yy7We1WjmWW8jmg1n8uuUwf+w+Qmae8V1ZO1PLuqSah/tiNuuyC5VRO+bIiYiInIOPhyv/uqoVd/eJ4b+L9vLt2oMsS8hgWUIGnaIDyCss5eDxfPIruK5VTEg9OkYH0Ck6kM6NAmv82k6nVybWeJvKU3EjIiJ1RoS/F6+MaMu9fZvyzu8JzNx4iI3JWbbHTSYI9/MkMtCLzLwi9h3NIzGj7Hb6chC9YoN5dWQ7ooK8ayTz7tTT08A13qayVNyIiEidExXkzcTr2/NAv6asP3CcMD9PogK9aBjohYfrn4vkZeUXselgFpsOHGdD8nHWJR1nxd5jDJq0lKeGtOAflzSq9q4i2zWl1HJTaSpuRESkzmpS34cm9X3O+niAtzv9m4fSv3koAEkZeTw5YytrEzN5/pcdzN6ayuvXtaNRcL1Kv2apxYpLJQuirPwiUk9dGb2ZiptK04BiERGRSmocUo9vx3Tnxatb4+3uwprETAZNWsqny/ZzsoLxOn+1/2guY7/eSMt/zeX/ftlOQfG594c/W20iA73w86z9Vz63F5PV2Sb8X6ScnBz8/f3Jzs7Gz0/9lyIicmEOZuYzfsZWVu4rm1bu7+XGDV0i+Uf3RuVactKyC3jn9wS+X3+QUsufX7lxoT68c1NHWjU4y3eRpZS5s2cwZ9UWoqJjeOKeO8Bcd68rVZXvbxU3IiIiF8hqtfLtuoP8d9FeDh0/CZQNSr60WX1u6RbNhuTjTF2RRGGJBYDLW4YysHU4b8yL5+iJQtxdzDw5uDl39oopP3Zn5yyYOx5yDv+5za8BDH4NWl1dk2/RYai4OQcVNyIiYm+lFiuL49OZtuoAS/YcPePxLo0CGT+kBV0bBwFwLLeQ8TO2sXDXEQB6x4bw5g3tCfPzLCtsvr8N+PvX86ni54ZpdbLAUXFzDipuRESkOiVm5PHV6gPM2nKYUF8Pxl3RjMtahJ6xNo7VamX62mRe/t9OCootuLua6djQl0+O34FvUToVDzk2lbXgPLqtznVRqbg5BxU3IiLiSPam5/LP7zez5VA23c07+db9lfMfdPv/IKZP9YdzIFX5/tZUcBEREQPFhvrw89heJGbkcWTFIdhciYNyj1R3LKemqeAiIiIGM5lMNKnvQ4/2rSp3gE9Y9QZycipuREREHEWjnmVjas4y4qZszE3Dsv3krFTciIiIOAqzS9l0b+DMAufU/cGv1rnBxFWl4kZERMSRtLq6bLq3X0T57X4N6uw08KrSgGIRERFH0+pqaHElHFhZNnjYJ6ysK0otNpWi4kZERMQRmV3q3HRve1G3lIiIiNQqKm5ERESkVlFxIyIiIrWKihsRERGpVVTciIiISK1iaHGzdOlShg0bRoMGDTCZTPz888/nPWbJkiV07twZT09PmjRpwkcffVT9QUVERMRpGFrc5OXl0b59e95///1K7Z+YmMjQoUPp06cPmzZt4plnnuHhhx9mxowZ1ZxUREREnIWh69wMGTKEIUOGVHr/jz76iOjoaCZNmgRAy5YtWb9+PRMnTuTaa6+tppQiIiLiTJxqzM2qVasYOHBguW2DBg1i/fr1FBcXV3hMYWEhOTk55W4iIiJSeznVCsVpaWmEhZW/zHtYWBglJSVkZGQQERFxxjETJkzgxRdfPGO7ihwRERHncfp722q1nndfpypuAEym8ldJPf0m/779tKeffppx48bZ7qekpNCqVSuioqKqL6SIiIhUixMnTuDv73/OfZyquAkPDyctLa3ctvT0dFxdXQkODq7wGA8PDzw8PGz3fXx8OHjwIL6+vnTr1o1169aV279r167n3Xa2+zk5OURFRXHw4EH8/Pwu+H3+XUWZLvaYcz1+tsfOdx7+vq26z8u5sl7M/lU9N7XhM1Md56Wi7Uafl3NlvZj99Zmp+j7O8pmpjt+/59qnKtvPdW7++v+Ocm4u9jPTpUsX/vjjDxo0aHDe13Kq4qZHjx78+uuv5bbNnz+fLl264ObmVqnnMJvNREZGAuDi4nLGD7oy285338/Pz64foIoyXewx53r8bI+d733/fVt1n5dzZb2Y/at6bmrDZ6Y6zktF240+L+fKejH76zNT9X2c5TNTHb9/z7VPVbaf61xUtL/R5+ZiPzOurq627+/zMXRAcW5uLps3b2bz5s1A2VTvzZs3k5ycDJR1Kd122222/e+77z4OHDjAuHHj2LVrF5999hlTpkzh8ccfv6DXHzt27AVtO999e7uQ5z/fMed6/GyPVeZ9/3VbdZ+XC3mNyuxf1XNTGz4z1XFeKtpu9Hm5kNfQZ+bC968Nn5nq+P17rn2qsv1c56Ku/Fs6G5O1MiNzqsnixYvp37//Gdtvv/12pk6dyujRo0lKSmLx4sW2x5YsWcJjjz3Gjh07aNCgAePHj+e+++6rwdRnl5OTg7+/P9nZ2Xb/a9OZ6bycnc5NxXRezk7npmI6L2dXF8+Nod1S/fr1O+eo56lTp56x7dJLL2Xjxo3VmOrCeXh48H//93/lxviIzsu56NxUTOfl7HRuKqbzcnZ18dwY2nIjIiIiYm9OtYifiIiIyPmouBEREZFaRcWNiIiI1CoqbkRERKRWUXEjIiIitYqKGwPEx8fToUMH283Ly4uff/7Z6FgOIzExkf79+9OqVSvatm1LXl6e0ZEcgqurq+0zc/fddxsdx+Hk5+fTqFGjC17Us7Y5ceIEXbt2pUOHDrRt25ZPPvnE6EgO4+DBg/Tr149WrVrRrl07fvjhB6MjOYxrrrmGwMBArrvuOqOjXBRNBTdYbm4ujRs35sCBA9SrV8/oOA7h0ksv5ZVXXqFPnz5kZmbi5+eHq6tTXSmkWoSEhJCRkWF0DIf17LPPkpCQQHR0NBMnTjQ6juFKS0spLCzE29ub/Px82rRpw7p16856Hb66JDU1lSNHjtChQwfS09Pp1KkT8fHx+h0MLFq0iNzcXL744gt+/PFHo+NcMLXcGGzWrFkMGDBA/6hO2bFjB25ubvTp0weAoKAgFTZyXgkJCezevZuhQ4caHcVhuLi44O3tDUBBQQGlpaXnXDS1LomIiKBDhw4AhIaGEhQURGZmprGhHET//v3x9fU1OsZFU3FTgaVLlzJs2DAaNGiAyWSqsMvogw8+ICYmBk9PTzp37syyZcsu6LW+//57brzxxotMXHOq+9wkJCTg4+PD1VdfTadOnfjPf/5jx/TVpyY+Mzk5OXTu3JnevXuzZMkSOyWvfjVxbh5//HEmTJhgp8Q1oybOS1ZWFu3btycyMpInn3ySkJAQO6WvXjX5O3j9+vVYLBaioqIuMnX1q8nz4uxU3FQgLy+P9u3b8/7771f4+Hfffcejjz7Ks88+y6ZNm+jTpw9DhgyxXfAToHPnzrRp0+aM2+HDh2375OTksGLFCqf6a7O6z01xcTHLli3jv//9L6tWrWLBggUsWLCgpt7eBauJz0xSUhIbNmzgo48+4rbbbiMnJ6dG3tvFqu5z88svv9CsWTOaNWtWU2/JLmriMxMQEMCWLVtITExk+vTpHDlypEbe28Wqqd/Bx44d47bbbmPy5MnV/p7soabOS61glXMCrD/99FO5bd26dbPed9995ba1aNHC+tRTT1XpuadNm2a99dZbLzaiYarj3KxcudI6aNAg2/3XX3/d+vrrr1901ppUnZ+Z0wYPHmxdt27dhUY0THWcm6eeesoaGRlpbdSokTU4ONjq5+dnffHFF+0VuUbUxGfmvvvus37//fcXGtEw1XVuCgoKrH369LFOmzbNHjFrXHV+ZhYtWmS99tprLzaiodRyU0VFRUVs2LCBgQMHlts+cOBAVq5cWaXncrYuqfOxx7np2rUrR44c4fjx41gsFpYuXUrLli2rI26Nscd5OX78OIWFhQAcOnSInTt30qRJE7tnrWn2ODcTJkzg4MGDJCUlMXHiRMaMGcPzzz9fHXFrjD3Oy5EjR2ytezk5OSxdupTmzZvbPWtNs8e5sVqtjB49mssuu4xRo0ZVR8waZ8/vptpAIzWrKCMjg9LSUsLCwsptDwsLIy0trdLPk52dzdq1a5kxY4a9IxrGHufG1dWV//znP/Tt2xer1crAgQO56qqrqiNujbHHedm1axf33nsvZrMZk8nEO++8Q1BQUHXErVH2+vdU29jjvBw6dIi77roLq9WK1WrlwQcfpF27dtURt0bZ49ysWLGC7777jnbt2tnGrXz55Ze0bdvW3nFrjL3+LQ0aNIiNGzeSl5dHZGQkP/30E127drV33Gqn4uYCmUymcvetVusZ287F39/fafq/q+piz82QIUMYMmSIvWMZ7mLOS8+ePdm2bVt1xHIIF/uZOW306NF2SuQYLua8dO7cmc2bN1dDKsdwMeemd+/eWCyW6ohluIv9tzRv3jx7RzKEuqWqKCQkBBcXlzMq4fT09DMq5rpG56ZiOi9np3NTMZ2Xs9O5qZjOS3kqbqrI3d2dzp07nzGDZ8GCBfTs2dOgVI5B56ZiOi9np3NTMZ2Xs9O5qZjOS3nqlqpAbm4ue/futd1PTExk8+bNBAUFER0dzbhx4xg1ahRdunShR48eTJ48meTkZO677z4DU9cMnZuK6bycnc5NxXRezk7npmI6L1Vg0Cwth7Zo0SIrcMbt9ttvt+3z3//+19qoUSOru7u7tVOnTtYlS5YYF7gG6dxUTOfl7HRuKqbzcnY6NxXTeak8XVtKREREahWNuREREZFaRcWNiIiI1CoqbkRERKRWUXEjIiIitYqKGxEREalVVNyIiIhIraLiRkRERGoVFTciIiJSq6i4ERGn0rhxYyZNmmR0DBFxYCpuROQMo0ePZsSIEUbHqNC6deu45557qv11GjdujMlkwmQy4eXlRYsWLXjjjTeo6qLuKsZEap4unCkiDqG4uBg3N7fz7le/fv0aSFPmpZdeYsyYMRQUFLBw4ULuv/9+/Pz8uPfee2ssg4hUnVpuRKTKdu7cydChQ/Hx8SEsLIxRo0aRkZFhe3zu3Ln07t2bgIAAgoODueqqq9i3b5/t8aSkJEwmE99//z39+vXD09OTr776ytZiNHHiRCIiIggODmbs2LEUFxfbjv17S4jJZOLTTz/lmmuuwdvbm7i4OGbNmlUu76xZs4iLi8PLy4v+/fvzxRdfYDKZyMrKOuf79PX1JTw8nMaNG3P33XfTrl075s+fb3t83759DB8+nLCwMHx8fOjatSsLFy60Pd6vXz8OHDjAY489ZmsFOm3lypX07dsXLy8voqKiePjhh8nLy6v0z0BEzk7FjYhUSWpqKpdeeikdOnRg/fr1zJ07lyNHjnDDDTfY9snLy2PcuHGsW7eO33//HbPZzDXXXIPFYin3XOPHj+fhhx9m165dDBo0CIBFixaxb98+Fi1axBdffMHUqVOZOnXqOTO9+OKL3HDDDWzdupWhQ4dy6623kpmZCZQVUtdddx0jRoxg8+bN3HvvvTz77LNVes9Wq5XFixeza9eucq1Lubm5DB06lIULF7Jp0yYGDRrEsGHDSE5OBmDmzJlERkby0ksvkZqaSmpqKgDbtm1j0KBBjBw5kq1bt/Ldd9+xfPlyHnzwwSrlEpGzMPai5CLiiG6//Xbr8OHDK3zsX//6l3XgwIHlth08eNAKWOPj4ys8Jj093QpYt23bZrVardbExEQrYJ00adIZr9uoUSNrSUmJbdv1119vvfHGG233GzVqZH377bdt9wHrc889Z7ufm5trNZlM1t9++81qtVqt48ePt7Zp06bc6zz77LNWwHr8+PGKT8Cp13F3d7fWq1fP6ubmZgWsnp6e1hUrVpz1GKvVam3VqpX1vffeO2teq9VqHTVqlPWee+4pt23ZsmVWs9lsPXny5DmfX0TOTy03IlIlGzZsYNGiRfj4+NhuLVq0ALB1Pe3bt49bbrmFJk2a4OfnR0xMDICtReO0Ll26nPH8rVu3xsXFxXY/IiKC9PT0c2Zq166d7f/r1auHr6+v7Zj4+Hi6du1abv9u3bpV6r0+8cQTbN68mSVLltC/f3+effZZevbsaXs8Ly+PJ598klatWhEQEICPjw+7d+8+433+3YYNG5g6dWq5czho0CAsFguJiYmVyiYiZ6cBxSJSJRaLhWHDhvHaa6+d8VhERAQAw4YNIyoqik8++YQGDRpgsVho06YNRUVF5favV6/eGc/x90HFJpPpjO6sqhxjtVrLjXU5va0yQkJCiI2NJTY2lhkzZhAbG0v37t25/PLLgbLiZ968eUycOJHY2Fi8vLy47rrrzniff2exWLj33nt5+OGHz3gsOjq6UtlE5OxU3IhIlXTq1IkZM2bQuHFjXF3P/BVy7Ngxdu3axccff0yfPn0AWL58eU3HtGnRogVz5swpt239+vVVfp7AwEAeeughHn/8cTZt2oTJZGLZsmWMHj2aa665Bigbg5OUlFTuOHd3d0pLS8tt69SpEzt27CA2NrbKOUTk/NQtJSIVys7OZvPmzeVuycnJjB07lszMTG6++WbWrl3L/v37mT9/PnfeeSelpaUEBgYSHBzM5MmT2bt3L3/88Qfjxo0z7H3ce++97N69m/Hjx7Nnzx6+//572wDlv7fonM/YsWOJj49nxowZAMTGxjJz5kw2b97Mli1buOWWW85oZWrcuDFLly4lJSXFNqNs/PjxrFq1irFjx7J582YSEhKYNWsWDz300MW/YRFRcSMiFVu8eDEdO3Ysd3v++edp0KABK1asoLS0lEGDBtGmTRseeeQR/P39MZvNmM1mvv32WzZs2ECbNm147LHHeOONNwx7HzExMfz444/MnDmTdu3a8eGHH9pmS3l4eFTpuerXr8+oUaN44YUXsFgsvP322wQGBtKzZ0+GDRvGoEGD6NSpU7ljXnrpJZKSkmjatKltjZ527dqxZMkSEhIS6NOnDx07duRf//qXrVtPRC6OyVrZzmcRkVri3//+Nx999BEHDx40OoqIVAONuRGRWu+DDz6ga9euBAcHs2LFCt544w2tKSNSi6m4EZFaLyEhgVdeeYXMzEyio6P55z//ydNPP210LBGpJuqWEhERkVpFA4pFRESkVlFxIyIiIrWKihsRERGpVVTciIiISK2i4kZERERqFRU3IiIiUquouBEREZFaRcWNiIiI1CoqbkRERKRW+X9oN+F3nt3LYAAAAABJRU5ErkJggg==
-"
+<img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAYIAAAEKCAYAAAAfGVI8AAAAOXRFWHRTb2Z0d2FyZQBNYXRwbG90bGliIHZlcnNpb24zLjUuMSwgaHR0cHM6Ly9tYXRwbG90bGliLm9yZy/YYfK9AAAACXBIWXMAAAsTAAALEwEAmpwYAAAxPklEQVR4nO3dd3xUdb74/9c7nRQSIARCCqHXUEOTBUEEK2VXERXr6vJ1dVWU5epeXRf9ufe697qKyloXRVcsLDZU5CIK0ksSehEChJZACAkppE8+vz9miCEkISE5mZnM+/l4zCMzn3PmnPcJzLzzOZ8mxhiUUkp5Li9nB6CUUsq5NBEopZSH00SglFIeThOBUkp5OE0ESinl4TQRKKWUh/NxdgD1FR4ebuLi4pwdhlJKuZWkpKRMY0zb6rZZlghEJABYDfg7zrPYGPOXKvvcA/wvcMJRNM8Y88/ajhsXF0diYmLjB6yUUs2YiBypaZuVNYJi4CpjTL6I+AJrReQ7Y8zGKvt9aoz5g4VxKKWUqoVlicDYhyznO176Oh46jFkppVyMpY3FIuItItuADOB7Y8ymana7SUR2iMhiEYmxMh6llFIXs7Sx2BhjAwaISBjwhYj0NcbsqrTL18DHxphiEfl/wPvAVVWPIyIzgBkAsbGxF52ntLSU48ePU1RUZMFVeJaAgACio6Px9fV1dihKqSYiTTXpnIg8AxQYY16sYbs3kGWMCa3tOAkJCaZqY/Hhw4cJCQmhTZs2iEijxexpjDGcOXOGvLw8OnXq5OxwlFKNSESSjDEJ1W2z7NaQiLR11AQQkRbAeGBflX0iK72cBOy9nHMVFRVpEmgEIkKbNm20ZqWUh7Hy1lAk8L7jL30vYJEx5hsReQ5INMYsAR4RkUlAGZAF3HO5J9Mk0Dj096iUa1qx5xRx4YF0jQhp9GNbViMwxuwwxgw0xvQzxvQ1xjznKH/GkQQwxvzJGNPHGNPfGDPWGLOv9qO6tyVLlvDCCy/Uuk9aWho333xzE0WklHIXv1+YxOKkE5fe8TK43cjiRrFjEfzwHOQch9BoGPcM9LvF8tNOmjSJSZMm1bpPhw4dWLx4seWxKKXcR6mtnFKbIdDP25Lje95cQzsWwdePQM4xwNh/fv2IvbwBUlNT6dmzJ/fccw/du3dn+vTprFixgpEjR9KtWzc2b97MggUL+MMf7GPn7rnnHh555BGuuOIKOnfuXPHln5qaSt++fQFYsGABU6ZMYfz48cTFxTFv3jxeeuklBg4cyPDhw8nKygJgzJgxFaOtMzMzOT8FR13fr5RybQUlNgBNBI3mh+egtPDCstJCe3kDpaSkMGvWLPbt28e+ffv46KOPWLt2LS+++CL/9V//ddH+6enprF27lm+++YYnn3yy2mPu2rWLzz//nC1btvDUU08RGBjI1q1bGTFiBB988MElY2ro+5VSzlfoSAQtNBE0kpzj9Suvh06dOhEfH4+Xlxd9+vRh3LhxiAjx8fGkpqZetP+UKVPw8vKid+/enDp1qtpjjh07lpCQENq2bUtoaCgTJ04EqPGYjf1+pZTzFZZqjaBxhUbXr7we/P39K557eXlVvPby8qKsrKzW/Wsaz1GXY/r4+FBeXg5wUdfP+saklHI9BSX2z2oLX2uadT0vEYx7BnxbXFjm28Je7qbi4uJISkoC0IZmpZohvTXU2PrdAhNfhdAYQOw/J77aJL2GrPLHP/6RN954g4EDB5KZmenscJRSjczqxuImm2KisVQ3xcTevXvp1auXkyJqfvT3qZRrWbbrJA98mMQ3D/+KvlG1zsJTI6dMMaGUUqpxFJba2wi0sVgppTxUYYm9M0ignzYWK6WUR6roNaQ1AqWU8kyFOrJYKaU8W0GpDR8vwdfbmq9sTQRKKeXiCktslt0WAk0Elpo7dy4FBQXODkMp5eYKSsosuy0EHpoIvj30LRMWT6Df+/2YsHgC3x761pLzaCJQSjWGwtJyy3oMgQcmgm8Pfcuc9XNIP5eOwZB+Lp056+c0OBmcO3eOG264gf79+9O3b1+effZZ0tLSGDt2LGPHjgVg+fLljBgxgkGDBjF16lTy8/MBSEpK4sorr2Tw4MFcc801pKenA/bppR999FEGDBhA37592bx5c8MuXinllgpLymjhqzWCRvNK8isU2S6cmK3IVsQrya806LjLli2jQ4cObN++nV27djFz5kw6dOjAypUrWblyJZmZmTz//POsWLGC5ORkEhISeOmllygtLeXhhx9m8eLFJCUl8dvf/pannnqq4rgFBQVs27aN119/nd/+9rcNilEp5Z4KSmyW3hryuBXKTp47Wa/yuoqPj2fWrFk88cQT3HjjjYwaNeqC7Rs3bmTPnj2MHDkSgJKSEkaMGMHPP//Mrl27GD9+PAA2m43IyMiK9912220AjB49mtzcXM6ePUtYWFiDYlVKuZeCEhshAdZ9XXtcImgf1J70c+nVljdE9+7dSU5OZunSpTz99NOMGzfugu3GGMaPH8/HH398QfnOnTvp06cPGzZsqPa4VReT18XllfI8hSU2IkL8L73jZfK4W0OPDnqUAO+AC8oCvAN4dNCjDTpuWloagYGB3HHHHcyePZvk5GRCQkLIy8sDYPjw4axbt46UlBTA3qawf/9+evTowenTpysSQWlpKbt376447qeffgrA2rVrCQ0NJTT08iacUkq5r4JSa3sNeVyN4IbONwD2toKT507SPqg9jw56tKL8cu3cuZPZs2fj5eWFr68vb7zxBhs2bODaa6+taCtYsGABt912G8XFxQA8//zzdO/encWLF/PII4+Qk5NDWVkZM2fOpE+fPgAEBAQwcOBASktLeffddxt28Uopt1RYUk4LC3sN6TTULmzMmDG8+OKLJCRUO3OsZZrr71Mpd9XnmWXcOjSWP9/Y+7KPodNQK6WUmzLGUFCqvYY81qpVq5wdglLKyYrLyjEGAnQcgVJKeSarl6kETQRKKeXSzq9FoIlAKaU81Pm1CKzsNaSJQCmlXFhhqePWkLYRNC/BwcEApKam0rdvXydHo5RyZdpGYJGcr7/mwFXj2NurNweuGkfO1187OySllKrW+VtDAZoIGk/O11+T/udnKEtLA2MoS0sj/c/PNCgZPPnkk/zjH/+oeD1nzhyef/55xo0bx6BBg4iPj+err76q9Rg2m43Zs2czZMgQ+vXrx1tvvQXAXXfdxZdfflmx3/Tp0y95LKVU86E1AgtkvDwXU3ThNNSmqIiMl+de9jGnTZvGokWLKl4vWrSIu+++my+++ILk5GRWrlzJrFmzqG0U9/z58wkNDWXLli1s2bKFd955h8OHD3PfffexYMECAHJycli/fj033NCw6TCUUu6joteQr84+2mjK0i+eebS28roYOHAgGRkZpKWlcfr0aVq1akX79u157LHHWL16NV5eXpw4cYJTp07Rvn31s5wuX76cHTt2sHjxYsD+pX/gwAEmTJjAgw8+yOnTp/nss8+46aab8PHxuH82pTzW+cZiK9cs9rhvFJ/ISPttoWrKG2Lq1KksXryYkydPMm3aNBYuXMjp06dJSkrC19eXuLg4iqrURCozxvDaa69xzTXX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"
 >
 </div>
 
@@ -772,7 +721,7 @@ calculations.</p>
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">learn</span><span class="o">.</span><span class="n">fit_one_cycle</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">lr_max</span><span class="o">=</span> <span class="mf">3e-5</span><span class="p">,</span> <span class="n">moms</span><span class="o">=</span><span class="p">(</span><span class="mf">0.8</span><span class="p">,</span><span class="mf">0.7</span><span class="p">,</span><span class="mf">0.8</span><span class="p">),</span> <span class="n">cbs</span><span class="o">=</span><span class="n">fit_cbs</span><span class="p">)</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">learn</span><span class="o">.</span><span class="n">fit_one_cycle</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">lr_max</span><span class="o">=</span><span class="mf">3e-5</span><span class="p">,</span> <span class="n">moms</span><span class="o">=</span><span class="p">(</span><span class="mf">0.8</span><span class="p">,</span> <span class="mf">0.7</span><span class="p">,</span> <span class="mf">0.8</span><span class="p">),</span> <span class="n">cbs</span><span class="o">=</span><span class="n">fit_cbs</span><span class="p">)</span>
 </pre></div>
 
     </div>
@@ -785,8 +734,7 @@ calculations.</p>
 <div class="output_area">
 
 
-<div class="output_html rendered_html output_subarea ">
-<table border="1" class="dataframe">
+<div class="output_html rendered_html output_subarea "><table border="1" class="dataframe">
   <thead>
     <tr style="text-align: left;">
       <th>epoch</th>
@@ -802,601 +750,16 @@ calculations.</p>
   <tbody>
     <tr>
       <td>0</td>
-      <td>0.192442</td>
-      <td>0.143492</td>
-      <td>0.959979</td>
-      <td>0.631179</td>
-      <td>0.570447</td>
-      <td>0.599278</td>
-      <td>00:34</td>
+      <td>0.068646</td>
+      <td>0.052940</td>
+      <td>0.989094</td>
+      <td>0.938987</td>
+      <td>0.936960</td>
+      <td>0.937973</td>
+      <td>03:18</td>
     </tr>
   </tbody>
-</table>
-</div>
-
-</div>
-
-<div class="output_area">
-
-<div class="output_subarea output_stream output_stderr output_text">
-<pre>/home/wgilliam/miniconda3/envs/blurr/lib/python3.9/site-packages/seqeval/metrics/v1.py:57: UndefinedMetricWarning: Recall and F-score are ill-defined and being set to 0.0 in labels with no true samples. Use `zero_division` parameter to control this behavior.
-  _warn_prf(average, modifier, msg_start, len(result))
-</pre>
-</div>
-</div>
-
-</div>
-</div>
-
-</div>
-    {% endraw %}
-
-    {% raw %}
-    
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">learn</span><span class="o">.</span><span class="n">token_classification_report</span><span class="p">)</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-</div>
-    {% endraw %}
-
-<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<h3 id="Showing-results">Showing results<a class="anchor-link" href="#Showing-results"> </a></h3><p>Below we'll add in additional functionality to more intuitively show the results of our model.</p>
-
-</div>
-</div>
-</div>
-    {% raw %}
-    
-<div class="cell border-box-sizing code_cell rendered">
-
-</div>
-    {% endraw %}
-
-    {% raw %}
-    
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">learn</span><span class="o">.</span><span class="n">show_results</span><span class="p">(</span><span class="n">learner</span><span class="o">=</span><span class="n">learn</span><span class="p">,</span> <span class="n">max_n</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">trunc_at</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-<div class="output_area">
-
-
-<div class="output_html rendered_html output_subarea ">
-
-</div>
-
-</div>
-
-<div class="output_area">
-
-
-<div class="output_html rendered_html output_subarea ">
-<table border="1" class="dataframe">
-  <thead>
-    <tr style="text-align: right;">
-      <th></th>
-      <th>token / target label / predicted label</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th>0</th>
-      <td>[('Scenes', 'B-OTH', 'O'), ('of', 'I-OTH', 'B-OTH'), ('a', 'I-OTH', 'I-OTH'), ('Sexual', 'I-OTH', 'I-OTH'), ('Nature', 'I-OTH', 'I-OTH'), ('(', 'O', 'I-OTH'), ('GB', 'O', 'I-OTH'), ('2006', 'O', 'O'), (')', 'O', 'B-LOC'), ('-', 'O', 'O')]</td>
-    </tr>
-    <tr>
-      <th>1</th>
-      <td>[('Der', 'O', 'O'), ('notenbeste', 'O', 'O'), ('Zweitligaspieler', 'O', 'O'), ('(', 'O', 'O'), ('2,', 'O', 'O'), ('91', 'O', 'O'), ('),', 'O', 'O'), ('der', 'O', 'O'), ('seine', 'O', 'O'), ('persönliche', 'O', 'O')]</td>
-    </tr>
-  </tbody>
-</table>
-</div>
-
-</div>
-
-</div>
-</div>
-
-</div>
-    {% endraw %}
-
-    {% raw %}
-    
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">res</span> <span class="o">=</span> <span class="n">learn</span><span class="o">.</span><span class="n">blurr_predict</span><span class="p">(</span><span class="s1">&#39;My name is Wayde and I live in San Diego&#39;</span><span class="o">.</span><span class="n">split</span><span class="p">())</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">res</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-<div class="output_area">
-
-<div class="output_subarea output_stream output_stdout output_text">
-<pre>(&#34;[&#39;O&#39;, &#39;O&#39;, &#39;O&#39;, &#39;O&#39;, &#39;B-PER&#39;, &#39;B-PER&#39;, &#39;O&#39;, &#39;O&#39;, &#39;O&#39;, &#39;O&#39;, &#39;B-LOC&#39;, &#39;B-LOC&#39;, &#39;O&#39;]&#34;,)
-</pre>
-</div>
-</div>
-
-</div>
-</div>
-
-</div>
-    {% endraw %}
-
-<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<p>The default <code>Learner.predict</code> method returns a prediction per subtoken, including the special tokens for each architecture's tokenizer.</p>
-
-</div>
-</div>
-</div>
-    {% raw %}
-    
-<div class="cell border-box-sizing code_cell rendered">
-
-</div>
-    {% endraw %}
-
-    {% raw %}
-    
-<div class="cell border-box-sizing code_cell rendered">
-
-</div>
-    {% endraw %}
-
-    {% raw %}
-    
-<div class="cell border-box-sizing code_cell rendered">
-
-<div class="output_wrapper">
-<div class="output">
-
-<div class="output_area">
-
-
-<div class="output_markdown rendered_html output_subarea ">
-<h4 id="Learner.blurr_predict_tokens" class="doc_header"><code>Learner.blurr_predict_tokens</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/modeling/token_classification.py#L235" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>Learner.blurr_predict_tokens</code>(<strong><code>items</code></strong>:<code>Union</code>[<code>str</code>, <code>List</code>[<code>str</code>]], <strong>**<code>kwargs</code></strong>)</p>
-</blockquote>
-<p><strong>Parameters:</strong></p>
-<ul>
-<li><strong><code>items</code></strong> : <em><code>typing.Union[str, typing.List[str]]</code></em>    <p>The str (or list of strings) you want to get token classification predictions for</p></li>
-</ul>
-<ul>
-<li><strong><code>kwargs</code></strong> : <em><code>&lt;class 'inspect._empty'&gt;</code></em></li>
-</ul>
-
-</div>
-
-</div>
-
-</div>
-</div>
-
-</div>
-    {% endraw %}
-
-    {% raw %}
-    
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">txt</span> <span class="o">=</span><span class="s2">&quot;Hi! My name is Wayde Gilliam from ohmeow.com. I live in California.&quot;</span>
-<span class="n">txt2</span> <span class="o">=</span> <span class="s2">&quot;I wish covid was over so I could go to Germany and watch Bayern Munich play in the Bundesliga.&quot;</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-</div>
-    {% endraw %}
-
-    {% raw %}
-    
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">res</span> <span class="o">=</span> <span class="n">learn</span><span class="o">.</span><span class="n">blurr_predict_tokens</span><span class="p">(</span><span class="n">txt</span><span class="o">.</span><span class="n">split</span><span class="p">())</span>
-<span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">res</span><span class="p">:</span> <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="p">[(</span><span class="n">tok</span><span class="p">,</span> <span class="n">lbl</span><span class="p">)</span> <span class="k">for</span> <span class="n">tok</span><span class="p">,</span><span class="n">lbl</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">r</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">r</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="p">]</span><span class="si">}</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-<div class="output_area">
-
-<div class="output_subarea output_stream output_stdout output_text">
-<pre>[(&#39;Hi!&#39;, &#39;O&#39;), (&#39;My&#39;, &#39;O&#39;), (&#39;name&#39;, &#39;O&#39;), (&#39;is&#39;, &#39;O&#39;), (&#39;Wayde&#39;, &#39;B-PER&#39;), (&#39;Gilliam&#39;, &#39;I-PER&#39;), (&#39;from&#39;, &#39;O&#39;), (&#39;ohmeow.com.&#39;, &#39;B-ORG&#39;), (&#39;I&#39;, &#39;O&#39;), (&#39;live&#39;, &#39;O&#39;), (&#39;in&#39;, &#39;O&#39;), (&#39;California.&#39;, &#39;B-LOC&#39;)]
-
-</pre>
-</div>
-</div>
-
-</div>
-</div>
-
-</div>
-    {% endraw %}
-
-    {% raw %}
-    
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">res</span> <span class="o">=</span> <span class="n">learn</span><span class="o">.</span><span class="n">blurr_predict_tokens</span><span class="p">([</span><span class="n">txt</span><span class="o">.</span><span class="n">split</span><span class="p">(),</span> <span class="n">txt2</span><span class="o">.</span><span class="n">split</span><span class="p">()])</span>
-<span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">res</span><span class="p">:</span> <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="p">[(</span><span class="n">tok</span><span class="p">,</span> <span class="n">lbl</span><span class="p">)</span> <span class="k">for</span> <span class="n">tok</span><span class="p">,</span><span class="n">lbl</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">r</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">r</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="p">]</span><span class="si">}</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-<div class="output_area">
-
-<div class="output_subarea output_stream output_stdout output_text">
-<pre>[(&#39;Hi!&#39;, &#39;O&#39;), (&#39;My&#39;, &#39;O&#39;), (&#39;name&#39;, &#39;O&#39;), (&#39;is&#39;, &#39;O&#39;), (&#39;Wayde&#39;, &#39;B-PER&#39;), (&#39;Gilliam&#39;, &#39;I-PER&#39;), (&#39;from&#39;, &#39;O&#39;), (&#39;ohmeow.com.&#39;, &#39;B-ORG&#39;), (&#39;I&#39;, &#39;O&#39;), (&#39;live&#39;, &#39;O&#39;), (&#39;in&#39;, &#39;O&#39;), (&#39;California.&#39;, &#39;B-LOC&#39;)]
-
-[(&#39;I&#39;, &#39;O&#39;), (&#39;wish&#39;, &#39;O&#39;), (&#39;covid&#39;, &#39;O&#39;), (&#39;was&#39;, &#39;O&#39;), (&#39;over&#39;, &#39;O&#39;), (&#39;so&#39;, &#39;O&#39;), (&#39;I&#39;, &#39;O&#39;), (&#39;could&#39;, &#39;O&#39;), (&#39;go&#39;, &#39;O&#39;), (&#39;to&#39;, &#39;O&#39;), (&#39;Germany&#39;, &#39;B-LOC&#39;), (&#39;and&#39;, &#39;O&#39;), (&#39;watch&#39;, &#39;O&#39;), (&#39;Bayern&#39;, &#39;B-ORG&#39;), (&#39;Munich&#39;, &#39;B-LOC&#39;), (&#39;play&#39;, &#39;O&#39;), (&#39;in&#39;, &#39;O&#39;), (&#39;the&#39;, &#39;O&#39;), (&#39;Bundesliga.&#39;, &#39;B-LOC&#39;)]
-
-</pre>
-</div>
-</div>
-
-</div>
-</div>
-
-</div>
-    {% endraw %}
-
-<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<p>It's interesting (and very cool) how well this model performs on English even thought it was trained against a German corpus.</p>
-
-</div>
-</div>
-</div>
-<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<h3 id="Inference">Inference<a class="anchor-link" href="#Inference"> </a></h3>
-</div>
-</div>
-</div>
-    {% raw %}
-    
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">export_fname</span> <span class="o">=</span> <span class="s1">&#39;tok_class_learn_export&#39;</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-</div>
-    {% endraw %}
-
-    {% raw %}
-    
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">learn</span><span class="o">.</span><span class="n">export</span><span class="p">(</span><span class="n">fname</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">export_fname</span><span class="si">}</span><span class="s1">.pkl&#39;</span><span class="p">)</span>
-<span class="n">inf_learn</span> <span class="o">=</span> <span class="n">load_learner</span><span class="p">(</span><span class="n">fname</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">export_fname</span><span class="si">}</span><span class="s1">.pkl&#39;</span><span class="p">)</span>
-
-<span class="n">res</span> <span class="o">=</span> <span class="n">learn</span><span class="o">.</span><span class="n">blurr_predict_tokens</span><span class="p">([</span><span class="n">txt</span><span class="o">.</span><span class="n">split</span><span class="p">(),</span> <span class="n">txt2</span><span class="o">.</span><span class="n">split</span><span class="p">()])</span>
-<span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">res</span><span class="p">:</span> <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="p">[(</span><span class="n">tok</span><span class="p">,</span> <span class="n">lbl</span><span class="p">)</span> <span class="k">for</span> <span class="n">tok</span><span class="p">,</span><span class="n">lbl</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">r</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">r</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="p">]</span><span class="si">}</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-<div class="output_area">
-
-<div class="output_subarea output_stream output_stdout output_text">
-<pre>[(&#39;Hi!&#39;, &#39;O&#39;), (&#39;My&#39;, &#39;O&#39;), (&#39;name&#39;, &#39;O&#39;), (&#39;is&#39;, &#39;O&#39;), (&#39;Wayde&#39;, &#39;B-PER&#39;), (&#39;Gilliam&#39;, &#39;I-PER&#39;), (&#39;from&#39;, &#39;O&#39;), (&#39;ohmeow.com.&#39;, &#39;B-ORG&#39;), (&#39;I&#39;, &#39;O&#39;), (&#39;live&#39;, &#39;O&#39;), (&#39;in&#39;, &#39;O&#39;), (&#39;California.&#39;, &#39;B-LOC&#39;)]
-
-[(&#39;I&#39;, &#39;O&#39;), (&#39;wish&#39;, &#39;O&#39;), (&#39;covid&#39;, &#39;O&#39;), (&#39;was&#39;, &#39;O&#39;), (&#39;over&#39;, &#39;O&#39;), (&#39;so&#39;, &#39;O&#39;), (&#39;I&#39;, &#39;O&#39;), (&#39;could&#39;, &#39;O&#39;), (&#39;go&#39;, &#39;O&#39;), (&#39;to&#39;, &#39;O&#39;), (&#39;Germany&#39;, &#39;B-LOC&#39;), (&#39;and&#39;, &#39;O&#39;), (&#39;watch&#39;, &#39;O&#39;), (&#39;Bayern&#39;, &#39;B-ORG&#39;), (&#39;Munich&#39;, &#39;B-LOC&#39;), (&#39;play&#39;, &#39;O&#39;), (&#39;in&#39;, &#39;O&#39;), (&#39;the&#39;, &#39;O&#39;), (&#39;Bundesliga.&#39;, &#39;B-LOC&#39;)]
-
-</pre>
-</div>
-</div>
-
-</div>
-</div>
-
-</div>
-    {% endraw %}
-
-<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="High-level-API">High-level API<a class="anchor-link" href="#High-level-API"> </a></h2>
-</div>
-</div>
-</div>
-<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<h3 id="BLearnerForTokenClassification">BLearnerForTokenClassification<a class="anchor-link" href="#BLearnerForTokenClassification"> </a></h3>
-</div>
-</div>
-</div>
-    {% raw %}
-    
-<div class="cell border-box-sizing code_cell rendered">
-
-<div class="output_wrapper">
-<div class="output">
-
-<div class="output_area">
-
-
-<div class="output_markdown rendered_html output_subarea ">
-<h2 id="BlearnerForTokenClassification" class="doc_header"><code>class</code> <code>BlearnerForTokenClassification</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/modeling/token_classification.py#L247" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>BlearnerForTokenClassification</code>(<strong><code>dls</code></strong>:<code>DataLoaders</code>, <strong><code>hf_model</code></strong>:<code>PreTrainedModel</code>, <strong><code>base_model_cb</code></strong>:<a href="/blurr/modeling-core.html#BaseModelCallback"><code>BaseModelCallback</code></a>=<em><code>BaseModelCallback</code></em>, <strong><code>loss_func</code></strong>=<em><code>None</code></em>, <strong><code>opt_func</code></strong>=<em><code>Adam</code></em>, <strong><code>lr</code></strong>=<em><code>0.001</code></em>, <strong><code>splitter</code></strong>=<em><code>trainable_params</code></em>, <strong><code>cbs</code></strong>=<em><code>None</code></em>, <strong><code>metrics</code></strong>=<em><code>None</code></em>, <strong><code>path</code></strong>=<em><code>None</code></em>, <strong><code>model_dir</code></strong>=<em><code>'models'</code></em>, <strong><code>wd</code></strong>=<em><code>None</code></em>, <strong><code>wd_bn_bias</code></strong>=<em><code>False</code></em>, <strong><code>train_bn</code></strong>=<em><code>True</code></em>, <strong><code>moms</code></strong>=<em><code>(0.95, 0.85, 0.95)</code></em>) :: <a href="/blurr/modeling-core.html#Blearner"><code>Blearner</code></a></p>
-</blockquote>
-<p>Group together a <code>model</code>, some <code>dls</code> and a <code>loss_func</code> to handle training</p>
-<p><strong>Parameters:</strong></p>
-<ul>
-<li><p><strong><code>dls</code></strong> : <em><code>&lt;class 'fastai.data.core.DataLoaders'&gt;</code></em></p>
-</li>
-<li><p><strong><code>hf_model</code></strong> : <em><code>&lt;class 'transformers.modeling_utils.PreTrainedModel'&gt;</code></em></p>
-</li>
-<li><p><strong><code>kwargs</code></strong> : <em><code>&lt;class 'inspect._empty'&gt;</code></em></p>
-</li>
-</ul>
-
-</div>
-
-</div>
-
-</div>
-</div>
-
-</div>
-    {% endraw %}
-
-    {% raw %}
-    
-<div class="cell border-box-sizing code_cell rendered">
-
-</div>
-    {% endraw %}
-
-    {% raw %}
-    
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">learn</span> <span class="o">=</span> <span class="n">BlearnerForTokenClassification</span><span class="o">.</span><span class="n">from_dataframe</span><span class="p">(</span><span class="n">germ_eval_df</span><span class="p">,</span> <span class="s1">&#39;bert-base-multilingual-cased&#39;</span><span class="p">,</span> 
-                                                      <span class="n">tokens_attr</span><span class="o">=</span><span class="s1">&#39;tokens&#39;</span><span class="p">,</span> <span class="n">token_labels_attr</span><span class="o">=</span><span class="s1">&#39;labels&#39;</span><span class="p">,</span> 
-                                                      <span class="n">dblock_splitter</span><span class="o">=</span><span class="n">RandomSplitter</span><span class="p">(),</span> 
-                                                      <span class="n">dl_kwargs</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;bs&#39;</span><span class="p">:</span><span class="mi">2</span><span class="p">})</span>
-
-<span class="n">learn</span><span class="o">.</span><span class="n">unfreeze</span><span class="p">()</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-</div>
-    {% endraw %}
-
-    {% raw %}
-    
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">learn</span><span class="o">.</span><span class="n">dls</span><span class="o">.</span><span class="n">show_batch</span><span class="p">(</span><span class="n">dataloaders</span><span class="o">=</span><span class="n">learn</span><span class="o">.</span><span class="n">dls</span><span class="p">,</span> <span class="n">max_n</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-<div class="output_area">
-
-
-<div class="output_html rendered_html output_subarea ">
-<table border="1" class="dataframe">
-  <thead>
-    <tr style="text-align: right;">
-      <th></th>
-      <th>token / target label</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th>0</th>
-      <td>[('(', 'O'), ('Standard', 'B-ORG'), ('Oil', 'I-ORG'), ('of', 'I-ORG'), ('New', 'I-ORG'), ('Jersey', 'I-ORG'), ('),', 'O'), ('die', 'O'), ('ausgesprochen', 'O'), ('„', 'O'), ('Esso', 'O'), ('ergeben', 'B-ORG'), ('(', 'O'), ('heute', 'O'), ('ExxonMobil', 'O'), (').', 'O'), (';', 'B-ORG'), ('Exxon', 'O'), (':', 'O'), ('Ein', 'O'), ('Name,', 'B-ORG'), ('der', 'O'), ('in', 'O'), ('den', 'O'), ('frühen', 'O'), ('1970ern', 'O'), ('von', 'O'), ('Esso', 'O'), ('erfunden', 'O'), ('wurde,', 'O'), ('um', 'O'), ('ein', 'B-ORG'), ('neutrales', 'O'), ('aber', 'O'), ('eindeutiges', 'O'), ('Markenzeichen', 'O'), ('für', 'O'), ('das', 'O'), ('Unternehmen', 'O'), ('zu', 'O'), ('haben.', 'O')]</td>
-    </tr>
-    <tr>
-      <th>1</th>
-      <td>[('Der', 'O'), ('notenbeste', 'O'), ('Zweitligaspieler', 'O'), ('(', 'O'), ('2,', 'O'), ('91', 'O'), ('),', 'O'), ('der', 'O'), ('seine', 'O'), ('persönliche', 'O'), ('Bilanz', 'O'), ('auf', 'O'), ('sieben', 'O'), ('Tore', 'O'), ('und', 'O'), ('13', 'O'), ('Assists', 'O'), ('aufstockte', 'O'), ('und', 'O'), ('schon', 'O'), ('vor', 'O'), ('Wochen', 'O'), ('seinen', 'O'), ('Wechsel', 'O'), ('zu', 'O'), ('Dortmund', 'B-ORG'), ('bekannt', 'O'), ('gegeben', 'O'), ('hatte,', 'O'), ('war', 'O'), ('zuletzt', 'O'), ('in', 'O'), ('Mainz', 'O'), ('in', 'B-LOC'), ('die', 'O'), ('Kritik', 'O'), ('geraten.', 'O')]</td>
-    </tr>
-  </tbody>
-</table>
-</div>
-
-</div>
-
-</div>
-</div>
-
-</div>
-    {% endraw %}
-
-    {% raw %}
-    
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">learn</span><span class="o">.</span><span class="n">fit_one_cycle</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">lr_max</span><span class="o">=</span> <span class="mf">3e-5</span><span class="p">,</span> <span class="n">moms</span><span class="o">=</span><span class="p">(</span><span class="mf">0.8</span><span class="p">,</span><span class="mf">0.7</span><span class="p">,</span><span class="mf">0.8</span><span class="p">),</span> <span class="n">cbs</span><span class="o">=</span><span class="p">[</span><span class="n">BlearnerForTokenClassification</span><span class="o">.</span><span class="n">get_metrics_cb</span><span class="p">()])</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-<div class="output_area">
-
-
-<div class="output_html rendered_html output_subarea ">
-<table border="1" class="dataframe">
-  <thead>
-    <tr style="text-align: left;">
-      <th>epoch</th>
-      <th>train_loss</th>
-      <th>valid_loss</th>
-      <th>accuracy</th>
-      <th>precision</th>
-      <th>recall</th>
-      <th>f1</th>
-      <th>time</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>0</td>
-      <td>0.195376</td>
-      <td>0.180452</td>
-      <td>0.945981</td>
-      <td>0.548638</td>
-      <td>0.550781</td>
-      <td>0.549708</td>
-      <td>00:35</td>
-    </tr>
-  </tbody>
-</table>
-</div>
-
-</div>
-
-<div class="output_area">
-
-<div class="output_subarea output_stream output_stderr output_text">
-<pre>/home/wgilliam/miniconda3/envs/blurr/lib/python3.9/site-packages/seqeval/metrics/v1.py:57: UndefinedMetricWarning: Recall and F-score are ill-defined and being set to 0.0 in labels with no true samples. Use `zero_division` parameter to control this behavior.
-  _warn_prf(average, modifier, msg_start, len(result))
-</pre>
-</div>
-</div>
-
-</div>
-</div>
-
-</div>
-    {% endraw %}
-
-    {% raw %}
-    
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">learn</span><span class="o">.</span><span class="n">show_results</span><span class="p">(</span><span class="n">learner</span><span class="o">=</span><span class="n">learn</span><span class="p">,</span> <span class="n">max_n</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">trunc_at</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-<div class="output_area">
-
-
-<div class="output_html rendered_html output_subarea ">
-
-</div>
-
-</div>
-
-<div class="output_area">
-
-
-<div class="output_html rendered_html output_subarea ">
-<table border="1" class="dataframe">
-  <thead>
-    <tr style="text-align: right;">
-      <th></th>
-      <th>token / target label / predicted label</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th>0</th>
-      <td>[('Helbig', 'B-OTH', 'O'), ('et', 'I-OTH', 'B-PER'), ('al.', 'I-OTH', 'I-PER'), ('(', 'O', 'I-PER'), ('1994', 'O', 'O'), (')', 'O', 'O'), ('S.', 'O', 'O'), ('593.', 'O', 'O'), ('Wink', 'O', 'O'), ('&amp;', 'B-OTH', 'O')]</td>
-    </tr>
-    <tr>
-      <th>1</th>
-      <td>[('NEWSru.', 'B-OTH', 'O'), ('ua', 'O', 'B-ORG'), ('/', 'O', 'B-ORG'), (':', 'B-OTH', 'O'), ('Политисполком', 'I-OTH', 'O'), ('СПУ', 'I-OTH', 'O'), ('отказал', 'I-OTH', 'O'), ('Морозу', 'I-OTH', 'O'), ('в', 'I-OTH', 'O'), ('отставке', 'O', 'O')]</td>
-    </tr>
-  </tbody>
-</table>
-</div>
+</table></div>
 
 </div>
 
@@ -1428,21 +791,227 @@ calculations.</p>
 <div class="output_subarea output_stream output_stdout output_text">
 <pre>              precision    recall  f1-score   support
 
-         LOC       0.76      0.48      0.59        79
-    LOCderiv       0.48      0.73      0.58        15
-     LOCpart       0.00      0.00      0.00         0
-         ORG       0.42      0.31      0.35        75
-     ORGpart       0.00      0.00      0.00         0
-         OTH       0.03      0.25      0.05         4
-    OTHderiv       0.00      0.00      0.00         0
-         PER       0.86      0.82      0.84        83
-    PERderiv       0.00      0.00      0.00         0
-     PERpart       0.00      0.00      0.00         0
+         LOC       0.96      0.96      0.96      1466
+        MISC       0.87      0.88      0.87       685
+         ORG       0.91      0.90      0.91      1240
+         PER       0.97      0.97      0.97      1241
 
-   micro avg       0.55      0.55      0.55       256
-   macro avg       0.25      0.26      0.24       256
-weighted avg       0.66      0.55      0.59       256
+   micro avg       0.94      0.94      0.94      4632
+   macro avg       0.93      0.93      0.93      4632
+weighted avg       0.94      0.94      0.94      4632
 
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+    {% endraw %}
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h4 id="Showing-results">Showing results<a class="anchor-link" href="#Showing-results"> </a></h4><p>Below we'll add in additional functionality to more intuitively show the results of our model.</p>
+
+</div>
+</div>
+</div>
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+
+</div>
+    {% endraw %}
+
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">learn</span><span class="o">.</span><span class="n">show_results</span><span class="p">(</span><span class="n">learner</span><span class="o">=</span><span class="n">learn</span><span class="p">,</span> <span class="n">max_n</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">trunc_at</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+<div class="output_html rendered_html output_subarea "></div>
+
+</div>
+
+<div class="output_area">
+
+
+<div class="output_html rendered_html output_subarea "><table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>token / target label / predicted label</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>[('On', 'O', 'O'), ('the', 'O', 'O'), ('women', 'O', 'O'), ("'s", 'O', 'O'), ('side', 'O', 'O'), (',', 'O', 'O'), ('second', 'O', 'O'), ('seed', 'O', 'O'), ('Monica', 'B-PER', 'B-PER'), ('Seles', 'I-PER', 'I-PER')]</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>[('But', 'O', 'O'), ('Nutricia', 'B-ORG', 'B-ORG'), ('shrugged', 'O', 'O'), ('off', 'O', 'O'), ('its', 'O', 'O'), ('ex-div', 'O', 'O'), ('tag', 'O', 'O'), ('to', 'O', 'O'), ('soar', 'O', 'O'), ('a', 'O', 'O')]</td>
+    </tr>
+  </tbody>
+</table></div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    {% endraw %}
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h4 id="Prediction">Prediction<a class="anchor-link" href="#Prediction"> </a></h4><p>The default <code>Learner.predict</code> method returns a prediction per subtoken, including the special tokens for each architecture's tokenizer. Starting with version 2.0 of BLURR, we bring token prediction in-line with Hugging Face's token classification pipeline, both in terms of supporting the same aggregation strategies via Blurr's <a href="/blurr/modeling-token-classification.html#TokenAggregationStrategies"><code>TokenAggregationStrategies</code></a> class, and also the output via BLURR's <code>@patch</code>ed <code>Learner</code> method, <code>blurr_predict_tokens</code>.</p>
+
+</div>
+</div>
+</div>
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+<div class="output_markdown rendered_html output_subarea ">
+<h2 id="TokenAggregationStrategies" class="doc_header"><code>class</code> <code>TokenAggregationStrategies</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/modeling/token_classification.py#L198" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>TokenAggregationStrategies</code>(<strong><code>hf_tokenizer</code></strong>:<code>PreTrainedTokenizerBase</code>, <strong><code>labels</code></strong>:<code>List</code>[<code>str</code>], <strong><code>non_entity_label</code></strong>:<code>str</code>=<em><code>'O'</code></em>)</p>
+</blockquote>
+<p>Provides the equivalanet of Hugging Face's token classification pipeline's <code>aggregation_strategy</code> support across various
+token classication tasks (e.g, NER, POS, chunking, etc...)</p>
+
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    {% endraw %}
+
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+
+</div>
+    {% endraw %}
+
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+
+</div>
+    {% endraw %}
+
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+<div class="output_markdown rendered_html output_subarea ">
+<h4 id="Learner.blurr_predict_tokens" class="doc_header"><code>Learner.blurr_predict_tokens</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/modeling/token_classification.py#L284" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>Learner.blurr_predict_tokens</code>(<strong><code>items</code></strong>:<code>Union</code>[<code>str</code>, List[str]<code>\], **</code>aggregation_strategy<code>**:</code>str<code>=*</code>'simple'<code>*, **</code>non_entity_label<code>**:</code>str<code>=*</code>'O'<code>*, **</code>slow_word_ids_func<code>**:</code>Optional<code>\[</code>Callable<code>\]=*</code>None`*)</p>
+</blockquote>
+<table>
+<thead><tr>
+<th></th>
+<th>Type</th>
+<th>Default</th>
+<th>Details</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong><code>items</code></strong></td>
+<td><code>List[str]]</code></td>
+<td></td>
+<td>The str (or list of strings) you want to get token classification predictions for</td>
+</tr>
+<tr>
+<td><strong><code>aggregation_strategy</code></strong></td>
+<td><code>str</code></td>
+<td><code>simple</code></td>
+<td>How entities are grouped and scored</td>
+</tr>
+<tr>
+<td><strong><code>non_entity_label</code></strong></td>
+<td><code>str</code></td>
+<td><code>O</code></td>
+<td>The label used to idendity non-entity related words/tokens</td>
+</tr>
+<tr>
+<td><strong><code>slow_word_ids_func</code></strong></td>
+<td><code>Callable]</code></td>
+<td>``</td>
+<td>If using a slow tokenizer, users will need to prove a <code>slow_word_ids_func</code> that accepts a<br />tokenizzer, example index, and a batch encoding as arguments and in turn returnes the<br />equavlient of fast tokenizer's `word_ids``</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    {% endraw %}
+
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">res</span> <span class="o">=</span> <span class="n">learn</span><span class="o">.</span><span class="n">blurr_predict_tokens</span><span class="p">(</span>
+    <span class="n">items</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;My name is Wayde and I live in San Diego and using Hugging Face&quot;</span><span class="p">,</span> <span class="s2">&quot;Bayern Munich is a soccer team in Germany&quot;</span><span class="p">],</span>
+    <span class="n">aggregation_strategy</span><span class="o">=</span><span class="s2">&quot;max&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">res</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">res</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>2
+[{&#39;entity_group&#39;: &#39;ORG&#39;, &#39;score&#39;: 0.9873917698860168, &#39;word&#39;: &#39;Bayern Munich&#39;, &#39;start&#39;: 0, &#39;end&#39;: 13}, {&#39;entity_group&#39;: &#39;LOC&#39;, &#39;score&#39;: 0.9976140260696411, &#39;word&#39;: &#39;Germany&#39;, &#39;start&#39;: 34, &#39;end&#39;: 41}]
 </pre>
 </div>
 </div>
@@ -1460,7 +1029,446 @@ weighted avg       0.66      0.55      0.59       256
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">txt</span> <span class="o">=</span><span class="s2">&quot;Hi! My name is Wayde Gilliam from ohmeow.com. I live in California.&quot;</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">txt</span> <span class="o">=</span> <span class="s2">&quot;Hi! My name is Wayde Gilliam from ohmeow.com. I live in California.&quot;</span>
+<span class="n">txt2</span> <span class="o">=</span> <span class="s2">&quot;I wish covid was over so I could go to Germany and watch Bayern Munich play in the Bundesliga.&quot;</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    {% endraw %}
+
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">res</span> <span class="o">=</span> <span class="n">learn</span><span class="o">.</span><span class="n">blurr_predict_tokens</span><span class="p">(</span><span class="n">txt</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">res</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>[[{&#39;entity_group&#39;: &#39;PER&#39;, &#39;score&#39;: 0.874926894903183, &#39;word&#39;: &#39;Wayde Gilliam&#39;, &#39;start&#39;: 15, &#39;end&#39;: 28}, {&#39;entity_group&#39;: &#39;ORG&#39;, &#39;score&#39;: 0.5338972310225168, &#39;word&#39;: &#39;ohmeow&#39;, &#39;start&#39;: 34, &#39;end&#39;: 40}, {&#39;entity_group&#39;: &#39;LOC&#39;, &#39;score&#39;: 0.9935435056686401, &#39;word&#39;: &#39;California&#39;, &#39;start&#39;: 56, &#39;end&#39;: 66}]]
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+    {% endraw %}
+
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">results</span> <span class="o">=</span> <span class="n">learn</span><span class="o">.</span><span class="n">blurr_predict_tokens</span><span class="p">([</span><span class="n">txt</span><span class="p">,</span> <span class="n">txt2</span><span class="p">])</span>
+<span class="k">for</span> <span class="n">res</span> <span class="ow">in</span> <span class="n">results</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">res</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>[{&#39;entity_group&#39;: &#39;PER&#39;, &#39;score&#39;: 0.874926894903183, &#39;word&#39;: &#39;Wayde Gilliam&#39;, &#39;start&#39;: 15, &#39;end&#39;: 28}, {&#39;entity_group&#39;: &#39;ORG&#39;, &#39;score&#39;: 0.5338972310225168, &#39;word&#39;: &#39;ohmeow&#39;, &#39;start&#39;: 34, &#39;end&#39;: 40}, {&#39;entity_group&#39;: &#39;LOC&#39;, &#39;score&#39;: 0.9935435056686401, &#39;word&#39;: &#39;California&#39;, &#39;start&#39;: 56, &#39;end&#39;: 66}]
+
+[{&#39;entity_group&#39;: &#39;LOC&#39;, &#39;score&#39;: 0.9943583607673645, &#39;word&#39;: &#39;Germany&#39;, &#39;start&#39;: 39, &#39;end&#39;: 46}, {&#39;entity_group&#39;: &#39;ORG&#39;, &#39;score&#39;: 0.979567140340805, &#39;word&#39;: &#39;Bayern Munich&#39;, &#39;start&#39;: 57, &#39;end&#39;: 70}, {&#39;entity_group&#39;: &#39;MISC&#39;, &#39;score&#39;: 0.9795207381248474, &#39;word&#39;: &#39;Bundesliga&#39;, &#39;start&#39;: 83, &#39;end&#39;: 93}]
+
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+    {% endraw %}
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h4 id="Inference">Inference<a class="anchor-link" href="#Inference"> </a></h4>
+</div>
+</div>
+</div>
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">export_fname</span> <span class="o">=</span> <span class="s2">&quot;tok_class_learn_export&quot;</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    {% endraw %}
+
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">learn</span><span class="o">.</span><span class="n">export</span><span class="p">(</span><span class="n">fname</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">export_fname</span><span class="si">}</span><span class="s2">.pkl&quot;</span><span class="p">)</span>
+<span class="n">inf_learn</span> <span class="o">=</span> <span class="n">load_learner</span><span class="p">(</span><span class="n">fname</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">export_fname</span><span class="si">}</span><span class="s2">.pkl&quot;</span><span class="p">)</span>
+
+<span class="n">results</span> <span class="o">=</span> <span class="n">inf_learn</span><span class="o">.</span><span class="n">blurr_predict_tokens</span><span class="p">([</span><span class="n">txt</span><span class="p">,</span> <span class="n">txt2</span><span class="p">])</span>
+<span class="k">for</span> <span class="n">res</span> <span class="ow">in</span> <span class="n">results</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">res</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>[{&#39;entity_group&#39;: &#39;PER&#39;, &#39;score&#39;: 0.8749268501996994, &#39;word&#39;: &#39;Wayde Gilliam&#39;, &#39;start&#39;: 15, &#39;end&#39;: 28}, {&#39;entity_group&#39;: &#39;ORG&#39;, &#39;score&#39;: 0.533899575471878, &#39;word&#39;: &#39;ohmeow&#39;, &#39;start&#39;: 34, &#39;end&#39;: 40}, {&#39;entity_group&#39;: &#39;LOC&#39;, &#39;score&#39;: 0.9935435056686401, &#39;word&#39;: &#39;California&#39;, &#39;start&#39;: 56, &#39;end&#39;: 66}]
+
+[{&#39;entity_group&#39;: &#39;LOC&#39;, &#39;score&#39;: 0.994358479976654, &#39;word&#39;: &#39;Germany&#39;, &#39;start&#39;: 39, &#39;end&#39;: 46}, {&#39;entity_group&#39;: &#39;ORG&#39;, &#39;score&#39;: 0.9795672595500946, &#39;word&#39;: &#39;Bayern Munich&#39;, &#39;start&#39;: 57, &#39;end&#39;: 70}, {&#39;entity_group&#39;: &#39;MISC&#39;, &#39;score&#39;: 0.9795206785202026, &#39;word&#39;: &#39;Bundesliga&#39;, &#39;start&#39;: 83, &#39;end&#39;: 93}]
+
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+    {% endraw %}
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="High-level-API">High-level API<a class="anchor-link" href="#High-level-API"> </a></h2>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="BLearnerForTokenClassification"><code>BLearnerForTokenClassification</code><a class="anchor-link" href="#BLearnerForTokenClassification"> </a></h3>
+</div>
+</div>
+</div>
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+<div class="output_markdown rendered_html output_subarea ">
+<h2 id="BlearnerForTokenClassification" class="doc_header"><code>class</code> <code>BlearnerForTokenClassification</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/modeling/token_classification.py#L335" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>BlearnerForTokenClassification</code>(<strong><code>dls</code></strong>:<code>DataLoaders</code>, <strong><code>hf_model</code></strong>:<code>PreTrainedModel</code>, <strong><code>base_model_cb</code></strong>:<a href="/blurr/modeling-core.html#BaseModelCallback"><code>BaseModelCallback</code></a>=<em><code>BaseModelCallback</code></em>, <strong><code>loss_func</code></strong>=<em><code>None</code></em>, <strong><code>opt_func</code></strong>=<em><code>Adam</code></em>, <strong><code>lr</code></strong>=<em><code>0.001</code></em>, <strong><code>splitter</code></strong>=<em><code>trainable_params</code></em>, <strong><code>cbs</code></strong>=<em><code>None</code></em>, <strong><code>metrics</code></strong>=<em><code>None</code></em>, <strong><code>path</code></strong>=<em><code>None</code></em>, <strong><code>model_dir</code></strong>=<em><code>'models'</code></em>, <strong><code>wd</code></strong>=<em><code>None</code></em>, <strong><code>wd_bn_bias</code></strong>=<em><code>False</code></em>, <strong><code>train_bn</code></strong>=<em><code>True</code></em>, <strong><code>moms</code></strong>=<em><code>(0.95, 0.85, 0.95)</code></em>) :: <a href="/blurr/modeling-core.html#Blearner"><code>Blearner</code></a></p>
+</blockquote>
+<p>Group together a <code>model</code>, some <code>dls</code> and a <code>loss_func</code> to handle training</p>
+
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    {% endraw %}
+
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+
+</div>
+    {% endraw %}
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="Example">Example<a class="anchor-link" href="#Example"> </a></h3>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h4 id="Define-your-Blearner">Define your <a href="/blurr/modeling-core.html#Blearner"><code>Blearner</code></a><a class="anchor-link" href="#Define-your-Blearner"> </a></h4>
+</div>
+</div>
+</div>
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">learn</span> <span class="o">=</span> <span class="n">BlearnerForTokenClassification</span><span class="o">.</span><span class="n">from_data</span><span class="p">(</span>
+    <span class="n">conll2003_df</span><span class="p">,</span>
+    <span class="s2">&quot;distilroberta-base&quot;</span><span class="p">,</span>
+    <span class="n">tokens_attr</span><span class="o">=</span><span class="s2">&quot;tokens&quot;</span><span class="p">,</span>
+    <span class="n">token_labels_attr</span><span class="o">=</span><span class="s2">&quot;ner_tags&quot;</span><span class="p">,</span>
+    <span class="n">labels</span><span class="o">=</span><span class="n">labels</span><span class="p">,</span>
+    <span class="n">dl_kwargs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;bs&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">},</span>
+<span class="p">)</span>
+
+<span class="n">learn</span><span class="o">.</span><span class="n">unfreeze</span><span class="p">()</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    {% endraw %}
+
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">learn</span><span class="o">.</span><span class="n">dls</span><span class="o">.</span><span class="n">show_batch</span><span class="p">(</span><span class="n">dataloaders</span><span class="o">=</span><span class="n">learn</span><span class="o">.</span><span class="n">dls</span><span class="p">,</span> <span class="n">max_n</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+<div class="output_html rendered_html output_subarea "><table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>word / target label</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>[('MARKET', 'O'), ('TALK', 'O'), ('-', 'O'), ('USDA', 'B-ORG'), ('net', 'O'), ('change', 'O'), ('in', 'O'), ('weekly', 'O'), ('export', 'O'), ('commitments', 'O'), ('for', 'O'), ('the', 'O'), ('week', 'O'), ('ended', 'O'), ('August', 'O'), ('22', 'O'), (',', 'O'), ('includes', 'O'), ('old', 'O'), ('crop', 'O'), ('and', 'O'), ('new', 'O'), ('crop', 'O'), (',', 'O'), ('were', 'O'), (':', 'O'), ('wheat', 'O'), ('up', 'O'), ('595,400', 'O'), ('tonnes', 'O'), ('old', 'O'), (',', 'O'), ('nil', 'O'), ('new', 'O'), (';', 'O'), ('corn', 'O'), ('up', 'O'), ('1,900', 'O'), ('old', 'O'), (',', 'O'), ('up', 'O'), ('319,600', 'O'), ('new', 'O'), (';', 'O'), ('soybeans', 'O'), ('down', 'O'), ('12,300', 'O'), ('old', 'O'), (',', 'O'), ('up', 'O'), ('300,800', 'O'), ('new', 'O'), (';', 'O'), ('upland', 'O'), ('cotton', 'O'), ('up', 'O'), ('50,400', 'O'), ('bales', 'O'), ('new', 'O'), (',', 'O'), ('nil', 'O'), ('old', 'O'), (';', 'O'), ('soymeal', 'O'), ('54,800', 'O'), ('old', 'O'), (',', 'O'), ('up', 'O'), ('100,600', 'O'), ('new', 'O'), (',', 'O'), ('soyoil', 'O'), ('nil', 'O'), ('old', 'O'), (',', 'O'), ('up', 'O'), ('75,000', 'O'), ('new', 'O'), (';', 'O'), ('barley', 'O'), ('up', 'O'), ('1,700', 'O'), ('old', 'O'), (',', 'O'), ('nil', 'O'), ('new', 'O'), (';', 'O'), ('sorghum', 'O'), ('6,200', 'O'), ('old', 'O'), (',', 'O'), ('up', 'O'), ('156,700', 'O'), ('new', 'O'), (';', 'O'), ('pima', 'O'), ('cotton', 'O'), ('up', 'O'), ('4,000', 'O'), ('bales', 'O'), ('old', 'O'), (',', 'O'), ('nil', 'O'), ('new', 'O'), (';', 'O'), ('rice', 'O'), ('up', 'O'), ('49,900', 'O'), ('old', 'O'), (',', 'O'), ('nil', 'O'), ('new', 'O'), ('...', 'O')]</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>[('Speaking', 'O'), ('only', 'O'), ('hours', 'O'), ('after', 'O'), ('Chinese', 'B-MISC'), ('state', 'O'), ('media', 'O'), ('said', 'O'), ('the', 'O'), ('time', 'O'), ('was', 'O'), ('right', 'O'), ('to', 'O'), ('engage', 'O'), ('in', 'O'), ('political', 'O'), ('talks', 'O'), ('with', 'O'), ('Taiwan', 'B-LOC'), (',', 'O'), ('Foreign', 'B-ORG'), ('Ministry', 'I-ORG'), ('spokesman', 'O'), ('Shen', 'B-PER'), ('Guofang', 'I-PER'), ('told', 'O'), ('Reuters', 'B-ORG'), (':', 'O'), ('"', 'O'), ('The', 'O'), ('necessary', 'O'), ('atmosphere', 'O'), ('for', 'O'), ('the', 'O'), ('opening', 'O'), ('of', 'O'), ('the', 'O'), ('talks', 'O'), ('has', 'O'), ('been', 'O'), ('disrupted', 'O'), ('by', 'O'), ('the', 'O'), ('Taiwan', 'B-LOC'), ('authorities', 'O'), ('.', 'O'), ('"', 'O')]</td>
+    </tr>
+  </tbody>
+</table></div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    {% endraw %}
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h4 id="Train">Train<a class="anchor-link" href="#Train"> </a></h4>
+</div>
+</div>
+</div>
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">learn</span><span class="o">.</span><span class="n">fit_one_cycle</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">lr_max</span><span class="o">=</span><span class="mf">3e-5</span><span class="p">,</span> <span class="n">moms</span><span class="o">=</span><span class="p">(</span><span class="mf">0.8</span><span class="p">,</span> <span class="mf">0.7</span><span class="p">,</span> <span class="mf">0.8</span><span class="p">),</span> <span class="n">cbs</span><span class="o">=</span><span class="p">[</span><span class="n">BlearnerForTokenClassification</span><span class="o">.</span><span class="n">get_metrics_cb</span><span class="p">()])</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+<div class="output_html rendered_html output_subarea "><table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: left;">
+      <th>epoch</th>
+      <th>train_loss</th>
+      <th>valid_loss</th>
+      <th>accuracy</th>
+      <th>precision</th>
+      <th>recall</th>
+      <th>f1</th>
+      <th>time</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>0</td>
+      <td>0.050027</td>
+      <td>0.054881</td>
+      <td>0.988096</td>
+      <td>0.934068</td>
+      <td>0.925630</td>
+      <td>0.929830</td>
+      <td>03:57</td>
+    </tr>
+  </tbody>
+</table></div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    {% endraw %}
+
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">learn</span><span class="o">.</span><span class="n">show_results</span><span class="p">(</span><span class="n">learner</span><span class="o">=</span><span class="n">learn</span><span class="p">,</span> <span class="n">max_n</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">trunc_at</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+<div class="output_html rendered_html output_subarea "></div>
+
+</div>
+
+<div class="output_area">
+
+
+<div class="output_html rendered_html output_subarea "><table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>token / target label / predicted label</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>[('Compared', 'O', 'O'), ('with', 'O', 'O'), ('the', 'O', 'O'), ('end', 'O', 'O'), ('of', 'O', 'O'), ('last', 'O', 'O'), ('year', 'O', 'O'), (',', 'O', 'O'), ('when', 'O', 'O'), ('T&amp;N', 'B-ORG', 'B-ORG')]</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>[('At', 'O', 'O'), ('Colorado', 'B-LOC', 'B-LOC'), (',', 'O', 'O'), ('Vinny', 'B-PER', 'B-PER'), ('Castilla', 'I-PER', 'I-PER'), ('homered', 'O', 'O'), ('twice', 'O', 'O'), ('and', 'O', 'O'), ('drove', 'O', 'O'), ('in', 'O', 'O')]</td>
+    </tr>
+  </tbody>
+</table></div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    {% endraw %}
+
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">learn</span><span class="o">.</span><span class="n">token_classification_report</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>              precision    recall  f1-score   support
+
+         LOC       0.96      0.96      0.96      1483
+        MISC       0.83      0.87      0.85       635
+         ORG       0.91      0.88      0.89      1252
+         PER       0.98      0.96      0.97      1390
+
+   micro avg       0.93      0.93      0.93      4760
+   macro avg       0.92      0.92      0.92      4760
+weighted avg       0.93      0.93      0.93      4760
+
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+    {% endraw %}
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h4 id="Prediction">Prediction<a class="anchor-link" href="#Prediction"> </a></h4>
+</div>
+</div>
+</div>
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">txt</span> <span class="o">=</span> <span class="s2">&quot;Hi! My name is Wayde Gilliam from ohmeow.com. I live in California.&quot;</span>
 <span class="n">txt2</span> <span class="o">=</span> <span class="s2">&quot;I wish covid was over so I could watch Lewandowski score some more goals for Bayern Munich in the Bundesliga.&quot;</span>
 </pre></div>
 
@@ -1478,8 +1486,9 @@ weighted avg       0.66      0.55      0.59       256
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">res</span> <span class="o">=</span> <span class="n">learn</span><span class="o">.</span><span class="n">blurr_predict_tokens</span><span class="p">(</span><span class="n">txt</span><span class="o">.</span><span class="n">split</span><span class="p">())</span>
-<span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">res</span><span class="p">:</span> <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="p">[(</span><span class="n">tok</span><span class="p">,</span> <span class="n">lbl</span><span class="p">)</span> <span class="k">for</span> <span class="n">tok</span><span class="p">,</span><span class="n">lbl</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">r</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">r</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="p">]</span><span class="si">}</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">results</span> <span class="o">=</span> <span class="n">learn</span><span class="o">.</span><span class="n">predict</span><span class="p">([</span><span class="n">txt</span><span class="p">,</span> <span class="n">txt2</span><span class="p">])</span>
+<span class="k">for</span> <span class="n">res</span> <span class="ow">in</span> <span class="n">results</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">res</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
 </pre></div>
 
     </div>
@@ -1492,42 +1501,9 @@ weighted avg       0.66      0.55      0.59       256
 <div class="output_area">
 
 <div class="output_subarea output_stream output_stdout output_text">
-<pre>[(&#39;Hi!&#39;, &#39;O&#39;), (&#39;My&#39;, &#39;O&#39;), (&#39;name&#39;, &#39;O&#39;), (&#39;is&#39;, &#39;O&#39;), (&#39;Wayde&#39;, &#39;B-PER&#39;), (&#39;Gilliam&#39;, &#39;I-PER&#39;), (&#39;from&#39;, &#39;O&#39;), (&#39;ohmeow.com.&#39;, &#39;O&#39;), (&#39;I&#39;, &#39;O&#39;), (&#39;live&#39;, &#39;O&#39;), (&#39;in&#39;, &#39;O&#39;), (&#39;California.&#39;, &#39;B-LOC&#39;)]
+<pre>[{&#39;entity_group&#39;: &#39;PER&#39;, &#39;score&#39;: 0.9551546424627304, &#39;word&#39;: &#39;Wayde Gilliam&#39;, &#39;start&#39;: 15, &#39;end&#39;: 28}, {&#39;entity_group&#39;: &#39;LOC&#39;, &#39;score&#39;: 0.4953663448492686, &#39;word&#39;: &#39;ohmeow&#39;, &#39;start&#39;: 34, &#39;end&#39;: 40}, {&#39;entity_group&#39;: &#39;LOC&#39;, &#39;score&#39;: 0.996951699256897, &#39;word&#39;: &#39;California&#39;, &#39;start&#39;: 56, &#39;end&#39;: 66}]
 
-</pre>
-</div>
-</div>
-
-</div>
-</div>
-
-</div>
-    {% endraw %}
-
-    {% raw %}
-    
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">res</span> <span class="o">=</span> <span class="n">learn</span><span class="o">.</span><span class="n">blurr_predict_tokens</span><span class="p">([</span><span class="n">txt</span><span class="o">.</span><span class="n">split</span><span class="p">(),</span> <span class="n">txt2</span><span class="o">.</span><span class="n">split</span><span class="p">()])</span>
-<span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">res</span><span class="p">:</span> <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="p">[(</span><span class="n">tok</span><span class="p">,</span> <span class="n">lbl</span><span class="p">)</span> <span class="k">for</span> <span class="n">tok</span><span class="p">,</span><span class="n">lbl</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">r</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">r</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="p">]</span><span class="si">}</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-<div class="output_area">
-
-<div class="output_subarea output_stream output_stdout output_text">
-<pre>[(&#39;Hi!&#39;, &#39;O&#39;), (&#39;My&#39;, &#39;O&#39;), (&#39;name&#39;, &#39;O&#39;), (&#39;is&#39;, &#39;O&#39;), (&#39;Wayde&#39;, &#39;B-PER&#39;), (&#39;Gilliam&#39;, &#39;I-PER&#39;), (&#39;from&#39;, &#39;O&#39;), (&#39;ohmeow.com.&#39;, &#39;O&#39;), (&#39;I&#39;, &#39;O&#39;), (&#39;live&#39;, &#39;O&#39;), (&#39;in&#39;, &#39;O&#39;), (&#39;California.&#39;, &#39;B-LOC&#39;)]
-
-[(&#39;I&#39;, &#39;O&#39;), (&#39;wish&#39;, &#39;O&#39;), (&#39;covid&#39;, &#39;O&#39;), (&#39;was&#39;, &#39;O&#39;), (&#39;over&#39;, &#39;O&#39;), (&#39;so&#39;, &#39;O&#39;), (&#39;I&#39;, &#39;O&#39;), (&#39;could&#39;, &#39;O&#39;), (&#39;watch&#39;, &#39;O&#39;), (&#39;Lewandowski&#39;, &#39;B-PER&#39;), (&#39;score&#39;, &#39;O&#39;), (&#39;some&#39;, &#39;O&#39;), (&#39;more&#39;, &#39;O&#39;), (&#39;goals&#39;, &#39;O&#39;), (&#39;for&#39;, &#39;O&#39;), (&#39;Bayern&#39;, &#39;B-ORG&#39;), (&#39;Munich&#39;, &#39;B-LOC&#39;), (&#39;in&#39;, &#39;O&#39;), (&#39;the&#39;, &#39;O&#39;), (&#39;Bundesliga.&#39;, &#39;B-ORG&#39;)]
+[{&#39;entity_group&#39;: &#39;PER&#39;, &#39;score&#39;: 0.9687133431434631, &#39;word&#39;: &#39;Lewandowski&#39;, &#39;start&#39;: 39, &#39;end&#39;: 50}, {&#39;entity_group&#39;: &#39;ORG&#39;, &#39;score&#39;: 0.9801087379455566, &#39;word&#39;: &#39;Bayern Munich&#39;, &#39;start&#39;: 77, &#39;end&#39;: 90}, {&#39;entity_group&#39;: &#39;MISC&#39;, &#39;score&#39;: 0.9899513125419617, &#39;word&#39;: &#39;Bundesliga&#39;, &#39;start&#39;: 98, &#39;end&#39;: 108}]
 
 </pre>
 </div>
@@ -1550,6 +1526,39 @@ weighted avg       0.66      0.55      0.59       256
     {% raw %}
     
 <div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">raw_datasets</span> <span class="o">=</span> <span class="n">load_dataset</span><span class="p">(</span><span class="s2">&quot;conll2003&quot;</span><span class="p">)</span>
+<span class="n">labels</span> <span class="o">=</span> <span class="n">raw_datasets</span><span class="p">[</span><span class="s2">&quot;train&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">features</span><span class="p">[</span><span class="s2">&quot;ner_tags&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">feature</span><span class="o">.</span><span class="n">names</span>
+<span class="n">conll2003_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">raw_datasets</span><span class="p">[</span><span class="s2">&quot;train&quot;</span><span class="p">])</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stderr output_text">
+<pre>Reusing dataset conll2003 (/home/wgilliam/.cache/huggingface/datasets/conll2003/conll2003/1.0.0/40e7cb6bcc374f7c349c83acd1e9352a4f09474eb691f64f364ee62eb65d0ca6)
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+    {% endraw %}
+
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
 
 <div class="output_wrapper">
 <div class="output">
@@ -1557,8 +1566,7 @@ weighted avg       0.66      0.55      0.59       256
 <div class="output_area">
 
 
-<div class="output_html rendered_html output_subarea ">
-<table border="1" class="dataframe">
+<div class="output_html rendered_html output_subarea "><table border="1" class="dataframe">
   <thead>
     <tr style="text-align: right;">
       <th></th>
@@ -1588,6 +1596,14 @@ weighted avg       0.66      0.55      0.59       256
     </tr>
     <tr>
       <th>2</th>
+      <td>big_bird</td>
+      <td>BigBirdTokenizerFast</td>
+      <td>BigBirdForTokenClassification</td>
+      <td>PASSED</td>
+      <td></td>
+    </tr>
+    <tr>
+      <th>3</th>
       <td>camembert</td>
       <td>CamembertTokenizerFast</td>
       <td>CamembertForTokenClassification</td>
@@ -1595,15 +1611,31 @@ weighted avg       0.66      0.55      0.59       256
       <td></td>
     </tr>
     <tr>
-      <th>3</th>
-      <td>distilbert</td>
-      <td>DistilBertTokenizerFast</td>
-      <td>DistilBertForTokenClassification</td>
+      <th>4</th>
+      <td>convbert</td>
+      <td>ConvBertTokenizerFast</td>
+      <td>ConvBertForTokenClassification</td>
       <td>PASSED</td>
       <td></td>
     </tr>
     <tr>
-      <th>4</th>
+      <th>5</th>
+      <td>deberta</td>
+      <td>DebertaTokenizerFast</td>
+      <td>DebertaForTokenClassification</td>
+      <td>PASSED</td>
+      <td></td>
+    </tr>
+    <tr>
+      <th>6</th>
+      <td>bert</td>
+      <td>BertTokenizerFast</td>
+      <td>BertForTokenClassification</td>
+      <td>PASSED</td>
+      <td></td>
+    </tr>
+    <tr>
+      <th>7</th>
       <td>electra</td>
       <td>ElectraTokenizerFast</td>
       <td>ElectraForTokenClassification</td>
@@ -1611,15 +1643,7 @@ weighted avg       0.66      0.55      0.59       256
       <td></td>
     </tr>
     <tr>
-      <th>5</th>
-      <td>flaubert</td>
-      <td>FlaubertTokenizer</td>
-      <td>FlaubertForTokenClassification</td>
-      <td>PASSED</td>
-      <td></td>
-    </tr>
-    <tr>
-      <th>6</th>
+      <th>8</th>
       <td>funnel</td>
       <td>FunnelTokenizerFast</td>
       <td>FunnelForTokenClassification</td>
@@ -1627,7 +1651,23 @@ weighted avg       0.66      0.55      0.59       256
       <td></td>
     </tr>
     <tr>
-      <th>7</th>
+      <th>9</th>
+      <td>gpt2</td>
+      <td>GPT2TokenizerFast</td>
+      <td>GPT2ForTokenClassification</td>
+      <td>PASSED</td>
+      <td></td>
+    </tr>
+    <tr>
+      <th>10</th>
+      <td>layoutlm</td>
+      <td>LayoutLMTokenizerFast</td>
+      <td>LayoutLMForTokenClassification</td>
+      <td>PASSED</td>
+      <td></td>
+    </tr>
+    <tr>
+      <th>11</th>
       <td>longformer</td>
       <td>LongformerTokenizerFast</td>
       <td>LongformerForTokenClassification</td>
@@ -1635,7 +1675,7 @@ weighted avg       0.66      0.55      0.59       256
       <td></td>
     </tr>
     <tr>
-      <th>8</th>
+      <th>12</th>
       <td>mpnet</td>
       <td>MPNetTokenizerFast</td>
       <td>MPNetForTokenClassification</td>
@@ -1643,7 +1683,15 @@ weighted avg       0.66      0.55      0.59       256
       <td></td>
     </tr>
     <tr>
-      <th>9</th>
+      <th>13</th>
+      <td>ibert</td>
+      <td>RobertaTokenizerFast</td>
+      <td>IBertForTokenClassification</td>
+      <td>PASSED</td>
+      <td></td>
+    </tr>
+    <tr>
+      <th>14</th>
       <td>mobilebert</td>
       <td>MobileBertTokenizerFast</td>
       <td>MobileBertForTokenClassification</td>
@@ -1651,7 +1699,23 @@ weighted avg       0.66      0.55      0.59       256
       <td></td>
     </tr>
     <tr>
-      <th>10</th>
+      <th>15</th>
+      <td>rembert</td>
+      <td>RemBertTokenizerFast</td>
+      <td>RemBertForTokenClassification</td>
+      <td>PASSED</td>
+      <td></td>
+    </tr>
+    <tr>
+      <th>16</th>
+      <td>roformer</td>
+      <td>RoFormerTokenizerFast</td>
+      <td>RoFormerForTokenClassification</td>
+      <td>PASSED</td>
+      <td></td>
+    </tr>
+    <tr>
+      <th>17</th>
       <td>roberta</td>
       <td>RobertaTokenizerFast</td>
       <td>RobertaForTokenClassification</td>
@@ -1659,7 +1723,7 @@ weighted avg       0.66      0.55      0.59       256
       <td></td>
     </tr>
     <tr>
-      <th>11</th>
+      <th>18</th>
       <td>squeezebert</td>
       <td>SqueezeBertTokenizerFast</td>
       <td>SqueezeBertForTokenClassification</td>
@@ -1667,15 +1731,7 @@ weighted avg       0.66      0.55      0.59       256
       <td></td>
     </tr>
     <tr>
-      <th>12</th>
-      <td>xlm</td>
-      <td>XLMTokenizer</td>
-      <td>XLMForTokenClassification</td>
-      <td>PASSED</td>
-      <td></td>
-    </tr>
-    <tr>
-      <th>13</th>
+      <th>19</th>
       <td>xlm_roberta</td>
       <td>XLMRobertaTokenizerFast</td>
       <td>XLMRobertaForTokenClassification</td>
@@ -1683,7 +1739,7 @@ weighted avg       0.66      0.55      0.59       256
       <td></td>
     </tr>
     <tr>
-      <th>14</th>
+      <th>20</th>
       <td>xlnet</td>
       <td>XLNetTokenizerFast</td>
       <td>XLNetForTokenClassification</td>
@@ -1691,8 +1747,7 @@ weighted avg       0.66      0.55      0.59       256
       <td></td>
     </tr>
   </tbody>
-</table>
-</div>
+</table></div>
 
 </div>
 
@@ -1704,13 +1759,7 @@ weighted avg       0.66      0.55      0.59       256
 
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Summary">Summary<a class="anchor-link" href="#Summary"> </a></h2>
-</div>
-</div>
-</div>
-<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<p>This module includes all the low, mid, and high-level API bits for token classification tasks training and inference.</p>
+<h2 id="Summary">Summary<a class="anchor-link" href="#Summary"> </a></h2><p>This module includes all the low, mid, and high-level API bits for token classification tasks training and inference.</p>
 
 </div>
 </div>

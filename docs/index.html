@@ -234,7 +234,7 @@ pip install -e ".[dev]"</code></pre>
     </tr>
     <tr>
       <th>1</th>
-      <td>many neglect that this isn't just a classic due to the fact that it's the first 3d game, or even the first shoot -'em - up. it's also one of the first stealth games, one of the only ( and definitely the first ) truly claustrophobic games, and just a pretty well - rounded gaming experience in general. with graphics that are terribly dated today, the game thrusts you into the role of b. j. ( don't even * think * i'm going to attempt spelling his last name! ), an american p. o. w. caught in an underground bunker. you fight and search your way through tunnels in order to achieve different objectives for the six episodes ( but, let's face it, most of them are just an excuse to hand you a weapon, surround you with nazis and send you out to waste one of the nazi leaders ). the graphics are, as i mentioned before, quite dated and very simple. the least detailed of basically any 3d game released by a professional team of creators. if you can get over that, however ( and some would suggest that this simplicity only adds to the effect the game has on you ), then you've got one heck of a good shooter / sneaking game. the game play consists of searching for keys, health and ammo, blasting enemies ( aforementioned nazis, and a " boss enemy " per chapter ) of varying difficulty ( which, of course, grows as you move further in the game ), unlocking doors and looking for secret rooms. there is a bonus count after each level is beaten... it goes by how fast you were ( basically, if you beat the'par time ', which is the time it took a tester to go through the same level ; this can be quite fun to try and beat, and with how difficult the levels are to find your way in, they are even challenging after many play - throughs ), how much nazi gold ( treasure ) you collected and how many bad guys you killed. basically, if you got 100 % of any of aforementioned, you get a bonus, helping you reach the coveted high score placings. the game ( mostly, but not always ) allows for two contrastingly different methods of playing... stealthily or gunning down anything and everything you see. you can either run or walk, and amongst your weapons is also a knife... running is heard instantly the moment you enter the same room as the guard, as</td>
+      <td>although recognized as the best film treatment of the difficulties of having a house in the country built ( or bought ) to your specifications, it is not the first, nor the last. in 1940 jack benny and ann sheridan were the leads in the film version of the comedy george washington slept here by george s. kaufman and moss hart. and about fifteen years ago shelly long and tom hanks had the lead in the money pit. the former was about moving into an 18th century country house that... err, needs work. the latter was about building your dream house - in the late 1980s. although the two films have their moments, both are not as good as blandings, which was based on an autobiographical novel of the same name. &lt; br / &gt; &lt; br / &gt; jim blandings and his wife muriel ( cary grant and myrna loy ) are noticing the tight corners of their apartment, which they share with their two daughters joan and betsy ( sharyn moffett and connie marshall ). although blandings has a good income as an advertising executive ( in 1948 he is making $ 15, 000. 00 a year, which was like making $ 90, 000. 00 today ), and lives in a luxury apartment - which in the new york city of that day he rents! - he feels they should seek something better. he and muriel take a drive into the country ( connecticut ) and soon find an old ruin that both imagine can be fixed up as that dream house they want. &lt; br / &gt; &lt; br / &gt; and they both fall into the financial worm hole that buying land and construction can lead to. for one thing, they are so gung ho about the idea of building a home like this they fail to heed warning after warning by their wise, if cynical friend and lawyer bill cole ( melvin douglas, in a nicely sardonic role ). for example, jim buys land from a connecticut dealer ( ian wolfe, sucking his chops quietly ), with a check before double checking the correct cost for the land in that part of connecticut. bill points out he's paid about five or six thousand dollars more for the land than it is worth. there are problems about water supply that both blandings just never think about, such as hard and soft water - which leads to the zis - zis water softening machine. they find that the designs they have in mind, and have worked out with their architect ( reginald denny ), can't be dropped cheaply at a spur of the</td>
       <td>positive</td>
     </tr>
   </tbody>
@@ -269,7 +269,7 @@ pip install -e ".[dev]"</code></pre>
                 <span class="n">loss_func</span><span class="o">=</span><span class="n">CrossEntropyLossFlat</span><span class="p">(),</span>
                 <span class="n">metrics</span><span class="o">=</span><span class="p">[</span><span class="n">accuracy</span><span class="p">],</span>
                 <span class="n">cbs</span><span class="o">=</span><span class="p">[</span><span class="n">BaseModelCallback</span><span class="p">],</span>
-                <span class="n">splitter</span><span class="o">=</span><span class="n">hf_splitter</span><span class="p">)</span>
+                <span class="n">splitter</span><span class="o">=</span><span class="n">blurr_splitter</span><span class="p">)</span>
 
 <span class="n">learn</span><span class="o">.</span><span class="n">freeze</span><span class="p">()</span>
 
@@ -299,23 +299,23 @@ pip install -e ".[dev]"</code></pre>
   <tbody>
     <tr>
       <td>0</td>
-      <td>0.594905</td>
-      <td>0.374806</td>
-      <td>0.850000</td>
+      <td>0.593744</td>
+      <td>0.470853</td>
+      <td>0.785000</td>
       <td>00:21</td>
     </tr>
     <tr>
       <td>1</td>
-      <td>0.348940</td>
-      <td>0.413091</td>
-      <td>0.830000</td>
-      <td>00:21</td>
+      <td>0.352055</td>
+      <td>0.333391</td>
+      <td>0.875000</td>
+      <td>00:20</td>
     </tr>
     <tr>
       <td>2</td>
-      <td>0.288840</td>
-      <td>0.270606</td>
-      <td>0.905000</td>
+      <td>0.315534</td>
+      <td>0.326376</td>
+      <td>0.865000</td>
       <td>00:21</td>
     </tr>
   </tbody>
@@ -410,7 +410,7 @@ pip install -e ".[dev]"</code></pre>
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">learn</span> <span class="o">=</span> <span class="n">BlearnerForSequenceClassification</span><span class="o">.</span><span class="n">from_dataframe</span><span class="p">(</span><span class="n">imdb_df</span><span class="p">,</span> <span class="n">pretrained_model_name</span><span class="p">,</span> <span class="n">dl_kwargs</span><span class="o">=</span><span class="p">{</span> <span class="s1">&#39;bs&#39;</span><span class="p">:</span> <span class="mi">4</span><span class="p">})</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">learn</span> <span class="o">=</span> <span class="n">BlearnerForSequenceClassification</span><span class="o">.</span><span class="n">from_data</span><span class="p">(</span><span class="n">imdb_df</span><span class="p">,</span> <span class="n">pretrained_model_name</span><span class="p">,</span> <span class="n">dl_kwargs</span><span class="o">=</span><span class="p">{</span> <span class="s1">&#39;bs&#39;</span><span class="p">:</span> <span class="mi">4</span><span class="p">})</span>
 </pre></div>
 
     </div>
@@ -454,10 +454,10 @@ pip install -e ".[dev]"</code></pre>
   <tbody>
     <tr>
       <td>0</td>
-      <td>0.532659</td>
-      <td>0.433739</td>
-      <td>0.819672</td>
-      <td>0.835000</td>
+      <td>0.539261</td>
+      <td>0.476592</td>
+      <td>0.759777</td>
+      <td>0.785000</td>
       <td>00:21</td>
     </tr>
   </tbody>

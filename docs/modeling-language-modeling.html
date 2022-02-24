@@ -64,9 +64,9 @@ nb_path: "nbs/02_modeling-language-modeling.ipynb"
 
 <div class="output_subarea output_stream output_stdout output_text">
 <pre>What we&#39;re running with at the time this documentation was generated:
-torch: 1.7.1
-fastai: 2.5.2
-transformers: 4.9.2
+torch: 1.10.1+cu111
+fastai: 2.5.3
+transformers: 4.16.2
 </pre>
 </div>
 </div>
@@ -116,8 +116,7 @@ transformers: 4.9.2
 <div class="output_area">
 
 
-<div class="output_html rendered_html output_subarea output_execute_result">
-<div>
+<div class="output_html rendered_html output_subarea output_execute_result"><div>
 <style scoped>
     .dataframe tbody tr th:only-of-type {
         vertical-align: middle;
@@ -167,8 +166,7 @@ transformers: 4.9.2
     </tr>
   </tbody>
 </table>
-</div>
-</div>
+</div></div>
 
 </div>
 
@@ -193,10 +191,6 @@ transformers: 4.9.2
 </blockquote>
 <p>A fastai friendly metric implemented as a callback so that we can handle use cases where we don't
 want to count tokens marked to be ignored or else not count batches where there are no targs</p>
-<p><strong>Parameters:</strong></p>
-<ul>
-<li><strong><code>kwargs</code></strong> : <em><code>&lt;class 'inspect._empty'&gt;</code></em></li>
-</ul>
 
 </div>
 
@@ -349,8 +343,7 @@ want to count tokens marked to be ignored or else not count batches where there 
 <div class="output_area">
 
 
-<div class="output_html rendered_html output_subarea ">
-<table border="1" class="dataframe">
+<div class="output_html rendered_html output_subarea "><table border="1" class="dataframe">
   <thead>
     <tr style="text-align: right;">
       <th></th>
@@ -370,8 +363,7 @@ want to count tokens marked to be ignored or else not count batches where there 
       <td>\n = Wales national rugby union team = \n \n The Wales national rugby union team ( Welsh : &lt;unk&gt; &lt;unk&gt; &lt;unk&gt; &lt;unk&gt; &lt;unk&gt; Cymru ) represent Wales in international rugby union. They compete annually in the Six Nations Championship with England, France, Ireland, Italy and Scotland. Wales have won the Six Nations and its predecessors 26 times outright, one less than England. Wales'most recent championship win came in 2013. \n The governing body, the Welsh Rugby Union ( WRU ), was established in 1881, th</td>
     </tr>
   </tbody>
-</table>
-</div>
+</table></div>
 
 </div>
 
@@ -397,7 +389,7 @@ want to count tokens marked to be ignored or else not count batches where there 
                 <span class="n">loss_func</span><span class="o">=</span><span class="n">PreCalculatedLoss</span><span class="p">(),</span>
                 <span class="n">cbs</span><span class="o">=</span><span class="p">[</span><span class="n">BaseModelCallback</span><span class="p">],</span>
                 <span class="n">metrics</span><span class="o">=</span><span class="p">[</span><span class="n">perplexity</span><span class="p">],</span>
-                <span class="n">splitter</span><span class="o">=</span><span class="n">hf_splitter</span><span class="p">)</span><span class="o">.</span><span class="n">to_fp16</span><span class="p">()</span>
+                <span class="n">splitter</span><span class="o">=</span><span class="n">blurr_splitter</span><span class="p">)</span><span class="o">.</span><span class="n">to_fp16</span><span class="p">()</span>
 
 <span class="n">learn</span><span class="o">.</span><span class="n">freeze</span><span class="p">()</span>
 </pre></div>
@@ -495,9 +487,7 @@ want to count tokens marked to be ignored or else not count batches where there 
 <div class="output_area">
 
 
-<div class="output_html rendered_html output_subarea ">
-
-</div>
+<div class="output_html rendered_html output_subarea "></div>
 
 </div>
 
@@ -558,8 +548,7 @@ want to count tokens marked to be ignored or else not count batches where there 
 <div class="output_area">
 
 
-<div class="output_html rendered_html output_subarea ">
-<table border="1" class="dataframe">
+<div class="output_html rendered_html output_subarea "><table border="1" class="dataframe">
   <thead>
     <tr style="text-align: left;">
       <th>epoch</th>
@@ -580,8 +569,7 @@ want to count tokens marked to be ignored or else not count batches where there 
       <td>01:46</td>
     </tr>
   </tbody>
-</table>
-</div>
+</table></div>
 
 </div>
 
@@ -618,17 +606,14 @@ want to count tokens marked to be ignored or else not count batches where there 
 <div class="output_area">
 
 
-<div class="output_html rendered_html output_subarea ">
-
-</div>
+<div class="output_html rendered_html output_subarea "></div>
 
 </div>
 
 <div class="output_area">
 
 
-<div class="output_html rendered_html output_subarea ">
-<table border="1" class="dataframe">
+<div class="output_html rendered_html output_subarea "><table border="1" class="dataframe">
   <thead>
     <tr style="text-align: right;">
       <th></th>
@@ -651,8 +636,7 @@ want to count tokens marked to be ignored or else not count batches where there 
       <td>\n =  Force = = # /&gt; = \n \n  Rhodesia Flight (unk&gt; was a flight flight flight from was scheduled down by a Uan'ss Liberation Army ( Zunk&gt; ) on July August 2014. and the countryian militaryi.  plane was was the Boeing- Fickersount, " "unk&gt;, was a from &lt;</td>
     </tr>
   </tbody>
-</table>
-</div>
+</table></div>
 
 </div>
 
@@ -815,8 +799,7 @@ want to count tokens marked to be ignored or else not count batches where there 
 <div class="output_area">
 
 
-<div class="output_html rendered_html output_subarea ">
-<table border="1" class="dataframe">
+<div class="output_html rendered_html output_subarea "><table border="1" class="dataframe">
   <thead>
     <tr style="text-align: right;">
       <th></th>
@@ -836,8 +819,7 @@ want to count tokens marked to be ignored or else not count batches where there 
       <td>=  Missouri  River  =   \n   \n  The  Missouri  River  is  the  longest  river  in  North  America .  Rising  in  the  Rocky  Mountains  of  western  Montana [,]  the  Missouri  flows  east  and  south  for  2  @ , @  341  miles  (  3 [ @] , @  7 67  km [ )]  before  entering  the  Mississippi  River  north  of  St .  Louis ,  Missouri .  The  river  takes  drainage  from  a  sparse ly  populated [,]  semi  @ - @  ar id  watershed  of  more  than [ half]  a  million  square  miles [ (]  1  @ , @  300 [ @] [,] @ [ 000]  km [2] [ )] ,  which  includes  parts  of  ten  U . S .  states  and  two  Canadian  provinces [.] [ When]  combined  with  the  lower  Mississippi  River ,  it [ forms]  the  world  ' s  fourth  longest [ river]  system .   \n  For [ over] [ 12]  @ , [@]  000  years , [ people] [ have]  depended  on  the  Missouri  River  and  its  t [ribut] aries  as  a  source  of  sust [enance]  and  transportation .  More  than  ten  major  groups  of  Native  Americans  populated  the  watershed [,]  most  leading  a  nom [adic]  lifestyle  and [ dependent]  on  enormous  buffalo  herds  that  once  ro amed [ through]  the  Great  Plains . [ The] [ first]  Europeans  encountered  the  river  in  the  late  sevent eenth  century ,  and  the  region [ passed]  through  Spanish  and  French  hands  before  finally  becoming  part  of  the  United  States  through  the [ Louisiana]  Purchase .  The  Missouri  was  long  believed  to  be  part [ of]  the [ Northwest] [ Passage]</td>
     </tr>
   </tbody>
-</table>
-</div>
+</table></div>
 
 </div>
 
@@ -863,7 +845,7 @@ want to count tokens marked to be ignored or else not count batches where there 
                 <span class="n">loss_func</span><span class="o">=</span> <span class="n">PreCalculatedLoss</span><span class="p">(),</span>
                 <span class="n">cbs</span><span class="o">=</span><span class="p">[</span><span class="n">BaseModelCallback</span><span class="p">],</span>
                 <span class="n">metrics</span><span class="o">=</span><span class="p">[</span><span class="n">perplexity</span><span class="p">],</span>
-                <span class="n">splitter</span><span class="o">=</span><span class="n">hf_splitter</span><span class="p">)</span><span class="o">.</span><span class="n">to_fp16</span><span class="p">()</span>
+                <span class="n">splitter</span><span class="o">=</span><span class="n">blurr_splitter</span><span class="p">)</span><span class="o">.</span><span class="n">to_fp16</span><span class="p">()</span>
 
 <span class="n">learn</span><span class="o">.</span><span class="n">freeze</span><span class="p">()</span>
 </pre></div>
@@ -943,9 +925,7 @@ want to count tokens marked to be ignored or else not count batches where there 
 <div class="output_area">
 
 
-<div class="output_html rendered_html output_subarea ">
-
-</div>
+<div class="output_html rendered_html output_subarea "></div>
 
 </div>
 
@@ -1006,8 +986,7 @@ want to count tokens marked to be ignored or else not count batches where there 
 <div class="output_area">
 
 
-<div class="output_html rendered_html output_subarea ">
-<table border="1" class="dataframe">
+<div class="output_html rendered_html output_subarea "><table border="1" class="dataframe">
   <thead>
     <tr style="text-align: left;">
       <th>epoch</th>
@@ -1028,8 +1007,7 @@ want to count tokens marked to be ignored or else not count batches where there 
       <td>00:30</td>
     </tr>
   </tbody>
-</table>
-</div>
+</table></div>
 
 </div>
 
@@ -1066,17 +1044,14 @@ want to count tokens marked to be ignored or else not count batches where there 
 <div class="output_area">
 
 
-<div class="output_html rendered_html output_subarea ">
-
-</div>
+<div class="output_html rendered_html output_subarea "></div>
 
 </div>
 
 <div class="output_area">
 
 
-<div class="output_html rendered_html output_subarea ">
-<table border="1" class="dataframe">
+<div class="output_html rendered_html output_subarea "><table border="1" class="dataframe">
   <thead>
     <tr style="text-align: right;">
       <th></th>
@@ -1099,8 +1074,7 @@ want to count tokens marked to be ignored or else not count batches where there 
       <td>= [ ]  Rhodes ia  Flight   [ =]   \n   \n  Air  Rhodes ia  Flight    was  a  scheduled  passenger  flight [ that]  was  shot  down  by  the [ Zimbabwe]  People  ' s  Revolutionary  Army  (   [ )]  on  3  September  1978 ,  during [ the] [ Rhodes] ian  Bush  War .  The  aircraft [ carrier] ,  a  V ickers [ V] isc ount [ of]  the   ,  was  flying  the  last  leg  of  Air  Rhodes ia  ' s  regular [ passenger]  service [ from]  Victoria [,]  to [ ] [ of]  Sal isbury ,  via  the  resort [ town]  of   [.]   \n  Soon  after  Flight    took  off ,  a  group  of    gu err illas  scored  a  direct  hit  on  its  star board  wing  with  a  Soviet [ RL] - @  made    2  surface  @ - @  to  @ - @ [ an]  infrared    missile ,  critically  damaging  the  aircraft [ and]  forcing  an  emergency  landing .  An  attempted  belly  landing  in  a  cotton  field  just [ south]  of    was    by  an  unseen  ditch [,]  which  caused [ the]  plane  to  cart wheel [ and]  break  up .  Of  the  52  passengers  and [ the]  crew ,  38  died  in  this  crash  ;  the  insurgents  then  approached  the [ aircraft] ,  rounded  up  the  10 [ people]  they  could  see  and  massac [red]  them  with [ live]  gunfire . [ Six]  passengers  survived  by  hiding  in [ the]  surrounding  bush ,  while  a  further  five  lived  because  they  had  gone  to [ look]  for  water  before  the [ gu] [err] illas  arrived .</td>
     </tr>
   </tbody>
-</table>
-</div>
+</table></div>
 
 </div>
 
@@ -1128,19 +1102,38 @@ want to count tokens marked to be ignored or else not count batches where there 
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h4 id="Learner.blurr_fill_mask" class="doc_header"><code>Learner.blurr_fill_mask</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/modeling/language_modeling.py#L198" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>Learner.blurr_fill_mask</code>(<strong><code>inp</code></strong>:<code>Union</code>[<code>List</code>[<code>int</code>], <code>str</code>], <strong><code>n_preds</code></strong>:<code>int</code>=<em><code>1</code></em>, <strong>**<code>kwargs</code></strong>)</p>
+<h4 id="Learner.blurr_fill_mask" class="doc_header"><code>Learner.blurr_fill_mask</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/modeling/language_modeling.py#L198" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>Learner.blurr_fill_mask</code>(<strong><code>inp</code></strong>:<code>Union</code>[List[int]<code>,</code>str<code>\], **</code>n_preds<code>**:</code>int<code>=*</code>1<code>*, **\*\*</code>kwargs`**)</p>
 </blockquote>
 <p>For MLM models</p>
-<p><strong>Parameters:</strong></p>
-<ul>
-<li><strong><code>inp</code></strong> : <em><code>typing.Union[typing.List[int], str]</code></em>  <p>Your input_ids or raw text string with a `hf_tokenizer.mask_token`</p></li>
-</ul>
-<ul>
-<li><strong><code>n_preds</code></strong> : <em><code>&lt;class 'int'&gt;</code></em>, <em>optional</em>    <p>The number of predictions you want to return for the [MASK]ed token</p></li>
-</ul>
-<ul>
-<li><strong><code>kwargs</code></strong> : <em><code>&lt;class 'inspect._empty'&gt;</code></em></li>
-</ul>
+<table>
+<thead><tr>
+<th></th>
+<th>Type</th>
+<th>Default</th>
+<th>Details</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong><code>inp</code></strong></td>
+<td><code>List[int], str]</code></td>
+<td></td>
+<td>Your input_ids or raw text string with a <code>hf_tokenizer.mask_token</code></td>
+</tr>
+<tr>
+<td><strong><code>n_preds</code></strong></td>
+<td><code>int</code></td>
+<td><code>1</code></td>
+<td>The number of predictions you want to return for the [MASK]ed token</td>
+</tr>
+<tr>
+<td><strong><code>kwargs</code></strong></td>
+<td></td>
+<td></td>
+<td><em>No Content</em></td>
+</tr>
+</tbody>
+</table>
 
 </div>
 
@@ -1223,15 +1216,6 @@ want to count tokens marked to be ignored or else not count batches where there 
 <h2 id="BlearnerForLM" class="doc_header"><code>class</code> <code>BlearnerForLM</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/modeling/language_modeling.py#L238" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>BlearnerForLM</code>(<strong><code>dls</code></strong>:<code>DataLoaders</code>, <strong><code>hf_model</code></strong>:<code>PreTrainedModel</code>, <strong><code>base_model_cb</code></strong>:<a href="/blurr/modeling-core.html#BaseModelCallback"><code>BaseModelCallback</code></a>=<em><code>BaseModelCallback</code></em>, <strong><code>loss_func</code></strong>=<em><code>None</code></em>, <strong><code>opt_func</code></strong>=<em><code>Adam</code></em>, <strong><code>lr</code></strong>=<em><code>0.001</code></em>, <strong><code>splitter</code></strong>=<em><code>trainable_params</code></em>, <strong><code>cbs</code></strong>=<em><code>None</code></em>, <strong><code>metrics</code></strong>=<em><code>None</code></em>, <strong><code>path</code></strong>=<em><code>None</code></em>, <strong><code>model_dir</code></strong>=<em><code>'models'</code></em>, <strong><code>wd</code></strong>=<em><code>None</code></em>, <strong><code>wd_bn_bias</code></strong>=<em><code>False</code></em>, <strong><code>train_bn</code></strong>=<em><code>True</code></em>, <strong><code>moms</code></strong>=<em><code>(0.95, 0.85, 0.95)</code></em>) :: <a href="/blurr/modeling-core.html#Blearner"><code>Blearner</code></a></p>
 </blockquote>
 <p>Group together a <code>model</code>, some <code>dls</code> and a <code>loss_func</code> to handle training</p>
-<p><strong>Parameters:</strong></p>
-<ul>
-<li><p><strong><code>dls</code></strong> : <em><code>&lt;class 'fastai.data.core.DataLoaders'&gt;</code></em></p>
-</li>
-<li><p><strong><code>hf_model</code></strong> : <em><code>&lt;class 'transformers.modeling_utils.PreTrainedModel'&gt;</code></em></p>
-</li>
-<li><p><strong><code>kwargs</code></strong> : <em><code>&lt;class 'inspect._empty'&gt;</code></em></p>
-</li>
-</ul>
 
 </div>
 
@@ -1309,8 +1293,7 @@ want to count tokens marked to be ignored or else not count batches where there 
 <div class="output_area">
 
 
-<div class="output_html rendered_html output_subarea ">
-<table border="1" class="dataframe">
+<div class="output_html rendered_html output_subarea "><table border="1" class="dataframe">
   <thead>
     <tr style="text-align: right;">
       <th></th>
@@ -1330,8 +1313,7 @@ want to count tokens marked to be ignored or else not count batches where there 
       <td>\n = Ireland = \n \n Ireland ( / &lt;unk&gt; / ; Irish : &lt;unk&gt; [ &lt;unk&gt; ] ; Ulster @-@ Scots : &lt;unk&gt; [ &lt;unk&gt; ] ) is an island in the North Atlantic. It is separated from Great Britain to its east by the North Channel, the Irish Sea, and St George's Channel. Ireland is the second @-@ largest island of the British Isles, the third @-@ largest in Europe, and the twentieth @-@ largest on Earth. \n &lt;unk&gt;, Ireland is divided between the Republic of Ireland ( officially named Ireland ), which covers five @-@ &lt;unk</td>
     </tr>
   </tbody>
-</table>
-</div>
+</table></div>
 
 </div>
 
@@ -1361,8 +1343,7 @@ want to count tokens marked to be ignored or else not count batches where there 
 <div class="output_area">
 
 
-<div class="output_html rendered_html output_subarea ">
-<table border="1" class="dataframe">
+<div class="output_html rendered_html output_subarea "><table border="1" class="dataframe">
   <thead>
     <tr style="text-align: left;">
       <th>epoch</th>
@@ -1383,8 +1364,7 @@ want to count tokens marked to be ignored or else not count batches where there 
       <td>01:42</td>
     </tr>
   </tbody>
-</table>
-</div>
+</table></div>
 
 </div>
 
@@ -1414,17 +1394,14 @@ want to count tokens marked to be ignored or else not count batches where there 
 <div class="output_area">
 
 
-<div class="output_html rendered_html output_subarea ">
-
-</div>
+<div class="output_html rendered_html output_subarea "></div>
 
 </div>
 
 <div class="output_area">
 
 
-<div class="output_html rendered_html output_subarea ">
-<table border="1" class="dataframe">
+<div class="output_html rendered_html output_subarea "><table border="1" class="dataframe">
   <thead>
     <tr style="text-align: right;">
       <th></th>
@@ -1447,8 +1424,7 @@ want to count tokens marked to be ignored or else not count batches where there 
       <td>\n\n =-is &lt;\n\n =\n =ía Per Perarte = laón =Eva ) 18 ) 7 May 2014 ) was a first daughter of Eva President Jose Perón and 7 –1945 ) and the as the first Vice of Argentina during 18 to her death in 1975. She was a depicted to as Eva Perón,  )  Spanish &lt;&gt; ]u</td>
     </tr>
   </tbody>
-</table>
-</div>
+</table></div>
 
 </div>
 
@@ -1537,8 +1513,7 @@ want to count tokens marked to be ignored or else not count batches where there 
 <div class="output_area">
 
 
-<div class="output_html rendered_html output_subarea ">
-<table border="1" class="dataframe">
+<div class="output_html rendered_html output_subarea "><table border="1" class="dataframe">
   <thead>
     <tr style="text-align: right;">
       <th></th>
@@ -1558,8 +1533,7 @@ want to count tokens marked to be ignored or else not count batches where there 
       <td>= Air Rhodesia Flight [&lt;] un ##k &gt; = Air Rhodesia Flight &lt; un [##k] &gt; was a scheduled passenger flight that was shot down by the [Zimbabwe] People ['] s Revolutionary Army ( &lt; un ##k &gt; ) on 3 September 1978 , [during] the Rhodesia ##n Bush War . [The] aircraft involved , a Vickers Viscount named the &lt; un [##k] &gt; , [was] flying the last [leg] of Air Rhodesia ' s regular [scheduled] service from Victoria Falls to the capital Salisbury , [via] the resort town [of] &lt; un ##k &gt; [.] Soon after Flight &lt; [un] [##k] [&gt;] took off , a [group] of [&lt;] un ##k &gt; guerrilla ##s scored a direct hit on its star ##board [wing] with a Soviet @ - @ made &lt; un ##k &gt; 2 surface [@] [-] @ [to] @ - @ air infrared &lt; un ##k &gt; missile , critically damaging the aircraft and forcing an emergency [landing] . An attempted belly landing in a cotton field just west of &lt; un ##k [&gt;] was [&lt;] un ##k &gt; by an unseen [ditch] [,] which caused the plane [to] [cart] ##wheel and break up . Of the 52 passengers and four [crew] [,] 38 died in this [crash] ; the insurgents then approached [the] wreckage , rounded [up] the [10] [survivors] they could see [and] massacre ##d them with [automatic] gunfire . Three passengers survived by hiding in the surrounding bush , while a further five lived</td>
     </tr>
   </tbody>
-</table>
-</div>
+</table></div>
 
 </div>
 
@@ -1589,8 +1563,7 @@ want to count tokens marked to be ignored or else not count batches where there 
 <div class="output_area">
 
 
-<div class="output_html rendered_html output_subarea ">
-<table border="1" class="dataframe">
+<div class="output_html rendered_html output_subarea "><table border="1" class="dataframe">
   <thead>
     <tr style="text-align: left;">
       <th>epoch</th>
@@ -1611,8 +1584,7 @@ want to count tokens marked to be ignored or else not count batches where there 
       <td>00:40</td>
     </tr>
   </tbody>
-</table>
-</div>
+</table></div>
 
 </div>
 
@@ -1642,17 +1614,14 @@ want to count tokens marked to be ignored or else not count batches where there 
 <div class="output_area">
 
 
-<div class="output_html rendered_html output_subarea ">
-
-</div>
+<div class="output_html rendered_html output_subarea "></div>
 
 </div>
 
 <div class="output_area">
 
 
-<div class="output_html rendered_html output_subarea ">
-<table border="1" class="dataframe">
+<div class="output_html rendered_html output_subarea "><table border="1" class="dataframe">
   <thead>
     <tr style="text-align: right;">
       <th></th>
@@ -1675,8 +1644,7 @@ want to count tokens marked to be ignored or else not count batches where there 
       <td>= Roger Fed ##erer = Roger Fed ##erer ( German : [ &lt; un ##k [&gt;] ] born 8 August 1981 ) is a Swiss professional tennis player who is currently [ranked] world No . 3 by the Association of Tennis &lt; un ##k &gt; ( ATP [)] . [His] accomplishments in professional tennis have [led] to him being regarded by [many] as [the] greatest tennis player of all time . Fed ##erer turned professional in 1998 and has been continuously ranked in the top 10 since October 2002 . [Fed] ##erer holds several records of the Open Era : holding the [world] No [.] 1 position for [38] weeks ( including 237 consecutive weeks [)] ; [his] 17 Grand Slam singles [travel] [##ler] reaching each Grand Slam final at least five times ( an all @ - @ time record ) [;] and [winning] the Wimbledon [Championships] ten times . He is among the eight men ( and among the [youngest] in [Open] Era ) to capture a career Grand Slam . [Fed] ##erer shares an Open Era [with] [the] most titles at [Wimbledon] with Pete Sam ##pra ##s ( seven [)] and at the US Open [with] [##s] Connor ##s and Sam ##pra ##s ( five ) . [He] is the only male player to win five [consecutive] US Open titles . Fed ##erer has reached 27 [of] ['] s singles Grand [Slam] finals [,] [the] 10 in a row from the 2005 Wimbledon Championships to the 2007</td>
     </tr>
   </tbody>
-</table>
-</div>
+</table></div>
 
 </div>
 

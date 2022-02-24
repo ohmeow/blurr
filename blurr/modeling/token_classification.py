@@ -351,7 +351,8 @@ class BlearnerForTokenClassification(Blearner):
     @classmethod
     def from_data(
         cls,
-        # Your raw dataset
+        # Your raw dataset. Supports DataFrames, Hugging Face Datasets, as well as file paths
+        # to .csv, .xlsx, .xls, and .jsonl files
         data: Union[pd.DataFrame, Path, str, List[Dict]],
         # The name or path of the pretrained model you want to fine-tune
         pretrained_model_name_or_path: Optional[Union[str, os.PathLike]],
@@ -371,6 +372,16 @@ class BlearnerForTokenClassification(Blearner):
     ):
         # if we get a path/str then we're loading something like a .csv file
         if isinstance(data, Path) or isinstance(data, str):
+            content_type = mimetypes.guess_type(data)[0]
+            if content_type  == 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet':
+                data = pd.read_excel(data)
+            elif content_type  == 'text/csv':
+                data = pd.read_csv(data)
+            elif content_type  == 'application/json':
+                data = pd.read_json(data, orient='records')
+            else:
+                raise ValueError("'data' must be a .xlsx, .xls, .csv, or .jsonl file")
+
             data = pd.read_csv(data)
 
         # we need to tell transformer how many labels/classes to expect

@@ -64,9 +64,9 @@ nb_path: "nbs/02_data-language-modeling.ipynb"
 
 <div class="output_subarea output_stream output_stdout output_text">
 <pre>What we&#39;re running with at the time this documentation was generated:
-torch: 1.7.1
-fastai: 2.5.2
-transformers: 4.9.2
+torch: 1.10.1+cu111
+fastai: 2.5.3
+transformers: 4.16.2
 </pre>
 </div>
 </div>
@@ -143,8 +143,7 @@ transformers: 4.9.2
 <div class="output_area">
 
 
-<div class="output_html rendered_html output_subarea output_execute_result">
-<div>
+<div class="output_html rendered_html output_subarea output_execute_result"><div>
 <style scoped>
     .dataframe tbody tr th:only-of-type {
         vertical-align: middle;
@@ -188,8 +187,7 @@ transformers: 4.9.2
     </tr>
   </tbody>
 </table>
-</div>
-</div>
+</div></div>
 
 </div>
 
@@ -223,8 +221,7 @@ transformers: 4.9.2
 <div class="output_area">
 
 
-<div class="output_html rendered_html output_subarea output_execute_result">
-<div>
+<div class="output_html rendered_html output_subarea output_execute_result"><div>
 <style scoped>
     .dataframe tbody tr th:only-of-type {
         vertical-align: middle;
@@ -274,8 +271,7 @@ transformers: 4.9.2
     </tr>
   </tbody>
 </table>
-</div>
-</div>
+</div></div>
 
 </div>
 
@@ -337,13 +333,6 @@ transformers: 4.9.2
 <h2 id="LMStrategy" class="doc_header"><code>class</code> <code>LMStrategy</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/data/language_modeling.py#L32" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>LMStrategy</code>(<strong><code>hf_tokenizer</code></strong>, <strong><code>ignore_token_id</code></strong>=<em><code>-100</code></em>) :: <code>ABC</code></p>
 </blockquote>
 <p>ABC for various language modeling strategies (e.g., causal, BertMLM, WholeWordMLM, etc...)</p>
-<p><strong>Parameters:</strong></p>
-<ul>
-<li><p><strong><code>hf_tokenizer</code></strong> : <em><code>&lt;class 'inspect._empty'&gt;</code></em></p>
-</li>
-<li><p><strong><code>ignore_token_id</code></strong> : <em><code>&lt;class 'int'&gt;</code></em>, <em>optional</em></p>
-</li>
-</ul>
 
 </div>
 
@@ -377,55 +366,95 @@ transformers: 4.9.2
 </blockquote>
 <p>Handles everything you need to assemble a mini-batch of inputs and targets, as well as
 decode the dictionary produced as a byproduct of the tokenization process in the <code>encodes</code> method.</p>
-<p><strong>Parameters:</strong></p>
-<ul>
-<li><strong><code>hf_arch</code></strong> : <em><code>&lt;class 'str'&gt;</code></em>    <p>The abbreviation/name of your Hugging Face transformer architecture (e.b., bert, bart, etc..)</p></li>
-</ul>
-<ul>
-<li><strong><code>hf_config</code></strong> : <em><code>&lt;class 'transformers.configuration_utils.PretrainedConfig'&gt;</code></em>    <p>A specific configuration instance you want to use</p></li>
-</ul>
-<ul>
-<li><strong><code>hf_tokenizer</code></strong> : <em><code>&lt;class 'transformers.tokenization_utils_base.PreTrainedTokenizerBase'&gt;</code></em>  <p>A Hugging Face tokenizer</p></li>
-</ul>
-<ul>
-<li><strong><code>hf_model</code></strong> : <em><code>&lt;class 'transformers.modeling_utils.PreTrainedModel'&gt;</code></em>   <p>A Hugging Face model</p></li>
-</ul>
-<ul>
-<li><strong><code>lm_strategy_cls</code></strong> : <em><code>&lt;class 'blurr.data.language_modeling.LMStrategy'&gt;</code></em>    <p>The language modeling strategy (or objective)</p></li>
-</ul>
-<ul>
-<li><strong><code>max_length</code></strong> : <em><code>&lt;class 'int'&gt;</code></em>, <em>optional</em> <p>To control the length of the padding/truncation. It can be an integer or None,
-in which case it will default to the maximum length the model can accept. If the model has no
-specific maximum input length, truncation/padding to max_length is deactivated.
-See [Everything you always wanted to know about padding and truncation](https://huggingface.co/transformers/preprocessing.html#everything-you-always-wanted-to-know-about-padding-and-truncation)</p></li>
-</ul>
-<ul>
-<li><strong><code>padding</code></strong> : <em><code>typing.Union[bool, str]</code></em>, <em>optional</em>  <p>To control the `padding` applied to your `hf_tokenizer` during tokenization. If None, will default to
-`False` or `'do_not_pad'.
-See [Everything you always wanted to know about padding and truncation](https://huggingface.co/transformers/preprocessing.html#everything-you-always-wanted-to-know-about-padding-and-truncation)</p></li>
-</ul>
-<ul>
-<li><strong><code>truncation</code></strong> : <em><code>typing.Union[bool, str]</code></em>, <em>optional</em>   <p>To control `truncation` applied to your `hf_tokenizer` during tokenization. If None, will default to
-`False` or `do_not_truncate`.
-See [Everything you always wanted to know about padding and truncation](https://huggingface.co/transformers/preprocessing.html#everything-you-always-wanted-to-know-about-padding-and-truncation)</p></li>
-</ul>
-<ul>
-<li><strong><code>ignore_token_id</code></strong> : <em><code>&lt;class 'int'&gt;</code></em>, <em>optional</em>    <p>The token ID that should be ignored when calculating the loss</p></li>
-</ul>
-<ul>
-<li><strong><code>is_split_into_words</code></strong> : <em><code>&lt;class 'bool'&gt;</code></em>, <em>optional</em>   <p>The `is_split_into_words` argument applied to your `hf_tokenizer` during tokenization. Set this to `True`
-if your inputs are pre-tokenized (not numericalized)</p></li>
-</ul>
-<ul>
-<li><strong><code>tok_kwargs</code></strong> : <em><code>&lt;class 'dict'&gt;</code></em>, <em>optional</em>    <p>Any other keyword arguments you want included when using your `hf_tokenizer` to tokenize your inputs</p></li>
-</ul>
-<ul>
-<li><strong><code>text_gen_kwargs</code></strong> : <em><code>&lt;class 'dict'&gt;</code></em>, <em>optional</em>   <p>Any keyword arguments you want included when generated text
-See [How to generate text](https://huggingface.co/blog/how-to-generate)</p></li>
-</ul>
-<ul>
-<li><strong><code>kwargs</code></strong> : <em><code>&lt;class 'inspect._empty'&gt;</code></em></li>
-</ul>
+<table>
+<thead><tr>
+<th></th>
+<th>Type</th>
+<th>Default</th>
+<th>Details</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong><code>hf_arch</code></strong></td>
+<td><code>str</code></td>
+<td></td>
+<td>The abbreviation/name of your Hugging Face transformer architecture (e.b., bert, bart, etc..)</td>
+</tr>
+<tr>
+<td><strong><code>hf_config</code></strong></td>
+<td><code>PretrainedConfig</code></td>
+<td></td>
+<td>A specific configuration instance you want to use</td>
+</tr>
+<tr>
+<td><strong><code>hf_tokenizer</code></strong></td>
+<td><code>PreTrainedTokenizerBase</code></td>
+<td></td>
+<td>A Hugging Face tokenizer</td>
+</tr>
+<tr>
+<td><strong><code>hf_model</code></strong></td>
+<td><code>PreTrainedModel</code></td>
+<td></td>
+<td>A Hugging Face model</td>
+</tr>
+<tr>
+<td><strong><code>lm_strategy_cls</code></strong></td>
+<td><a href="/blurr/data-language-modeling.html#LMStrategy"><code>LMStrategy</code></a></td>
+<td></td>
+<td>The language modeling strategy (or objective)</td>
+</tr>
+<tr>
+<td><strong><code>max_length</code></strong></td>
+<td><code>int</code></td>
+<td>``</td>
+<td>To control the length of the padding/truncation. It can be an integer or None,<br />in which case it will default to the maximum length the model can accept. If the model has no<br />specific maximum input length, truncation/padding to max_length is deactivated.<br />See <a href="https://huggingface.co/transformers/preprocessing.html#everything-you-always-wanted-to-know-about-padding-and-truncation">Everything you always wanted to know about padding and truncation</a></td>
+</tr>
+<tr>
+<td><strong><code>padding</code></strong></td>
+<td><code>Union[bool, str]</code></td>
+<td><code>True</code></td>
+<td>To control the <code>padding</code> applied to your <code>hf_tokenizer</code> during tokenization. If None, will default to<br /><code>False</code> or `'do_not_pad'.<br />See <a href="https://huggingface.co/transformers/preprocessing.html#everything-you-always-wanted-to-know-about-padding-and-truncation">Everything you always wanted to know about padding and truncation</a></td>
+</tr>
+<tr>
+<td><strong><code>truncation</code></strong></td>
+<td><code>Union[bool, str]</code></td>
+<td><code>True</code></td>
+<td>To control <code>truncation</code> applied to your <code>hf_tokenizer</code> during tokenization. If None, will default to<br /><code>False</code> or <code>do_not_truncate</code>.<br />See <a href="https://huggingface.co/transformers/preprocessing.html#everything-you-always-wanted-to-know-about-padding-and-truncation">Everything you always wanted to know about padding and truncation</a></td>
+</tr>
+<tr>
+<td><strong><code>ignore_token_id</code></strong></td>
+<td><code>int</code></td>
+<td><code>-100</code></td>
+<td>The token ID that should be ignored when calculating the loss</td>
+</tr>
+<tr>
+<td><strong><code>is_split_into_words</code></strong></td>
+<td><code>bool</code></td>
+<td><code>False</code></td>
+<td>The <code>is_split_into_words</code> argument applied to your <code>hf_tokenizer</code> during tokenization. Set this to <code>True</code><br />if your inputs are pre-tokenized (not numericalized)</td>
+</tr>
+<tr>
+<td><strong><code>tok_kwargs</code></strong></td>
+<td><code>dict</code></td>
+<td>``</td>
+<td>Any other keyword arguments you want included when using your <code>hf_tokenizer</code> to tokenize your inputs</td>
+</tr>
+<tr>
+<td><strong><code>text_gen_kwargs</code></strong></td>
+<td><code>dict</code></td>
+<td>``</td>
+<td>Any keyword arguments you want included when generated text<br />See <a href="https://huggingface.co/blog/how-to-generate">How to generate text</a></td>
+</tr>
+<tr>
+<td><strong><code>kwargs</code></strong></td>
+<td></td>
+<td></td>
+<td><em>No Content</em></td>
+</tr>
+</tbody>
+</table>
 
 </div>
 
@@ -555,13 +584,6 @@ See [How to generate text](https://huggingface.co/blog/how-to-generate)</p></li>
 </blockquote>
 <p>For next token prediction language modeling tasks, we want to use the <a href="/blurr/data-language-modeling.html#CausalLMStrategy"><code>CausalLMStrategy</code></a> which makes the
 necessary changes in your inputs/targets for causal LMs</p>
-<p><strong>Parameters:</strong></p>
-<ul>
-<li><p><strong><code>hf_tokenizer</code></strong> : <em><code>&lt;class 'inspect._empty'&gt;</code></em></p>
-</li>
-<li><p><strong><code>ignore_token_id</code></strong> : <em><code>&lt;class 'int'&gt;</code></em>, <em>optional</em></p>
-</li>
-</ul>
 
 </div>
 
@@ -729,8 +751,7 @@ necessary changes in your inputs/targets for causal LMs</p>
 <div class="output_area">
 
 
-<div class="output_html rendered_html output_subarea ">
-<table border="1" class="dataframe">
+<div class="output_html rendered_html output_subarea "><table border="1" class="dataframe">
   <thead>
     <tr style="text-align: right;">
       <th></th>
@@ -750,8 +771,7 @@ necessary changes in your inputs/targets for causal LMs</p>
       <td>\n = Ireland = \n \n Ireland ( / &lt;unk&gt; / ; Irish : &lt;unk&gt; [ &lt;unk&gt; ] ; Ulster @-@ Scots : &lt;unk&gt; [ &lt;unk&gt; ] ) is an island in the North Atlantic. It is separated from Great Britain to its east by the North Channel, the Irish Sea, and St George's Channel. Ireland is the second @-@ largest island of the British Isles, the third @-@ largest in Europe, and the twentieth @-@ largest on Earth. \n &lt;unk&gt;, Ireland is divided between the Republic of Ireland ( officially named Ireland ), which covers five @-@ &lt;unk</td>
     </tr>
   </tbody>
-</table>
-</div>
+</table></div>
 
 </div>
 
@@ -862,13 +882,6 @@ necessary changes in your inputs/targets for causal LMs</p>
 <h2 id="BertMLMStrategy" class="doc_header"><code>class</code> <code>BertMLMStrategy</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/data/language_modeling.py#L169" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>BertMLMStrategy</code>(<strong><code>hf_tokenizer</code></strong>, <strong><code>ignore_token_id</code></strong>=<em><code>-100</code></em>) :: <a href="/blurr/data-language-modeling.html#LMStrategy"><code>LMStrategy</code></a></p>
 </blockquote>
 <p>A masked language modeling strategy using the default BERT masking definition.</p>
-<p><strong>Parameters:</strong></p>
-<ul>
-<li><p><strong><code>hf_tokenizer</code></strong> : <em><code>&lt;class 'inspect._empty'&gt;</code></em></p>
-</li>
-<li><p><strong><code>ignore_token_id</code></strong> : <em><code>&lt;class 'int'&gt;</code></em>, <em>optional</em></p>
-</li>
-</ul>
 
 </div>
 
@@ -1061,8 +1074,7 @@ necessary changes in your inputs/targets for causal LMs</p>
 <div class="output_area">
 
 
-<div class="output_html rendered_html output_subarea ">
-<table border="1" class="dataframe">
+<div class="output_html rendered_html output_subarea "><table border="1" class="dataframe">
   <thead>
     <tr style="text-align: right;">
       <th></th>
@@ -1082,8 +1094,7 @@ necessary changes in your inputs/targets for causal LMs</p>
       <td>= ireland = [ireland] [(] [/] [&lt;] un ##k &gt; / ; irish : [&lt;] [un] ##k &gt; [ &lt; un ##k &gt; ] ; ulster @ - @ scots : &lt; un ##k &gt; [ &lt; un ##k &gt; ] ) is an [island] in the north atlantic [.] it is [separated] from great britain to its east by the north channel [,] the [irish] sea [,] and st george ' s channel . ireland is the second [@] - @ largest island of the british isles , the third @ - @ [largest] in europe , [and] the [twentieth] @ [-] @ largest on [earth] . [&lt;] un [##k] [&gt;] , ireland is divided between the republic of ireland ( officially [named] ireland [)] , which covers five @ - [@] &lt; un ##k &gt; of the island [,] and northern ireland , which is part of the united kingdom , in the northeast of the island . in 2011 [the] population of ireland was about 6 @ . @ 4 million , ranking it the second @ - @ most populous [island] in europe after great britain . just under [4] [@] . [@] 6 million live in [the] [republic] of ireland and just over [1] @ . @ [8] million live in northern ireland . the island ' s geography comprises [relatively] low @ - @ lying mountains surrounding a central plain , with several navigable rivers extending inland . the island has lush vegetation ,</td>
     </tr>
   </tbody>
-</table>
-</div>
+</table></div>
 
 </div>
 

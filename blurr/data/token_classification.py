@@ -149,7 +149,7 @@ class TokenClassPreprocessor(Preprocessor):
                 if current_chunk_length >= max_chunk_length:
                     # we need to add a chunk
                     if current_chunk_length > max_chunk_length:
-                        # only when the current chunk in > the max chunk length do we want to modify the `last_indx` (if
+                        # only when the current chunk in > the max chunk length do we want to modify the "last_indx" (if
                         # equal then we want to use the current value)
                         last_idx = len(non_special_word_ids) - 1 - non_special_word_ids[::-1].index(max(0, current_word_id - 1))
                     chunks.append(non_special_word_ids[start_idx : last_idx + 1])
@@ -158,8 +158,8 @@ class TokenClassPreprocessor(Preprocessor):
                     current_chunk_length = 0
 
                     if self.word_stride == 0 or non_special_word_ids.index(max(0, current_word_id - self.word_stride)) <= start_idx:
-                        # if `word_stride` = 0 or going back `word_stride` would lead to infinite recurssion because it would go
-                        # back beyond the start of the last chunk, we don't `word_stride` ... we just move to next token
+                        # if "word_stride" = 0 or going back "word_stride" would lead to infinite recurssion because it would go
+                        # back beyond the start of the last chunk, we don't "word_stride" ... we just move to next token
                         start_idx = last_idx + 1
                     else:
                         current_word_id -= self.word_stride - 1

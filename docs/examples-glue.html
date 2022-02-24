@@ -65,9 +65,9 @@ nb_path: "nbs/99b_examples-glue.ipynb"
 <div class="output_subarea output_stream output_stdout output_text">
 <pre>Here&#39;s what we&#39;re running with ...
 
-torch: 1.7.1
-fastai: 2.5.2
-transformers: 4.9.2
+torch: 1.10.1+cu111
+fastai: 2.5.3
+transformers: 4.16.2
 </pre>
 </div>
 </div>
@@ -115,8 +115,7 @@ transformers: 4.9.2
 <div class="output_area">
 
 
-<div class="output_html rendered_html output_subarea output_execute_result">
-<style  type="text/css" >
+<div class="output_html rendered_html output_subarea output_execute_result"><style  type="text/css" >
 </style><table id="T_09f8e_" ><thead>    <tr>        <th class="col_heading level0 col0" >Abbr</th>        <th class="col_heading level0 col1" >Name</th>        <th class="col_heading level0 col2" >Task type</th>        <th class="col_heading level0 col3" >Description</th>        <th class="col_heading level0 col4" >Size</th>        <th class="col_heading level0 col5" >Metrics</th>    </tr></thead><tbody>
                 <tr>
                                 <td id="T_09f8e_row0_col0" class="data row0 col0" >CoLA</td>
@@ -190,8 +189,7 @@ transformers: 4.9.2
                         <td id="T_09f8e_row8_col4" class="data row8 col4" >634</td>
                         <td id="T_09f8e_row8_col5" class="data row8 col5" >Accuracy</td>
             </tr>
-    </tbody></table>
-</div>
+    </tbody></table></div>
 
 </div>
 
@@ -360,8 +358,7 @@ transformers: 4.9.2
 <div class="output_area">
 
 
-<div class="output_html rendered_html output_subarea output_execute_result">
-<div>
+<div class="output_html rendered_html output_subarea output_execute_result"><div>
 <style scoped>
     .dataframe tbody tr th:only-of-type {
         vertical-align: middle;
@@ -429,8 +426,7 @@ transformers: 4.9.2
     </tr>
   </tbody>
 </table>
-</div>
-</div>
+</div></div>
 
 </div>
 
@@ -719,8 +715,7 @@ transformers: 4.9.2
 <div class="output_area">
 
 
-<div class="output_html rendered_html output_subarea ">
-<table border="1" class="dataframe">
+<div class="output_html rendered_html output_subarea "><table border="1" class="dataframe">
   <thead>
     <tr style="text-align: right;">
       <th></th>
@@ -755,8 +750,7 @@ transformers: 4.9.2
       <td>1</td>
     </tr>
   </tbody>
-</table>
-</div>
+</table></div>
 
 </div>
 
@@ -794,7 +788,7 @@ transformers: 4.9.2
                 <span class="n">loss_func</span><span class="o">=</span><span class="n">CrossEntropyLossFlat</span><span class="p">(),</span>
                 <span class="n">metrics</span><span class="o">=</span><span class="n">task_metrics</span><span class="p">,</span>
                 <span class="n">cbs</span><span class="o">=</span><span class="p">[</span><span class="n">BaseModelCallback</span><span class="p">],</span>
-                <span class="n">splitter</span><span class="o">=</span><span class="n">hf_splitter</span><span class="p">)</span><span class="o">.</span><span class="n">to_fp16</span><span class="p">()</span>
+                <span class="n">splitter</span><span class="o">=</span><span class="n">blurr_splitter</span><span class="p">)</span><span class="o">.</span><span class="n">to_fp16</span><span class="p">()</span>
 
 <span class="n">learn</span><span class="o">.</span><span class="n">freeze</span><span class="p">()</span>
 </pre></div>
@@ -826,9 +820,7 @@ transformers: 4.9.2
 <div class="output_area">
 
 
-<div class="output_html rendered_html output_subarea ">
-
-</div>
+<div class="output_html rendered_html output_subarea "></div>
 
 </div>
 
@@ -1039,9 +1031,7 @@ Callbacks:
 <div class="output_area">
 
 
-<div class="output_html rendered_html output_subarea ">
-
-</div>
+<div class="output_html rendered_html output_subarea "></div>
 
 </div>
 
@@ -1102,8 +1092,7 @@ Callbacks:
 <div class="output_area">
 
 
-<div class="output_html rendered_html output_subarea ">
-<table border="1" class="dataframe">
+<div class="output_html rendered_html output_subarea "><table border="1" class="dataframe">
   <thead>
     <tr style="text-align: left;">
       <th>epoch</th>
@@ -1124,8 +1113,7 @@ Callbacks:
       <td>00:10</td>
     </tr>
   </tbody>
-</table>
-</div>
+</table></div>
 
 </div>
 
@@ -1156,9 +1144,7 @@ Callbacks:
 <div class="output_area">
 
 
-<div class="output_html rendered_html output_subarea ">
-
-</div>
+<div class="output_html rendered_html output_subarea "></div>
 
 </div>
 
@@ -1219,8 +1205,7 @@ Callbacks:
 <div class="output_area">
 
 
-<div class="output_html rendered_html output_subarea ">
-<table border="1" class="dataframe">
+<div class="output_html rendered_html output_subarea "><table border="1" class="dataframe">
   <thead>
     <tr style="text-align: left;">
       <th>epoch</th>
@@ -1249,8 +1234,7 @@ Callbacks:
       <td>00:18</td>
     </tr>
   </tbody>
-</table>
-</div>
+</table></div>
 
 </div>
 
@@ -1280,17 +1264,14 @@ Callbacks:
 <div class="output_area">
 
 
-<div class="output_html rendered_html output_subarea ">
-
-</div>
+<div class="output_html rendered_html output_subarea "></div>
 
 </div>
 
 <div class="output_area">
 
 
-<div class="output_html rendered_html output_subarea ">
-<table border="1" class="dataframe">
+<div class="output_html rendered_html output_subarea "><table border="1" class="dataframe">
   <thead>
     <tr style="text-align: right;">
       <th></th>
@@ -1331,8 +1312,7 @@ Callbacks:
       <td>1</td>
     </tr>
   </tbody>
-</table>
-</div>
+</table></div>
 
 </div>
 
@@ -1375,9 +1355,7 @@ Callbacks:
 <div class="output_area">
 
 
-<div class="output_html rendered_html output_subarea ">
-
-</div>
+<div class="output_html rendered_html output_subarea "></div>
 
 </div>
 
@@ -1448,9 +1426,7 @@ Callbacks:
 <div class="output_area">
 
 
-<div class="output_html rendered_html output_subarea ">
-
-</div>
+<div class="output_html rendered_html output_subarea "></div>
 
 </div>
 
@@ -1503,8 +1479,7 @@ TensorBase(0.3029) TensorBase(0.8725)
 <div class="output_area">
 
 
-<div class="output_html rendered_html output_subarea output_execute_result">
-<div>
+<div class="output_html rendered_html output_subarea output_execute_result"><div>
 <style scoped>
     .dataframe tbody tr th:only-of-type {
         vertical-align: middle;
@@ -1601,8 +1576,7 @@ TensorBase(0.3029) TensorBase(0.8725)
     </tr>
   </tbody>
 </table>
-</div>
-</div>
+</div></div>
 
 </div>
 
@@ -1674,9 +1648,7 @@ TensorBase(0.3029) TensorBase(0.8725)
 <div class="output_area">
 
 
-<div class="output_html rendered_html output_subarea ">
-
-</div>
+<div class="output_html rendered_html output_subarea "></div>
 
 </div>
 
@@ -1758,8 +1730,7 @@ TensorBase(0.3029) TensorBase(0.8725)
 <div class="output_area">
 
 
-<div class="output_html rendered_html output_subarea ">
-<table border="1" class="dataframe">
+<div class="output_html rendered_html output_subarea "><table border="1" class="dataframe">
   <thead>
     <tr style="text-align: left;">
       <th>epoch</th>
@@ -1780,8 +1751,7 @@ TensorBase(0.3029) TensorBase(0.8725)
       <td>00:09</td>
     </tr>
   </tbody>
-</table>
-</div>
+</table></div>
 
 </div>
 
@@ -1811,17 +1781,14 @@ TensorBase(0.3029) TensorBase(0.8725)
 <div class="output_area">
 
 
-<div class="output_html rendered_html output_subarea ">
-
-</div>
+<div class="output_html rendered_html output_subarea "></div>
 
 </div>
 
 <div class="output_area">
 
 
-<div class="output_html rendered_html output_subarea ">
-<table border="1" class="dataframe">
+<div class="output_html rendered_html output_subarea "><table border="1" class="dataframe">
   <thead>
     <tr style="text-align: right;">
       <th></th>
@@ -1862,8 +1829,7 @@ TensorBase(0.3029) TensorBase(0.8725)
       <td>1</td>
     </tr>
   </tbody>
-</table>
-</div>
+</table></div>
 
 </div>
 

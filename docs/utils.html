@@ -116,6 +116,13 @@ nb_path: "nbs/00_utils.ipynb"
     
 <div class="cell border-box-sizing code_cell rendered">
 
+</div>
+    {% endraw %}
+
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+
 <div class="output_wrapper">
 <div class="output">
 
@@ -141,12 +148,6 @@ nb_path: "nbs/00_utils.ipynb"
 <td></td>
 <td><em>No Content</em></td>
 </tr>
-<tr>
-<td><strong>Returns</strong></td>
-<td><code>type</code></td>
-<td></td>
-<td>The name of a type as a string  # Returns the actual type</td>
-</tr>
 </tbody>
 </table>
 
@@ -154,30 +155,6 @@ nb_path: "nbs/00_utils.ipynb"
 
 </div>
 
-</div>
-</div>
-
-</div>
-    {% endraw %}
-
-    {% raw %}
-    
-<div class="cell border-box-sizing code_cell rendered">
-
-</div>
-    {% endraw %}
-
-    {% raw %}
-    
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span> 
-</pre></div>
-
-    </div>
 </div>
 </div>
 
@@ -212,8 +189,8 @@ nb_path: "nbs/00_utils.ipynb"
 <div class="output_area">
 
 <div class="output_subarea output_stream output_stdout output_text">
-<pre>&lt;function test_eq at 0x7f186a8cb430&gt;
-&lt;__main__.Singleton object at 0x7f1738094c10&gt;
+<pre>&lt;function test_eq at 0x7f6c3c0db820&gt;
+&lt;__main__.Singleton object at 0x7f6c35d37700&gt;
 </pre>
 </div>
 </div>
@@ -235,7 +212,7 @@ nb_path: "nbs/00_utils.ipynb"
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h4 id="print_versions" class="doc_header"><code>print_versions</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/utils.py#L38" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>print_versions</code>(<strong><code>packages</code></strong>:<code>(&lt;class 'str'&gt;, &lt;class 'list'&gt;)</code>)</p>
+<h4 id="print_versions" class="doc_header"><code>print_versions</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/utils.py#L38" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>print_versions</code>(<strong><code>packages</code></strong>:<code>Union</code>[<code>str</code>, List[str]`])</p>
 </blockquote>
 <p>Prints the name and version of one or more packages in your environment</p>
 <table>
@@ -249,7 +226,7 @@ nb_path: "nbs/00_utils.ipynb"
 <tbody>
 <tr>
 <td><strong><code>packages</code></strong></td>
-<td><code>(str, list)</code></td>
+<td><code>List[str]]</code></td>
 <td></td>
 <td>A string of space delimited package names or a list of package names</td>
 </tr>
@@ -386,7 +363,7 @@ to your fit function to help ensure reproducibility.</p>
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h4 id="Singleton object at 0x7f9965772b20>" class="doc_header"><code>Singleton object at 0x7f9965772b20></code><a href="" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>Singleton object at 0x7f9965772b20></code>(<strong>*<code>args</code></strong>, <strong>**<code>kwargs</code></strong>)</p>
+<h4 id="Singleton object at 0x7fbecfccf790>" class="doc_header"><code>Singleton object at 0x7fbecfccf790></code><a href="" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>Singleton object at 0x7fbecfccf790></code>(<strong>*<code>args</code></strong>, <strong>**<code>kwargs</code></strong>)</p>
 </blockquote>
 
 </div>
@@ -463,14 +440,40 @@ to your fit function to help ensure reproducibility.</p>
     {% raw %}
     
 <div class="cell border-box-sizing code_cell rendered">
-<div class="input">
 
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span> 
-</pre></div>
+<div class="output_wrapper">
+<div class="output">
 
-    </div>
+<div class="output_area">
+
+
+<div class="output_markdown rendered_html output_subarea ">
+<h4 id="BlurrUtil.get_tasks" class="doc_header"><code>BlurrUtil.get_tasks</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/utils.py#L124" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>BlurrUtil.get_tasks</code>(<strong><code>arch</code></strong>:<code>str</code>=<em><code>None</code></em>)</p>
+</blockquote>
+<p>This method can be used to get a list of all tasks supported by your transformers install, or
+just those available to a specific architecture</p>
+<table>
+<thead><tr>
+<th></th>
+<th>Type</th>
+<th>Default</th>
+<th>Details</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong><code>arch</code></strong></td>
+<td><code>str</code></td>
+<td>``</td>
+<td>A transformer architecture (e.g., 'bert')  # A list of tasks you can use</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+
+</div>
+
 </div>
 </div>
 
@@ -493,6 +496,22 @@ to your fit function to help ensure reproducibility.</p>
 </div>
 </div>
 
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>[&#39;AudioFrameClassification&#39;, &#39;CTC&#39;, &#39;CausalImageModeling&#39;, &#39;CausalLM&#39;, &#39;Classification&#39;, &#39;ConditionalGeneration&#39;, &#39;EntityClassification&#39;, &#39;EntityPairClassification&#39;, &#39;EntitySpanClassification&#39;, &#39;Generation&#39;, &#39;ImageAndTextRetrieval&#39;, &#39;ImageClassification&#39;, &#39;ImageClassificationConvProcessing&#39;, &#39;ImageClassificationFourier&#39;, &#39;ImageClassificationLearned&#39;, &#39;ImagesAndTextClassification&#39;, &#39;LMHead&#39;, &#39;LMHeadModel&#39;, &#39;MaskedImageModeling&#39;, &#39;MaskedLM&#39;, &#39;MultimodalAutoencoding&#39;, &#39;MultipleChoice&#39;, &#39;NextSentencePrediction&#39;, &#39;OpenQA&#39;, &#39;OpticalFlow&#39;, &#39;PreTraining&#39;, &#39;QuestionAnswering&#39;, &#39;QuestionAnsweringSimple&#39;, &#39;RegionToPhraseAlignment&#39;, &#39;SemanticSegmentation&#39;, &#39;SequenceClassification&#39;, &#39;Teacher&#39;, &#39;TokenClassification&#39;, &#39;VisualReasoning&#39;, &#39;XVector&#39;, &#39;merLayer&#39;, &#39;merModel&#39;, &#39;merPreTrainedModel&#39;]
+
+[&#39;CausalLM&#39;, &#39;ConditionalGeneration&#39;, &#39;QuestionAnswering&#39;, &#39;SequenceClassification&#39;]
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
 </div>
     {% endraw %}
 
@@ -506,14 +525,21 @@ to your fit function to help ensure reproducibility.</p>
     {% raw %}
     
 <div class="cell border-box-sizing code_cell rendered">
-<div class="input">
 
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span> 
-</pre></div>
+<div class="output_wrapper">
+<div class="output">
 
-    </div>
+<div class="output_area">
+
+
+<div class="output_markdown rendered_html output_subarea ">
+<h4 id="BlurrUtil.get_architectures" class="doc_header"><code>BlurrUtil.get_architectures</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/utils.py#L134" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>BlurrUtil.get_architectures</code>()</p>
+</blockquote>
+
+</div>
+
+</div>
+
 </div>
 </div>
 
@@ -554,14 +580,22 @@ to your fit function to help ensure reproducibility.</p>
     {% raw %}
     
 <div class="cell border-box-sizing code_cell rendered">
-<div class="input">
 
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span> 
-</pre></div>
+<div class="output_wrapper">
+<div class="output">
 
-    </div>
+<div class="output_area">
+
+
+<div class="output_markdown rendered_html output_subarea ">
+<h4 id="BlurrUtil.get_model_architecture" class="doc_header"><code>BlurrUtil.get_model_architecture</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/utils.py#L152" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>BlurrUtil.get_model_architecture</code>(<strong><code>model_name_or_enum</code></strong>)</p>
+</blockquote>
+<p>Get the architecture for a given model name / enum</p>
+
+</div>
+
+</div>
+
 </div>
 </div>
 
@@ -609,14 +643,45 @@ to your fit function to help ensure reproducibility.</p>
     {% raw %}
     
 <div class="cell border-box-sizing code_cell rendered">
-<div class="input">
 
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span> 
-</pre></div>
+<div class="output_wrapper">
+<div class="output">
 
-    </div>
+<div class="output_area">
+
+
+<div class="output_markdown rendered_html output_subarea ">
+<h4 id="BlurrUtil.get_models" class="doc_header"><code>BlurrUtil.get_models</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/utils.py#L137" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>BlurrUtil.get_models</code>(<strong><code>arch</code></strong>:<code>str</code>=<em><code>None</code></em>, <strong><code>task</code></strong>:<code>str</code>=<em><code>None</code></em>)</p>
+</blockquote>
+<p>The transformer models available for use (optional: by architecture | task)</p>
+<table>
+<thead><tr>
+<th></th>
+<th>Type</th>
+<th>Default</th>
+<th>Details</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong><code>arch</code></strong></td>
+<td><code>str</code></td>
+<td>``</td>
+<td>A transformer architecture (e.g., 'bert')</td>
+</tr>
+<tr>
+<td><strong><code>task</code></strong></td>
+<td><code>str</code></td>
+<td>``</td>
+<td>A transformer task (e.g., 'TokenClassification')</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+
+</div>
+
 </div>
 </div>
 
@@ -874,14 +939,82 @@ to your fit function to help ensure reproducibility.</p>
     {% raw %}
     
 <div class="cell border-box-sizing code_cell rendered">
-<div class="input">
 
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span> 
-</pre></div>
+<div class="output_wrapper">
+<div class="output">
 
-    </div>
+<div class="output_area">
+
+
+<div class="output_markdown rendered_html output_subarea ">
+<h4 id="BlurrUtil.get_hf_objects" class="doc_header"><code>BlurrUtil.get_hf_objects</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/utils.py#L157" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>BlurrUtil.get_hf_objects</code>(<strong><code>pretrained_model_name_or_path</code></strong>:<code>Union</code>[<code>str</code>, <code>PathLike</code>, <code>NoneType</code>], <strong><code>model_cls</code></strong>:<code>PreTrainedModel</code>, <strong><code>config</code></strong>:<code>Union</code>[<code>PretrainedConfig</code>, <code>str</code>, <code>PathLike</code>]=<em><code>None</code></em>, <strong><code>tokenizer_cls</code></strong>:<code>PreTrainedTokenizerBase</code>=<em><code>None</code></em>, <strong><code>config_kwargs</code></strong>:<code>dict</code>=<em><code>{}</code></em>, <strong><code>tokenizer_kwargs</code></strong>:<code>dict</code>=<em><code>{}</code></em>, <strong><code>model_kwargs</code></strong>:<code>dict</code>=<em><code>{}</code></em>, <strong><code>cache_dir</code></strong>:<code>Union</code>[<code>str</code>, <code>PathLike</code>]=<em><code>None</code></em>)</p>
+</blockquote>
+<p>Given at minimum a <code>pretrained_model_name_or_path</code> and <code>model_cls (such as</code>AutoModelForSequenceClassification"), this method returns all the Hugging Face objects you need to train
+a model using Blurr</p>
+<table>
+<thead><tr>
+<th></th>
+<th>Type</th>
+<th>Default</th>
+<th>Details</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong><code>pretrained_model_name_or_path</code></strong></td>
+<td><code>PathLike, NoneType]</code></td>
+<td></td>
+<td>The name or path of the pretrained model you want to fine-tune</td>
+</tr>
+<tr>
+<td><strong><code>model_cls</code></strong></td>
+<td><code>PreTrainedModel</code></td>
+<td></td>
+<td>The model class you want to use (e.g., AutoModelFor<task>)</td>
+</tr>
+<tr>
+<td><strong><code>config</code></strong></td>
+<td><code>PathLike]</code></td>
+<td>``</td>
+<td>A specific configuration instance you want to use. If None, a configuration object will be instantiated<br />using the AutoConfig class along with any supplied <code>config_kwargs</code></td>
+</tr>
+<tr>
+<td><strong><code>tokenizer_cls</code></strong></td>
+<td><code>PreTrainedTokenizerBase</code></td>
+<td>``</td>
+<td>A specific tokenizer class you want to use. If None, a tokenizer will be instantiated<br />using the AutoTokenizer class along with any supplied <code>tokenizer_kwargs</code></td>
+</tr>
+<tr>
+<td><strong><code>config_kwargs</code></strong></td>
+<td><code>dict</code></td>
+<td>``</td>
+<td>Any keyword arguments you want to pass to the <code>AutoConfig</code> (only used if you do NOT pass int a config above)</td>
+</tr>
+<tr>
+<td><strong><code>tokenizer_kwargs</code></strong></td>
+<td><code>dict</code></td>
+<td>``</td>
+<td>Any keyword arguments you want to pass in the creation of your tokenizer</td>
+</tr>
+<tr>
+<td><strong><code>model_kwargs</code></strong></td>
+<td><code>dict</code></td>
+<td>``</td>
+<td>Any keyword arguments you want to pass in the creation of your model</td>
+</tr>
+<tr>
+<td><strong><code>cache_dir</code></strong></td>
+<td><code>PathLike]</code></td>
+<td>``</td>
+<td>If you want to change the location Hugging Face objects are cached</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+
+</div>
+
 </div>
 </div>
 
@@ -895,6 +1028,23 @@ to your fit function to help ensure reproducibility.</p>
 </div>
 </div>
 </div>
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">logging</span><span class="o">.</span><span class="n">set_verbosity_error</span><span class="p">()</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    {% endraw %}
+
     {% raw %}
     
 <div class="cell border-box-sizing code_cell rendered">
@@ -918,102 +1068,6 @@ to your fit function to help ensure reproducibility.</p>
 
 <div class="output_wrapper">
 <div class="output">
-
-<div class="output_area">
-
-<div class="output_subarea output_stream output_stderr output_text">
-<pre>loading configuration file https://huggingface.co/bert-base-cased-finetuned-mrpc/resolve/main/config.json from cache at /home/wgilliam/.cache/huggingface/transformers/1d2fdd3792e3bcdf73c40c6d598a5c14b7626090fcbeb2f953c99390ea842c15.0d87139f53a477d9f900f8a9020c367863079014bdaf2aa713f4b64cf1782655
-Model config BertConfig {
-  &#34;_name_or_path&#34;: &#34;bert-base-cased-finetuned-mrpc&#34;,
-  &#34;architectures&#34;: [
-    &#34;BertForMaskedLM&#34;
-  ],
-  &#34;attention_probs_dropout_prob&#34;: 0.1,
-  &#34;classifier_dropout&#34;: null,
-  &#34;hidden_act&#34;: &#34;gelu&#34;,
-  &#34;hidden_dropout_prob&#34;: 0.1,
-  &#34;hidden_size&#34;: 768,
-  &#34;initializer_range&#34;: 0.02,
-  &#34;intermediate_size&#34;: 3072,
-  &#34;layer_norm_eps&#34;: 1e-12,
-  &#34;max_position_embeddings&#34;: 512,
-  &#34;model_type&#34;: &#34;bert&#34;,
-  &#34;num_attention_heads&#34;: 12,
-  &#34;num_hidden_layers&#34;: 12,
-  &#34;pad_token_id&#34;: 0,
-  &#34;position_embedding_type&#34;: &#34;absolute&#34;,
-  &#34;transformers_version&#34;: &#34;4.16.2&#34;,
-  &#34;type_vocab_size&#34;: 2,
-  &#34;use_cache&#34;: true,
-  &#34;vocab_size&#34;: 28996
-}
-
-loading configuration file https://huggingface.co/bert-base-cased-finetuned-mrpc/resolve/main/config.json from cache at /home/wgilliam/.cache/huggingface/transformers/1d2fdd3792e3bcdf73c40c6d598a5c14b7626090fcbeb2f953c99390ea842c15.0d87139f53a477d9f900f8a9020c367863079014bdaf2aa713f4b64cf1782655
-Model config BertConfig {
-  &#34;_name_or_path&#34;: &#34;bert-base-cased-finetuned-mrpc&#34;,
-  &#34;architectures&#34;: [
-    &#34;BertForMaskedLM&#34;
-  ],
-  &#34;attention_probs_dropout_prob&#34;: 0.1,
-  &#34;classifier_dropout&#34;: null,
-  &#34;hidden_act&#34;: &#34;gelu&#34;,
-  &#34;hidden_dropout_prob&#34;: 0.1,
-  &#34;hidden_size&#34;: 768,
-  &#34;initializer_range&#34;: 0.02,
-  &#34;intermediate_size&#34;: 3072,
-  &#34;layer_norm_eps&#34;: 1e-12,
-  &#34;max_position_embeddings&#34;: 512,
-  &#34;model_type&#34;: &#34;bert&#34;,
-  &#34;num_attention_heads&#34;: 12,
-  &#34;num_hidden_layers&#34;: 12,
-  &#34;pad_token_id&#34;: 0,
-  &#34;position_embedding_type&#34;: &#34;absolute&#34;,
-  &#34;transformers_version&#34;: &#34;4.16.2&#34;,
-  &#34;type_vocab_size&#34;: 2,
-  &#34;use_cache&#34;: true,
-  &#34;vocab_size&#34;: 28996
-}
-
-loading file https://huggingface.co/bert-base-cased-finetuned-mrpc/resolve/main/vocab.txt from cache at /home/wgilliam/.cache/huggingface/transformers/dd6e51de2a982414d626f5f612e567a233209e8583ee24ad942fd2dfd4112e29.437aa611e89f6fc6675a049d2b5545390adbc617e7d655286421c191d2be2791
-loading file https://huggingface.co/bert-base-cased-finetuned-mrpc/resolve/main/tokenizer.json from cache at /home/wgilliam/.cache/huggingface/transformers/6afc601822f894bd35ec3089038596b065704463780badcc6936a5adb6b04142.3dab63143af66769bbb35e3811f75f7e16b2320e12b7935e216bd6159ce6d9a6
-loading file https://huggingface.co/bert-base-cased-finetuned-mrpc/resolve/main/added_tokens.json from cache at None
-loading file https://huggingface.co/bert-base-cased-finetuned-mrpc/resolve/main/special_tokens_map.json from cache at None
-loading file https://huggingface.co/bert-base-cased-finetuned-mrpc/resolve/main/tokenizer_config.json from cache at /home/wgilliam/.cache/huggingface/transformers/7a2648c30292886df951b6c935c094a38b218647dd65f4790ce223bf2929b73e.ec5c189f89475aac7d8cbd243960a0655cfadc3d0474da8ff2ed0bf1699c2a5f
-loading configuration file https://huggingface.co/bert-base-cased-finetuned-mrpc/resolve/main/config.json from cache at /home/wgilliam/.cache/huggingface/transformers/1d2fdd3792e3bcdf73c40c6d598a5c14b7626090fcbeb2f953c99390ea842c15.0d87139f53a477d9f900f8a9020c367863079014bdaf2aa713f4b64cf1782655
-Model config BertConfig {
-  &#34;_name_or_path&#34;: &#34;bert-base-cased-finetuned-mrpc&#34;,
-  &#34;architectures&#34;: [
-    &#34;BertForMaskedLM&#34;
-  ],
-  &#34;attention_probs_dropout_prob&#34;: 0.1,
-  &#34;classifier_dropout&#34;: null,
-  &#34;hidden_act&#34;: &#34;gelu&#34;,
-  &#34;hidden_dropout_prob&#34;: 0.1,
-  &#34;hidden_size&#34;: 768,
-  &#34;initializer_range&#34;: 0.02,
-  &#34;intermediate_size&#34;: 3072,
-  &#34;layer_norm_eps&#34;: 1e-12,
-  &#34;max_position_embeddings&#34;: 512,
-  &#34;model_type&#34;: &#34;bert&#34;,
-  &#34;num_attention_heads&#34;: 12,
-  &#34;num_hidden_layers&#34;: 12,
-  &#34;pad_token_id&#34;: 0,
-  &#34;position_embedding_type&#34;: &#34;absolute&#34;,
-  &#34;transformers_version&#34;: &#34;4.16.2&#34;,
-  &#34;type_vocab_size&#34;: 2,
-  &#34;use_cache&#34;: true,
-  &#34;vocab_size&#34;: 28996
-}
-
-loading weights file https://huggingface.co/bert-base-cased-finetuned-mrpc/resolve/main/pytorch_model.bin from cache at /home/wgilliam/.cache/huggingface/transformers/4697440f8a9bdc65498f19a30e7246888f3e508644c188fdd40b971fa08e39ac.68d2bfa76c7cbd9fa9f35f22adac3e6cb048ea6a3c19fd1e4e160ee3d46666f0
-Some weights of the model checkpoint at bert-base-cased-finetuned-mrpc were not used when initializing BertForMaskedLM: [&#39;classifier.weight&#39;, &#39;classifier.bias&#39;]
-- This IS expected if you are initializing BertForMaskedLM from the checkpoint of a model trained on another task or with another architecture (e.g. initializing a BertForSequenceClassification model from a BertForPreTraining model).
-- This IS NOT expected if you are initializing BertForMaskedLM from the checkpoint of a model that you expect to be exactly identical (initializing a BertForSequenceClassification model from a BertForSequenceClassification model).
-Some weights of BertForMaskedLM were not initialized from the model checkpoint at bert-base-cased-finetuned-mrpc and are newly initialized: [&#39;cls.predictions.transform.dense.bias&#39;, &#39;cls.predictions.transform.LayerNorm.weight&#39;, &#39;cls.predictions.bias&#39;, &#39;cls.predictions.decoder.weight&#39;, &#39;cls.predictions.transform.LayerNorm.bias&#39;, &#39;cls.predictions.transform.dense.weight&#39;]
-You should probably TRAIN this model on a down-stream task to be able to use it for predictions and inference.
-</pre>
-</div>
-</div>
 
 <div class="output_area">
 
@@ -1053,6 +1107,23 @@ You should probably TRAIN this model on a down-stream task to be able to use it 
 </div>
 </div>
 
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>flaubert
+&lt;class &#39;transformers.models.flaubert.tokenization_flaubert.FlaubertTokenizer&#39;&gt;
+&lt;class &#39;transformers.models.flaubert.configuration_flaubert.FlaubertConfig&#39;&gt;
+&lt;class &#39;transformers.models.flaubert.modeling_flaubert.FlaubertForQuestionAnsweringSimple&#39;&gt;
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
 </div>
     {% endraw %}
 
@@ -1075,6 +1146,23 @@ You should probably TRAIN this model on a down-stream task to be able to use it 
 </pre></div>
 
     </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>bert
+&lt;class &#39;transformers.models.bert.tokenization_bert.BertTokenizer&#39;&gt;
+&lt;class &#39;transformers.models.bert.configuration_bert.BertConfig&#39;&gt;
+&lt;class &#39;transformers.models.bert.modeling_bert.BertForNextSentencePrediction&#39;&gt;
+</pre>
+</div>
+</div>
+
 </div>
 </div>
 
