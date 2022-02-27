@@ -81,6 +81,7 @@ index = {"Singleton": "00_utils.ipynb",
          "blurr_seq2seq_splitter": "10_modeling-seq2seq-core.ipynb",
          "Seq2SeqMetricsCallback": "10_modeling-seq2seq-core.ipynb",
          "SummarizationPreprocessor": "11_data-seq2seq-summarization.ipynb",
+         "Learner.blurr_summarize": "11_modeling-seq2seq-summarization.ipynb",
          "BlearnerForSummarization": "11_modeling-seq2seq-summarization.ipynb",
          "BlearnerForTranslation": "12_modeling-seq2seq-translation.ipynb"}
 

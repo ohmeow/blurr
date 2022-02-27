@@ -4,15 +4,14 @@ __all__ = ['Seq2SeqPreprocessor', 'Seq2SeqTextInput', 'Seq2SeqBatchTokenizeTrans
            'default_text_gen_kwargs', 'Seq2SeqTextBlock']
 
 # Cell
-from functools import reduce
 from typing import Optional
 
-from fastcore.all import *
 from fastai.imports import *
 from fastai.losses import CrossEntropyLossFlat
 from fastai.text.data import SortedDL
 from fastai.torch_core import *
 from fastai.torch_imports import *
+from fastcore.all import *
 from transformers import PretrainedConfig, PreTrainedTokenizerBase, PreTrainedModel, logging
 
 from ...utils import BLURR

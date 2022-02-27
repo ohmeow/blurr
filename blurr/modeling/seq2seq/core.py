@@ -3,22 +3,19 @@
 __all__ = ['blurr_seq2seq_splitter', 'Seq2SeqMetricsCallback']
 
 # Cell
-import ast, inspect, torch
-from typing import Any, Callable, Dict, List, Optional, Union, Type
+import torch
 
-from datasets import load_metric as hf_load_metric, list_metrics as hf_list_metrics
-from fastcore.all import *
+from datasets import load_metric as hf_load_metric
 from fastai.callback.all import *
-from fastai.data.block import DataBlock, ColReader, CategoryBlock, MultiCategoryBlock, ColSplitter, RandomSplitter
+from fastai.data.block import DataBlock, ColReader, ColSplitter, RandomSplitter
 from fastai.data.core import DataLoader, DataLoaders, TfmdDL
 from fastai.imports import *
 from fastai.learner import *
 from fastai.losses import CrossEntropyLossFlat
-from fastai.optimizer import Adam, OptimWrapper, params
 from fastai.torch_core import *
 from fastai.torch_imports import *
-from fastprogress.fastprogress import progress_bar, master_bar
-from transformers import AutoModelForSequenceClassification, logging, PretrainedConfig, PreTrainedTokenizerBase, PreTrainedModel
+from fastcore.all import *
+from transformers import PreTrainedModel, logging
 
 import nltk
 from nltk.tokenize import sent_tokenize
@@ -26,12 +23,7 @@ nltk.download("wordnet", quiet=True) # download punctuation rules
 
 from ...utils import BLURR
 from ...data.core import first_blurr_tfm
-from ...data.seq2seq.core import (
-    Seq2SeqTextInput,
-    Seq2SeqBatchTokenizeTransform,
-    Seq2SeqTextBlock,
-    default_text_gen_kwargs,
-)
+from ...data.seq2seq.core import Seq2SeqBatchTokenizeTransform, Seq2SeqTextBlock, Seq2SeqTextInput
 from ..core import BaseModelWrapper, BaseModelCallback, PreCalculatedCrossEntropyLoss
 
 logging.set_verbosity_error()

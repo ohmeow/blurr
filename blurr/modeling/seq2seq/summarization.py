@@ -3,30 +3,32 @@
 __all__ = ['BlearnerForSummarization']
 
 # Cell
-import ast, inspect, torch
-from typing import Any, Callable, Dict, List, Optional, Union, Type
+import inspect, torch
+from typing import Callable, Dict, List, Optional, Union
 
-from datasets import load_metric as hf_load_metric, list_metrics as hf_list_metrics
-from fastcore.all import *
 from fastai.callback.all import *
 from fastai.data.block import DataBlock, ColReader, ItemGetter, ColSplitter, RandomSplitter
-from fastai.data.core import DataLoader, DataLoaders, TfmdDL
+from fastai.data.core import DataLoaders
 from fastai.imports import *
 from fastai.learner import *
-from fastai.losses import CrossEntropyLossFlat
-from fastai.optimizer import Adam, ranger, OptimWrapper, params
 from fastai.torch_core import *
 from fastai.torch_imports import *
-from fastprogress.fastprogress import progress_bar, master_bar
-from transformers import AutoModelForSeq2SeqLM, logging, PretrainedConfig, PreTrainedTokenizerBase, PreTrainedModel
+from fastcore.all import *
+from transformers import AutoModelForSeq2SeqLM, PreTrainedModel, logging
 
 from ...utils import BLURR
-from ...data.seq2seq.core import Seq2SeqTextBlock, Seq2SeqBatchTokenizeTransform
-from ..core import BaseModelWrapper, BaseModelCallback, PreCalculatedLoss, Blearner
+from ...data.seq2seq.core import Seq2SeqBatchTokenizeTransform, Seq2SeqTextBlock
+from ..core import BaseModelCallback, BaseModelWrapper, Blearner, PreCalculatedCrossEntropyLoss
 from .core import Seq2SeqMetricsCallback, blurr_seq2seq_splitter
 
 logging.set_verbosity_error()
 
+
+# Cell
+@patch
+def blurr_summarize(self: Learner, inp, **kwargs):
+    preds = learn.blurr_generate(inp, **kwargs)
+    return [{"summary_text": pred} for pred in preds]
 
 # Cell
 @delegates(Blearner.__init__)
@@ -46,8 +48,8 @@ class BlearnerForSummarization(Blearner):
     def get_metrics_cb(self):
         seq2seq_metrics = {
             "rouge": {
-                "compute_kwargs": {"rouge_types": ["rouge1", "rouge2", "rougeL"], "use_stemmer": True},
-                "returns": ["rouge1", "rouge2", "rougeL"],
+                "compute_kwargs": {"rouge_types": ["rouge1", "rouge2", "rougeL", "rougeLsum"], "use_stemmer": True},
+                "returns": ["rouge1", "rouge2", "rougeL", "rougeLsum"],
             },
             "bertscore": {"compute_kwargs": {"lang": "en"}, "returns": ["precision", "recall", "f1"]},
         }
@@ -55,14 +57,13 @@ class BlearnerForSummarization(Blearner):
         return Seq2SeqMetricsCallback(custom_metrics=seq2seq_metrics)
 
     @classmethod
-    def _create_learner(
+    def from_data(
         cls,
-        # Your raw dataset
-        data,
+        # Your raw dataset. Supports DataFrames, Hugging Face Datasets, as well as file paths
+        # to .csv, .xlsx, .xls, and .jsonl files
+        data: Union[pd.DataFrame, Path, str, List[Dict]],
         # The name or path of the pretrained model you want to fine-tune
         pretrained_model_name_or_path: Optional[Union[str, os.PathLike]],
-        # A function to perform any preprocessing required for your Dataset
-        preprocess_func: Callable = None,
         # The attribute in your dataset that contains your raw text
         text_attr: str = "text",
         # The attribute in your dataset that contains your target (summarized) text
@@ -73,7 +74,7 @@ class BlearnerForSummarization(Blearner):
         max_target_length: Union[int, str] = None,
         # A function that will split your Dataset into a training and validation set
         # See [here](https://docs.fast.ai/data.transforms.html#Split) for a list of fast.ai splitters
-        dblock_splitter: Callable = RandomSplitter(),
+        dblock_splitter: Optional[Callable] = None,
         # Any additional keyword arguments applied during tokenization
         hf_tok_kwargs: dict = {},
         # If you want to override your Blurr transform's `text_gen_kwargs`, do that here
@@ -83,6 +84,24 @@ class BlearnerForSummarization(Blearner):
         # Any kwargs to pass to your task specific `Blearner`
         learner_kwargs: dict = {},
     ):
+        # if we get a path/str then we're loading something like a .csv file
+        if isinstance(data, Path) or isinstance(data, str):
+            content_type = mimetypes.guess_type(data)[0]
+            if content_type  == 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet':
+                data = pd.read_excel(data)
+            elif content_type  == 'text/csv':
+                data = pd.read_csv(data)
+            elif content_type  == 'application/json':
+                data = pd.read_json(data, orient='records')
+            else:
+                raise ValueError("'data' must be a .xlsx, .xls, .csv, or .jsonl file")
+
+            data = pd.read_csv(data)
+
+        # infer our datablock splitter if None
+        if dblock_splitter is None:
+            dblock_splitter = ColSplitter() if hasattr(data, "is_valid") else RandomSplitter()
+
         # we need to find the architecture to ensure "mbart" specific tokenizer kwargs are included
         model_cls = cls.get_model_cls()
         model = model_cls.from_pretrained(pretrained_model_name_or_path)
@@ -95,10 +114,6 @@ class BlearnerForSummarization(Blearner):
         hf_arch, hf_config, hf_tokenizer, hf_model = BLURR.get_hf_objects(
             pretrained_model_name_or_path, model_cls=model_cls, tokenizer_kwargs=hf_tok_kwargs
         )
-
-        # if we need to preprocess the raw data before creating our DataLoaders
-        if preprocess_func:
-            data = preprocess_func(data, hf_arch, hf_config, hf_tokenizer, hf_model, text_attr, summary_attr)
 
         # update text generation kwargs
         if text_gen_kwargs is None and hf_arch in ["bart", "t5"]:
@@ -115,12 +130,8 @@ class BlearnerForSummarization(Blearner):
             text_gen_kwargs = {**{"decoder_start_token_id": "en_XX"}, **text_gen_kwargs}
 
         # define getters
-        if isinstance(data, pd.DataFrame):
-            get_x = Pipeline(funcs=[ColReader(text_attr)])
-            get_y = ColReader(summary_attr)
-        else:
-            get_x = Pipeline(funcs=[ItemGetter(text_attr)])
-            get_y = ItemGetter(summary_attr)
+        get_x = Pipeline(funcs=[ItemGetter(text_attr)])
+        get_y = ItemGetter(summary_attr)
 
         if hf_arch == "t5":
             get_x.add(cls._add_t5_prefix)
@@ -143,141 +154,6 @@ class BlearnerForSummarization(Blearner):
 
         # return BLearner instance
         learner_kwargs["splitter"] = learner_kwargs.pop("splitter", partial(blurr_seq2seq_splitter, arch=hf_arch))
-        learner_kwargs["loss_func"] = learner_kwargs.pop("loss_func", CrossEntropyLossFlat())
+        learner_kwargs["loss_func"] = learner_kwargs.pop("loss_func", PreCalculatedCrossEntropyLoss())
 
         return cls(dls, hf_model, **learner_kwargs.copy())
-
-    @classmethod
-    def from_dataframe(
-        cls,
-        # Your pandas DataFrame
-        df,
-        # The name or path of the pretrained model you want to fine-tune
-        pretrained_model_name_or_path: Optional[Union[str, os.PathLike]],
-        # A function to perform any preprocessing required for your Dataset
-        preprocess_func: Callable = None,
-        # The attribute in your dataset that contains your raw text
-        text_attr: str = "text",
-        # The attribute in your dataset that contains your target (summarized) text
-        summary_attr: str = "summary",
-        # The max length of your raw text to consider for summarization
-        max_length: Union[int, str] = None,
-        # The max length of your targets (sumamrized) text
-        max_target_length: Union[int, str] = None,
-        # A function that will split your Dataset into a training and validation set
-        # See [here](https://docs.fast.ai/data.transforms.html#Split) for a list of fast.ai splitters
-        dblock_splitter: Callable = ColSplitter(),
-        # Any additional keyword arguments applied during tokenization
-        hf_tok_kwargs: dict = {},
-        # If you want to override your Blurr transform's `text_gen_kwargs`, do that here
-        text_gen_kwargs: dict = {},
-        # Any kwargs to pass to your `DataLoaders`
-        dl_kwargs: dict = {},
-        # Any kwargs to pass to your task specific `Blearner`
-        learner_kwargs: dict = {},
-    ):
-
-        return cls._create_learner(
-            df,
-            pretrained_model_name_or_path=pretrained_model_name_or_path,
-            preprocess_func=preprocess_func,
-            text_attr=text_attr,
-            summary_attr=summary_attr,
-            max_length=max_length,
-            max_target_length=max_target_length,
-            dblock_splitter=dblock_splitter,
-            hf_tok_kwargs=hf_tok_kwargs,
-            text_gen_kwargs=text_gen_kwargs,
-            dl_kwargs=dl_kwargs,
-            learner_kwargs=learner_kwargs,
-        )
-
-    @classmethod
-    def from_csv(
-        cls,
-        # The path to your csv file
-        csv_file: Union[Path, str],
-        # The name or path of the pretrained model you want to fine-tune
-        pretrained_model_name_or_path: Optional[Union[str, os.PathLike]],
-        # A function to perform any preprocessing required for your Dataset
-        preprocess_func: Callable = None,
-        # The attribute in your dataset that contains your raw text
-        text_attr: str = "text",
-        # The attribute in your dataset that contains your target (summarized) text
-        summary_attr: str = "summary",
-        # The max length of your raw text to consider for summarization
-        max_length: Union[int, str] = None,
-        # The max length of your targets (sumamrized) text
-        max_target_length: Union[int, str] = None,
-        # A function that will split your Dataset into a training and validation set
-        # See [here](https://docs.fast.ai/data.transforms.html#Split) for a list of fast.ai splitters
-        dblock_splitter: Callable = ColSplitter(),
-        # Any additional keyword arguments applied during tokenization
-        hf_tok_kwargs: dict = {},
-        # If you want to override your Blurr transform's `text_gen_kwargs`, do that here
-        text_gen_kwargs: dict = {},
-        # Any kwargs to pass to your `DataLoaders`
-        dl_kwargs: dict = {},
-        # Any kwargs to pass to your task specific `Blearner`
-        learner_kwargs: dict = {},
-    ):
-        df = pd.read_csv(csv_file)
-
-        return cls.from_dataframe(
-            df,
-            pretrained_model_name_or_path=pretrained_model_name_or_path,
-            preprocess_func=preprocess_func,
-            text_attr=text_attr,
-            summary_attr=summary_attr,
-            max_length=max_length,
-            max_target_length=max_target_length,
-            dblock_splitter=dblock_splitter,
-            hf_tok_kwargs=hf_tok_kwargs,
-            text_gen_kwargs=text_gen_kwargs,
-            dl_kwargs=dl_kwargs,
-            learner_kwargs=learner_kwargs,
-        )
-
-    @classmethod
-    def from_dictionaries(
-        cls,
-        # A list of dictionaries
-        ds: List[Dict],
-        # The name or path of the pretrained model you want to fine-tune
-        pretrained_model_name_or_path: Optional[Union[str, os.PathLike]],
-        # A function to perform any preprocessing required for your Dataset
-        preprocess_func: Callable = None,
-        # The attribute in your dataset that contains your raw text
-        text_attr: str = "text",
-        # The attribute in your dataset that contains your target (summarized) text
-        summary_attr: str = "summary",
-        # The max length of your raw text to consider for summarization
-        max_length: Union[int, str] = None,
-        # The max length of your targets (sumamrized) text
-        max_target_length: Union[int, str] = None,
-        # A function that will split your Dataset into a training and validation set
-        # See [here](https://docs.fast.ai/data.transforms.html#Split) for a list of fast.ai splitters
-        dblock_splitter: Callable = RandomSplitter(),
-        # Any additional keyword arguments applied during tokenization
-        hf_tok_kwargs: dict = {},
-        # If you want to override your Blurr transform's `text_gen_kwargs`, do that here
-        text_gen_kwargs: dict = {},
-        # Any kwargs to pass to your `DataLoaders`
-        dl_kwargs: dict = {},
-        # Any kwargs to pass to your task specific `Blearner`
-        learner_kwargs: dict = {},
-    ):
-        return cls._create_learner(
-            ds,
-            pretrained_model_name_or_path=pretrained_model_name_or_path,
-            preprocess_func=preprocess_func,
-            text_attr=text_attr,
-            summary_attr=summary_attr,
-            max_length=max_length,
-            max_target_length=max_target_length,
-            dblock_splitter=dblock_splitter,
-            hf_tok_kwargs=hf_tok_kwargs,
-            text_gen_kwargs=text_gen_kwargs,
-            dl_kwargs=dl_kwargs,
-            learner_kwargs=learner_kwargs,
-        )
