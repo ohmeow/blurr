@@ -6,8 +6,8 @@ title: data.seq2seq.summarization
 keywords: fastai
 sidebar: home_sidebar
 
-summary: "This module contains the bits required to use the fastai DataBlock API and/or mid-level data processing pipelines to organize your data for summarization tasks using architectures like BART and T5."
-description: "This module contains the bits required to use the fastai DataBlock API and/or mid-level data processing pipelines to organize your data for summarization tasks using architectures like BART and T5."
+summary: "This module contains the bits required to use the fastai DataBlock API and/or mid-level data processing pipelines to organize your data for summarization tasks using architectures like BART and T5. Summarization tasks attempt to generate a human-understandable and sensible representation of a larger body of text (e.g., capture the meaning of a larger document in 1-3 sentences)."
+description: "This module contains the bits required to use the fastai DataBlock API and/or mid-level data processing pipelines to organize your data for summarization tasks using architectures like BART and T5. Summarization tasks attempt to generate a human-understandable and sensible representation of a larger body of text (e.g., capture the meaning of a larger document in 1-3 sentences)."
 nb_path: "nbs/11_data-seq2seq-summarization.ipynb"
 ---
 <!--
@@ -79,7 +79,7 @@ transformers: 4.16.2
 
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Summarization-tokenization,-batch-transform,-and-DataBlock-methods">Summarization tokenization, batch transform, and DataBlock methods<a class="anchor-link" href="#Summarization-tokenization,-batch-transform,-and-DataBlock-methods"> </a></h2><p>Summarization tasks attempt to generate a human-understandable and sensible representation of a larger body of text (e.g., capture the meaning of a larger document in 1-3 sentences).</p>
+<h2 id="Setup">Setup<a class="anchor-link" href="#Setup"> </a></h2><p>We'll use a subset of <code>cnn_dailymail</code> to demonstrate how to configure your BLURR for summarization tasks</p>
 
 </div>
 </div>
@@ -91,9 +91,8 @@ transformers: 4.16.2
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="s2">&quot;./&quot;</span><span class="p">)</span>
-<span class="n">cnndm_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">path</span> <span class="o">/</span> <span class="s2">&quot;cnndm_sample.csv&quot;</span><span class="p">)</span>
-<span class="nb">len</span><span class="p">(</span><span class="n">cnndm_df</span><span class="p">)</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">raw_datasets</span> <span class="o">=</span> <span class="n">load_dataset</span><span class="p">(</span><span class="s2">&quot;cnn_dailymail&quot;</span><span class="p">,</span> <span class="s2">&quot;3.0.0&quot;</span><span class="p">,</span> <span class="n">split</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;train&quot;</span><span class="p">,</span> <span class="s2">&quot;validation&quot;</span><span class="p">])</span>
+<span class="n">raw_datasets</span>
 </pre></div>
 
     </div>
@@ -105,10 +104,25 @@ transformers: 4.16.2
 
 <div class="output_area">
 
+<div class="output_subarea output_stream output_stderr output_text">
+<pre>Reusing dataset cnn_dailymail (/home/wgilliam/.cache/huggingface/datasets/cnn_dailymail/3.0.0/3.0.0/3cb851bf7cf5826e45d49db2863f627cba583cbc32342df7349dfe6c38060234)
+</pre>
+</div>
+</div>
+
+<div class="output_area">
+
 
 
 <div class="output_text output_subarea output_execute_result">
-<pre>1000</pre>
+<pre>[Dataset({
+     features: [&#39;article&#39;, &#39;highlights&#39;, &#39;id&#39;],
+     num_rows: 287113
+ }),
+ Dataset({
+     features: [&#39;article&#39;, &#39;highlights&#39;, &#39;id&#39;],
+     num_rows: 13368
+ })]</pre>
 </div>
 
 </div>
@@ -126,7 +140,97 @@ transformers: 4.16.2
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">cnndm_df</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">raw_datasets</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">raw_datasets</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;highlights&quot;</span><span class="p">])</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">raw_datasets</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">raw_datasets</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;highlights&quot;</span><span class="p">])</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>dict_keys([&#39;article&#39;, &#39;highlights&#39;, &#39;id&#39;])
+Syrian official: Obama climbed to the top of the tree, &#34;doesn&#39;t know how to get down&#34;
+Obama sends a letter to the heads of the House and Senate .
+Obama to seek congressional approval on military action against Syria .
+Aim is to determine whether CW were used, not by whom, says U.N. spokesman .
+dict_keys([&#39;article&#39;, &#39;highlights&#39;, &#39;id&#39;])
+Accident happens in Santa Ynez, California, near where Crosby lives .
+The jogger suffered multiple fractures; his injuries are not believed to be life-threatening .
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+    {% endraw %}
+
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">raw_train_ds</span> <span class="o">=</span> <span class="n">raw_datasets</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">shuffle</span><span class="p">(</span><span class="n">seed</span><span class="o">=</span><span class="mi">42</span><span class="p">)</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">1000</span><span class="p">))</span>
+<span class="n">raw_valid_ds</span> <span class="o">=</span> <span class="n">raw_datasets</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">shuffle</span><span class="p">(</span><span class="n">seed</span><span class="o">=</span><span class="mi">42</span><span class="p">)</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">200</span><span class="p">))</span>
+
+<span class="nb">len</span><span class="p">(</span><span class="n">raw_train_ds</span><span class="p">)</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="n">raw_valid_ds</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stderr output_text">
+<pre>Loading cached shuffled indices for dataset at /home/wgilliam/.cache/huggingface/datasets/cnn_dailymail/3.0.0/3.0.0/3cb851bf7cf5826e45d49db2863f627cba583cbc32342df7349dfe6c38060234/cache-516bef66c83f0d37.arrow
+Loading cached shuffled indices for dataset at /home/wgilliam/.cache/huggingface/datasets/cnn_dailymail/3.0.0/3.0.0/3cb851bf7cf5826e45d49db2863f627cba583cbc32342df7349dfe6c38060234/cache-e7e93c0052828394.arrow
+</pre>
+</div>
+</div>
+
+<div class="output_area">
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>1200</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    {% endraw %}
+
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">raw_train_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">raw_train_ds</span><span class="p">)</span>
+<span class="n">raw_valid_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">raw_valid_ds</span><span class="p">)</span>
+
+<span class="n">raw_train_df</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
 </pre></div>
 
     </div>
@@ -159,21 +263,21 @@ transformers: 4.16.2
       <th></th>
       <th>article</th>
       <th>highlights</th>
-      <th>ds_type</th>
+      <th>id</th>
     </tr>
   </thead>
   <tbody>
     <tr>
       <th>0</th>
-      <td>(CNN)  -- Globalization washes like a flood over the world's cultures and economies. Floods can be destructive; however, they can also bring blessings, as the annual floods of the Nile did for ancient Egypt. The world's great universities can be crucial instruments in shaping, in a positive way, humankind's reaction to globalization and the development of humankind itself. Traditionally, universities have been defined and limited by location, creating an academic community and drawing students and scholars to that place. Eventually, some universities began to encourage students to study el...</td>
-      <td>John Sexton: Traditionally, universities have been defined and limited by location .\nGlobal campuses form a network of thought, innovation, he writes .\nFaculty can teach, Sexton says, students can team up in many cities at once .\nSexton: Research, scholarship can be shared and cultural ties made in "century of knowledge"</td>
-      <td>train</td>
+      <td>A protester in Ferguson was arrested during a demonstration on Thursday night - and live-tweeted her entire experience. Brittany Ferrell, a nursing student at the University of Missouri-Saint Louis, was one of 13 people detained by officers in the conflicted Missouri city for 'noise disruption'. The detention has sparked an investigation by the American Civil Liberties Union as lawyers accuse officers of overstretching their powers. Scroll down for video . Arrested: This is Brittany Ferrell, the nursing student and protester who live-tweeted her arrest in Ferguson . Tweeting in handcuffs, ...</td>
+      <td>Brittany Ferrell, nursing student, was arrested with 12 people on Thursday .\nThey were calling on police take responsibility for Michael Brown's death .\nMs Ferrell tweeted as she was arrested, piled in a small wagon with 7 others .\nThey were accused of 'noise disruption', put in orange jumpsuits and cuffed .\nOfficers now being investigated, lawyers claim they 'overstretched powers'</td>
+      <td>1e01f238418c31d4e9093f6334e0232babeb639a</td>
     </tr>
     <tr>
       <th>1</th>
-      <td>(CNN) -- Armenian President Robert Kocharian declared a state of emergency Saturday night after a day of clashes between police and protesters, a spokeswoman for the Armenian Foreign Ministry said. Opposition supporters wave an Armenian flag during a protest rally in Yerevan, Armenia, on Saturday. The protesters claim last month's presidential election was rigged. The state of emergency will "hopefully bring some order" to the capital, Yerevan, said Salpi Ghazarian, assistant to the Armenian foreign minister, who spoke to CNN early Sunday. The state of emergency could last until March 20, ...</td>
-      <td>NEW: Protest moves after crackdown at Freedom Square .\nOrder sought after protests over last month's election turn violent .\nDemonstrators say the election was fraudulent .\nState of emergency could last until March 20, official says .</td>
-      <td>train</td>
+      <td>A day after confirming it had lost the ability to display Instagram images, Twitter has rolled out its own library of retro filters for its Android and iPhone apps. The eight filters are the usual suspects we've come to expect from mobile photo apps, including desaturated, black and white and high contrast. There are auto-adjust and cropping options, as well as a helpful grid view that lets you see what each filter will look like at once. "The latest versions of Twitter for iPhone and Twitter for Android introduce a few new ways to enhance the images you tweet," said Twitter senior designe...</td>
+      <td>Twitter has added photo filters to its Android and iOS mobile apps .\nThe addition will help Twitter compete against Facebook-owned Instagram .\nThis is the first time the social network has offered image editing tools .</td>
+      <td>6f89645bff243fe9ce2a0509e5ca01912abf0d10</td>
     </tr>
   </tbody>
 </table>
@@ -227,6 +331,129 @@ transformers: 4.16.2
 </div>
     {% endraw %}
 
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Preprocessing">Preprocessing<a class="anchor-link" href="#Preprocessing"> </a></h2><p>Starting with version 2.0, BLURR provides a preprocessing base class that can be used to build task specific pre-processed datasets from pandas DataFrames or Hugging Face Datasets</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="SummarizationPreprocessor"><a href="/blurr/data-seq2seq-summarization.html#SummarizationPreprocessor"><code>SummarizationPreprocessor</code></a><a class="anchor-link" href="#SummarizationPreprocessor"> </a></h3><p>Starting with version 2.0, BLURR provides a sequence classification preprocessing class that can be used to preprocess DataFrames or Hugging Face Datasets.</p>
+<p>This class can be used for preprocessing summarization tasks, and includes a <code>proc_{your_text_attr}</code> and <code>proc_{target_text_attr}</code> attributes containing your modified input and target texts as a result of tokenization (e.g., if you specify a <code>max_length</code> the <code>proc_{your_text_attr}</code> may contain truncated text).</p>
+
+</div>
+</div>
+</div>
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+<div class="output_markdown rendered_html output_subarea ">
+<h2 id="SummarizationPreprocessor" class="doc_header"><code>class</code> <code>SummarizationPreprocessor</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/data/seq2seq/summarization.py#L23" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>SummarizationPreprocessor</code>(<strong><code>hf_tokenizer</code></strong>:<code>PreTrainedTokenizerBase</code>, <strong><code>batch_size</code></strong>:<code>int</code>=<em><code>1000</code></em>, <strong><code>id_attr</code></strong>:<code>Optional</code>[<code>str</code>]=<em><code>None</code></em>, <strong><code>text_attr</code></strong>:<code>str</code>=<em><code>'text'</code></em>, <strong><code>max_input_tok_length</code></strong>:<code>Optional</code>[<code>int</code>]=<em><code>None</code></em>, <strong><code>target_text_attr</code></strong>:<code>str</code>=<em><code>'summary'</code></em>, <strong><code>max_target_tok_length</code></strong>:<code>Optional</code>[<code>int</code>]=<em><code>None</code></em>, <strong><code>min_summary_char_length</code></strong>:<code>Optional</code>[<code>int</code>]=<em><code>None</code></em>, <strong><code>is_valid_attr</code></strong>:<code>Optional</code>[<code>str</code>]=<em><code>'is_valid'</code></em>, <strong><code>tok_kwargs</code></strong>:<code>dict</code>=<em><code>{}</code></em>) :: <a href="/blurr/data-seq2seq-core.html#Seq2SeqPreprocessor"><code>Seq2SeqPreprocessor</code></a></p>
+</blockquote>
+<table>
+<thead><tr>
+<th></th>
+<th>Type</th>
+<th>Default</th>
+<th>Details</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong><code>hf_tokenizer</code></strong></td>
+<td><code>PreTrainedTokenizerBase</code></td>
+<td></td>
+<td>A Hugging Face tokenizer</td>
+</tr>
+<tr>
+<td><strong><code>batch_size</code></strong></td>
+<td><code>int</code></td>
+<td><code>1000</code></td>
+<td>The number of examples to process at a time</td>
+</tr>
+<tr>
+<td><strong><code>id_attr</code></strong></td>
+<td><code>Optional[str]</code></td>
+<td>``</td>
+<td>The unique identifier in the dataset</td>
+</tr>
+<tr>
+<td><strong><code>text_attr</code></strong></td>
+<td><code>str</code></td>
+<td><code>text</code></td>
+<td>The attribute holding the text</td>
+</tr>
+<tr>
+<td><strong><code>max_input_tok_length</code></strong></td>
+<td><code>Optional[int]</code></td>
+<td>``</td>
+<td>The maximum length (# of tokens) allowed for inputs. Will default to the max length allowed<br />by the model if not provided</td>
+</tr>
+<tr>
+<td><strong><code>target_text_attr</code></strong></td>
+<td><code>str</code></td>
+<td><code>summary</code></td>
+<td>The attribute holding the summary</td>
+</tr>
+<tr>
+<td><strong><code>max_target_tok_length</code></strong></td>
+<td><code>Optional[int]</code></td>
+<td>``</td>
+<td>The maximum length (# of tokens) allowed for targets</td>
+</tr>
+<tr>
+<td><strong><code>min_summary_char_length</code></strong></td>
+<td><code>Optional[int]</code></td>
+<td>``</td>
+<td>If not "None", any examples where "target_text_attr" is &lt; "min_summary_char_length" will be removed</td>
+</tr>
+<tr>
+<td><strong><code>is_valid_attr</code></strong></td>
+<td><code>Optional[str]</code></td>
+<td><code>is_valid</code></td>
+<td>The attribute that should be created if your are processing individual training and validation<br />datasets into a single dataset, and will indicate to which each example is associated</td>
+</tr>
+<tr>
+<td><strong><code>tok_kwargs</code></strong></td>
+<td><code>dict</code></td>
+<td>``</td>
+<td>Tokenization kwargs that will be applied with calling the tokenizer</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    {% endraw %}
+
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+
+</div>
+    {% endraw %}
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h4 id="Using-a-DataFrame">Using a <code>DataFrame</code><a class="anchor-link" href="#Using-a-DataFrame"> </a></h4>
+</div>
+</div>
+</div>
     {% raw %}
     
 <div class="cell border-box-sizing code_cell rendered">
@@ -234,9 +461,134 @@ transformers: 4.16.2
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">blocks</span> <span class="o">=</span> <span class="p">(</span><span class="n">Seq2SeqTextBlock</span><span class="p">(</span><span class="n">hf_arch</span><span class="p">,</span> <span class="n">hf_config</span><span class="p">,</span> <span class="n">hf_tokenizer</span><span class="p">,</span> <span class="n">hf_model</span><span class="p">),</span> <span class="n">noop</span><span class="p">)</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">preprocessor</span> <span class="o">=</span> <span class="n">SummarizationPreprocessor</span><span class="p">(</span>
+    <span class="n">hf_tokenizer</span><span class="p">,</span>
+    <span class="n">id_attr</span><span class="o">=</span><span class="s2">&quot;id&quot;</span><span class="p">,</span>
+    <span class="n">text_attr</span><span class="o">=</span><span class="s2">&quot;article&quot;</span><span class="p">,</span>
+    <span class="n">target_text_attr</span><span class="o">=</span><span class="s2">&quot;highlights&quot;</span><span class="p">,</span>
+    <span class="n">max_input_tok_length</span><span class="o">=</span><span class="mi">128</span><span class="p">,</span>
+    <span class="n">max_target_tok_length</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span>
+    <span class="n">min_summary_char_length</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">proc_df</span> <span class="o">=</span> <span class="n">preprocessor</span><span class="o">.</span><span class="n">process_df</span><span class="p">(</span><span class="n">raw_train_df</span><span class="p">,</span> <span class="n">raw_valid_df</span><span class="p">)</span>
+<span class="n">proc_df</span><span class="o">.</span><span class="n">columns</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">proc_df</span><span class="p">)</span>
+<span class="n">proc_df</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+</pre></div>
 
-<span class="n">dblock</span> <span class="o">=</span> <span class="n">DataBlock</span><span class="p">(</span><span class="n">blocks</span><span class="o">=</span><span class="n">blocks</span><span class="p">,</span> <span class="n">get_x</span><span class="o">=</span><span class="n">ColReader</span><span class="p">(</span><span class="s2">&quot;article&quot;</span><span class="p">),</span> <span class="n">get_y</span><span class="o">=</span><span class="n">ColReader</span><span class="p">(</span><span class="s2">&quot;highlights&quot;</span><span class="p">),</span> <span class="n">splitter</span><span class="o">=</span><span class="n">RandomSplitter</span><span class="p">())</span>
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+<div class="output_html rendered_html output_subarea output_execute_result"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>proc_highlights</th>
+      <th>proc_article</th>
+      <th>article</th>
+      <th>highlights</th>
+      <th>id</th>
+      <th>is_valid</th>
+      <th>article_start_char_idx</th>
+      <th>article_end_char_idx</th>
+      <th>highlights_start_char_idx</th>
+      <th>highlights_end_char_idx</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>Brittany Ferrell, nursing student, was arrested with 12 people on Thursday .\nThey were calling on police take responsibility for Michael Brown's death</td>
+      <td>A protester in Ferguson was arrested during a demonstration on Thursday night - and live-tweeted her entire experience. Brittany Ferrell, a nursing student at the University of Missouri-Saint Louis, was one of 13 people detained by officers in the conflicted Missouri city for 'noise disruption'. The detention has sparked an investigation by the American Civil Liberties Union as lawyers accuse officers of overstretching their powers. Scroll down for video . Arrested: This is Brittany Ferrell, the nursing student and protester who live-tweeted her arrest in Ferguson . Tweeting in handcuffs, ...</td>
+      <td>A protester in Ferguson was arrested during a demonstration on Thursday night - and live-tweeted her entire experience. Brittany Ferrell, a nursing student at the University of Missouri-Saint Louis, was one of 13 people detained by officers in the conflicted Missouri city for 'noise disruption'. The detention has sparked an investigation by the American Civil Liberties Union as lawyers accuse officers of overstretching their powers. Scroll down for video . Arrested: This is Brittany Ferrell, the nursing student and protester who live-tweeted her arrest in Ferguson . Tweeting in handcuffs, ...</td>
+      <td>Brittany Ferrell, nursing student, was arrested with 12 people on Thursday .\nThey were calling on police take responsibility for Michael Brown's death .\nMs Ferrell tweeted as she was arrested, piled in a small wagon with 7 others .\nThey were accused of 'noise disruption', put in orange jumpsuits and cuffed .\nOfficers now being investigated, lawyers claim they 'overstretched powers'</td>
+      <td>1e01f238418c31d4e9093f6334e0232babeb639a</td>
+      <td>False</td>
+      <td>0</td>
+      <td>648</td>
+      <td>0</td>
+      <td>150</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>Twitter has added photo filters to its Android and iOS mobile apps .\nThe addition will help Twitter compete against Facebook-owned Instagram .\nThis</td>
+      <td>A day after confirming it had lost the ability to display Instagram images, Twitter has rolled out its own library of retro filters for its Android and iPhone apps. The eight filters are the usual suspects we've come to expect from mobile photo apps, including desaturated, black and white and high contrast. There are auto-adjust and cropping options, as well as a helpful grid view that lets you see what each filter will look like at once. "The latest versions of Twitter for iPhone and Twitter for Android introduce a few new ways to enhance the images you tweet," said Twitter senior designe...</td>
+      <td>A day after confirming it had lost the ability to display Instagram images, Twitter has rolled out its own library of retro filters for its Android and iPhone apps. The eight filters are the usual suspects we've come to expect from mobile photo apps, including desaturated, black and white and high contrast. There are auto-adjust and cropping options, as well as a helpful grid view that lets you see what each filter will look like at once. "The latest versions of Twitter for iPhone and Twitter for Android introduce a few new ways to enhance the images you tweet," said Twitter senior designe...</td>
+      <td>Twitter has added photo filters to its Android and iOS mobile apps .\nThe addition will help Twitter compete against Facebook-owned Instagram .\nThis is the first time the social network has offered image editing tools .</td>
+      <td>6f89645bff243fe9ce2a0509e5ca01912abf0d10</td>
+      <td>False</td>
+      <td>0</td>
+      <td>635</td>
+      <td>0</td>
+      <td>147</td>
+    </tr>
+  </tbody>
+</table>
+</div></div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    {% endraw %}
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Examples">Examples<a class="anchor-link" href="#Examples"> </a></h2>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="Using-the-mid-level-API">Using the mid-level API<a class="anchor-link" href="#Using-the-mid-level-API"> </a></h3>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h4 id="Batch-Time-Tokenization">Batch-Time Tokenization<a class="anchor-link" href="#Batch-Time-Tokenization"> </a></h4>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h5 id="Step-1:-Get-your-Hugging-Face-objects.">Step 1: Get your Hugging Face objects.<a class="anchor-link" href="#Step-1:-Get-your-Hugging-Face-objects."> </a></h5>
+</div>
+</div>
+</div>
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">pretrained_model_name</span> <span class="o">=</span> <span class="s2">&quot;facebook/bart-large-cnn&quot;</span>
+<span class="n">model_cls</span> <span class="o">=</span> <span class="n">AutoModelForSeq2SeqLM</span>
+
+<span class="n">hf_arch</span><span class="p">,</span> <span class="n">hf_config</span><span class="p">,</span> <span class="n">hf_tokenizer</span><span class="p">,</span> <span class="n">hf_model</span> <span class="o">=</span> <span class="n">BLURR</span><span class="o">.</span><span class="n">get_hf_objects</span><span class="p">(</span><span class="n">pretrained_model_name</span><span class="p">,</span> <span class="n">model_cls</span><span class="o">=</span><span class="n">model_cls</span><span class="p">)</span>
 </pre></div>
 
     </div>
@@ -248,11 +600,29 @@ transformers: 4.16.2
 
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>Two lines!  Notice we pass in <code>noop</code> for our targets (e.g. our summaries) because the batch transform will take care of both out inputs and targets.</p>
+<h5 id="Step-2:-Create-your-DataBlock">Step 2: Create your <code>DataBlock</code><a class="anchor-link" href="#Step-2:-Create-your-DataBlock"> </a></h5><p>Two lines!  Notice we pass in <code>noop</code> for our targets (e.g. our summaries) because the batch transform will take care of both out inputs and targets.</p>
 
 </div>
 </div>
 </div>
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">blocks</span> <span class="o">=</span> <span class="p">(</span><span class="n">Seq2SeqTextBlock</span><span class="p">(</span><span class="n">hf_arch</span><span class="p">,</span> <span class="n">hf_config</span><span class="p">,</span> <span class="n">hf_tokenizer</span><span class="p">,</span> <span class="n">hf_model</span><span class="p">),</span> <span class="n">noop</span><span class="p">)</span>
+<span class="n">dblock</span> <span class="o">=</span> <span class="n">DataBlock</span><span class="p">(</span><span class="n">blocks</span><span class="o">=</span><span class="n">blocks</span><span class="p">,</span> <span class="n">get_x</span><span class="o">=</span><span class="n">ColReader</span><span class="p">(</span><span class="s2">&quot;article&quot;</span><span class="p">),</span> <span class="n">get_y</span><span class="o">=</span><span class="n">ColReader</span><span class="p">(</span><span class="s2">&quot;highlights&quot;</span><span class="p">),</span> <span class="n">splitter</span><span class="o">=</span><span class="n">RandomSplitter</span><span class="p">())</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    {% endraw %}
+
     {% raw %}
     
 <div class="cell border-box-sizing code_cell rendered">
@@ -270,6 +640,12 @@ transformers: 4.16.2
 </div>
     {% endraw %}
 
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h5 id="Step-3:-Build-your-DataLoaders">Step 3: Build your <code>DataLoaders</code><a class="anchor-link" href="#Step-3:-Build-your-DataLoaders"> </a></h5>
+</div>
+</div>
+</div>
     {% raw %}
     
 <div class="cell border-box-sizing code_cell rendered">
@@ -277,7 +653,7 @@ transformers: 4.16.2
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">dls</span> <span class="o">=</span> <span class="n">dblock</span><span class="o">.</span><span class="n">dataloaders</span><span class="p">(</span><span class="n">cnndm_df</span><span class="p">,</span> <span class="n">bs</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">dls</span> <span class="o">=</span> <span class="n">dblock</span><span class="o">.</span><span class="n">dataloaders</span><span class="p">(</span><span class="n">raw_train_df</span><span class="p">,</span> <span class="n">bs</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
 </pre></div>
 
     </div>
@@ -326,7 +702,55 @@ transformers: 4.16.2
 
 
 <div class="output_text output_subarea output_execute_result">
-<pre>(2, torch.Size([4, 1024]), torch.Size([4, 78]), torch.Size([4, 78]))</pre>
+<pre>(2, torch.Size([4, 1024]), torch.Size([4, 72]), torch.Size([4, 72]))</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    {% endraw %}
+
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">b</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;labels&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="n">b</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>(tensor([    0,   270,  3905,  2950,   516,     9,   908,    25,    37,  5586,
+           940,  2355,   375,   479, 50118,  9167,   703,    15,     5,   276,
+           183,  1284,  2922, 11137,  4457,    30,   299,   940,  2355,  3504,
+            11,   188,   469,   479,     2,  -100,  -100,  -100,  -100,  -100,
+          -100,  -100,  -100,  -100,  -100,  -100,  -100,  -100,  -100,  -100,
+          -100,  -100,  -100,  -100,  -100,  -100,  -100,  -100,  -100,  -100,
+          -100,  -100,  -100,  -100,  -100,  -100,  -100,  -100,  -100,  -100,
+          -100,  -100], device=&#39;cuda:1&#39;),
+ tensor([    0,   270,  3905,  2950,   516,     9,   908,    25,    37,  5586,
+           940,  2355,   375,   479, 50118,  9167,   703,    15,     5,   276,
+           183,  1284,  2922, 11137,  4457,    30,   299,   940,  2355,  3504,
+            11,   188,   469,   479,     2,  -100,  -100,  -100,  -100,  -100,
+          -100,  -100,  -100,  -100,  -100,  -100,  -100,  -100,  -100,  -100,
+          -100,  -100,  -100,  -100,  -100,  -100,  -100,  -100,  -100,  -100,
+          -100,  -100,  -100,  -100,  -100,  -100,  -100,  -100,  -100,  -100,
+          -100,  -100], device=&#39;cuda:1&#39;))</pre>
 </div>
 
 </div>
@@ -368,13 +792,174 @@ transformers: 4.16.2
   <tbody>
     <tr>
       <th>0</th>
-      <td>&lt;s&gt; (CNN) -- Home to up to 10 percent of all known species, Mexico is recognized as one of the most biodiverse regions on the planet. The twin threats of climate change and human encroachment on natural environments are, however, threatening the existence of the country's rich wildlife. And there is a great deal to lose. In the United Nations Environment Program (UNEP) World Conservation Monitoring Centre's list of megadiverse countries Mexico ranks 11th. The list represents a group of 17 countries that harbor the majority of the Earth's species and are therefore considered extremely biodiverse. From its coral reefs in the Caribbean Sea to its tropical jungles in Chiapas and the Yucatan peninsula and its deserts and prairies in the north, Mexico boasts an incredibly rich variety of flora and fauna. Some 574 out of 717 reptile species found in Mexico -- the most in any country -- can only be encountered within its borders. It is home to 502 types of mammals, 290 species of birds, 1,150</td>
-      <td>Mexico hosts to up to 10 percent of all known species on Earth.\nIt is home to 502 types of mammals, 290 bird species and 26,000 types of plants.\nHuman development and climate change is placing a big strain on its biodiversity.\nThe Golden Eagle is un</td>
+      <td>&lt;s&gt; By. Daily Mail Reporter. PUBLISHED:. 08:16 EST, 14 May 2012. |. UPDATED:. 22:07 EST, 14 May 2012. Barack Obama's latest campaign gambit follows a familiar line of attack as it uses Mitt Romney's private equity past to cast the Republican candidate as  greedy, job-killing corporate titan with little concern for the working class. The President is not the first of Mr Romney's opponents to try and paint the former governor of Massachusetts as a heartless uber-capitalist - even his Republican rivals used the same tactic during the heated primary battle. But Mr Obama's campaign seems to have been particularly unoriginal - as his attack ad is almost identical to one produced by Ted Kennedy for his Senate campaign against Mr Romney in 1994, featuring unemployed workers complaining about Bain Capital, the firm founded by Mr Romney. The timing of the Obama assault on private equity is also unfortunate, as on Monday night the President attended a fundraiser hosted by Democratic supporter Ham</td>
+      <td>President follows familiar line of attack as he highlights private equity past.\nAd released on the same day Obama attended fundraiser hosted by top private equity boss in New York.</td>
     </tr>
     <tr>
       <th>1</th>
-      <td>&lt;s&gt; (CNN Student News) -- October 27, 2009. Downloadable Maps. Download PDF maps related to today's show:  • Afghanistan &amp; Pakistan • Los Angeles &amp; San Diego • Ft. Jackson, South Carolina. Transcript. THIS IS A RUSH TRANSCRIPT. THIS COPY MAY NOT BE IN ITS FINAL FORM AND MAY BE UPDATED. NATISHA LANCE, CNN STUDENT NEWS ANCHOR: A member of the military is making history. We'll explain how in today's edition of CNN Student News. Hi, everyone. Carl Azuz is off this week. I'm Natisha Lance. First Up: Afghan Crashes. LANCE: First up, Pakistan and Afghanistan. The countries share a border, and they also share a common problem: threats from militant groups and terrorists like the Taliban and al Qaeda. It's an issue facing both nations' governments, and one that the U.S. government is concerned about as well. That's why President Obama has been holding a series of meetings with some of his advisers. They're reviewing the U.S. strategy in Afghanistan and Pakistan. Samantha Hayes has the latest on</td>
-      <td>Consider U.S. efforts to offer Afghan citizens an alternative to the Taliban.\nHear how a proposed health care bill addresses the issue of the public option.\nMeet a soldier who is making history at the U.S. Army Drill Sergeant School.\nUse the Daily D</td>
+      <td>&lt;s&gt; (CNN) -- President Barack Obama and GOP vice presidential nominee Paul Ryan on Friday traded sharp criticism over health care reforms and Medicare, with each telling a leading advocacy group for senior citizens that the other was being untruthful. "Contrary to what you've heard and what you may hear from subsequent speakers, Obamacare actually strengthened Medicare," the president told the AARP Liffe@50+ event, using the nickname for the 2010 Affordable Care Act that passed with no Republican support. In particular, he called the claim by Ryan and other Republicans that $716 billion is being cut from Medicare to fund the health care bill "simply not true." Ryan spoke to the same event shortly afterward, saying that Obama's contention that the health care law strengthened Medicare was "just not true," adding that the legislation "turned Medicare into a piggy bank for Obamacare." The debate over Medicare is a major issue in the November election campaign, especially in the vital batt</td>
+      <td>NEW: Sen. Reid says Romney still isn't coming clean on taxes.\nPaul Ryan gets mixed reception at AARP event.\nRyan and President Obama accuse each other of being untruthful.\nObama says leadership means rejecting bad ideas.</td>
+    </tr>
+  </tbody>
+</table></div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    {% endraw %}
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h4 id="Using-a-preprocessed-dataset">Using a preprocessed dataset<a class="anchor-link" href="#Using-a-preprocessed-dataset"> </a></h4>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h5 id="Step-1a:-Get-your-Hugging-Face-objects.">Step 1a: Get your Hugging Face objects.<a class="anchor-link" href="#Step-1a:-Get-your-Hugging-Face-objects."> </a></h5>
+</div>
+</div>
+</div>
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">pretrained_model_name</span> <span class="o">=</span> <span class="s2">&quot;facebook/bart-large-cnn&quot;</span>
+<span class="n">model_cls</span> <span class="o">=</span> <span class="n">AutoModelForSeq2SeqLM</span>
+
+<span class="n">hf_arch</span><span class="p">,</span> <span class="n">hf_config</span><span class="p">,</span> <span class="n">hf_tokenizer</span><span class="p">,</span> <span class="n">hf_model</span> <span class="o">=</span> <span class="n">BLURR</span><span class="o">.</span><span class="n">get_hf_objects</span><span class="p">(</span><span class="n">pretrained_model_name</span><span class="p">,</span> <span class="n">model_cls</span><span class="o">=</span><span class="n">model_cls</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    {% endraw %}
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h5 id="Step-1b.-Preprocess-dataset">Step 1b. Preprocess dataset<a class="anchor-link" href="#Step-1b.-Preprocess-dataset"> </a></h5>
+</div>
+</div>
+</div>
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">preprocessor</span> <span class="o">=</span> <span class="n">SummarizationPreprocessor</span><span class="p">(</span>
+    <span class="n">hf_tokenizer</span><span class="p">,</span>
+    <span class="n">id_attr</span><span class="o">=</span><span class="s2">&quot;id&quot;</span><span class="p">,</span>
+    <span class="n">text_attr</span><span class="o">=</span><span class="s2">&quot;article&quot;</span><span class="p">,</span>
+    <span class="n">target_text_attr</span><span class="o">=</span><span class="s2">&quot;highlights&quot;</span><span class="p">,</span>
+    <span class="n">max_input_tok_length</span><span class="o">=</span><span class="mi">128</span><span class="p">,</span>
+    <span class="n">max_target_tok_length</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span>
+    <span class="n">min_summary_char_length</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">proc_df</span> <span class="o">=</span> <span class="n">preprocessor</span><span class="o">.</span><span class="n">process_df</span><span class="p">(</span><span class="n">raw_train_df</span><span class="p">,</span> <span class="n">raw_valid_df</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    {% endraw %}
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h5 id="Step-2:-Create-your-DataBlock">Step 2: Create your <code>DataBlock</code><a class="anchor-link" href="#Step-2:-Create-your-DataBlock"> </a></h5>
+</div>
+</div>
+</div>
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">blocks</span> <span class="o">=</span> <span class="p">(</span><span class="n">Seq2SeqTextBlock</span><span class="p">(</span><span class="n">hf_arch</span><span class="p">,</span> <span class="n">hf_config</span><span class="p">,</span> <span class="n">hf_tokenizer</span><span class="p">,</span> <span class="n">hf_model</span><span class="p">),</span> <span class="n">noop</span><span class="p">)</span>
+<span class="n">dblock</span> <span class="o">=</span> <span class="n">DataBlock</span><span class="p">(</span><span class="n">blocks</span><span class="o">=</span><span class="n">blocks</span><span class="p">,</span> <span class="n">get_x</span><span class="o">=</span><span class="n">ColReader</span><span class="p">(</span><span class="s2">&quot;proc_article&quot;</span><span class="p">),</span> <span class="n">get_y</span><span class="o">=</span><span class="n">ColReader</span><span class="p">(</span><span class="s2">&quot;proc_highlights&quot;</span><span class="p">),</span> <span class="n">splitter</span><span class="o">=</span><span class="n">ColSplitter</span><span class="p">())</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    {% endraw %}
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h5 id="Step-3:-Build-your-DataLoaders">Step 3: Build your <code>DataLoaders</code><a class="anchor-link" href="#Step-3:-Build-your-DataLoaders"> </a></h5>
+</div>
+</div>
+</div>
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">dls</span> <span class="o">=</span> <span class="n">dblock</span><span class="o">.</span><span class="n">dataloaders</span><span class="p">(</span><span class="n">proc_df</span><span class="p">,</span> <span class="n">bs</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    {% endraw %}
+
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">dls</span><span class="o">.</span><span class="n">show_batch</span><span class="p">(</span><span class="n">dataloaders</span><span class="o">=</span><span class="n">dls</span><span class="p">,</span> <span class="n">max_n</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">trunc_at</span><span class="o">=</span><span class="mi">500</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+<div class="output_html rendered_html output_subarea "><table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>text</th>
+      <th>target</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>&lt;s&gt; Washington (CNN) -- A post-mortem Sunday of the mid-term elections provided little evidence that Democrats and Republicans will work together to address major issues such as deficit reduction any better than they have in recent years. Republicans interviewed on talk shows promised congressional investigations, an all-out effort to repeal health care reform, and steadfast opposition to any form of higher taxes. Democrats, meanwhile, said the losses they suffered in the congressional elections reflected voter dissatisfaction with lingering high unemployment in the slow recovery from economic recession, rather than an outright repudiation of their policies. Republicans won more than 60 seats formerly held by Democrats to take majority control of &lt;/s&gt;</td>
+      <td>GOP targets health care reform, government spending.\n"Are we willing to work with him?" Cantor says of President Obama.\nObama says</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>&lt;s&gt; Washington (CNN) -- President Barack Obama will deploy up to 1,200 more National Guard troops to the U.S. border with Mexico, an administration official told CNN on Tuesday. In addition, Obama will request $500 million to supplement current spending for enhanced border protection and law enforcement activities, the official said. The National Guard troops will help with drug enforcement efforts and intelligence efforts until Customs and Border Protection can recruit and train additional officers and agents to serve on the border, the official said. The news followed Obama's lunch meeting with Senate Republicans, where Sen. John McCain of Arizona raised the issue of increased border security. McCain &lt;/s&gt;</td>
+      <td>NEW: Mexico says additional U.S. troops at border should battle organized crime, not illegal immigration.\nObama to send 1,200</td>
     </tr>
   </tbody>
 </table></div>

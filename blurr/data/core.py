@@ -45,13 +45,20 @@ class Preprocessor:
         text_attr: str = "text",
         # The attribute holding the text_pair
         text_pair_attr: Optional[str] = None,
+        # The attribute that should be created if your are processing individual training and validation
+        # datasets into a single dataset, and will indicate to which each example is associated
+        is_valid_attr: Optional[str] = "is_valid",
         # Tokenization kwargs that will be applied with calling the tokenizer
         tok_kwargs: dict = {},
     ):
         self.hf_tokenizer = hf_tokenizer
         self.batch_size = batch_size
         self.text_attr, self.text_pair_attr = text_attr, text_pair_attr
+        self.is_valid_attr = is_valid_attr
         self.tok_kwargs = tok_kwargs
+
+        if "truncation" not in self.tok_kwargs:
+            self.tok_kwargs["truncation"] = True
 
     def process_df(self, training_df: pd.DataFrame, validation_df: Optional[pd.DataFrame] = None):
         df = training_df.copy()
@@ -84,12 +91,10 @@ class Preprocessor:
         return ds
 
     def _tokenize_function(self, example):
-        truncation = self.tok_kwargs.pop("truncation", True)
-
         txts = example[self.text_attr]
         txt_pairs = example[self.text_pair_attr] if self.text_pair_attr else None
 
-        return self.hf_tokenizer(txts, txt_pairs, truncation=truncation, **self.tok_kwargs)
+        return self.hf_tokenizer(txts, txt_pairs, **self.tok_kwargs)
 
 
 # Cell
@@ -121,12 +126,11 @@ class ClassificationPreprocessor(Preprocessor):
         tok_kwargs: dict = {},
     ):
         tok_kwargs = {**tok_kwargs, "return_offsets_mapping": True}
-        super().__init__(hf_tokenizer, batch_size, text_attr, text_pair_attr, tok_kwargs)
+        super().__init__(hf_tokenizer, batch_size, text_attr, text_pair_attr, is_valid_attr, tok_kwargs)
 
         self.is_multilabel = is_multilabel
         self.id_attr = id_attr
         self.label_attrs = label_attrs
-        self.is_valid_attr = is_valid_attr
         self.label_mapping = label_mapping
 
     def process_df(self, training_df: pd.DataFrame, validation_df: Optional[pd.DataFrame] = None):
@@ -182,7 +186,7 @@ class ClassificationPreprocessor(Preprocessor):
                 batch_df.apply(lambda r: r[txt_attr][r[f"{txt_attr}_start_char_idx"] : r[f"{txt_attr}_end_char_idx"] + 1], axis=1),
             )
 
-            return batch_df
+        return batch_df
 
 
 # Cell
