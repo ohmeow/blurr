@@ -36,6 +36,9 @@ class BlearnerForSummarization(Blearner):
     def __init__(self, dls: DataLoaders, hf_model: PreTrainedModel, **kwargs):
         super().__init__(dls, hf_model, **kwargs)
 
+    def predict(self, text, **kwargs):
+        return self.blurr_summarize(text, **kwargs)
+
     @classmethod
     def get_model_cls(cls):
         return AutoModelForSeq2SeqLM
