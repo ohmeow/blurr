@@ -77,6 +77,13 @@ transformers: 4.16.2
 </div>
     {% endraw %}
 
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Setup">Setup<a class="anchor-link" href="#Setup"> </a></h2><p>We'll use a subset of <code>wmt16</code> to demonstrate how to configure your BLURR for translation tasks</p>
+
+</div>
+</div>
+</div>
     {% raw %}
     
 <div class="cell border-box-sizing code_cell rendered">
@@ -84,7 +91,8 @@ transformers: 4.16.2
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">ds</span> <span class="o">=</span> <span class="n">load_dataset</span><span class="p">(</span><span class="s2">&quot;wmt16&quot;</span><span class="p">,</span> <span class="s2">&quot;de-en&quot;</span><span class="p">,</span> <span class="n">split</span><span class="o">=</span><span class="s2">&quot;train[:1%]&quot;</span><span class="p">)</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">raw_dataset</span> <span class="o">=</span> <span class="n">load_dataset</span><span class="p">(</span><span class="s2">&quot;wmt16&quot;</span><span class="p">,</span> <span class="s2">&quot;de-en&quot;</span><span class="p">,</span> <span class="n">split</span><span class="o">=</span><span class="s2">&quot;train[:1%]&quot;</span><span class="p">)</span>
+<span class="n">raw_dataset</span>
 </pre></div>
 
     </div>
@@ -102,19 +110,25 @@ transformers: 4.16.2
 </div>
 </div>
 
+<div class="output_area">
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>Dataset({
+    features: [&#39;translation&#39;],
+    num_rows: 45489
+})</pre>
+</div>
+
+</div>
+
 </div>
 </div>
 
 </div>
     {% endraw %}
 
-<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Translation-tokenization,-batch-transform,-and-DataBlock-methods">Translation tokenization, batch transform, and DataBlock methods<a class="anchor-link" href="#Translation-tokenization,-batch-transform,-and-DataBlock-methods"> </a></h2><p>Translation tasks attempt to convert text in one language into another</p>
-
-</div>
-</div>
-</div>
     {% raw %}
     
 <div class="cell border-box-sizing code_cell rendered">
@@ -122,9 +136,8 @@ transformers: 4.16.2
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="s2">&quot;./&quot;</span><span class="p">)</span>
-<span class="n">wmt_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">ds</span><span class="p">[</span><span class="s2">&quot;translation&quot;</span><span class="p">],</span> <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;de&quot;</span><span class="p">,</span> <span class="s2">&quot;en&quot;</span><span class="p">])</span>
-<span class="nb">len</span><span class="p">(</span><span class="n">wmt_df</span><span class="p">)</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">raw_dataset</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">raw_dataset</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
 </pre></div>
 
     </div>
@@ -136,12 +149,11 @@ transformers: 4.16.2
 
 <div class="output_area">
 
-
-
-<div class="output_text output_subarea output_execute_result">
-<pre>45489</pre>
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>dict_keys([&#39;translation&#39;])
+{&#39;translation&#39;: {&#39;de&#39;: &#39;Wiederaufnahme der Sitzungsperiode&#39;, &#39;en&#39;: &#39;Resumption of the session&#39;}}
+</pre>
 </div>
-
 </div>
 
 </div>
@@ -157,7 +169,10 @@ transformers: 4.16.2
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">wmt_df</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">wmt_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">raw_dataset</span><span class="p">[</span><span class="s2">&quot;translation&quot;</span><span class="p">],</span> <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;de&quot;</span><span class="p">,</span> <span class="s2">&quot;en&quot;</span><span class="p">])</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">wmt_df</span><span class="p">))</span>
+<span class="n">wmt_df</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
 </pre></div>
 
     </div>
@@ -166,6 +181,14 @@ transformers: 4.16.2
 
 <div class="output_wrapper">
 <div class="output">
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>45489
+</pre>
+</div>
+</div>
 
 <div class="output_area">
 
@@ -255,6 +278,261 @@ transformers: 4.16.2
 </div>
     {% endraw %}
 
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Preprocessing">Preprocessing<a class="anchor-link" href="#Preprocessing"> </a></h2><p>Starting with version 2.0, BLURR provides a preprocessing base class that can be used to build task specific pre-processed datasets from pandas DataFrames or Hugging Face Datasets</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="TranslationPreprocessor"><a href="/blurr/data-seq2seq-translation.html#TranslationPreprocessor"><code>TranslationPreprocessor</code></a><a class="anchor-link" href="#TranslationPreprocessor"> </a></h3><p>This class can be used for preprocessing translation tasks, and includes a <code>proc_{your_text_attr}</code> and <code>proc_{target_text_attr}</code> attributes containing your modified input and target texts as a result of tokenization (e.g., if you specify a <code>max_length</code> the <code>proc_{your_text_attr}</code> may contain truncated text).</p>
+
+</div>
+</div>
+</div>
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+<div class="output_markdown rendered_html output_subarea ">
+<h2 id="TranslationPreprocessor" class="doc_header"><code>class</code> <code>TranslationPreprocessor</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/data/seq2seq/translation.py#L21" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>TranslationPreprocessor</code>(<strong><code>hf_tokenizer</code></strong>:<code>PreTrainedTokenizerBase</code>, <strong><code>batch_size</code></strong>:<code>int</code>=<em><code>1000</code></em>, <strong><code>id_attr</code></strong>:<code>Optional</code>[<code>str</code>]=<em><code>None</code></em>, <strong><code>text_attr</code></strong>:<code>str</code>=<em><code>'original_text'</code></em>, <strong><code>max_input_tok_length</code></strong>:<code>Optional</code>[<code>int</code>]=<em><code>None</code></em>, <strong><code>target_text_attr</code></strong>:<code>str</code>=<em><code>'translated_text'</code></em>, <strong><code>max_target_tok_length</code></strong>:<code>Optional</code>[<code>int</code>]=<em><code>None</code></em>, <strong><code>is_valid_attr</code></strong>:<code>Optional</code>[<code>str</code>]=<em><code>'is_valid'</code></em>, <strong><code>tok_kwargs</code></strong>:<code>dict</code>=<em><code>{}</code></em>) :: <a href="/blurr/data-seq2seq-core.html#Seq2SeqPreprocessor"><code>Seq2SeqPreprocessor</code></a></p>
+</blockquote>
+<table>
+<thead><tr>
+<th></th>
+<th>Type</th>
+<th>Default</th>
+<th>Details</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong><code>hf_tokenizer</code></strong></td>
+<td><code>PreTrainedTokenizerBase</code></td>
+<td></td>
+<td>A Hugging Face tokenizer</td>
+</tr>
+<tr>
+<td><strong><code>batch_size</code></strong></td>
+<td><code>int</code></td>
+<td><code>1000</code></td>
+<td>The number of examples to process at a time</td>
+</tr>
+<tr>
+<td><strong><code>id_attr</code></strong></td>
+<td><code>Optional[str]</code></td>
+<td>``</td>
+<td>The unique identifier in the dataset</td>
+</tr>
+<tr>
+<td><strong><code>text_attr</code></strong></td>
+<td><code>str</code></td>
+<td><code>original_text</code></td>
+<td>The attribute holding the text to translate</td>
+</tr>
+<tr>
+<td><strong><code>max_input_tok_length</code></strong></td>
+<td><code>Optional[int]</code></td>
+<td>``</td>
+<td>The maximum length (# of tokens) allowed for inputs. Will default to the max length allowed<br />by the model if not provided</td>
+</tr>
+<tr>
+<td><strong><code>target_text_attr</code></strong></td>
+<td><code>str</code></td>
+<td><code>translated_text</code></td>
+<td>The attribute holding the summary</td>
+</tr>
+<tr>
+<td><strong><code>max_target_tok_length</code></strong></td>
+<td><code>Optional[int]</code></td>
+<td>``</td>
+<td>The maximum length (# of tokens) allowed for targets</td>
+</tr>
+<tr>
+<td><strong><code>is_valid_attr</code></strong></td>
+<td><code>Optional[str]</code></td>
+<td><code>is_valid</code></td>
+<td>The attribute that should be created if your are processing individual training and validation<br />datasets into a single dataset, and will indicate to which each example is associated</td>
+</tr>
+<tr>
+<td><strong><code>tok_kwargs</code></strong></td>
+<td><code>dict</code></td>
+<td>``</td>
+<td>Tokenization kwargs that will be applied with calling the tokenizer</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    {% endraw %}
+
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+
+</div>
+    {% endraw %}
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h4 id="Using-a-DataFrame">Using a <code>DataFrame</code><a class="anchor-link" href="#Using-a-DataFrame"> </a></h4>
+</div>
+</div>
+</div>
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">preprocessor</span> <span class="o">=</span> <span class="n">TranslationPreprocessor</span><span class="p">(</span>
+    <span class="n">hf_tokenizer</span><span class="p">,</span> <span class="n">text_attr</span><span class="o">=</span><span class="s2">&quot;de&quot;</span><span class="p">,</span> <span class="n">target_text_attr</span><span class="o">=</span><span class="s2">&quot;en&quot;</span><span class="p">,</span> <span class="n">max_input_tok_length</span><span class="o">=</span><span class="mi">128</span><span class="p">,</span> <span class="n">max_target_tok_length</span><span class="o">=</span><span class="mi">128</span>
+<span class="p">)</span>
+<span class="n">proc_df</span> <span class="o">=</span> <span class="n">preprocessor</span><span class="o">.</span><span class="n">process_df</span><span class="p">(</span><span class="n">wmt_df</span><span class="p">)</span>
+<span class="n">proc_df</span><span class="o">.</span><span class="n">columns</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">proc_df</span><span class="p">)</span>
+<span class="n">proc_df</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+<div class="output_html rendered_html output_subarea output_execute_result"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>proc_en</th>
+      <th>proc_de</th>
+      <th>de</th>
+      <th>en</th>
+      <th>de_start_char_idx</th>
+      <th>de_end_char_idx</th>
+      <th>en_start_char_idx</th>
+      <th>en_end_char_idx</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>Resumption of the session</td>
+      <td>Wiederaufnahme der Sitzungsperiode</td>
+      <td>Wiederaufnahme der Sitzungsperiode</td>
+      <td>Resumption of the session</td>
+      <td>0</td>
+      <td>34</td>
+      <td>0</td>
+      <td>25</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>I declare resumed the session of the European Parliament adjourned on Friday 17 December 1999, and I would like once again to wish you a happy new year in the hope that you enjoyed a pleasant festive period.</td>
+      <td>Ich erkläre die am Freitag, dem 17. Dezember unterbrochene Sitzungsperiode des Europäischen Parlaments für wiederaufgenommen, wünsche Ihnen nochmals alles Gute zum Jahreswechsel und hoffe, daß Sie schöne Ferien hatten.</td>
+      <td>Ich erkläre die am Freitag, dem 17. Dezember unterbrochene Sitzungsperiode des Europäischen Parlaments für wiederaufgenommen, wünsche Ihnen nochmals alles Gute zum Jahreswechsel und hoffe, daß Sie schöne Ferien hatten.</td>
+      <td>I declare resumed the session of the European Parliament adjourned on Friday 17 December 1999, and I would like once again to wish you a happy new year in the hope that you enjoyed a pleasant festive period.</td>
+      <td>0</td>
+      <td>218</td>
+      <td>0</td>
+      <td>207</td>
+    </tr>
+  </tbody>
+</table>
+</div></div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    {% endraw %}
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Examples">Examples<a class="anchor-link" href="#Examples"> </a></h2>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="Using-the-mid-level-API">Using the mid-level API<a class="anchor-link" href="#Using-the-mid-level-API"> </a></h3>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h4 id="Batch-Time-Tokenization">Batch-Time Tokenization<a class="anchor-link" href="#Batch-Time-Tokenization"> </a></h4>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h5 id="Step-1:-Get-your-Hugging-Face-objects.">Step 1: Get your Hugging Face objects.<a class="anchor-link" href="#Step-1:-Get-your-Hugging-Face-objects."> </a></h5>
+</div>
+</div>
+</div>
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">pretrained_model_name</span> <span class="o">=</span> <span class="s2">&quot;facebook/bart-large-cnn&quot;</span>
+<span class="n">model_cls</span> <span class="o">=</span> <span class="n">AutoModelForSeq2SeqLM</span>
+
+<span class="n">hf_arch</span><span class="p">,</span> <span class="n">hf_config</span><span class="p">,</span> <span class="n">hf_tokenizer</span><span class="p">,</span> <span class="n">hf_model</span> <span class="o">=</span> <span class="n">BLURR</span><span class="o">.</span><span class="n">get_hf_objects</span><span class="p">(</span><span class="n">pretrained_model_name</span><span class="p">,</span> <span class="n">model_cls</span><span class="o">=</span><span class="n">model_cls</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    {% endraw %}
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h5 id="Step-2:-Create-your-DataBlock">Step 2: Create your <code>DataBlock</code><a class="anchor-link" href="#Step-2:-Create-your-DataBlock"> </a></h5><p>Two lines!  Notice we pass in <code>noop</code> for our targets (e.g. our summaries) because the batch transform will take care of both out inputs and targets.</p>
+
+</div>
+</div>
+</div>
     {% raw %}
     
 <div class="cell border-box-sizing code_cell rendered">
@@ -273,13 +551,6 @@ transformers: 4.16.2
 </div>
     {% endraw %}
 
-<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<p>Two lines!  Notice we pass in <code>noop</code> for our targets (e.g. our summaries) because the batch transform will take care of both out inputs and targets.</p>
-
-</div>
-</div>
-</div>
     {% raw %}
     
 <div class="cell border-box-sizing code_cell rendered">
@@ -297,6 +568,12 @@ transformers: 4.16.2
 </div>
     {% endraw %}
 
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h5 id="Step-3:-Build-your-DataLoaders">Step 3: Build your <code>DataLoaders</code><a class="anchor-link" href="#Step-3:-Build-your-DataLoaders"> </a></h5>
+</div>
+</div>
+</div>
     {% raw %}
     
 <div class="cell border-box-sizing code_cell rendered">
@@ -338,7 +615,7 @@ transformers: 4.16.2
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="nb">len</span><span class="p">(</span><span class="n">b</span><span class="p">),</span> <span class="n">b</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;input_ids&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">b</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="nb">len</span><span class="p">(</span><span class="n">b</span><span class="p">),</span> <span class="n">b</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;input_ids&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">b</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;labels&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">b</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span>
 </pre></div>
 
     </div>
@@ -353,7 +630,97 @@ transformers: 4.16.2
 
 
 <div class="output_text output_subarea output_execute_result">
-<pre>(2, torch.Size([4, 483]), torch.Size([4, 86]))</pre>
+<pre>(2, torch.Size([4, 458]), torch.Size([4, 287]), torch.Size([4, 287]))</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    {% endraw %}
+
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">b</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;labels&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="n">b</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>(tensor([    0,  2872,    36,   250,   245,    12,   612,  5046,    73, 17472,
+            43,    30,   427,   248,  2768,   298,   459,     6,    15,  4137,
+             9,     5,  1674,    15,  8587,  1766,  6007,     6,    15, 22674,
+         30252,     9,     5,   568,  8082, 15462,     7,     5,  1463,    11,
+          2098,     9,     5,   613,  1052,     9,     5,  2958,     6,  3821,
+             8,  4413,   796,  2717, 17114,    13,     5,  6708,   613,    76,
+            36, 10370,  1640, 37446,    43, 30398,   111,   230,   245,  5514,
+           151,   246,    73, 37446,   111,  6193,    73, 34972,  1640, 44579,
+         48749,    15, 18379, 15462,     7,     5,   796,  2475,    13,     5,
+         26657,     9, 10427,     8, 11214, 28614,     6,  7378,     6,    13,
+             5,  6708,   613,    76,    36,   347,   245,    12,  2663,  1096,
+            73, 17472,   111,  3788,    73,   844,  6405,  1640, 44579, 48749,
+            15, 18379, 15462,     7,     5,   796,  2521,    13, 36413,  5033,
+         10657,     6,    20,  7485, 30521,  8907,     6,    13,     5,  6708,
+           613,    76,    36,   347,   245,  5514,  2663,  3414,    73, 17472,
+           111,  3788,    73,   844,  6478,  1640, 44579, 48749,    15, 18379,
+         15462,    11,  2098,     9,     5,  5574,     9,     5,   937,  1229,
+             9,     5,   796,  1332,    13,     5,  6708,   613,    76,   131,
+          7162, 10831,   111,   837,  1525,  1659,     6,  7162,   468,   111,
+           837,  1525, 11917,  9314,     6,  7162, 11663,   111,  4657,   163,
+           111,  1674,     9,     5, 18647,    36, 21536,  1640, 37446,    43,
+         38456,   111,   230,   245,  5514,   151,   398,    73, 37446,   111,
+          6193,    73, 26912,   401,  1640, 44579,  4397,    15, 22674, 30252,
+             9,     5,   568,  8082, 15462,    11,  2098,     9,     5,  5574,
+             9,     5,   937,  1229,     9,     5,   796,  1332,    13,     5,
+          6708,   613,    76,    35,  7162, 11663,   111,  4657,    83,   111,
+          4713,   178,  3574,  1674,    36, 21536,  1640, 37446,    43, 38456,
+           111,   230,   245,  5514,   151,   398,    73, 37446,   111,  6193,
+            73, 26912,   401,  1640, 44579, 35122,     2], device=&#39;cuda:1&#39;),
+ tensor([    0,  2872,    36,   250,   245,    12,   612,  5046,    73, 17472,
+            43,    30,   427,   248,  2768,   298,   459,     6,    15,  4137,
+             9,     5,  1674,    15,  8587,  1766,  6007,     6,    15, 22674,
+         30252,     9,     5,   568,  8082, 15462,     7,     5,  1463,    11,
+          2098,     9,     5,   613,  1052,     9,     5,  2958,     6,  3821,
+             8,  4413,   796,  2717, 17114,    13,     5,  6708,   613,    76,
+            36, 10370,  1640, 37446,    43, 30398,   111,   230,   245,  5514,
+           151,   246,    73, 37446,   111,  6193,    73, 34972,  1640, 44579,
+         48749,    15, 18379, 15462,     7,     5,   796,  2475,    13,     5,
+         26657,     9, 10427,     8, 11214, 28614,     6,  7378,     6,    13,
+             5,  6708,   613,    76,    36,   347,   245,    12,  2663,  1096,
+            73, 17472,   111,  3788,    73,   844,  6405,  1640, 44579, 48749,
+            15, 18379, 15462,     7,     5,   796,  2521,    13, 36413,  5033,
+         10657,     6,    20,  7485, 30521,  8907,     6,    13,     5,  6708,
+           613,    76,    36,   347,   245,  5514,  2663,  3414,    73, 17472,
+           111,  3788,    73,   844,  6478,  1640, 44579, 48749,    15, 18379,
+         15462,    11,  2098,     9,     5,  5574,     9,     5,   937,  1229,
+             9,     5,   796,  1332,    13,     5,  6708,   613,    76,   131,
+          7162, 10831,   111,   837,  1525,  1659,     6,  7162,   468,   111,
+           837,  1525, 11917,  9314,     6,  7162, 11663,   111,  4657,   163,
+           111,  1674,     9,     5, 18647,    36, 21536,  1640, 37446,    43,
+         38456,   111,   230,   245,  5514,   151,   398,    73, 37446,   111,
+          6193,    73, 26912,   401,  1640, 44579,  4397,    15, 22674, 30252,
+             9,     5,   568,  8082, 15462,    11,  2098,     9,     5,  5574,
+             9,     5,   937,  1229,     9,     5,   796,  1332,    13,     5,
+          6708,   613,    76,    35,  7162, 11663,   111,  4657,    83,   111,
+          4713,   178,  3574,  1674,    36, 21536,  1640, 37446,    43, 38456,
+           111,   230,   245,  5514,   151,   398,    73, 37446,   111,  6193,
+            73, 26912,   401,  1640, 44579, 35122,     2], device=&#39;cuda:1&#39;))</pre>
 </div>
 
 </div>
@@ -395,13 +762,222 @@ transformers: 4.16.2
   <tbody>
     <tr>
       <th>0</th>
-      <td>&lt;s&gt; Was nun die Ergebnisse der Verhandlungen über die Anwendung der Artikel 3, 4, 5, 6 und 12 des Interimsabkommens bezüglich Warenhandel, öffentlicher Aufträge, Wettbewerb, Konsultationsmechanismen bei Fragen des geistigen Eigentums und Beilegung vo</td>
-      <td>Although for certain sectors there may be flaws - I am thinking specifically of the textiles sector, where the rules of origin issue causes great concern - the effects will be beneficial for both the European Union and Mexico. For the European Union</td>
+      <td>&lt;s&gt; Bericht (A5-0089/2000) von Frau Rühle im Namen des Ausschusses für Haushaltskontrolle über den Aufschub des Beschlusses zur Entlastung der Kommission für die Haushaltsführung des sechsten, siebten und achten Europäischen Entwicklungsfonds für das</td>
+      <td>Report (A5-0089/2000) by Mr Rühle, on behalf of the Committee on Budgetary Control, on postponement of the decision concerning discharge to the Commission in respect of the financial management of the sixth, seventh and eighth European Development F</td>
     </tr>
     <tr>
       <th>1</th>
-      <td>&lt;s&gt; Es ist sicher nicht meine Aufgabe zu beurteilen, wer mit wem welches Bündnis eingeht, aber wenn der Volkspartei und den Liberalen soviel an der Festigung ihres Bündnisses liegt, dann sollten sie zumindest etwas Positives vorschlagen, etwas, das d</td>
-      <td>It is certainly not my task to judge other people' s alliances but if the People' s Party and the Liberals are so desperate to cement their alliance, let them at least propose something positive, something that has a chance of working, not repeat th</td>
+      <td>&lt;s&gt; Dabei wird mit der Entziehung oder Einbehaltung von Mitteln gedroht, um eine bessere Umsetzung von Rechtsvorschriften in Bereichen durchzusetzen, die mit dem Bereich, für den die Mittel bestimmt sind, mitunter recht wenig zu tun haben, wobei die</td>
+      <td>Linkage, in other words, using the threat of the withdrawal or withholding of funds to try to get better implementation of legislation in what may sometimes be a rather unconnected sector but in this case is quite a closely connected sector, is one</td>
+    </tr>
+  </tbody>
+</table></div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    {% endraw %}
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h4 id="Using-a-preprocessed-dataset">Using a preprocessed dataset<a class="anchor-link" href="#Using-a-preprocessed-dataset"> </a></h4>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h5 id="Step-1a:-Get-your-Hugging-Face-objects.">Step 1a: Get your Hugging Face objects.<a class="anchor-link" href="#Step-1a:-Get-your-Hugging-Face-objects."> </a></h5>
+</div>
+</div>
+</div>
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">pretrained_model_name</span> <span class="o">=</span> <span class="s2">&quot;facebook/bart-large-cnn&quot;</span>
+<span class="n">model_cls</span> <span class="o">=</span> <span class="n">AutoModelForSeq2SeqLM</span>
+
+<span class="n">hf_arch</span><span class="p">,</span> <span class="n">hf_config</span><span class="p">,</span> <span class="n">hf_tokenizer</span><span class="p">,</span> <span class="n">hf_model</span> <span class="o">=</span> <span class="n">BLURR</span><span class="o">.</span><span class="n">get_hf_objects</span><span class="p">(</span><span class="n">pretrained_model_name</span><span class="p">,</span> <span class="n">model_cls</span><span class="o">=</span><span class="n">model_cls</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    {% endraw %}
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h5 id="Step-1b.-Preprocess-dataset">Step 1b. Preprocess dataset<a class="anchor-link" href="#Step-1b.-Preprocess-dataset"> </a></h5>
+</div>
+</div>
+</div>
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">preprocessor</span> <span class="o">=</span> <span class="n">TranslationPreprocessor</span><span class="p">(</span>
+    <span class="n">hf_tokenizer</span><span class="p">,</span>
+    <span class="n">text_attr</span><span class="o">=</span><span class="s2">&quot;de&quot;</span><span class="p">,</span>
+    <span class="n">target_text_attr</span><span class="o">=</span><span class="s2">&quot;en&quot;</span><span class="p">,</span>
+    <span class="n">max_input_tok_length</span><span class="o">=</span><span class="mi">128</span><span class="p">,</span>
+    <span class="n">max_target_tok_length</span><span class="o">=</span><span class="mi">128</span>
+<span class="p">)</span>
+<span class="n">proc_df</span> <span class="o">=</span> <span class="n">preprocessor</span><span class="o">.</span><span class="n">process_df</span><span class="p">(</span><span class="n">wmt_df</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    {% endraw %}
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h5 id="Step-2:-Create-your-DataBlock">Step 2: Create your <code>DataBlock</code><a class="anchor-link" href="#Step-2:-Create-your-DataBlock"> </a></h5>
+</div>
+</div>
+</div>
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">blocks</span> <span class="o">=</span> <span class="p">(</span><span class="n">Seq2SeqTextBlock</span><span class="p">(</span><span class="n">hf_arch</span><span class="p">,</span> <span class="n">hf_config</span><span class="p">,</span> <span class="n">hf_tokenizer</span><span class="p">,</span> <span class="n">hf_model</span><span class="p">),</span> <span class="n">noop</span><span class="p">)</span>
+<span class="n">dblock</span> <span class="o">=</span> <span class="n">DataBlock</span><span class="p">(</span><span class="n">blocks</span><span class="o">=</span><span class="n">blocks</span><span class="p">,</span> <span class="n">get_x</span><span class="o">=</span><span class="n">ColReader</span><span class="p">(</span><span class="s2">&quot;proc_de&quot;</span><span class="p">),</span> <span class="n">get_y</span><span class="o">=</span><span class="n">ColReader</span><span class="p">(</span><span class="s2">&quot;proc_en&quot;</span><span class="p">),</span> <span class="n">splitter</span><span class="o">=</span><span class="n">RandomSplitter</span><span class="p">())</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    {% endraw %}
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h5 id="Step-3:-Build-your-DataLoaders">Step 3: Build your <code>DataLoaders</code><a class="anchor-link" href="#Step-3:-Build-your-DataLoaders"> </a></h5>
+</div>
+</div>
+</div>
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">dls</span> <span class="o">=</span> <span class="n">dblock</span><span class="o">.</span><span class="n">dataloaders</span><span class="p">(</span><span class="n">proc_df</span><span class="p">,</span> <span class="n">bs</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    {% endraw %}
+
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">b</span> <span class="o">=</span> <span class="n">dls</span><span class="o">.</span><span class="n">one_batch</span><span class="p">()</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    {% endraw %}
+
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="nb">len</span><span class="p">(</span><span class="n">b</span><span class="p">),</span> <span class="n">b</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;input_ids&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">b</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;labels&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">b</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>(2, torch.Size([4, 129]), torch.Size([4, 91]), torch.Size([4, 91]))</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    {% endraw %}
+
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">dls</span><span class="o">.</span><span class="n">show_batch</span><span class="p">(</span><span class="n">dataloaders</span><span class="o">=</span><span class="n">dls</span><span class="p">,</span> <span class="n">max_n</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">input_trunc_at</span><span class="o">=</span><span class="mi">250</span><span class="p">,</span> <span class="n">target_trunc_at</span><span class="o">=</span><span class="mi">250</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+<div class="output_html rendered_html output_subarea "><table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>text</th>
+      <th>target</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>&lt;s&gt; Daher geht es nicht nur um eine Reform der Welthandelsorganisation und der wirtschaftlichen Architektur - und der Kommissionspräsident hat bezeichnenderweise vergessen, von der Reform der Finanzinstitutionen der internationalen Finanzarchitektur</td>
+      <td>What we need are not just reforms of the World Trade Organisation and the economic architecture - and, significantly, the President of the Commission forgot to mention the reform of the financial institutions and international financial architecture</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>&lt;s&gt; Die "Vereinfachung " der Richtlinie von 1973, die 1992 durch den Rat von Edinburgh eingeleitet wurde, hat erst 1996 zu einem Vorschlag der Kommission geführt, der 1997 in erster Lesung von unserem Parlament geprüft wurde; und nun hat es noch einm</td>
+      <td>Introduced at the Edinburgh Council in 1992, the'simplification' of the 1973 directive became a Commission proposal only in 1996 and was considered at first reading by this House in 1997. It has taken another two and a half years for the Council to</td>
     </tr>
   </tbody>
 </table></div>
@@ -500,7 +1076,7 @@ transformers: 4.16.2
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="s2">&quot;./&quot;</span><span class="p">)</span>
-<span class="n">wmt_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">ds</span><span class="p">[</span><span class="s2">&quot;translation&quot;</span><span class="p">],</span> <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;de&quot;</span><span class="p">,</span> <span class="s2">&quot;en&quot;</span><span class="p">])</span>
+<span class="n">wmt_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">raw_dataset</span><span class="p">[</span><span class="s2">&quot;translation&quot;</span><span class="p">],</span> <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;de&quot;</span><span class="p">,</span> <span class="s2">&quot;en&quot;</span><span class="p">])</span>
 </pre></div>
 
     </div>

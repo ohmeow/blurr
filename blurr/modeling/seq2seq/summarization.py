@@ -17,7 +17,7 @@ from fastcore.all import *
 from transformers import AutoModelForSeq2SeqLM, PreTrainedModel, logging
 
 from ...utils import BLURR
-from ...data.seq2seq.core import Seq2SeqBatchTokenizeTransform, Seq2SeqTextBlock
+from ...data.seq2seq.core import Seq2SeqBatchTokenizeTransform, Seq2SeqTextBlock, default_text_gen_kwargs
 from ..core import BaseModelCallback, BaseModelWrapper, Blearner, PreCalculatedCrossEntropyLoss
 from .core import Seq2SeqMetricsCallback, blurr_seq2seq_splitter
 
@@ -27,8 +27,8 @@ logging.set_verbosity_error()
 # Cell
 @patch
 def blurr_summarize(self: Learner, inp, **kwargs):
-    preds = learn.blurr_generate(inp, **kwargs)
-    return [{"summary_text": pred} for pred in preds]
+    preds = learn.blurr_generate(inp, key="summary_texts", **kwargs)
+    return preds
 
 # Cell
 @delegates(Blearner.__init__)
@@ -119,8 +119,7 @@ class BlearnerForSummarization(Blearner):
         )
 
         # update text generation kwargs
-        if text_gen_kwargs is None and hf_arch in ["bart", "t5"]:
-            text_gen_kwargs = hf_config.task_specific_params["summarization"]
+        text_gen_kwargs = {**text_gen_kwargs, **default_text_gen_kwargs(hf_config, hf_model, task="summarization")}
 
         # not all "summarization" parameters are for the model.generate method ... remove them here
         generate_func_args = list(inspect.signature(hf_model.generate).parameters.keys())

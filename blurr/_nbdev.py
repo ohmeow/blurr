@@ -84,6 +84,7 @@ index = {"Singleton": "00_utils.ipynb",
          "Learner.blurr_summarize": "11_modeling-seq2seq-summarization.ipynb",
          "BlearnerForSummarization": "11_modeling-seq2seq-summarization.ipynb",
          "TranslationPreprocessor": "12_data-seq2seq-translation.ipynb",
+         "Learner.blurr_translate": "12_modeling-seq2seq-translation.ipynb",
          "BlearnerForTranslation": "12_modeling-seq2seq-translation.ipynb"}
 
 modules = ["utils.py",

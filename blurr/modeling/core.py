@@ -242,11 +242,14 @@ def blurr_predict(self: Learner, items, rm_type_tfms=None):
 
 # Cell
 @patch
-def blurr_generate(self: Learner, inp, **kwargs):
+def blurr_generate(self: Learner, items, key="generated_texts", **kwargs):
     """Uses the built-in `generate` method to generate the text
     (see [here](https://huggingface.co/transformers/main_classes/model.html#transformers.PreTrainedModel.generate)
     for a list of arguments you can pass in)
     """
+    if not is_listy(items):
+        items = [items]
+
     # grab our blurr tfm with the bits to properly decode/show our inputs/targets
     tfm = first_blurr_tfm(self.dls)
 
@@ -257,21 +260,25 @@ def blurr_generate(self: Learner, inp, **kwargs):
     # grab the text generation kwargs
     text_gen_kwargs = tfm.text_gen_kwargs if (len(kwargs) == 0) else kwargs
 
-    if isinstance(inp, str):
-        input_ids = hf_tokenizer.encode(inp, padding=True, truncation=True, return_tensors="pt", **tok_kwargs)
-    else:
-        # note (10/30/2020): as of pytorch 1.7, this has to be a plain ol tensor (not a subclass of TensorBase)
-        input_ids = inp.as_subclass(Tensor)
+    results = []
+    for idx, inp in enumerate(items):
+        if isinstance(inp, str):
+            input_ids = hf_tokenizer.encode(inp, padding=True, truncation=True, return_tensors="pt", **tok_kwargs)
+        else:
+            # note (10/30/2020): as of pytorch 1.7, this has to be a plain ol tensor (not a subclass of TensorBase)
+            input_ids = inp.as_subclass(Tensor)
 
-    input_ids = input_ids.to(self.model.hf_model.device)
+        input_ids = input_ids.to(self.model.hf_model.device)
 
-    gen_texts = self.model.hf_model.generate(input_ids, **text_gen_kwargs)
-    outputs = [hf_tokenizer.decode(txt, skip_special_tokens=True, clean_up_tokenization_spaces=False) for txt in gen_texts]
+        gen_texts = self.model.hf_model.generate(input_ids, **text_gen_kwargs)
+        outputs = [hf_tokenizer.decode(txt, skip_special_tokens=True, clean_up_tokenization_spaces=False) for txt in gen_texts]
 
-    if tfm.hf_arch == "pegasus":
-        outputs = [o.replace("<n>", " ") for o in outputs]
+        if tfm.hf_arch == "pegasus":
+            outputs = [o.replace("<n>", " ") for o in outputs]
 
-    return outputs
+        results.append({key: outputs[0] if len(outputs) == 1 else outputs})
+
+    return results
 
 
 # Cell

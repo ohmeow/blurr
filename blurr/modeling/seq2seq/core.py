@@ -7,8 +7,7 @@ import torch
 
 from datasets import load_metric as hf_load_metric
 from fastai.callback.all import *
-from fastai.data.block import DataBlock, ColReader, ColSplitter, RandomSplitter
-from fastai.data.core import DataLoader, DataLoaders, TfmdDL
+from fastai.data.block import DataBlock, ColReader, RandomSplitter
 from fastai.imports import *
 from fastai.learner import *
 from fastai.losses import CrossEntropyLossFlat
@@ -282,7 +281,7 @@ def show_results(
             (
                 hf_tokenizer.decode(s[0], skip_special_tokens=True)[:input_trunc_at],
                 hf_tokenizer.decode(s[1][s[1] != ignore_token_id], skip_special_tokens=True)[:target_trunc_at],
-                gen_txt[:target_trunc_at],
+                gen_txt["generated_texts"][:target_trunc_at],
             )
             for s, gen_txt in zip(samples, gen_text_txts)
         ]

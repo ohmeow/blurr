@@ -298,7 +298,7 @@ Loading cached shuffled indices for dataset at /home/wgilliam/.cache/huggingface
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">pretrained_model_name</span> <span class="o">=</span> <span class="s2">&quot;facebook/bart-large-cnn&quot;</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">pretrained_model_name</span> <span class="o">=</span> <span class="s2">&quot;sshleifer/distilbart-cnn-6-6&quot;</span>
 <span class="n">model_cls</span> <span class="o">=</span> <span class="n">AutoModelForSeq2SeqLM</span>
 
 <span class="n">hf_arch</span><span class="p">,</span> <span class="n">hf_config</span><span class="p">,</span> <span class="n">hf_tokenizer</span><span class="p">,</span> <span class="n">hf_model</span> <span class="o">=</span> <span class="n">BLURR</span><span class="o">.</span><span class="n">get_hf_objects</span><span class="p">(</span><span class="n">pretrained_model_name</span><span class="p">,</span> <span class="n">model_cls</span><span class="o">=</span><span class="n">model_cls</span><span class="p">)</span>
@@ -340,8 +340,7 @@ Loading cached shuffled indices for dataset at /home/wgilliam/.cache/huggingface
 </div>
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h3 id="SummarizationPreprocessor"><a href="/blurr/data-seq2seq-summarization.html#SummarizationPreprocessor"><code>SummarizationPreprocessor</code></a><a class="anchor-link" href="#SummarizationPreprocessor"> </a></h3><p>Starting with version 2.0, BLURR provides a sequence classification preprocessing class that can be used to preprocess DataFrames or Hugging Face Datasets.</p>
-<p>This class can be used for preprocessing summarization tasks, and includes a <code>proc_{your_text_attr}</code> and <code>proc_{target_text_attr}</code> attributes containing your modified input and target texts as a result of tokenization (e.g., if you specify a <code>max_length</code> the <code>proc_{your_text_attr}</code> may contain truncated text).</p>
+<h3 id="SummarizationPreprocessor"><a href="/blurr/data-seq2seq-summarization.html#SummarizationPreprocessor"><code>SummarizationPreprocessor</code></a><a class="anchor-link" href="#SummarizationPreprocessor"> </a></h3><p>This class can be used for preprocessing summarization tasks, and includes a <code>proc_{your_text_attr}</code> and <code>proc_{target_text_attr}</code> attributes containing your modified input and target texts as a result of tokenization (e.g., if you specify a <code>max_length</code> the <code>proc_{your_text_attr}</code> may contain truncated text).</p>
 
 </div>
 </div>
@@ -702,7 +701,7 @@ Loading cached shuffled indices for dataset at /home/wgilliam/.cache/huggingface
 
 
 <div class="output_text output_subarea output_execute_result">
-<pre>(2, torch.Size([4, 1024]), torch.Size([4, 72]), torch.Size([4, 72]))</pre>
+<pre>(2, torch.Size([4, 1024]), torch.Size([4, 60]), torch.Size([4, 60]))</pre>
 </div>
 
 </div>
@@ -740,17 +739,15 @@ Loading cached shuffled indices for dataset at /home/wgilliam/.cache/huggingface
            183,  1284,  2922, 11137,  4457,    30,   299,   940,  2355,  3504,
             11,   188,   469,   479,     2,  -100,  -100,  -100,  -100,  -100,
           -100,  -100,  -100,  -100,  -100,  -100,  -100,  -100,  -100,  -100,
-          -100,  -100,  -100,  -100,  -100,  -100,  -100,  -100,  -100,  -100,
-          -100,  -100,  -100,  -100,  -100,  -100,  -100,  -100,  -100,  -100,
-          -100,  -100], device=&#39;cuda:1&#39;),
+          -100,  -100,  -100,  -100,  -100,  -100,  -100,  -100,  -100,  -100],
+        device=&#39;cuda:1&#39;),
  tensor([    0,   270,  3905,  2950,   516,     9,   908,    25,    37,  5586,
            940,  2355,   375,   479, 50118,  9167,   703,    15,     5,   276,
            183,  1284,  2922, 11137,  4457,    30,   299,   940,  2355,  3504,
             11,   188,   469,   479,     2,  -100,  -100,  -100,  -100,  -100,
           -100,  -100,  -100,  -100,  -100,  -100,  -100,  -100,  -100,  -100,
-          -100,  -100,  -100,  -100,  -100,  -100,  -100,  -100,  -100,  -100,
-          -100,  -100,  -100,  -100,  -100,  -100,  -100,  -100,  -100,  -100,
-          -100,  -100], device=&#39;cuda:1&#39;))</pre>
+          -100,  -100,  -100,  -100,  -100,  -100,  -100,  -100,  -100,  -100],
+        device=&#39;cuda:1&#39;))</pre>
 </div>
 
 </div>
@@ -797,8 +794,8 @@ Loading cached shuffled indices for dataset at /home/wgilliam/.cache/huggingface
     </tr>
     <tr>
       <th>1</th>
-      <td>&lt;s&gt; (CNN) -- President Barack Obama and GOP vice presidential nominee Paul Ryan on Friday traded sharp criticism over health care reforms and Medicare, with each telling a leading advocacy group for senior citizens that the other was being untruthful. "Contrary to what you've heard and what you may hear from subsequent speakers, Obamacare actually strengthened Medicare," the president told the AARP Liffe@50+ event, using the nickname for the 2010 Affordable Care Act that passed with no Republican support. In particular, he called the claim by Ryan and other Republicans that $716 billion is being cut from Medicare to fund the health care bill "simply not true." Ryan spoke to the same event shortly afterward, saying that Obama's contention that the health care law strengthened Medicare was "just not true," adding that the legislation "turned Medicare into a piggy bank for Obamacare." The debate over Medicare is a major issue in the November election campaign, especially in the vital batt</td>
-      <td>NEW: Sen. Reid says Romney still isn't coming clean on taxes.\nPaul Ryan gets mixed reception at AARP event.\nRyan and President Obama accuse each other of being untruthful.\nObama says leadership means rejecting bad ideas.</td>
+      <td>&lt;s&gt; Emails from reporter Liz MacKean to friend expressing concerns about management. interference 'blocked by Panorama from appearing in show' By. Emily Allen. PUBLISHED:. 02:41 EST, 23 October 2012. |. UPDATED:. 03:08 EST, 23 October 2012. Calls: Harriet Harman, Labour's shadow culture. secretary, called for an independent inquiry. into the BBC's handling of the allegations. BBC boss George Entwistle will be quizzed about the handling of the Jimmy Savile sex abuse scandal by MPs today as calls were made for an independent inquiry into the Corporation's actions. Harriet Harman, Labour's shadow culture secretary, called on the Government to set up an independent inquiry into the BBC's handling of the allegations surrounding the late DJ. It comes after excerpts from last night's Panorama highlighted the different explanations given by BBC. bosses about a Newsnight documentary, which planned to expose Savile's crimes, and reasons why it was dropped. Mr Entwistle faces the Culture,. Media</td>
+      <td>Harriet Harman, Labour's shadow culture.\nsecretary, calls for an independent inquiry.\ninto the BBC's handling of the abuse claims.\nFollows last night's Panorama which highlighted different explanations given by BBC.\nbosses about why the Newsnight do</td>
     </tr>
   </tbody>
 </table></div>
@@ -830,7 +827,7 @@ Loading cached shuffled indices for dataset at /home/wgilliam/.cache/huggingface
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">pretrained_model_name</span> <span class="o">=</span> <span class="s2">&quot;facebook/bart-large-cnn&quot;</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">pretrained_model_name</span> <span class="o">=</span> <span class="s2">&quot;sshleifer/distilbart-cnn-6-6&quot;</span>
 <span class="n">model_cls</span> <span class="o">=</span> <span class="n">AutoModelForSeq2SeqLM</span>
 
 <span class="n">hf_arch</span><span class="p">,</span> <span class="n">hf_config</span><span class="p">,</span> <span class="n">hf_tokenizer</span><span class="p">,</span> <span class="n">hf_model</span> <span class="o">=</span> <span class="n">BLURR</span><span class="o">.</span><span class="n">get_hf_objects</span><span class="p">(</span><span class="n">pretrained_model_name</span><span class="p">,</span> <span class="n">model_cls</span><span class="o">=</span><span class="n">model_cls</span><span class="p">)</span>
@@ -958,8 +955,8 @@ Loading cached shuffled indices for dataset at /home/wgilliam/.cache/huggingface
     </tr>
     <tr>
       <th>1</th>
-      <td>&lt;s&gt; Washington (CNN) -- President Barack Obama will deploy up to 1,200 more National Guard troops to the U.S. border with Mexico, an administration official told CNN on Tuesday. In addition, Obama will request $500 million to supplement current spending for enhanced border protection and law enforcement activities, the official said. The National Guard troops will help with drug enforcement efforts and intelligence efforts until Customs and Border Protection can recruit and train additional officers and agents to serve on the border, the official said. The news followed Obama's lunch meeting with Senate Republicans, where Sen. John McCain of Arizona raised the issue of increased border security. McCain &lt;/s&gt;</td>
-      <td>NEW: Mexico says additional U.S. troops at border should battle organized crime, not illegal immigration.\nObama to send 1,200</td>
+      <td>&lt;s&gt; (CNN) -- About 83,000 Defense Department employees and contractors with security clearances to protect the nation's secrets have delinquent federal tax debts totaling $730 million, according to an internal government audit. The findings in the new Government Accountability Office study raise security concerns for the U.S. government. Officials say employees and contractors who have financial problems are top targets of foreign intelligence agents. Federal regulations governing security clearances say that a person "who is financially overextended is at risk of having to engage in illegal acts to generate funds" and that indebtedness should be among factors considered when someone applies for a clearance, the GAO&lt;/s&gt;</td>
+      <td>Findings raise security concerns for the U.S. government.\nOfficials say employees and contractors with financial problems are top targets of foreign intelligence</td>
     </tr>
   </tbody>
 </table></div>
