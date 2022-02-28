@@ -30,6 +30,7 @@ from fastai.text.all import *
 
 from blurr.data.all import *
 from blurr.modeling.all import *
+
 ```
 
 ### Get your data
@@ -37,14 +38,16 @@ from blurr.modeling.all import *
 ```python
 path = untar_data(URLs.IMDB_SAMPLE)
 
-model_path = Path('models')
-imdb_df = pd.read_csv(path/'texts.csv')
+model_path = Path("models")
+imdb_df = pd.read_csv(path / "texts.csv")
+
 ```
 
 ### Get `n_labels` from data for config later
 
 ```python
-n_labels = len(imdb_df['label'].unique())
+n_labels = len(imdb_df["label"].unique())
+
 ```
 
 ### Get your 🤗 objects
@@ -58,6 +61,7 @@ config = AutoConfig.from_pretrained(pretrained_model_name)
 config.num_labels = n_labels
 
 hf_arch, hf_config, hf_tokenizer, hf_model = BLURR.get_hf_objects(pretrained_model_name, model_cls=model_cls, config=config)
+
 ```
 
 ### Build your Data 🧱 and your DataLoaders
@@ -65,13 +69,15 @@ hf_arch, hf_config, hf_tokenizer, hf_model = BLURR.get_hf_objects(pretrained_mod
 ```python
 # single input
 blocks = (TextBlock(hf_arch, hf_config, hf_tokenizer, hf_model), CategoryBlock)
-dblock = DataBlock(blocks=blocks,  get_x=ColReader('text'), get_y=ColReader('label'), splitter=ColSplitter())
+dblock = DataBlock(blocks=blocks, get_x=ColReader("text"), get_y=ColReader("label"), splitter=ColSplitter())
 
 dls = dblock.dataloaders(imdb_df, bs=4)
+
 ```
 
 ```python
 dls.show_batch(dataloaders=dls, max_n=2)
+
 ```
 
 
@@ -101,20 +107,23 @@ dls.show_batch(dataloaders=dls, max_n=2)
 ### ... and 🚂
 
 ```python
-#slow
+# slow
 model = BaseModelWrapper(hf_model)
 
-learn = Learner(dls, 
-                model,
-                opt_func=partial(Adam, decouple_wd=True),
-                loss_func=CrossEntropyLossFlat(),
-                metrics=[accuracy],
-                cbs=[BaseModelCallback],
-                splitter=blurr_splitter)
+learn = Learner(
+    dls,
+    model,
+    opt_func=partial(Adam, decouple_wd=True),
+    loss_func=CrossEntropyLossFlat(),
+    metrics=[accuracy],
+    cbs=[BaseModelCallback],
+    splitter=blurr_splitter,
+)
 
 learn.freeze()
 
 learn.fit_one_cycle(3, lr_max=1e-3)
+
 ```
 
 
@@ -155,8 +164,9 @@ learn.fit_one_cycle(3, lr_max=1e-3)
 
 
 ```python
-#slow
+# slow
 learn.show_results(learner=learn, max_n=2)
+
 ```
 
 
@@ -197,13 +207,15 @@ Using the high-level API we can reduce DataBlock, DataLoaders, and Learner creat
 Included in the high-level API is a general `BLearner` class (pronouned **"Blurrner"**) that you can use with hand crafted DataLoaders, as well as, task specific BLearners like `BLearnerForSequenceClassification` that will handle everything given your raw data sourced from a pandas DataFrame, CSV file, or list of dictionaries (for example a huggingface datasets dataset)
 
 ```python
-#slow
-learn = BlearnerForSequenceClassification.from_data(imdb_df, pretrained_model_name, dl_kwargs={ 'bs': 4})
+# slow
+learn = BlearnerForSequenceClassification.from_data(imdb_df, pretrained_model_name, dl_kwargs={"bs": 4})
+
 ```
 
 ```python
-#slow
+# slow
 learn.fit_one_cycle(1, lr_max=1e-3)
+
 ```
 
 
@@ -232,8 +244,9 @@ learn.fit_one_cycle(1, lr_max=1e-3)
 
 
 ```python
-#slow
+# slow
 learn.show_results(learner=learn, max_n=2)
+
 ```
 
 
