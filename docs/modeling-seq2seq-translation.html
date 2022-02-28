@@ -85,7 +85,7 @@ transformers: 4.16.2
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">set_device</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Using GPU #</span><span class="si">{</span><span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">current_device</span><span class="p">()</span><span class="si">}</span><span class="s1">: </span><span class="si">{</span><span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">get_device_name</span><span class="p">()</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Using GPU #</span><span class="si">{</span><span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">current_device</span><span class="p">()</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">get_device_name</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 </pre></div>
 
     </div>
@@ -135,9 +135,10 @@ transformers: 4.16.2
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">dataset</span> <span class="o">=</span> <span class="n">load_dataset</span><span class="p">(</span><span class="s1">&#39;wmt16&#39;</span><span class="p">,</span> <span class="s1">&#39;de-en&#39;</span><span class="p">,</span> <span class="n">split</span><span class="o">=</span><span class="s1">&#39;train&#39;</span><span class="p">)</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">dataset</span> <span class="o">=</span> <span class="n">load_dataset</span><span class="p">(</span><span class="s2">&quot;wmt16&quot;</span><span class="p">,</span> <span class="s2">&quot;de-en&quot;</span><span class="p">,</span> <span class="n">split</span><span class="o">=</span><span class="s2">&quot;train&quot;</span><span class="p">)</span>
 <span class="n">dataset</span> <span class="o">=</span> <span class="n">dataset</span><span class="o">.</span><span class="n">shuffle</span><span class="p">(</span><span class="n">seed</span><span class="o">=</span><span class="mi">32</span><span class="p">)</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">1200</span><span class="p">))</span>
-<span class="n">wmt_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">dataset</span><span class="p">[</span><span class="s1">&#39;translation&#39;</span><span class="p">],</span> <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;de&#39;</span><span class="p">,</span> <span class="s1">&#39;en&#39;</span><span class="p">]);</span> <span class="nb">len</span><span class="p">(</span><span class="n">wmt_df</span><span class="p">)</span>
+<span class="n">wmt_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">dataset</span><span class="p">[</span><span class="s2">&quot;translation&quot;</span><span class="p">],</span> <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;de&quot;</span><span class="p">,</span> <span class="s2">&quot;en&quot;</span><span class="p">])</span>
+<span class="nb">len</span><span class="p">(</span><span class="n">wmt_df</span><span class="p">)</span>
 <span class="n">wmt_df</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
 </pre></div>
 
@@ -253,7 +254,7 @@ Loading cached shuffled indices for dataset at /home/wgilliam/.cache/huggingface
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">blocks</span> <span class="o">=</span> <span class="p">(</span><span class="n">Seq2SeqTextBlock</span><span class="p">(</span><span class="n">hf_arch</span><span class="p">,</span> <span class="n">hf_config</span><span class="p">,</span> <span class="n">hf_tokenizer</span><span class="p">,</span> <span class="n">hf_model</span><span class="p">),</span> <span class="n">noop</span><span class="p">)</span>
-<span class="n">dblock</span> <span class="o">=</span> <span class="n">DataBlock</span><span class="p">(</span><span class="n">blocks</span><span class="o">=</span><span class="n">blocks</span><span class="p">,</span> <span class="n">get_x</span><span class="o">=</span><span class="n">ColReader</span><span class="p">(</span><span class="s1">&#39;de&#39;</span><span class="p">),</span> <span class="n">get_y</span><span class="o">=</span><span class="n">ColReader</span><span class="p">(</span><span class="s1">&#39;en&#39;</span><span class="p">),</span> <span class="n">splitter</span><span class="o">=</span><span class="n">RandomSplitter</span><span class="p">())</span>
+<span class="n">dblock</span> <span class="o">=</span> <span class="n">DataBlock</span><span class="p">(</span><span class="n">blocks</span><span class="o">=</span><span class="n">blocks</span><span class="p">,</span> <span class="n">get_x</span><span class="o">=</span><span class="n">ColReader</span><span class="p">(</span><span class="s2">&quot;de&quot;</span><span class="p">),</span> <span class="n">get_y</span><span class="o">=</span><span class="n">ColReader</span><span class="p">(</span><span class="s2">&quot;en&quot;</span><span class="p">),</span> <span class="n">splitter</span><span class="o">=</span><span class="n">RandomSplitter</span><span class="p">())</span>
 </pre></div>
 
     </div>
@@ -304,7 +305,7 @@ Loading cached shuffled indices for dataset at /home/wgilliam/.cache/huggingface
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="nb">len</span><span class="p">(</span><span class="n">b</span><span class="p">),</span> <span class="n">b</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;input_ids&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">b</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="nb">len</span><span class="p">(</span><span class="n">b</span><span class="p">),</span> <span class="n">b</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;input_ids&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">b</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span>
 </pre></div>
 
     </div>
@@ -403,7 +404,7 @@ Loading cached shuffled indices for dataset at /home/wgilliam/.cache/huggingface
     <span class="n">dls</span><span class="p">,</span>
     <span class="n">model</span><span class="p">,</span>
     <span class="n">opt_func</span><span class="o">=</span><span class="n">partial</span><span class="p">(</span><span class="n">Adam</span><span class="p">),</span>
-    <span class="n">loss_func</span><span class="o">=</span><span class="n">PreCalculatedCrossEntropyLoss</span><span class="p">(),</span>  <span class="c1">#CrossEntropyLossFlat()</span>
+    <span class="n">loss_func</span><span class="o">=</span><span class="n">PreCalculatedCrossEntropyLoss</span><span class="p">(),</span>  <span class="c1"># CrossEntropyLossFlat()</span>
     <span class="n">cbs</span><span class="o">=</span><span class="n">learn_cbs</span><span class="p">,</span>
     <span class="n">splitter</span><span class="o">=</span><span class="n">partial</span><span class="p">(</span><span class="n">blurr_seq2seq_splitter</span><span class="p">,</span> <span class="n">arch</span><span class="o">=</span><span class="n">hf_arch</span><span class="p">),</span>
 <span class="p">)</span>
@@ -860,7 +861,7 @@ Loading cached shuffled indices for dataset at /home/wgilliam/.cache/huggingface
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">export_fname</span> <span class="o">=</span> <span class="s1">&#39;translation_export&#39;</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">export_fname</span> <span class="o">=</span> <span class="s2">&quot;translation_export&quot;</span>
 </pre></div>
 
     </div>
@@ -878,7 +879,7 @@ Loading cached shuffled indices for dataset at /home/wgilliam/.cache/huggingface
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">learn</span><span class="o">.</span><span class="n">metrics</span> <span class="o">=</span> <span class="kc">None</span>
-<span class="n">learn</span><span class="o">.</span><span class="n">export</span><span class="p">(</span><span class="n">fname</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">export_fname</span><span class="si">}</span><span class="s1">.pkl&#39;</span><span class="p">)</span>
+<span class="n">learn</span><span class="o">.</span><span class="n">export</span><span class="p">(</span><span class="n">fname</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">export_fname</span><span class="si">}</span><span class="s2">.pkl&quot;</span><span class="p">)</span>
 </pre></div>
 
     </div>
@@ -895,7 +896,7 @@ Loading cached shuffled indices for dataset at /home/wgilliam/.cache/huggingface
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">inf_learn</span> <span class="o">=</span> <span class="n">load_learner</span><span class="p">(</span><span class="n">fname</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">export_fname</span><span class="si">}</span><span class="s1">.pkl&#39;</span><span class="p">)</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">inf_learn</span> <span class="o">=</span> <span class="n">load_learner</span><span class="p">(</span><span class="n">fname</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">export_fname</span><span class="si">}</span><span class="s2">.pkl&quot;</span><span class="p">)</span>
 <span class="n">inf_learn</span><span class="o">.</span><span class="n">blurr_translate</span><span class="p">(</span><span class="n">test_de</span><span class="p">)</span>
 </pre></div>
 
@@ -974,10 +975,15 @@ Loading cached shuffled indices for dataset at /home/wgilliam/.cache/huggingface
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">learn</span> <span class="o">=</span> <span class="n">BlearnerForTranslation</span><span class="o">.</span><span class="n">from_data</span><span class="p">(</span><span class="n">wmt_df</span><span class="p">,</span> <span class="s1">&#39;Helsinki-NLP/opus-mt-de-en&#39;</span><span class="p">,</span> 
-                                              <span class="n">src_lang_name</span><span class="o">=</span><span class="s1">&#39;German&#39;</span><span class="p">,</span> <span class="n">src_lang_attr</span><span class="o">=</span><span class="s1">&#39;de&#39;</span><span class="p">,</span> 
-                                              <span class="n">trg_lang_name</span><span class="o">=</span><span class="s1">&#39;English&#39;</span><span class="p">,</span> <span class="n">trg_lang_attr</span><span class="o">=</span><span class="s1">&#39;en&#39;</span><span class="p">,</span>
-                                              <span class="n">dl_kwargs</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;bs&#39;</span><span class="p">:</span><span class="mi">2</span><span class="p">})</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">learn</span> <span class="o">=</span> <span class="n">BlearnerForTranslation</span><span class="o">.</span><span class="n">from_data</span><span class="p">(</span>
+    <span class="n">wmt_df</span><span class="p">,</span>
+    <span class="s2">&quot;Helsinki-NLP/opus-mt-de-en&quot;</span><span class="p">,</span>
+    <span class="n">src_lang_name</span><span class="o">=</span><span class="s2">&quot;German&quot;</span><span class="p">,</span>
+    <span class="n">src_lang_attr</span><span class="o">=</span><span class="s2">&quot;de&quot;</span><span class="p">,</span>
+    <span class="n">trg_lang_name</span><span class="o">=</span><span class="s2">&quot;English&quot;</span><span class="p">,</span>
+    <span class="n">trg_lang_attr</span><span class="o">=</span><span class="s2">&quot;en&quot;</span><span class="p">,</span>
+    <span class="n">dl_kwargs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;bs&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">},</span>
+<span class="p">)</span>
 </pre></div>
 
     </div>
@@ -1165,13 +1171,13 @@ Loading cached shuffled indices for dataset at /home/wgilliam/.cache/huggingface
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">export_fname</span> <span class="o">=</span> <span class="s1">&#39;translation_export&#39;</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">export_fname</span> <span class="o">=</span> <span class="s2">&quot;translation_export&quot;</span>
 
 <span class="n">learn</span><span class="o">.</span><span class="n">metrics</span> <span class="o">=</span> <span class="kc">None</span>
 <span class="n">learn</span> <span class="o">=</span> <span class="n">learn</span><span class="o">.</span><span class="n">to_fp32</span><span class="p">()</span>
-<span class="n">learn</span><span class="o">.</span><span class="n">export</span><span class="p">(</span><span class="n">fname</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">export_fname</span><span class="si">}</span><span class="s1">.pkl&#39;</span><span class="p">)</span>
+<span class="n">learn</span><span class="o">.</span><span class="n">export</span><span class="p">(</span><span class="n">fname</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">export_fname</span><span class="si">}</span><span class="s2">.pkl&quot;</span><span class="p">)</span>
 
-<span class="n">inf_learn</span> <span class="o">=</span> <span class="n">load_learner</span><span class="p">(</span><span class="n">fname</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">export_fname</span><span class="si">}</span><span class="s1">.pkl&#39;</span><span class="p">)</span>
+<span class="n">inf_learn</span> <span class="o">=</span> <span class="n">load_learner</span><span class="p">(</span><span class="n">fname</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">export_fname</span><span class="si">}</span><span class="s2">.pkl&quot;</span><span class="p">)</span>
 <span class="n">inf_learn</span><span class="o">.</span><span class="n">blurr_generate</span><span class="p">(</span><span class="n">test_de</span><span class="p">)</span>
 </pre></div>
 
@@ -1213,8 +1219,11 @@ Loading cached shuffled indices for dataset at /home/wgilliam/.cache/huggingface
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="k">try</span><span class="p">:</span> <span class="k">del</span> <span class="n">learn</span><span class="p">;</span> <span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">empty_cache</span><span class="p">()</span>
-<span class="k">except</span><span class="p">:</span> <span class="k">pass</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="k">try</span><span class="p">:</span>
+    <span class="k">del</span> <span class="n">learn</span>
+    <span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">empty_cache</span><span class="p">()</span>
+<span class="k">except</span><span class="p">:</span>
+    <span class="k">pass</span>
 </pre></div>
 
     </div>
@@ -1231,8 +1240,7 @@ Loading cached shuffled indices for dataset at /home/wgilliam/.cache/huggingface
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="p">[</span> <span class="n">model_type</span> <span class="k">for</span> <span class="n">model_type</span> <span class="ow">in</span> <span class="n">BLURR</span><span class="o">.</span><span class="n">get_models</span><span class="p">(</span><span class="n">task</span><span class="o">=</span><span class="s1">&#39;ConditionalGeneration&#39;</span><span class="p">)</span> 
- <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="n">model_type</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;TF&#39;</span><span class="p">))</span> <span class="p">]</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="p">[</span><span class="n">model_type</span> <span class="k">for</span> <span class="n">model_type</span> <span class="ow">in</span> <span class="n">BLURR</span><span class="o">.</span><span class="n">get_models</span><span class="p">(</span><span class="n">task</span><span class="o">=</span><span class="s2">&quot;ConditionalGeneration&quot;</span><span class="p">)</span> <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="n">model_type</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;TF&quot;</span><span class="p">))]</span>
 </pre></div>
 
     </div>
@@ -1279,12 +1287,12 @@ Loading cached shuffled indices for dataset at /home/wgilliam/.cache/huggingface
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">pretrained_model_names</span> <span class="o">=</span> <span class="p">[</span>
-    <span class="s1">&#39;facebook/bart-base&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;facebook/wmt19-de-en&#39;</span><span class="p">,</span>                      <span class="c1"># FSMT</span>
-    <span class="s1">&#39;Helsinki-NLP/opus-mt-de-en&#39;</span><span class="p">,</span>                <span class="c1"># MarianMT</span>
+    <span class="s2">&quot;facebook/bart-base&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;facebook/wmt19-de-en&quot;</span><span class="p">,</span>  <span class="c1"># FSMT</span>
+    <span class="s2">&quot;Helsinki-NLP/opus-mt-de-en&quot;</span><span class="p">,</span>  <span class="c1"># MarianMT</span>
     <span class="c1">#&#39;sshleifer/tiny-mbart&#39;,</span>
     <span class="c1">#&#39;google/mt5-small&#39;,</span>
-    <span class="s1">&#39;t5-small&#39;</span>
+    <span class="s2">&quot;t5-small&quot;</span><span class="p">,</span>
 <span class="p">]</span>
 </pre></div>
 
@@ -1302,9 +1310,10 @@ Loading cached shuffled indices for dataset at /home/wgilliam/.cache/huggingface
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">dataset</span> <span class="o">=</span> <span class="n">load_dataset</span><span class="p">(</span><span class="s1">&#39;wmt16&#39;</span><span class="p">,</span> <span class="s1">&#39;de-en&#39;</span><span class="p">,</span> <span class="n">split</span><span class="o">=</span><span class="s1">&#39;train&#39;</span><span class="p">)</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">dataset</span> <span class="o">=</span> <span class="n">load_dataset</span><span class="p">(</span><span class="s2">&quot;wmt16&quot;</span><span class="p">,</span> <span class="s2">&quot;de-en&quot;</span><span class="p">,</span> <span class="n">split</span><span class="o">=</span><span class="s2">&quot;train&quot;</span><span class="p">)</span>
 <span class="n">dataset</span> <span class="o">=</span> <span class="n">dataset</span><span class="o">.</span><span class="n">shuffle</span><span class="p">(</span><span class="n">seed</span><span class="o">=</span><span class="mi">32</span><span class="p">)</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">1200</span><span class="p">))</span>
-<span class="n">wmt_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">dataset</span><span class="p">[</span><span class="s1">&#39;translation&#39;</span><span class="p">],</span> <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;de&#39;</span><span class="p">,</span> <span class="s1">&#39;en&#39;</span><span class="p">]);</span> <span class="nb">len</span><span class="p">(</span><span class="n">wmt_df</span><span class="p">)</span>
+<span class="n">wmt_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">dataset</span><span class="p">[</span><span class="s2">&quot;translation&quot;</span><span class="p">],</span> <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;de&quot;</span><span class="p">,</span> <span class="s2">&quot;en&quot;</span><span class="p">])</span>
+<span class="nb">len</span><span class="p">(</span><span class="n">wmt_df</span><span class="p">)</span>
 </pre></div>
 
     </div>
@@ -1346,90 +1355,91 @@ Loading cached shuffled indices for dataset at /home/wgilliam/.cache/huggingface
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="c1">#hide_output</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># hide_output</span>
 <span class="n">model_cls</span> <span class="o">=</span> <span class="n">AutoModelForSeq2SeqLM</span>
 <span class="n">bsz</span> <span class="o">=</span> <span class="mi">2</span>
-<span class="n">inp_seq_sz</span> <span class="o">=</span> <span class="mi">128</span><span class="p">;</span> <span class="n">trg_seq_sz</span> <span class="o">=</span> <span class="mi">128</span>
+<span class="n">inp_seq_sz</span> <span class="o">=</span> <span class="mi">128</span>
+<span class="n">trg_seq_sz</span> <span class="o">=</span> <span class="mi">128</span>
 
 <span class="n">test_results</span> <span class="o">=</span> <span class="p">[]</span>
 <span class="k">for</span> <span class="n">model_name</span> <span class="ow">in</span> <span class="n">pretrained_model_names</span><span class="p">:</span>
-    <span class="n">error</span><span class="o">=</span><span class="kc">None</span>
-    
-    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;=== </span><span class="si">{</span><span class="n">model_name</span><span class="si">}</span><span class="s1"> ===</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
-    
-    <span class="n">hf_tok_kwargs</span> <span class="o">=</span> <span class="p">{}</span>
-    <span class="k">if</span> <span class="p">(</span><span class="n">model_name</span> <span class="o">==</span> <span class="s1">&#39;sshleifer/tiny-mbart&#39;</span><span class="p">):</span>
-        <span class="n">hf_tok_kwargs</span><span class="p">[</span><span class="s1">&#39;src_lang&#39;</span><span class="p">],</span> <span class="n">hf_tok_kwargs</span><span class="p">[</span><span class="s1">&#39;tgt_lang&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;de_DE&quot;</span><span class="p">,</span> <span class="s2">&quot;en_XX&quot;</span>
-            
-    
-    <span class="n">hf_arch</span><span class="p">,</span> <span class="n">hf_config</span><span class="p">,</span> <span class="n">hf_tokenizer</span><span class="p">,</span> <span class="n">hf_model</span> <span class="o">=</span> <span class="n">BLURR</span><span class="o">.</span><span class="n">get_hf_objects</span><span class="p">(</span><span class="n">model_name</span><span class="p">,</span> 
-                                                                      <span class="n">model_cls</span><span class="o">=</span><span class="n">model_cls</span><span class="p">,</span> 
-                                                                      <span class="n">tokenizer_kwargs</span><span class="o">=</span><span class="n">hf_tok_kwargs</span><span class="p">)</span>
-    
-    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;architecture:</span><span class="se">\t</span><span class="si">{</span><span class="n">hf_arch</span><span class="si">}</span><span class="se">\n</span><span class="s1">tokenizer:</span><span class="se">\t</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">hf_tokenizer</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="se">\n</span><span class="s1">model:</span><span class="se">\t\t</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">hf_model</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
-    
-    <span class="c1"># 1. build your DataBlock</span>
-    <span class="n">text_gen_kwargs</span> <span class="o">=</span> <span class="n">default_text_gen_kwargs</span><span class="p">(</span><span class="n">hf_config</span><span class="p">,</span> <span class="n">hf_model</span><span class="p">,</span> <span class="n">task</span><span class="o">=</span><span class="s1">&#39;translation&#39;</span><span class="p">)</span>
-    
-    <span class="k">def</span> <span class="nf">add_t5_prefix</span><span class="p">(</span><span class="n">inp</span><span class="p">):</span> <span class="k">return</span> <span class="sa">f</span><span class="s1">&#39;translate German to English: </span><span class="si">{</span><span class="n">inp</span><span class="si">}</span><span class="s1">&#39;</span> <span class="k">if</span> <span class="p">(</span><span class="n">hf_arch</span> <span class="o">==</span> <span class="s1">&#39;t5&#39;</span><span class="p">)</span> <span class="k">else</span> <span class="n">inp</span>
-    
-    <span class="n">batch_tokenize_tfm</span> <span class="o">=</span> <span class="n">Seq2SeqBatchTokenizeTransform</span><span class="p">(</span><span class="n">hf_arch</span><span class="p">,</span> <span class="n">hf_config</span><span class="p">,</span> <span class="n">hf_tokenizer</span><span class="p">,</span> <span class="n">hf_model</span><span class="p">,</span>
-                                                      <span class="n">padding</span><span class="o">=</span><span class="s1">&#39;max_length&#39;</span><span class="p">,</span> 
-                                                      <span class="n">max_length</span><span class="o">=</span><span class="n">inp_seq_sz</span><span class="p">,</span> 
-                                                      <span class="n">max_target_length</span><span class="o">=</span><span class="n">trg_seq_sz</span><span class="p">,</span> 
-                                                      <span class="n">text_gen_kwargs</span><span class="o">=</span><span class="n">text_gen_kwargs</span><span class="p">)</span>
-    
-    <span class="n">blocks</span> <span class="o">=</span> <span class="p">(</span><span class="n">Seq2SeqTextBlock</span><span class="p">(</span><span class="n">batch_tokenize_tfm</span><span class="o">=</span><span class="n">batch_tokenize_tfm</span><span class="p">),</span> <span class="n">noop</span><span class="p">)</span>
-    <span class="n">dblock</span> <span class="o">=</span> <span class="n">DataBlock</span><span class="p">(</span><span class="n">blocks</span><span class="o">=</span><span class="n">blocks</span><span class="p">,</span> 
-                   <span class="n">get_x</span><span class="o">=</span><span class="n">Pipeline</span><span class="p">([</span><span class="n">ColReader</span><span class="p">(</span><span class="s1">&#39;de&#39;</span><span class="p">),</span> <span class="n">add_t5_prefix</span><span class="p">]),</span> 
-                   <span class="n">get_y</span><span class="o">=</span><span class="n">ColReader</span><span class="p">(</span><span class="s1">&#39;en&#39;</span><span class="p">),</span> 
-                   <span class="n">splitter</span><span class="o">=</span><span class="n">RandomSplitter</span><span class="p">())</span>
+    <span class="n">error</span> <span class="o">=</span> <span class="kc">None</span>
 
-    <span class="n">dls</span> <span class="o">=</span> <span class="n">dblock</span><span class="o">.</span><span class="n">dataloaders</span><span class="p">(</span><span class="n">wmt_df</span><span class="p">,</span> <span class="n">bs</span><span class="o">=</span><span class="n">bsz</span><span class="p">)</span> 
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;=== </span><span class="si">{</span><span class="n">model_name</span><span class="si">}</span><span class="s2"> ===</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="n">hf_tok_kwargs</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">if</span> <span class="n">model_name</span> <span class="o">==</span> <span class="s2">&quot;sshleifer/tiny-mbart&quot;</span><span class="p">:</span>
+        <span class="n">hf_tok_kwargs</span><span class="p">[</span><span class="s2">&quot;src_lang&quot;</span><span class="p">],</span> <span class="n">hf_tok_kwargs</span><span class="p">[</span><span class="s2">&quot;tgt_lang&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;de_DE&quot;</span><span class="p">,</span> <span class="s2">&quot;en_XX&quot;</span>
+
+    <span class="n">hf_arch</span><span class="p">,</span> <span class="n">hf_config</span><span class="p">,</span> <span class="n">hf_tokenizer</span><span class="p">,</span> <span class="n">hf_model</span> <span class="o">=</span> <span class="n">BLURR</span><span class="o">.</span><span class="n">get_hf_objects</span><span class="p">(</span><span class="n">model_name</span><span class="p">,</span> <span class="n">model_cls</span><span class="o">=</span><span class="n">model_cls</span><span class="p">,</span> <span class="n">tokenizer_kwargs</span><span class="o">=</span><span class="n">hf_tok_kwargs</span><span class="p">)</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;architecture:</span><span class="se">\t</span><span class="si">{</span><span class="n">hf_arch</span><span class="si">}</span><span class="se">\n</span><span class="s2">tokenizer:</span><span class="se">\t</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">hf_tokenizer</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="se">\n</span><span class="s2">model:</span><span class="se">\t\t</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">hf_model</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="c1"># 1. build your DataBlock</span>
+    <span class="n">text_gen_kwargs</span> <span class="o">=</span> <span class="n">default_text_gen_kwargs</span><span class="p">(</span><span class="n">hf_config</span><span class="p">,</span> <span class="n">hf_model</span><span class="p">,</span> <span class="n">task</span><span class="o">=</span><span class="s2">&quot;translation&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">add_t5_prefix</span><span class="p">(</span><span class="n">inp</span><span class="p">):</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;translate German to English: </span><span class="si">{</span><span class="n">inp</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">if</span> <span class="p">(</span><span class="n">hf_arch</span> <span class="o">==</span> <span class="s2">&quot;t5&quot;</span><span class="p">)</span> <span class="k">else</span> <span class="n">inp</span>
+
+    <span class="n">batch_tokenize_tfm</span> <span class="o">=</span> <span class="n">Seq2SeqBatchTokenizeTransform</span><span class="p">(</span>
+        <span class="n">hf_arch</span><span class="p">,</span>
+        <span class="n">hf_config</span><span class="p">,</span>
+        <span class="n">hf_tokenizer</span><span class="p">,</span>
+        <span class="n">hf_model</span><span class="p">,</span>
+        <span class="n">padding</span><span class="o">=</span><span class="s2">&quot;max_length&quot;</span><span class="p">,</span>
+        <span class="n">max_length</span><span class="o">=</span><span class="n">inp_seq_sz</span><span class="p">,</span>
+        <span class="n">max_target_length</span><span class="o">=</span><span class="n">trg_seq_sz</span><span class="p">,</span>
+        <span class="n">text_gen_kwargs</span><span class="o">=</span><span class="n">text_gen_kwargs</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="n">blocks</span> <span class="o">=</span> <span class="p">(</span><span class="n">Seq2SeqTextBlock</span><span class="p">(</span><span class="n">batch_tokenize_tfm</span><span class="o">=</span><span class="n">batch_tokenize_tfm</span><span class="p">),</span> <span class="n">noop</span><span class="p">)</span>
+    <span class="n">dblock</span> <span class="o">=</span> <span class="n">DataBlock</span><span class="p">(</span><span class="n">blocks</span><span class="o">=</span><span class="n">blocks</span><span class="p">,</span> <span class="n">get_x</span><span class="o">=</span><span class="n">Pipeline</span><span class="p">([</span><span class="n">ColReader</span><span class="p">(</span><span class="s2">&quot;de&quot;</span><span class="p">),</span> <span class="n">add_t5_prefix</span><span class="p">]),</span> <span class="n">get_y</span><span class="o">=</span><span class="n">ColReader</span><span class="p">(</span><span class="s2">&quot;en&quot;</span><span class="p">),</span> <span class="n">splitter</span><span class="o">=</span><span class="n">RandomSplitter</span><span class="p">())</span>
+
+    <span class="n">dls</span> <span class="o">=</span> <span class="n">dblock</span><span class="o">.</span><span class="n">dataloaders</span><span class="p">(</span><span class="n">wmt_df</span><span class="p">,</span> <span class="n">bs</span><span class="o">=</span><span class="n">bsz</span><span class="p">)</span>
     <span class="n">b</span> <span class="o">=</span> <span class="n">dls</span><span class="o">.</span><span class="n">one_batch</span><span class="p">()</span>
 
     <span class="c1"># 2. build your Learner</span>
     <span class="n">seq2seq_metrics</span> <span class="o">=</span> <span class="p">{}</span>
-    
+
     <span class="n">model</span> <span class="o">=</span> <span class="n">BaseModelWrapper</span><span class="p">(</span><span class="n">hf_model</span><span class="p">)</span>
-    <span class="n">fit_cbs</span> <span class="o">=</span> <span class="p">[</span>
-        <span class="n">ShortEpochCallback</span><span class="p">(</span><span class="mf">0.05</span><span class="p">,</span> <span class="n">short_valid</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span> 
-        <span class="n">Seq2SeqMetricsCallback</span><span class="p">(</span><span class="n">custom_metrics</span><span class="o">=</span><span class="n">seq2seq_metrics</span><span class="p">)</span>
-    <span class="p">]</span>
+    <span class="n">fit_cbs</span> <span class="o">=</span> <span class="p">[</span><span class="n">ShortEpochCallback</span><span class="p">(</span><span class="mf">0.05</span><span class="p">,</span> <span class="n">short_valid</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span> <span class="n">Seq2SeqMetricsCallback</span><span class="p">(</span><span class="n">custom_metrics</span><span class="o">=</span><span class="n">seq2seq_metrics</span><span class="p">)]</span>
 
-    <span class="n">learn</span> <span class="o">=</span> <span class="n">Learner</span><span class="p">(</span><span class="n">dls</span><span class="p">,</span> 
-                    <span class="n">model</span><span class="p">,</span>
-                    <span class="n">opt_func</span><span class="o">=</span><span class="n">ranger</span><span class="p">,</span>
-                    <span class="n">loss_func</span><span class="o">=</span><span class="n">PreCalculatedCrossEntropyLoss</span><span class="p">(),</span>
-                    <span class="n">cbs</span><span class="o">=</span><span class="p">[</span><span class="n">BaseModelCallback</span><span class="p">],</span>
-                    <span class="n">splitter</span><span class="o">=</span><span class="n">partial</span><span class="p">(</span><span class="n">blurr_seq2seq_splitter</span><span class="p">,</span> <span class="n">arch</span><span class="o">=</span><span class="n">hf_arch</span><span class="p">))</span><span class="o">.</span><span class="n">to_fp16</span><span class="p">()</span>
+    <span class="n">learn</span> <span class="o">=</span> <span class="n">Learner</span><span class="p">(</span>
+        <span class="n">dls</span><span class="p">,</span>
+        <span class="n">model</span><span class="p">,</span>
+        <span class="n">opt_func</span><span class="o">=</span><span class="n">ranger</span><span class="p">,</span>
+        <span class="n">loss_func</span><span class="o">=</span><span class="n">PreCalculatedCrossEntropyLoss</span><span class="p">(),</span>
+        <span class="n">cbs</span><span class="o">=</span><span class="p">[</span><span class="n">BaseModelCallback</span><span class="p">],</span>
+        <span class="n">splitter</span><span class="o">=</span><span class="n">partial</span><span class="p">(</span><span class="n">blurr_seq2seq_splitter</span><span class="p">,</span> <span class="n">arch</span><span class="o">=</span><span class="n">hf_arch</span><span class="p">),</span>
+    <span class="p">)</span><span class="o">.</span><span class="n">to_fp16</span><span class="p">()</span>
 
-    <span class="n">learn</span><span class="o">.</span><span class="n">create_opt</span><span class="p">()</span> 
+    <span class="n">learn</span><span class="o">.</span><span class="n">create_opt</span><span class="p">()</span>
     <span class="n">learn</span><span class="o">.</span><span class="n">freeze</span><span class="p">()</span>
-    
+
     <span class="c1"># 3. Run your tests</span>
     <span class="k">try</span><span class="p">:</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;*** TESTING DataLoaders ***</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;*** TESTING DataLoaders ***</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="n">test_eq</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">b</span><span class="p">),</span> <span class="mi">2</span><span class="p">)</span>
-        <span class="n">test_eq</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">b</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;input_ids&#39;</span><span class="p">]),</span> <span class="n">bsz</span><span class="p">)</span>
-        <span class="n">test_eq</span><span class="p">(</span><span class="n">b</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;input_ids&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Size</span><span class="p">([</span><span class="n">bsz</span><span class="p">,</span> <span class="n">inp_seq_sz</span><span class="p">]))</span>
+        <span class="n">test_eq</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">b</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;input_ids&quot;</span><span class="p">]),</span> <span class="n">bsz</span><span class="p">)</span>
+        <span class="n">test_eq</span><span class="p">(</span><span class="n">b</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;input_ids&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Size</span><span class="p">([</span><span class="n">bsz</span><span class="p">,</span> <span class="n">inp_seq_sz</span><span class="p">]))</span>
         <span class="n">test_eq</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">b</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span> <span class="n">bsz</span><span class="p">)</span>
 
-<span class="c1">#         print(&#39;*** TESTING One pass through the model ***&#39;)</span>
-<span class="c1">#         preds = learn.model(b[0])</span>
-<span class="c1">#         test_eq(preds[1].shape[0], bsz)</span>
-<span class="c1">#         test_eq(preds[1].shape[2], hf_config.vocab_size)</span>
+        <span class="c1">#         print(&#39;*** TESTING One pass through the model ***&#39;)</span>
+        <span class="c1">#         preds = learn.model(b[0])</span>
+        <span class="c1">#         test_eq(preds[1].shape[0], bsz)</span>
+        <span class="c1">#         test_eq(preds[1].shape[2], hf_config.vocab_size)</span>
 
-        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;*** TESTING Training/Results ***&#39;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;*** TESTING Training/Results ***&quot;</span><span class="p">)</span>
         <span class="n">learn</span><span class="o">.</span><span class="n">fit_one_cycle</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">lr_max</span><span class="o">=</span><span class="mf">1e-3</span><span class="p">,</span> <span class="n">cbs</span><span class="o">=</span><span class="n">fit_cbs</span><span class="p">)</span>
 
-        <span class="n">test_results</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">hf_arch</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">hf_tokenizer</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">hf_model</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="s1">&#39;PASSED&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">))</span>
+        <span class="n">test_results</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">hf_arch</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">hf_tokenizer</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">hf_model</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="s2">&quot;PASSED&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">))</span>
         <span class="n">learn</span><span class="o">.</span><span class="n">show_results</span><span class="p">(</span><span class="n">learner</span><span class="o">=</span><span class="n">learn</span><span class="p">,</span> <span class="n">max_n</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">input_trunc_at</span><span class="o">=</span><span class="mi">500</span><span class="p">,</span> <span class="n">target_trunc_at</span><span class="o">=</span><span class="mi">250</span><span class="p">)</span>
     <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
-        <span class="n">test_results</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">hf_arch</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">hf_tokenizer</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">hf_model</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="s1">&#39;FAILED&#39;</span><span class="p">,</span> <span class="n">err</span><span class="p">))</span>
+        <span class="n">test_results</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">hf_arch</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">hf_tokenizer</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">hf_model</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="s2">&quot;FAILED&quot;</span><span class="p">,</span> <span class="n">err</span><span class="p">))</span>
     <span class="k">finally</span><span class="p">:</span>
         <span class="c1"># cleanup</span>
-        <span class="k">del</span> <span class="n">learn</span><span class="p">;</span> <span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">empty_cache</span><span class="p">()</span>
+        <span class="k">del</span> <span class="n">learn</span>
+        <span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">empty_cache</span><span class="p">()</span>
 </pre></div>
 
     </div>
