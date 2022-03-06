@@ -18,7 +18,8 @@ from transformers import PreTrainedModel, logging
 
 import nltk
 from nltk.tokenize import sent_tokenize
-nltk.download("wordnet", quiet=True) # download punctuation rules
+
+nltk.download("wordnet", quiet=True)  # download punctuation rules
 
 from ...utils import BLURR
 from ...data.core import first_blurr_tfm

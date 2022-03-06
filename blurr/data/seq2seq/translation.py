@@ -17,6 +17,7 @@ from .core import Seq2SeqBatchTokenizeTransform, Seq2SeqPreprocessor, Seq2SeqTex
 
 logging.set_verbosity_error()
 
+
 # Cell
 class TranslationPreprocessor(Seq2SeqPreprocessor):
     def __init__(

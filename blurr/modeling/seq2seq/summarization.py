@@ -27,8 +27,9 @@ logging.set_verbosity_error()
 # Cell
 @patch
 def blurr_summarize(self: Learner, inp, **kwargs):
-    preds = learn.blurr_generate(inp, key="summary_texts", **kwargs)
+    preds = self.blurr_generate(inp, key="summary_texts", **kwargs)
     return preds
+
 
 # Cell
 @delegates(Blearner.__init__)
@@ -90,12 +91,12 @@ class BlearnerForSummarization(Blearner):
         # if we get a path/str then we're loading something like a .csv file
         if isinstance(data, Path) or isinstance(data, str):
             content_type = mimetypes.guess_type(data)[0]
-            if content_type  == 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet':
+            if content_type == "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
                 data = pd.read_excel(data)
-            elif content_type  == 'text/csv':
+            elif content_type == "text/csv":
                 data = pd.read_csv(data)
-            elif content_type  == 'application/json':
-                data = pd.read_json(data, orient='records')
+            elif content_type == "application/json":
+                data = pd.read_json(data, orient="records")
             else:
                 raise ValueError("'data' must be a .xlsx, .xls, .csv, or .jsonl file")
 
