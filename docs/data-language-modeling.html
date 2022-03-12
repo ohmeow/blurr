@@ -77,6 +77,13 @@ transformers: 4.16.2
 </div>
     {% endraw %}
 
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Setup">Setup<a class="anchor-link" href="#Setup"> </a></h2><p>For this example, we'll use the <code>WIKITEXT_TINY</code> dataset available from fastai.  In addition to using the <code>Datasets</code> library from Hugging Face, fastai provides a lot of smaller datasets that are really useful when experimenting and/or in the early development of your training/validation/inference coding.</p>
+
+</div>
+</div>
+</div>
     {% raw %}
     
 <div class="cell border-box-sizing code_cell rendered">
@@ -118,8 +125,8 @@ transformers: 4.16.2
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">train_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">wiki_path</span><span class="o">/</span><span class="s1">&#39;train.csv&#39;</span><span class="p">,</span> <span class="n">header</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
-<span class="n">valid_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">wiki_path</span><span class="o">/</span><span class="s1">&#39;test.csv&#39;</span><span class="p">,</span> <span class="n">header</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">train_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">wiki_path</span> <span class="o">/</span> <span class="s2">&quot;train.csv&quot;</span><span class="p">,</span> <span class="n">header</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+<span class="n">valid_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">wiki_path</span> <span class="o">/</span> <span class="s2">&quot;test.csv&quot;</span><span class="p">,</span> <span class="n">header</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
 
 <span class="nb">print</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">train_df</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">valid_df</span><span class="p">))</span>
 <span class="n">train_df</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
@@ -204,8 +211,8 @@ transformers: 4.16.2
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">train_df</span><span class="p">[</span><span class="s1">&#39;is_valid&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
-<span class="n">valid_df</span><span class="p">[</span><span class="s1">&#39;is_valid&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">train_df</span><span class="p">[</span><span class="s2">&quot;is_valid&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="n">valid_df</span><span class="p">[</span><span class="s2">&quot;is_valid&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
 
 <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">([</span><span class="n">train_df</span><span class="p">,</span> <span class="n">valid_df</span><span class="p">])</span>
 <span class="n">df</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
@@ -284,6 +291,64 @@ transformers: 4.16.2
     {% raw %}
     
 <div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">model_cls</span> <span class="o">=</span> <span class="n">AutoModelForCausalLM</span>
+
+<span class="n">pretrained_model_name</span> <span class="o">=</span> <span class="s2">&quot;gpt2&quot;</span>
+<span class="n">hf_arch</span><span class="p">,</span> <span class="n">hf_config</span><span class="p">,</span> <span class="n">hf_tokenizer</span><span class="p">,</span> <span class="n">hf_model</span> <span class="o">=</span> <span class="n">BLURR</span><span class="o">.</span><span class="n">get_hf_objects</span><span class="p">(</span><span class="n">pretrained_model_name</span><span class="p">,</span> <span class="n">model_cls</span><span class="o">=</span><span class="n">model_cls</span><span class="p">)</span>
+
+<span class="c1"># some tokenizers like gpt and gpt2 do not have a pad token, so we add it here mainly for the purpose</span>
+<span class="c1"># of setting the &quot;labels&quot; key appropriately (see below)</span>
+<span class="k">if</span> <span class="n">hf_tokenizer</span><span class="o">.</span><span class="n">pad_token</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="n">hf_tokenizer</span><span class="o">.</span><span class="n">pad_token</span> <span class="o">=</span> <span class="s2">&quot;[PAD]&quot;</span>
+
+<span class="n">hf_tokenizer</span><span class="o">.</span><span class="n">pad_token</span><span class="p">,</span> <span class="n">hf_tokenizer</span><span class="o">.</span><span class="n">pad_token_id</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stderr output_text">
+<pre>Using pad_token, but it is not set yet.
+</pre>
+</div>
+</div>
+
+<div class="output_area">
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>(&#39;[PAD]&#39;, 50256)</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    {% endraw %}
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="LMPreprocessor"><a href="/blurr/data-language-modeling.html#LMPreprocessor"><code>LMPreprocessor</code></a><a class="anchor-link" href="#LMPreprocessor"> </a></h3><p>Starting with version 2.0, BLURR provides a language preprocessing class that can be used to preprocess DataFrames or Hugging Face Datasets for both causal and masked language modeling tasks.</p>
+
+</div>
+</div>
+</div>
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
 
 <div class="output_wrapper">
 <div class="output">
@@ -292,7 +357,153 @@ transformers: 4.16.2
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h2 id="LMType" class="doc_header"><code>LMType</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/data/language_modeling.py#L27" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>Enum</code> = [CAUSAL, MASKED]</p>
+<h2 id="LMPreprocessor" class="doc_header"><code>class</code> <code>LMPreprocessor</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/data/language_modeling.py#L26" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>LMPreprocessor</code>(<strong><code>hf_tokenizer</code></strong>:<code>PreTrainedTokenizerBase</code>, <strong><code>batch_size</code></strong>:<code>int</code>=<em><code>1000</code></em>, <strong><code>is_multilabel</code></strong>:<code>bool</code>=<em><code>False</code></em>, <strong><code>id_attr</code></strong>:<code>Optional</code>[<code>str</code>]=<em><code>None</code></em>, <strong><code>text_attr</code></strong>:<code>str</code>=<em><code>'text'</code></em>, <strong><code>text_pair_attr</code></strong>:<code>Optional</code>[<code>str</code>]=<em><code>None</code></em>, <strong><code>label_attrs</code></strong>:<code>Union</code>[<code>str</code>, List[str]<code>\]=*</code>'label'<code>*, **</code>is_valid_attr<code>**:</code>Optional<code>\[</code>str<code>\]=*</code>'is_valid'<code>*, **</code>label_mapping<code>**:</code>Optional<code>\[</code>List<code>\[</code>str<code>\]\]=*</code>None<code>*, **</code>tok_kwargs<code>**:</code>dict<code>=*</code>{}<code>*) :: [</code>Preprocessor`](/blurr/data-core.html#Preprocessor)</p>
+</blockquote>
+<table>
+<thead><tr>
+<th></th>
+<th>Type</th>
+<th>Default</th>
+<th>Details</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong><code>hf_tokenizer</code></strong></td>
+<td><code>PreTrainedTokenizerBase</code></td>
+<td></td>
+<td>A Hugging Face tokenizer</td>
+</tr>
+<tr>
+<td><strong><code>batch_size</code></strong></td>
+<td><code>int</code></td>
+<td><code>1000</code></td>
+<td>The number of examples to process at a time</td>
+</tr>
+<tr>
+<td><strong><code>is_multilabel</code></strong></td>
+<td><code>bool</code></td>
+<td><code>False</code></td>
+<td>Whether the dataset should be processed for multi-label; if True, will ensure <code>label_attrs</code> are<br />converted to a value of either 0 or 1 indiciating the existence of the class in the example</td>
+</tr>
+<tr>
+<td><strong><code>id_attr</code></strong></td>
+<td><code>Optional[str]</code></td>
+<td>``</td>
+<td>The unique identifier in the dataset</td>
+</tr>
+<tr>
+<td><strong><code>text_attr</code></strong></td>
+<td><code>str</code></td>
+<td><code>text</code></td>
+<td>The attribute holding the text</td>
+</tr>
+<tr>
+<td><strong><code>text_pair_attr</code></strong></td>
+<td><code>Optional[str]</code></td>
+<td>``</td>
+<td>The attribute holding the text_pair</td>
+</tr>
+<tr>
+<td><strong><code>label_attrs</code></strong></td>
+<td><code>List[str]]</code></td>
+<td><code>label</code></td>
+<td>The attribute holding the label(s) of the example</td>
+</tr>
+<tr>
+<td><strong><code>is_valid_attr</code></strong></td>
+<td><code>Optional[str]</code></td>
+<td><code>is_valid</code></td>
+<td>The attribute that should be created if your are processing individual training and validation<br />datasets into a single dataset, and will indicate to which each example is associated</td>
+</tr>
+<tr>
+<td><strong><code>label_mapping</code></strong></td>
+<td><code>List[str]]</code></td>
+<td>``</td>
+<td>A list indicating the valid labels for the dataset (optional, defaults to the unique set of labels<br />found in the full dataset)</td>
+</tr>
+<tr>
+<td><strong><code>tok_kwargs</code></strong></td>
+<td><code>dict</code></td>
+<td>``</td>
+<td>Tokenization kwargs that will be applied with calling the tokenizer</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    {% endraw %}
+
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+
+</div>
+    {% endraw %}
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h4 id="Using-a-DataFrame">Using a <code>DataFrame</code><a class="anchor-link" href="#Using-a-DataFrame"> </a></h4>
+</div>
+</div>
+</div>
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># proc_df = preprocessor.process_df(df)</span>
+<span class="c1"># proc_df.columns, len(proc_df)</span>
+<span class="c1"># proc_df.head(2)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    {% endraw %}
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h4 id="Using-a-Hugging-Face-Dataset">Using a Hugging Face <code>Dataset</code><a class="anchor-link" href="#Using-a-Hugging-Face-Dataset"> </a></h4>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="LM-Strategies">LM Strategies<a class="anchor-link" href="#LM-Strategies"> </a></h2>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h4 id="LMType"><a href="/blurr/data-language-modeling.html#LMType"><code>LMType</code></a><a class="anchor-link" href="#LMType"> </a></h4><p>BLURR supports both causal and masked language model tasks. To indicate what kind you are training, we introduce this enum</p>
+
+</div>
+</div>
+</div>
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+<div class="output_markdown rendered_html output_subarea ">
+<h2 id="LMType" class="doc_header"><code>LMType</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/data/language_modeling.py#L118" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>Enum</code> = [CAUSAL, MASKED]</p>
 </blockquote>
 <p>An enumeration.</p>
 
@@ -315,7 +526,8 @@ transformers: 4.16.2
 
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Abstract-LMStrategy-Class-&amp;-LM-Before-Batch-Transform">Abstract LMStrategy Class &amp; LM Before Batch Transform<a class="anchor-link" href="#Abstract-LMStrategy-Class-&amp;-LM-Before-Batch-Transform"> </a></h2>
+<h3 id="BaseLMStrategy-and-implementations"><a href="/blurr/data-language-modeling.html#BaseLMStrategy"><code>BaseLMStrategy</code></a> and implementations<a class="anchor-link" href="#BaseLMStrategy-and-implementations"> </a></h3><p>Here we include a <a href="/blurr/data-language-modeling.html#BaseLMStrategy"><code>BaseLMStrategy</code></a> abstract class and several different strategies for building your inputs and targets for causal and masked language modeling tasks.  With CLMs, the objective is to simply predict the next token, but with MLMs, a variety of masking strategies may be used (e.g., mask random tokens, mask random words, mask spans, etc...).  A <a href="/blurr/data-language-modeling.html#BertMLMStrategy"><code>BertMLMStrategy</code></a> is introduced below that follows the "mask random tokens" strategy used in the BERT paper, but users can create their own <a href="/blurr/data-language-modeling.html#BaseLMStrategy"><code>BaseLMStrategy</code></a> subclass to support any masking strategy they desire.</p>
+
 </div>
 </div>
 </div>
@@ -330,7 +542,7 @@ transformers: 4.16.2
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h2 id="LMStrategy" class="doc_header"><code>class</code> <code>LMStrategy</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/data/language_modeling.py#L32" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>LMStrategy</code>(<strong><code>hf_tokenizer</code></strong>, <strong><code>ignore_token_id</code></strong>=<em><code>-100</code></em>) :: <code>ABC</code></p>
+<h2 id="BaseLMStrategy" class="doc_header"><code>class</code> <code>BaseLMStrategy</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/data/language_modeling.py#L124" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>BaseLMStrategy</code>(<strong><code>hf_tokenizer</code></strong>, <strong><code>ignore_token_id</code></strong>=<em><code>-100</code></em>) :: <code>ABC</code></p>
 </blockquote>
 <p>ABC for various language modeling strategies (e.g., causal, BertMLM, WholeWordMLM, etc...)</p>
 
@@ -351,6 +563,13 @@ transformers: 4.16.2
 </div>
     {% endraw %}
 
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h4 id="CausalLMStrategy"><a href="/blurr/data-language-modeling.html#CausalLMStrategy"><code>CausalLMStrategy</code></a><a class="anchor-link" href="#CausalLMStrategy"> </a></h4><p>For predicting the next token given the prior tokens</p>
+
+</div>
+</div>
+</div>
     {% raw %}
     
 <div class="cell border-box-sizing code_cell rendered">
@@ -362,7 +581,157 @@ transformers: 4.16.2
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h2 id="HF_LMBeforeBatchTransform" class="doc_header"><code>class</code> <code>HF_LMBeforeBatchTransform</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/data/language_modeling.py#L55" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>HF_LMBeforeBatchTransform</code>(<strong><code>hf_arch</code></strong>:<code>str</code>, <strong><code>hf_config</code></strong>:<code>PretrainedConfig</code>, <strong><code>hf_tokenizer</code></strong>:<code>PreTrainedTokenizerBase</code>, <strong><code>hf_model</code></strong>:<code>PreTrainedModel</code>, <strong><code>lm_strategy_cls</code></strong>:<a href="/blurr/data-language-modeling.html#LMStrategy"><code>LMStrategy</code></a>, <strong><code>max_length</code></strong>:<code>int</code>=<em><code>None</code></em>, <strong><code>padding</code></strong>:<code>Union</code>[<code>bool</code>, <code>str</code>]=<em><code>True</code></em>, <strong><code>truncation</code></strong>:<code>Union</code>[<code>bool</code>, <code>str</code>]=<em><code>True</code></em>, <strong><code>ignore_token_id</code></strong>=<em><code>-100</code></em>, <strong><code>is_split_into_words</code></strong>:<code>bool</code>=<em><code>False</code></em>, <strong><code>tok_kwargs</code></strong>=<em><code>{}</code></em>, <strong><code>text_gen_kwargs</code></strong>=<em><code>{}</code></em>, <strong>**<code>kwargs</code></strong>) :: <a href="/blurr/data-core.html#BatchTokenizeTransform"><code>BatchTokenizeTransform</code></a></p>
+<h2 id="CausalLMStrategy" class="doc_header"><code>class</code> <code>CausalLMStrategy</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/data/language_modeling.py#L145" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>CausalLMStrategy</code>(<strong><code>hf_tokenizer</code></strong>, <strong><code>ignore_token_id</code></strong>=<em><code>-100</code></em>) :: <a href="/blurr/data-language-modeling.html#BaseLMStrategy"><code>BaseLMStrategy</code></a></p>
+</blockquote>
+<p>For next token prediction language modeling tasks, we want to use the <a href="/blurr/data-language-modeling.html#CausalLMStrategy"><code>CausalLMStrategy</code></a> which makes the
+necessary changes in your inputs/targets for causal LMs</p>
+
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    {% endraw %}
+
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+
+</div>
+    {% endraw %}
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h4 id="BertMLMStrategy"><a href="/blurr/data-language-modeling.html#BertMLMStrategy"><code>BertMLMStrategy</code></a><a class="anchor-link" href="#BertMLMStrategy"> </a></h4><p>Follows the masking strategy used in the <a href="https://arxiv.org/abs/1810.04805">BERT paper</a> for random token masking</p>
+
+</div>
+</div>
+</div>
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+<div class="output_markdown rendered_html output_subarea ">
+<h2 id="BertMLMStrategy" class="doc_header"><code>class</code> <code>BertMLMStrategy</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/data/language_modeling.py#L167" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>BertMLMStrategy</code>(<strong><code>hf_tokenizer</code></strong>, <strong><code>ignore_token_id</code></strong>=<em><code>-100</code></em>) :: <a href="/blurr/data-language-modeling.html#BaseLMStrategy"><code>BaseLMStrategy</code></a></p>
+</blockquote>
+<p>A masked language modeling strategy using the default BERT masking definition.</p>
+
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    {% endraw %}
+
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+
+</div>
+    {% endraw %}
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Mid-level-API">Mid-level API<a class="anchor-link" href="#Mid-level-API"> </a></h2>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h4 id="CausalLMTextInput-and-MLMTextInput"><a href="/blurr/data-language-modeling.html#CausalLMTextInput"><code>CausalLMTextInput</code></a> and <a href="/blurr/data-language-modeling.html#MLMTextInput"><code>MLMTextInput</code></a><a class="anchor-link" href="#CausalLMTextInput-and-MLMTextInput"> </a></h4><p>Again, we define a custom classes for the <code>@typedispatch</code>ed methods to use so that we can override how both causal and masked language modeling inputs/targets are assembled, as well as, how the data is shown via methods like <code>show_batch</code> and <code>show_results</code>.</p>
+
+</div>
+</div>
+</div>
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+<div class="output_markdown rendered_html output_subarea ">
+<h2 id="CausalLMTextInput" class="doc_header"><code>class</code> <code>CausalLMTextInput</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/data/language_modeling.py#L224" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>CausalLMTextInput</code>(<strong><code>x</code></strong>, <strong>**<code>kwargs</code></strong>) :: <a href="/blurr/data-core.html#TextInput"><code>TextInput</code></a></p>
+</blockquote>
+<p>The base represenation of your inputs; used by the various fastai <code>show</code> methods</p>
+
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    {% endraw %}
+
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+<div class="output_markdown rendered_html output_subarea ">
+<h2 id="MLMTextInput" class="doc_header"><code>class</code> <code>MLMTextInput</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/data/language_modeling.py#L229" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>MLMTextInput</code>(<strong><code>x</code></strong>, <strong>**<code>kwargs</code></strong>) :: <a href="/blurr/data-core.html#TextInput"><code>TextInput</code></a></p>
+</blockquote>
+<p>The base represenation of your inputs; used by the various fastai <code>show</code> methods</p>
+
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    {% endraw %}
+
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+
+</div>
+    {% endraw %}
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h4 id="LMBatchTokenizeTransform"><a href="/blurr/data-language-modeling.html#LMBatchTokenizeTransform"><code>LMBatchTokenizeTransform</code></a><a class="anchor-link" href="#LMBatchTokenizeTransform"> </a></h4><p>Our <a href="/blurr/data-language-modeling.html#LMBatchTokenizeTransform"><code>LMBatchTokenizeTransform</code></a> allows us to update the input's <code>labels</code> and our targets appropriately given any language modeling task.</p>
+<p>The <code>labels</code> argument allows you to forgo calculating the loss yourself by letting Hugging Face return it for you should you choose to do that. Padding tokens are set to -100 by default (e.g., <code>CrossEntropyLossFlat().ignore_index</code>) and prevent cross entropy loss from considering token prediction for tokens it should ... i.e., the padding tokens. For more information on the meaning of this argument, see the <a href="https://huggingface.co/transformers/glossary.html#labels">Hugging Face glossary entry for "Labels"</a></p>
+
+</div>
+</div>
+</div>
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+<div class="output_markdown rendered_html output_subarea ">
+<h2 id="LMBatchTokenizeTransform" class="doc_header"><code>class</code> <code>LMBatchTokenizeTransform</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/data/language_modeling.py#L234" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>LMBatchTokenizeTransform</code>(<strong><code>hf_arch</code></strong>:<code>str</code>, <strong><code>hf_config</code></strong>:<code>PretrainedConfig</code>, <strong><code>hf_tokenizer</code></strong>:<code>PreTrainedTokenizerBase</code>, <strong><code>hf_model</code></strong>:<code>PreTrainedModel</code>, <strong><code>include_labels</code></strong>:<code>bool</code>=<em><code>True</code></em>, <strong><code>ignore_token_id</code></strong>:<code>int</code>=<em><code>-100</code></em>, <strong><code>lm_strategy_cls</code></strong>:<a href="/blurr/data-language-modeling.html#BaseLMStrategy"><code>BaseLMStrategy</code></a>=<em><code>CausalLMStrategy</code></em>, <strong><code>max_length</code></strong>:<code>int</code>=<em><code>None</code></em>, <strong><code>padding</code></strong>:<code>Union</code>[<code>bool</code>, <code>str</code>]=<em><code>True</code></em>, <strong><code>truncation</code></strong>:<code>Union</code>[<code>bool</code>, <code>str</code>]=<em><code>True</code></em>, <strong><code>is_split_into_words</code></strong>:<code>bool</code>=<em><code>False</code></em>, <strong><code>tok_kwargs</code></strong>=<em><code>{}</code></em>, <strong><code>text_gen_kwargs</code></strong>=<em><code>{}</code></em>, <strong>**<code>kwargs</code></strong>) :: <a href="/blurr/data-core.html#BatchTokenizeTransform"><code>BatchTokenizeTransform</code></a></p>
 </blockquote>
 <p>Handles everything you need to assemble a mini-batch of inputs and targets, as well as
 decode the dictionary produced as a byproduct of the tokenization process in the <code>encodes</code> method.</p>
@@ -400,9 +769,21 @@ decode the dictionary produced as a byproduct of the tokenization process in the
 <td>A Hugging Face model</td>
 </tr>
 <tr>
+<td><strong><code>include_labels</code></strong></td>
+<td><code>bool</code></td>
+<td><code>True</code></td>
+<td>To control whether the "labels" are included in your inputs. If they are, the loss will be calculated in<br />the model's forward function and you can simply use <a href="/blurr/modeling-core.html#PreCalculatedLoss"><code>PreCalculatedLoss</code></a> as your <code>Learner</code>'s loss function to use it</td>
+</tr>
+<tr>
+<td><strong><code>ignore_token_id</code></strong></td>
+<td><code>int</code></td>
+<td><code>-100</code></td>
+<td>The token ID that should be ignored when calculating the loss</td>
+</tr>
+<tr>
 <td><strong><code>lm_strategy_cls</code></strong></td>
-<td><a href="/blurr/data-language-modeling.html#LMStrategy"><code>LMStrategy</code></a></td>
-<td></td>
+<td><a href="/blurr/data-language-modeling.html#BaseLMStrategy"><code>BaseLMStrategy</code></a></td>
+<td><a href="/blurr/data-language-modeling.html#CausalLMStrategy"><code>CausalLMStrategy</code></a></td>
 <td>The language modeling strategy (or objective)</td>
 </tr>
 <tr>
@@ -422,12 +803,6 @@ decode the dictionary produced as a byproduct of the tokenization process in the
 <td><code>Union[bool, str]</code></td>
 <td><code>True</code></td>
 <td>To control <code>truncation</code> applied to your <code>hf_tokenizer</code> during tokenization. If None, will default to<br /><code>False</code> or <code>do_not_truncate</code>.<br />See <a href="https://huggingface.co/transformers/preprocessing.html#everything-you-always-wanted-to-know-about-padding-and-truncation">Everything you always wanted to know about padding and truncation</a></td>
-</tr>
-<tr>
-<td><strong><code>ignore_token_id</code></strong></td>
-<td><code>int</code></td>
-<td><code>-100</code></td>
-<td>The token ID that should be ignored when calculating the loss</td>
 </tr>
 <tr>
 <td><strong><code>is_split_into_words</code></strong></td>
@@ -475,15 +850,25 @@ decode the dictionary produced as a byproduct of the tokenization process in the
 
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>Our <a href="/blurr/data-language-modeling.html#HF_LMBeforeBatchTransform"><code>HF_LMBeforeBatchTransform</code></a> allows us to update the input's <code>labels</code> and our targets appropriately given any language modeling task.</p>
-<p>The <code>labels</code> argument allows you to forgo calculating the loss yourself by letting Hugging Face return it for you should you choose to do that. Padding tokens are set to -100 by default (e.g., <code>CrossEntropyLossFlat().ignore_index</code>) and prevent cross entropy loss from considering token prediction for tokens it should ... i.e., the padding tokens. For more information on the meaning of this argument, see the <a href="https://huggingface.co/transformers/glossary.html#labels">Hugging Face glossary entry for "Labels"</a></p>
-
+<h2 id="Examples">Examples<a class="anchor-link" href="#Examples"> </a></h2>
 </div>
 </div>
 </div>
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Causal-LM">Causal LM<a class="anchor-link" href="#Causal-LM"> </a></h2>
+<h3 id="Using-the-mid-level-API">Using the mid-level API<a class="anchor-link" href="#Using-the-mid-level-API"> </a></h3>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h4 id="Causal-LM">Causal LM<a class="anchor-link" href="#Causal-LM"> </a></h4>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h5 id="Step-1:-Get-your-Hugging-Face-objects.">Step 1: Get your Hugging Face objects.<a class="anchor-link" href="#Step-1:-Get-your-Hugging-Face-objects."> </a></h5>
 </div>
 </div>
 </div>
@@ -501,7 +886,8 @@ decode the dictionary produced as a byproduct of the tokenization process in the
 
 <span class="c1"># some tokenizers like gpt and gpt2 do not have a pad token, so we add it here mainly for the purpose</span>
 <span class="c1"># of setting the &quot;labels&quot; key appropriately (see below)</span>
-<span class="k">if</span> <span class="p">(</span><span class="n">hf_tokenizer</span><span class="o">.</span><span class="n">pad_token</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">):</span> <span class="n">hf_tokenizer</span><span class="o">.</span><span class="n">pad_token</span> <span class="o">=</span> <span class="s1">&#39;[PAD]&#39;</span>
+<span class="k">if</span> <span class="n">hf_tokenizer</span><span class="o">.</span><span class="n">pad_token</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="n">hf_tokenizer</span><span class="o">.</span><span class="n">pad_token</span> <span class="o">=</span> <span class="s2">&quot;[PAD]&quot;</span>
 
 <span class="n">hf_tokenizer</span><span class="o">.</span><span class="n">pad_token</span><span class="p">,</span> <span class="n">hf_tokenizer</span><span class="o">.</span><span class="n">pad_token_id</span>
 </pre></div>
@@ -537,71 +923,12 @@ decode the dictionary produced as a byproduct of the tokenization process in the
 </div>
     {% endraw %}
 
-    {% raw %}
-    
-<div class="cell border-box-sizing code_cell rendered">
-
-<div class="output_wrapper">
-<div class="output">
-
-<div class="output_area">
-
-
-<div class="output_markdown rendered_html output_subarea ">
-<h2 id="HF_CausalLMInput" class="doc_header"><code>class</code> <code>HF_CausalLMInput</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/data/language_modeling.py#L110" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>HF_CausalLMInput</code>(<strong><code>x</code></strong>, <strong>**<code>kwargs</code></strong>) :: <a href="/blurr/data-core.html#TextInput"><code>TextInput</code></a></p>
-</blockquote>
-<p>The base represenation of your inputs; used by the various fastai <code>show</code> methods</p>
-
-</div>
-
-</div>
-
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h5 id="Step-2:-Create-your-DataBlock">Step 2: Create your <code>DataBlock</code><a class="anchor-link" href="#Step-2:-Create-your-DataBlock"> </a></h5>
 </div>
 </div>
-
 </div>
-    {% endraw %}
-
-    {% raw %}
-    
-<div class="cell border-box-sizing code_cell rendered">
-
-</div>
-    {% endraw %}
-
-    {% raw %}
-    
-<div class="cell border-box-sizing code_cell rendered">
-
-<div class="output_wrapper">
-<div class="output">
-
-<div class="output_area">
-
-
-<div class="output_markdown rendered_html output_subarea ">
-<h2 id="CausalLMStrategy" class="doc_header"><code>class</code> <code>CausalLMStrategy</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/data/language_modeling.py#L113" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>CausalLMStrategy</code>(<strong><code>hf_tokenizer</code></strong>, <strong><code>ignore_token_id</code></strong>=<em><code>-100</code></em>) :: <a href="/blurr/data-language-modeling.html#LMStrategy"><code>LMStrategy</code></a></p>
-</blockquote>
-<p>For next token prediction language modeling tasks, we want to use the <a href="/blurr/data-language-modeling.html#CausalLMStrategy"><code>CausalLMStrategy</code></a> which makes the
-necessary changes in your inputs/targets for causal LMs</p>
-
-</div>
-
-</div>
-
-</div>
-</div>
-
-</div>
-    {% endraw %}
-
-    {% raw %}
-    
-<div class="cell border-box-sizing code_cell rendered">
-
-</div>
-    {% endraw %}
-
     {% raw %}
     
 <div class="cell border-box-sizing code_cell rendered">
@@ -609,12 +936,11 @@ necessary changes in your inputs/targets for causal LMs</p>
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">before_batch_tfm</span> <span class="o">=</span> <span class="n">HF_LMBeforeBatchTransform</span><span class="p">(</span><span class="n">hf_arch</span><span class="p">,</span> <span class="n">hf_config</span><span class="p">,</span> <span class="n">hf_tokenizer</span><span class="p">,</span> <span class="n">hf_model</span><span class="p">,</span> 
-                                             <span class="n">lm_strategy_cls</span><span class="o">=</span><span class="n">CausalLMStrategy</span><span class="p">)</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">batch_tok_tfm</span> <span class="o">=</span> <span class="n">LMBatchTokenizeTransform</span><span class="p">(</span><span class="n">hf_arch</span><span class="p">,</span> <span class="n">hf_config</span><span class="p">,</span> <span class="n">hf_tokenizer</span><span class="p">,</span> <span class="n">hf_model</span><span class="p">,</span> <span class="n">lm_strategy_cls</span><span class="o">=</span><span class="n">CausalLMStrategy</span><span class="p">)</span>
 
-<span class="n">blocks</span> <span class="o">=</span> <span class="p">(</span><span class="n">TextBlock</span><span class="p">(</span><span class="n">before_batch_tfm</span><span class="o">=</span><span class="n">before_batch_tfm</span><span class="p">,</span> <span class="n">input_return_type</span><span class="o">=</span><span class="n">HF_CausalLMInput</span><span class="p">),</span> <span class="n">noop</span><span class="p">)</span>
+<span class="n">blocks</span> <span class="o">=</span> <span class="p">(</span><span class="n">TextBlock</span><span class="p">(</span><span class="n">batch_tokenize_tfm</span><span class="o">=</span><span class="n">batch_tok_tfm</span><span class="p">,</span> <span class="n">input_return_type</span><span class="o">=</span><span class="n">CausalLMTextInput</span><span class="p">),</span> <span class="n">noop</span><span class="p">)</span>
 
-<span class="n">dblock</span> <span class="o">=</span> <span class="n">DataBlock</span><span class="p">(</span><span class="n">blocks</span><span class="o">=</span><span class="n">blocks</span><span class="p">,</span> <span class="n">get_x</span><span class="o">=</span><span class="n">ColReader</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span> <span class="n">splitter</span><span class="o">=</span><span class="n">ColSplitter</span><span class="p">(</span><span class="n">col</span><span class="o">=</span><span class="s1">&#39;is_valid&#39;</span><span class="p">))</span>
+<span class="n">dblock</span> <span class="o">=</span> <span class="n">DataBlock</span><span class="p">(</span><span class="n">blocks</span><span class="o">=</span><span class="n">blocks</span><span class="p">,</span> <span class="n">get_x</span><span class="o">=</span><span class="n">ColReader</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span> <span class="n">splitter</span><span class="o">=</span><span class="n">ColSplitter</span><span class="p">(</span><span class="n">col</span><span class="o">=</span><span class="s2">&quot;is_valid&quot;</span><span class="p">))</span>
 </pre></div>
 
     </div>
@@ -624,6 +950,12 @@ necessary changes in your inputs/targets for causal LMs</p>
 </div>
     {% endraw %}
 
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h5 id="Step-3:-Build-your-DataLoaders">Step 3: Build your <code>DataLoaders</code><a class="anchor-link" href="#Step-3:-Build-your-DataLoaders"> </a></h5>
+</div>
+</div>
+</div>
     {% raw %}
     
 <div class="cell border-box-sizing code_cell rendered">
@@ -665,7 +997,7 @@ necessary changes in your inputs/targets for causal LMs</p>
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">b</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;input_ids&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">b</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;labels&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">b</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">b</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;input_ids&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">b</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;labels&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">b</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span>
 </pre></div>
 
     </div>
@@ -767,8 +1099,8 @@ necessary changes in your inputs/targets for causal LMs</p>
     </tr>
     <tr>
       <th>1</th>
-      <td>\n = Ireland = \n \n Ireland ( / &lt;unk&gt; / ; Irish : &lt;unk&gt; [ &lt;unk&gt; ] ; Ulster @-@ Scots : &lt;unk&gt; [ &lt;unk&gt; ] ) is an island in the North Atlantic. It is separated from Great Britain to its east by the North Channel, the Irish Sea, and St George's Channel. Ireland is the second @-@ largest island of the British Isles, the third @-@ largest in Europe, and the twentieth @-@ largest on Earth. \n &lt;unk&gt;, Ireland is divided between the Republic of Ireland ( officially named Ireland ), which covers five @-@ &lt;un</td>
-      <td>\n = Ireland = \n \n Ireland ( / &lt;unk&gt; / ; Irish : &lt;unk&gt; [ &lt;unk&gt; ] ; Ulster @-@ Scots : &lt;unk&gt; [ &lt;unk&gt; ] ) is an island in the North Atlantic. It is separated from Great Britain to its east by the North Channel, the Irish Sea, and St George's Channel. Ireland is the second @-@ largest island of the British Isles, the third @-@ largest in Europe, and the twentieth @-@ largest on Earth. \n &lt;unk&gt;, Ireland is divided between the Republic of Ireland ( officially named Ireland ), which covers five @-@ &lt;unk</td>
+      <td>\n = Laurence Olivier = \n \n Laurence Kerr Olivier, Baron Olivier, &lt;unk&gt; ( / &lt;unk&gt; &lt;unk&gt; &lt;unk&gt; / ; 22 May 1907 – 11 July 1989 ) was an English actor who, along with his contemporaries Ralph Richardson and John Gielgud, dominated the British stage of the mid @-@ 20th century. He also worked in films throughout his career, playing more than fifty cinema roles. Late in his career, he had considerable success in television roles. \n His family had no theatrical connections, but Olivier's father, a cle</td>
+      <td>\n = Laurence Olivier = \n \n Laurence Kerr Olivier, Baron Olivier, &lt;unk&gt; ( / &lt;unk&gt; &lt;unk&gt; &lt;unk&gt; / ; 22 May 1907 – 11 July 1989 ) was an English actor who, along with his contemporaries Ralph Richardson and John Gielgud, dominated the British stage of the mid @-@ 20th century. He also worked in films throughout his career, playing more than fifty cinema roles. Late in his career, he had considerable success in television roles. \n His family had no theatrical connections, but Olivier's father, a cler</td>
     </tr>
   </tbody>
 </table></div>
@@ -783,7 +1115,13 @@ necessary changes in your inputs/targets for causal LMs</p>
 
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Masked-LM">Masked LM<a class="anchor-link" href="#Masked-LM"> </a></h2>
+<h4 id="Masked-LM">Masked LM<a class="anchor-link" href="#Masked-LM"> </a></h4>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h5 id="Step-1:-Get-your-Hugging-Face-objects.">Step 1: Get your Hugging Face objects.<a class="anchor-link" href="#Step-1:-Get-your-Hugging-Face-objects."> </a></h5>
 </div>
 </div>
 </div>
@@ -801,7 +1139,8 @@ necessary changes in your inputs/targets for causal LMs</p>
 
 <span class="c1"># some tokenizers like gpt and gpt2 do not have a pad token, so we add it here mainly for the purpose</span>
 <span class="c1"># of setting the &quot;labels&quot; key appropriately (see below)</span>
-<span class="k">if</span> <span class="p">(</span><span class="n">hf_tokenizer</span><span class="o">.</span><span class="n">pad_token</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">):</span> <span class="n">hf_tokenizer</span><span class="o">.</span><span class="n">pad_token</span> <span class="o">=</span> <span class="s1">&#39;[PAD]&#39;</span>
+<span class="k">if</span> <span class="n">hf_tokenizer</span><span class="o">.</span><span class="n">pad_token</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="n">hf_tokenizer</span><span class="o">.</span><span class="n">pad_token</span> <span class="o">=</span> <span class="s2">&quot;[PAD]&quot;</span>
 
 <span class="n">hf_tokenizer</span><span class="o">.</span><span class="n">pad_token</span><span class="p">,</span> <span class="n">hf_tokenizer</span><span class="o">.</span><span class="n">pad_token_id</span>
 </pre></div>
@@ -831,75 +1170,10 @@ necessary changes in your inputs/targets for causal LMs</p>
 
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>We need a new input type for MLM tasks, particularly for <code>Learner.show_batch</code> and <code>Learner.show_results</code></p>
-
+<h5 id="Step-2:-Create-your-DataBlock">Step 2: Create your <code>DataBlock</code><a class="anchor-link" href="#Step-2:-Create-your-DataBlock"> </a></h5>
 </div>
 </div>
 </div>
-    {% raw %}
-    
-<div class="cell border-box-sizing code_cell rendered">
-
-<div class="output_wrapper">
-<div class="output">
-
-<div class="output_area">
-
-
-<div class="output_markdown rendered_html output_subarea ">
-<h2 id="HF_MLMInput" class="doc_header"><code>class</code> <code>HF_MLMInput</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/data/language_modeling.py#L166" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>HF_MLMInput</code>(<strong><code>x</code></strong>, <strong>**<code>kwargs</code></strong>) :: <a href="/blurr/data-core.html#TextInput"><code>TextInput</code></a></p>
-</blockquote>
-<p>The base represenation of your inputs; used by the various fastai <code>show</code> methods</p>
-
-</div>
-
-</div>
-
-</div>
-</div>
-
-</div>
-    {% endraw %}
-
-    {% raw %}
-    
-<div class="cell border-box-sizing code_cell rendered">
-
-</div>
-    {% endraw %}
-
-    {% raw %}
-    
-<div class="cell border-box-sizing code_cell rendered">
-
-<div class="output_wrapper">
-<div class="output">
-
-<div class="output_area">
-
-
-<div class="output_markdown rendered_html output_subarea ">
-<h2 id="BertMLMStrategy" class="doc_header"><code>class</code> <code>BertMLMStrategy</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/data/language_modeling.py#L169" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>BertMLMStrategy</code>(<strong><code>hf_tokenizer</code></strong>, <strong><code>ignore_token_id</code></strong>=<em><code>-100</code></em>) :: <a href="/blurr/data-language-modeling.html#LMStrategy"><code>LMStrategy</code></a></p>
-</blockquote>
-<p>A masked language modeling strategy using the default BERT masking definition.</p>
-
-</div>
-
-</div>
-
-</div>
-</div>
-
-</div>
-    {% endraw %}
-
-    {% raw %}
-    
-<div class="cell border-box-sizing code_cell rendered">
-
-</div>
-    {% endraw %}
-
     {% raw %}
     
 <div class="cell border-box-sizing code_cell rendered">
@@ -907,12 +1181,11 @@ necessary changes in your inputs/targets for causal LMs</p>
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">before_batch_tfm</span> <span class="o">=</span> <span class="n">HF_LMBeforeBatchTransform</span><span class="p">(</span><span class="n">hf_arch</span><span class="p">,</span> <span class="n">hf_config</span><span class="p">,</span> <span class="n">hf_tokenizer</span><span class="p">,</span> <span class="n">hf_model</span><span class="p">,</span>
-                                             <span class="n">lm_strategy_cls</span><span class="o">=</span><span class="n">BertMLMStrategy</span><span class="p">)</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">batch_tok_tfm</span> <span class="o">=</span> <span class="n">LMBatchTokenizeTransform</span><span class="p">(</span><span class="n">hf_arch</span><span class="p">,</span> <span class="n">hf_config</span><span class="p">,</span> <span class="n">hf_tokenizer</span><span class="p">,</span> <span class="n">hf_model</span><span class="p">,</span> <span class="n">lm_strategy_cls</span><span class="o">=</span><span class="n">BertMLMStrategy</span><span class="p">)</span>
 
-<span class="n">blocks</span> <span class="o">=</span> <span class="p">(</span><span class="n">TextBlock</span><span class="p">(</span><span class="n">before_batch_tfm</span><span class="o">=</span><span class="n">before_batch_tfm</span><span class="p">,</span> <span class="n">input_return_type</span><span class="o">=</span><span class="n">HF_MLMInput</span><span class="p">),</span> <span class="n">noop</span><span class="p">)</span>
+<span class="n">blocks</span> <span class="o">=</span> <span class="p">(</span><span class="n">TextBlock</span><span class="p">(</span><span class="n">batch_tokenize_tfm</span><span class="o">=</span><span class="n">batch_tok_tfm</span><span class="p">,</span> <span class="n">input_return_type</span><span class="o">=</span><span class="n">MLMTextInput</span><span class="p">),</span> <span class="n">noop</span><span class="p">)</span>
 
-<span class="n">dblock</span> <span class="o">=</span> <span class="n">DataBlock</span><span class="p">(</span><span class="n">blocks</span><span class="o">=</span><span class="n">blocks</span><span class="p">,</span> <span class="n">get_x</span><span class="o">=</span><span class="n">ColReader</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span> <span class="n">splitter</span><span class="o">=</span><span class="n">ColSplitter</span><span class="p">(</span><span class="n">col</span><span class="o">=</span><span class="s1">&#39;is_valid&#39;</span><span class="p">))</span>
+<span class="n">dblock</span> <span class="o">=</span> <span class="n">DataBlock</span><span class="p">(</span><span class="n">blocks</span><span class="o">=</span><span class="n">blocks</span><span class="p">,</span> <span class="n">get_x</span><span class="o">=</span><span class="n">ColReader</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span> <span class="n">splitter</span><span class="o">=</span><span class="n">ColSplitter</span><span class="p">(</span><span class="n">col</span><span class="o">=</span><span class="s2">&quot;is_valid&quot;</span><span class="p">))</span>
 </pre></div>
 
     </div>
@@ -922,6 +1195,12 @@ necessary changes in your inputs/targets for causal LMs</p>
 </div>
     {% endraw %}
 
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h5 id="Step-3:-Build-your-DataLoaders">Step 3: Build your <code>DataLoaders</code><a class="anchor-link" href="#Step-3:-Build-your-DataLoaders"> </a></h5>
+</div>
+</div>
+</div>
     {% raw %}
     
 <div class="cell border-box-sizing code_cell rendered">
@@ -947,7 +1226,7 @@ necessary changes in your inputs/targets for causal LMs</p>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">b</span> <span class="o">=</span> <span class="n">dls</span><span class="o">.</span><span class="n">one_batch</span><span class="p">()</span>
-<span class="n">b</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;input_ids&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">b</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;labels&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">b</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span>
+<span class="n">b</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;input_ids&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">b</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;labels&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">b</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span>
 </pre></div>
 
     </div>
@@ -980,7 +1259,7 @@ necessary changes in your inputs/targets for causal LMs</p>
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">b</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;input_ids&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">][:</span><span class="mi">20</span><span class="p">],</span> <span class="n">b</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;labels&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">][:</span><span class="mi">20</span><span class="p">],</span> <span class="n">b</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">][:</span><span class="mi">20</span><span class="p">]</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">b</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;input_ids&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">][:</span><span class="mi">20</span><span class="p">],</span> <span class="n">b</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;labels&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">][:</span><span class="mi">20</span><span class="p">],</span> <span class="n">b</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">][:</span><span class="mi">20</span><span class="p">]</span>
 </pre></div>
 
     </div>
@@ -995,15 +1274,13 @@ necessary changes in your inputs/targets for causal LMs</p>
 
 
 <div class="output_text output_subarea output_execute_result">
-<pre>(tensor([  101,  1027,  3960,  7758,   103,  3960,  7758,  1006,   103,  1026,
-          4895,  2243,  1028,   103,  1025,  2141,  2728,  5297, 27946,  1010],
+<pre>(tensor([  101,   103,  3960,  7758,  1027,  3960,  7758,  1006,  1013,   103,
+          4895,  2243,  1028,   103,  1025,  2141,   103,  5297, 27946,  1010],
         device=&#39;cuda:1&#39;),
- tensor([ -100,  -100,  -100,  -100,  1027,  -100,  -100,  -100,  1013,  -100,
-          -100,  -100,  -100,  1013,  -100,  -100,  -100,  -100, 27946,  -100],
-        device=&#39;cuda:1&#39;),
- tensor([ -100,  -100,  -100,  -100,  1027,  -100,  -100,  -100,  1013,  -100,
-          -100,  -100,  -100,  1013,  -100,  -100,  -100,  -100, 27946,  -100],
-        device=&#39;cuda:1&#39;))</pre>
+ tensor([-100, 1027, -100, -100, -100, 3960, -100, -100, -100, 1026, -100, -100,
+         -100, 1013, -100, -100, 2728, -100, -100, -100], device=&#39;cuda:1&#39;),
+ tensor([-100, 1027, -100, -100, -100, 3960, -100, -100, -100, 1026, -100, -100,
+         -100, 1013, -100, -100, 2728, -100, -100, -100], device=&#39;cuda:1&#39;))</pre>
 </div>
 
 </div>
@@ -1085,13 +1362,13 @@ necessary changes in your inputs/targets for causal LMs</p>
   <tbody>
     <tr>
       <th>0</th>
-      <td>= bob dylan = bob dylan ( / &lt; un ##k &gt; / ; born robert [MASK] zimmerman , [MASK] 24 , 1941 [MASK] is an american singer @ - @ [MASK] , artist and writer . he has been influential [MASK] popular music [MASK] culture for [MASK] than five decades . much of his most celebrated work dates from the 1960s when his songs chronicle [MASK] social unrest , although dylan rep [MASK] ##ated suggestions from journalists [MASK] he was [MASK] spokesman for his generation . nevertheless , early [songs] such as " blow ##in ' in the wind " and " the times they are [MASK] [worldwide] - @ &lt; un [##k] &gt; ' " became [MASK] [MASK] for the american civil [MASK] and anti @ - @ war movements . after he left his [MASK] base in the american [essentially] [ru] revival , his six @ - @ minute single [MASK] like a rolling stone " altered the range [MASK] popular music in 1965 . his mid @ - [MASK] 1960s [recordings] , backed by rock musicians , reached the top end [of] the united states music charts while also [MASK] &lt; un ##k &gt; and criticism from others in the folk movement . dylan ' s [MASK] have [MASK] various political [MASK] social , philosophical [,] and literary [MASK] . [they] [MASK] ##ied existing pop music [MASK] and appealed [MASK] the bu ##rgeon ##ing counter ##culture . initially inspired by the performances of little richard and</td>
-      <td>= bob dylan = bob dylan ( / &lt; un ##k &gt; / ; born robert [allen] zimmerman , [may] 24 , 1941 [)] is an american singer @ - @ [songwriter] , artist and writer . he has been influential [in] popular music [and] culture for [more] than five decades . much of his most celebrated work dates from the 1960s when his songs chronicle [##d] social unrest , although dylan rep [##udi] ##ated suggestions from journalists [that] he was [a] spokesman for his generation . nevertheless , early [songs] such as " blow ##in ' in the wind " and " the times they are [a] [@] - @ &lt; un [##k] &gt; ' " became [anthem] [##s] for the american civil [rights] and anti @ - @ war movements . after he left his [initial] base in the american [folk] [music] revival , his six @ - @ minute single ["] like a rolling stone " altered the range [of] popular music in 1965 . his mid @ - [@] 1960s [recordings] , backed by rock musicians , reached the top end [of] the united states music charts while also [attracting] &lt; un ##k &gt; and criticism from others in the folk movement . dylan ' s [lyrics] have [incorporated] various political [,] social , philosophical [,] and literary [influences] . [they] [def] ##ied existing pop music [conventions] and appealed [to] the bu ##rgeon ##ing counter ##culture . initially inspired by the performances of little richard and</td>
+      <td>= bob dylan = [MASK] dylan ( / &lt; un [MASK] &gt; / [baton] born robert allen zimmerman , may 24 , 1941 [)] is an american singer @ - @ [MASK] , artist and [##igny] . he has been influential in popular music [MASK] culture for more than [MASK] decades [MASK] much of his most celebrated work dates from the 1960s when his [MASK] chronicle ##d social unrest , although dylan rep ##udi ##ated suggestions from [MASK] that he was a spokesman for his [MASK] . nevertheless , early songs such as " blow ##in ' [MASK] the wind " and " the [MASK] they are a @ - [MASK] &lt; un ##k &gt; ' [MASK] became anthem ##s for the american civil rights and anti @ - @ war movements . after [MASK] left his initial base [MASK] the american folk music revival , his six @ - [MASK] minute single " like a rolling stone " [MASK] the range [MASK] popular music in 1965 . [MASK] [MASK] @ - @ 1960s recordings , backed [MASK] rock musicians , reached the top end [MASK] [rpg] united states music charts [MASK] also attracting &lt; un ##k &gt; and criticism from others [MASK] the folk movement . dylan ' s lyrics have incorporated various political , social , [MASK] [MASK] [MASK] [MASK] influences . [MASK] def ##ied existing pop music conventions and appealed to the bu ##rgeon ##ing counter ##culture . initially inspired by the performances of little richard and</td>
+      <td>= bob dylan = [bob] dylan ( / &lt; un [##k] &gt; / [;] born robert allen zimmerman , may 24 , 1941 [)] is an american singer @ - @ [songwriter] , artist and [writer] . he has been influential in popular music [and] culture for more than [five] decades [.] much of his most celebrated work dates from the 1960s when his [songs] chronicle ##d social unrest , although dylan rep ##udi ##ated suggestions from [journalists] that he was a spokesman for his [generation] . nevertheless , early songs such as " blow ##in ' [in] the wind " and " the [times] they are a @ - [@] &lt; un ##k &gt; ' ["] became anthem ##s for the american civil rights and anti @ - @ war movements . after [he] left his initial base [in] the american folk music revival , his six @ - [@] minute single " like a rolling stone " [altered] the range [of] popular music in 1965 . [his] [mid] @ - @ 1960s recordings , backed [by] rock musicians , reached the top end [of] [the] united states music charts [while] also attracting &lt; un ##k &gt; and criticism from others [in] the folk movement . dylan ' s lyrics have incorporated various political , social , [philosophical] [,] [and] [literary] influences . [they] def ##ied existing pop music conventions and appealed to the bu ##rgeon ##ing counter ##culture . initially inspired by the performances of little richard and</td>
     </tr>
     <tr>
       <th>1</th>
-      <td>= ireland = [MASK] [##itical] [/] [MASK] un ##k &gt; / ; irish : [MASK] [MASK] ##k &gt; [ &lt; un ##k &gt; ] ; ulster @ - @ scots : &lt; un ##k &gt; [ &lt; un ##k &gt; ] ) is an [MASK] in the north atlantic [MASK] it is [##示] from great britain to its east by the north channel [challenges] the [MASK] sea [,] and st george ' s channel . ireland is the second [MASK] - @ largest island of the british isles , the third @ - @ [cascade] in europe , [MASK] the [MASK] @ [MASK] @ largest on [MASK] . [MASK] un [MASK] [MASK] , ireland is divided between the republic of ireland ( officially [named] ireland [seminal] , which covers five @ - [MASK] &lt; un ##k &gt; of the island [MASK] and northern ireland , which is part of the united kingdom , in the northeast of the island . in 2011 [the] population of ireland was about 6 @ . @ 4 million , ranking it the second @ - @ most populous [MASK] in europe after great britain . just under [MASK] [MASK] . [MASK] 6 million live in [MASK] [MASK] of ireland and just over [MASK] @ . @ [8] million live in northern ireland . the island ' s geography comprises [MASK] low @ - @ lying mountains surrounding a central plain , with several navigable rivers extending inland . the island has lush vegetation ,</td>
-      <td>= ireland = [ireland] [(] [/] [&lt;] un ##k &gt; / ; irish : [&lt;] [un] ##k &gt; [ &lt; un ##k &gt; ] ; ulster @ - @ scots : &lt; un ##k &gt; [ &lt; un ##k &gt; ] ) is an [island] in the north atlantic [.] it is [separated] from great britain to its east by the north channel [,] the [irish] sea [,] and st george ' s channel . ireland is the second [@] - @ largest island of the british isles , the third @ - @ [largest] in europe , [and] the [twentieth] @ [-] @ largest on [earth] . [&lt;] un [##k] [&gt;] , ireland is divided between the republic of ireland ( officially [named] ireland [)] , which covers five @ - [@] &lt; un ##k &gt; of the island [,] and northern ireland , which is part of the united kingdom , in the northeast of the island . in 2011 [the] population of ireland was about 6 @ . @ 4 million , ranking it the second @ - @ most populous [island] in europe after great britain . just under [4] [@] . [@] 6 million live in [the] [republic] of ireland and just over [1] @ . @ [8] million live in northern ireland . the island ' s geography comprises [relatively] low @ - @ lying mountains surrounding a central plain , with several navigable rivers extending inland . the island has lush vegetation ,</td>
+      <td>[MASK] [MASK] of romani = the battle of [MASK] was the last ground attack of the central powers on the suez [canal] at the beginning [MASK] the sinai and palestine campaign during the [MASK] world war . the [MASK] was fought between 3 and 5 august 1916 near [MASK] [MASK] [MASK] of romani and the [MASK] of [ancient] pe ##lus ##ium on the sinai [MASK] , 23 miles [MASK] 37 [MASK] ) east of the suez canal . [MASK] victory by the 52nd [MASK] lowland ) division and the anzac mounted division of [MASK] egyptian expeditionary force ( ee ##f ) over a joint [emergence] and german [MASK] , which had marched across the sinai , marked the end of [MASK] defence of the [MASK] [MASK] campaign , also [MASK] as the [MASK] zur &lt; un ##k &gt; [MASK] &lt; un ##k &gt; and the &lt; [un] ##k &gt; &lt; un ##k &gt; &lt; un ##k &gt; , which had begun on 26 [MASK] [MASK] . this british empire [MASK] [,] the first against the ottoman [MASK] in the war [MASK] ensured the safety [of] [MASK] suez canal from ground attacks , and [MASK] the central powers [MASK] ambitions [vicinity] [MASK] [differing] traffic through the canal by gaining control of the strategically important northern [MASK] to [MASK] suez canal . the pursuit [by] the [MASK] [mounted] division which ended [MASK] bi ##r el [MASK] on 12 august began the sinai and palestine campaign . thereafter , [##wicz] anzac mounted [MASK]</td>
+      <td>[=] [battle] of romani = the battle of [romani] was the last ground attack of the central powers on the suez [canal] at the beginning [of] the sinai and palestine campaign during the [first] world war . the [battle] was fought between 3 and 5 august 1916 near [the] [egyptian] [town] of romani and the [site] of [ancient] pe ##lus ##ium on the sinai [peninsula] , 23 miles [(] 37 [km] ) east of the suez canal . [this] victory by the 52nd [(] lowland ) division and the anzac mounted division of [the] egyptian expeditionary force ( ee ##f ) over a joint [ottoman] and german [force] , which had marched across the sinai , marked the end of [the] defence of the [suez] [canal] campaign , also [known] as the [offensive] zur &lt; un ##k &gt; [des] &lt; un ##k &gt; and the &lt; [un] ##k &gt; &lt; un ##k &gt; &lt; un ##k &gt; , which had begun on 26 [january] [1915] . this british empire [victory] [,] the first against the ottoman [empire] in the war [,] ensured the safety [of] [the] suez canal from ground attacks , and [ended] the central powers ['] ambitions [of] [disrupt] [##ing] traffic through the canal by gaining control of the strategically important northern [approaches] to [the] suez canal . the pursuit [by] the [anzac] [mounted] division which ended [at] bi ##r el [abd] on 12 august began the sinai and palestine campaign . thereafter , [the] anzac mounted [division]</td>
     </tr>
   </tbody>
 </table></div>
@@ -1106,13 +1383,7 @@ necessary changes in your inputs/targets for causal LMs</p>
 
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Summary">Summary<a class="anchor-link" href="#Summary"> </a></h2>
-</div>
-</div>
-</div>
-<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<p>You can implement whatever LM strategy your heart desires for either causal or masked language modeling tasks in Blurr</p>
+<h2 id="Summary">Summary<a class="anchor-link" href="#Summary"> </a></h2><p>You can implement whatever LM strategy your heart desires for either causal or masked language modeling tasks in Blurr</p>
 
 </div>
 </div>
