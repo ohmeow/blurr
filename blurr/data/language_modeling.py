@@ -14,7 +14,7 @@ from fastai.imports import *
 from fastai.losses import CrossEntropyLossFlat
 from fastai.torch_core import *
 from fastai.torch_imports import *
-from transformers import AutoModelForCausalLM, AutoModelForMaskedLM, logging, PretrainedConfig, PreTrainedTokenizerBase, PreTrainedModel
+from transformers import AutoModelForCausalLM, AutoModelForMaskedLM, logging, PretrainedConfig, PreTrainedTokenizerBase, PreTrainedModel, BatchEncoding
 
 from ..utils import BLURR
 from .core import TextInput, BatchTokenizeTransform, Preprocessor, first_blurr_tfm
@@ -30,56 +30,38 @@ class LMPreprocessor(Preprocessor):
         hf_tokenizer: PreTrainedTokenizerBase,
         # The number of examples to process at a time
         batch_size: int = 1000,
-        # Whether the dataset should be processed for multi-label; if True, will ensure `label_attrs` are
-        # converted to a value of either 0 or 1 indiciating the existence of the class in the example
-        is_multilabel: bool = False,
-        # The unique identifier in the dataset
-        id_attr: Optional[str] = None,
+        # How big each chunk of text should be (default: hf_tokenizer.model_max_length)
+        chunk_size: Optional[int] = None,
+        # How to indicate the beginning on a new text example (default is hf_tokenizer.eos_token|sep_token
+        sep_token: Optional[str] = None,
         # The attribute holding the text
         text_attr: str = "text",
-        # The attribute holding the text_pair
-        text_pair_attr: Optional[str] = None,
-        # The attribute holding the label(s) of the example
-        label_attrs: Union[str, List[str]] = "label",
         # The attribute that should be created if your are processing individual training and validation
         # datasets into a single dataset, and will indicate to which each example is associated
         is_valid_attr: Optional[str] = "is_valid",
-        # A list indicating the valid labels for the dataset (optional, defaults to the unique set of labels
-        # found in the full dataset)
-        label_mapping: Optional[List[str]] = None,
         # Tokenization kwargs that will be applied with calling the tokenizer
         tok_kwargs: dict = {},
     ):
-        tok_kwargs = {**tok_kwargs, "return_offsets_mapping": True}
-        super().__init__(hf_tokenizer, batch_size, text_attr, text_pair_attr, is_valid_attr, tok_kwargs)
+        tok_kwargs = {**tok_kwargs, "truncation": False, "return_offsets_mapping": True}
+        super().__init__(hf_tokenizer, batch_size, text_attr, None, is_valid_attr, tok_kwargs)
 
-        self.is_multilabel = is_multilabel
-        self.id_attr = id_attr
-        self.label_attrs = label_attrs
-        self.label_mapping = label_mapping
+        self.chunk_size = chunk_size or hf_tokenizer.model_max_length
+        self.sep_token = sep_token or hf_tokenizer.eos_token or hf_tokenizer.sep_token
 
     def process_df(self, training_df: pd.DataFrame, validation_df: Optional[pd.DataFrame] = None):
-        df = super().process_df(training_df, validation_df)
-
-        # convert even single "labels" to a list to make things easier
-        label_cols = listify(self.label_attrs)
-
-        # if "is_multilabel", convert all targets to an int, 0 or 1, rounding floats if necessary
-        if self.is_multilabel:
-            for label_col in label_cols:
-                df[label_col] = df[label_col].apply(lambda v: int(bool(max(0, round(v)))))
-
-        # if a "label_mapping" is included, add a "[label_col]_name" field with the label Ids converted to their label names
-        if self.label_mapping:
-            for label_col in label_cols:
-                df[f"{label_col}_name"] = df[label_col].apply(lambda v: self.label_mapping[v])
-
         # process df in mini-batches
-        final_df = pd.DataFrame()
-        for g, batch_df in df.groupby(np.arange(len(df)) // self.batch_size):
-            final_df = final_df.append(self._process_df_batch(batch_df))
+        final_train_df = pd.DataFrame()
+        for g, batch_df in training_df.groupby(np.arange(len(training_df)) // self.batch_size):
+            final_train_df = final_train_df.append(self._process_df_batch(batch_df))
+            final_train_df.reset_index(drop=True, inplace=True)
 
-        final_df.reset_index(drop=True, inplace=True)
+        final_val_df = pd.DataFrame() if validation_df is not None else None
+        if final_val_df is not None:
+            for g, batch_df in validation_df.groupby(np.arange(len(validation_df)) // self.batch_size):
+                final_val_df = final_val_df.append(self._process_df_batch(batch_df))
+                final_val_df.reset_index(drop=True, inplace=True)
+
+        final_df = super().process_df(final_train_df, final_val_df)
         return final_df
 
     def process_hf_dataset(self, training_ds: Dataset, validation_ds: Optional[Dataset] = None):
@@ -90,28 +72,27 @@ class LMPreprocessor(Preprocessor):
     def _process_df_batch(self, batch_df):
         batch_df.reset_index(drop=True, inplace=True)
 
-        # grab our inputs
-        inputs = self._tokenize_function(batch_df.to_dict(orient="list"))
+        # concatenate our texts
+        concat_txts = {self.text_attr: f' {self.sep_token} '.join(batch_df[self.text_attr].values.tolist())}
+        inputs = self._tokenize_function(concat_txts)
 
-        for txt_seq_idx, txt_attr in enumerate([self.text_attr, self.text_pair_attr]):
-            if txt_attr is None:
-                break
+        # compute the length of our concatenated texts
+        n_total_toks = len(inputs["input_ids"])
 
-            char_idxs = []
-            for idx, offset_mapping in enumerate(inputs["offset_mapping"]):
-                text_offsets = [offset_mapping[i] for i, seq_id in enumerate(inputs.sequence_ids(idx)) if seq_id == txt_seq_idx]
-                char_idxs.append([min(text_offsets)[0], max(text_offsets)[1]])
+        # need to modify chunk_size to included the # of special tokens added
+        max_chunk_size = self.chunk_size - self.hf_tokenizer.num_special_tokens_to_add() - 1
 
-            batch_df = pd.concat(
-                [batch_df, pd.DataFrame(char_idxs, columns=[f"{txt_attr}_start_char_idx", f"{txt_attr}_end_char_idx"])], axis=1
-            )
-            batch_df.insert(
-                0,
-                f"proc_{txt_attr}",
-                batch_df.apply(lambda r: r[txt_attr][r[f"{txt_attr}_start_char_idx"] : r[f"{txt_attr}_end_char_idx"] + 1], axis=1),
-            )
+        # drop the last chunk of text if it is smaller than chunk size (see the HF course, section 7 on training MLMs)
+        total_length = (n_total_toks // max_chunk_size) * max_chunk_size
 
-        return batch_df
+        # break our concatenated into chunks of text of size max_chunk_size
+        examples = []
+        for i in range(0, total_length, max_chunk_size):
+            chunked_offsets = inputs["offset_mapping"][i: i + max_chunk_size]
+            chunked_text = concat_txts[self.text_attr][min(chunked_offsets)[0]:max(chunked_offsets)[1]]
+            examples.append(chunked_text)
+
+        return pd.DataFrame(examples, columns=[f"proc_{self.text_attr}"])
 
 
 # Cell
@@ -128,7 +109,7 @@ class BaseLMStrategy(ABC):
         store_attr(["hf_tokenizer", "ignore_token_id"])
 
     @abstractmethod
-    def build_inputs_targets(self, samples):
+    def build_inputs_targets(self, samples, include_labels: bool = True, inputs: Optional[BatchEncoding] = None):
         pass
 
     # utility methods
@@ -147,11 +128,13 @@ class CausalLMStrategy(BaseLMStrategy):
     necessary changes in your inputs/targets for causal LMs
     """
 
-    def build_inputs_targets(self, samples):
+    def build_inputs_targets(self, samples, include_labels: bool = True, inputs: Optional[BatchEncoding] = None):
         updated_samples = []
         for s in samples:
-            s[0]["labels"] = s[0]["input_ids"].clone()
-            s[0]["labels"][s[0]["labels"] == self.hf_tokenizer.pad_token_id] = self.ignore_token_id
+            if include_labels:
+                s[0]["labels"] = s[0]["input_ids"].clone()
+                s[0]["labels"][s[0]["labels"] == self.hf_tokenizer.pad_token_id] = self.ignore_token_id
+
             targ_ids = torch.cat([s[0]["input_ids"][1:], tensor([self.hf_tokenizer.eos_token_id])])
 
             updated_samples.append((s[0], targ_ids))
@@ -175,7 +158,7 @@ class BertMLMStrategy(BaseLMStrategy):
             vocab[tok] for tok in list(hf_tokenizer.special_tokens_map.values()) if vocab[tok] != hf_tokenizer.mask_token_id
         ]
 
-    def build_inputs_targets(self, samples):
+    def build_inputs_targets(self, samples, include_labels: bool = True, inputs: Optional[BatchEncoding] = None):
         updated_samples = []
         for s in samples:
             # mask the input_ids
@@ -208,8 +191,10 @@ class BertMLMStrategy(BaseLMStrategy):
             # update the inputs to use our masked input_ids and labels; set targ_ids = labels (will use when
             # we calculate the loss ourselves)
             s[0]["input_ids"] = masked_input_ids
-            s[0]["labels"] = lbls
-            targ_ids = lbls.clone()
+            targ_ids = lbls
+
+            if include_labels:
+                s[0]["labels"] = targ_ids.clone()
 
             updated_samples.append((s[0], targ_ids))
 
@@ -293,11 +278,11 @@ class LMBatchTokenizeTransform(BatchTokenizeTransform):
 
     def encodes(self, samples):
         # because no target is specific in CLM, fastai will duplicate the inputs (which is just the raw text)
-        samples = super().encodes(samples)
+        samples, inputs = super().encodes(samples, return_batch_encoding=True)
         if len(samples[0]) == 1:
             return samples
 
-        return self.lm_strategy.build_inputs_targets(samples)
+        return self.lm_strategy.build_inputs_targets(samples, self.include_labels, inputs)
 
 
 # Cell

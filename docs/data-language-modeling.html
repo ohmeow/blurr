@@ -339,6 +339,30 @@ transformers: 4.16.2
 </div>
     {% endraw %}
 
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># num_added_toks = hf_tokenizer.add_special_tokens(special_tokens_dict)</span>
+<span class="c1"># hf_model.resize_token_embeddings(len(hf_tokenizer))</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    {% endraw %}
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Preprocessing">Preprocessing<a class="anchor-link" href="#Preprocessing"> </a></h2>
+</div>
+</div>
+</div>
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <h3 id="LMPreprocessor"><a href="/blurr/data-language-modeling.html#LMPreprocessor"><code>LMPreprocessor</code></a><a class="anchor-link" href="#LMPreprocessor"> </a></h3><p>Starting with version 2.0, BLURR provides a language preprocessing class that can be used to preprocess DataFrames or Hugging Face Datasets for both causal and masked language modeling tasks.</p>
@@ -357,7 +381,7 @@ transformers: 4.16.2
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h2 id="LMPreprocessor" class="doc_header"><code>class</code> <code>LMPreprocessor</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/data/language_modeling.py#L26" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>LMPreprocessor</code>(<strong><code>hf_tokenizer</code></strong>:<code>PreTrainedTokenizerBase</code>, <strong><code>batch_size</code></strong>:<code>int</code>=<em><code>1000</code></em>, <strong><code>is_multilabel</code></strong>:<code>bool</code>=<em><code>False</code></em>, <strong><code>id_attr</code></strong>:<code>Optional</code>[<code>str</code>]=<em><code>None</code></em>, <strong><code>text_attr</code></strong>:<code>str</code>=<em><code>'text'</code></em>, <strong><code>text_pair_attr</code></strong>:<code>Optional</code>[<code>str</code>]=<em><code>None</code></em>, <strong><code>label_attrs</code></strong>:<code>Union</code>[<code>str</code>, List[str]<code>\]=*</code>'label'<code>*, **</code>is_valid_attr<code>**:</code>Optional<code>\[</code>str<code>\]=*</code>'is_valid'<code>*, **</code>label_mapping<code>**:</code>Optional<code>\[</code>List<code>\[</code>str<code>\]\]=*</code>None<code>*, **</code>tok_kwargs<code>**:</code>dict<code>=*</code>{}<code>*) :: [</code>Preprocessor`](/blurr/data-core.html#Preprocessor)</p>
+<h2 id="LMPreprocessor" class="doc_header"><code>class</code> <code>LMPreprocessor</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/data/language_modeling.py#L26" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>LMPreprocessor</code>(<strong><code>hf_tokenizer</code></strong>:<code>PreTrainedTokenizerBase</code>, <strong><code>batch_size</code></strong>:<code>int</code>=<em><code>1000</code></em>, <strong><code>chunk_size</code></strong>:<code>Optional</code>[<code>int</code>]=<em><code>None</code></em>, <strong><code>sep_token</code></strong>:<code>Optional</code>[<code>str</code>]=<em><code>None</code></em>, <strong><code>text_attr</code></strong>:<code>str</code>=<em><code>'text'</code></em>, <strong><code>is_valid_attr</code></strong>:<code>Optional</code>[<code>str</code>]=<em><code>'is_valid'</code></em>, <strong><code>tok_kwargs</code></strong>:<code>dict</code>=<em><code>{}</code></em>) :: <a href="/blurr/data-core.html#Preprocessor"><code>Preprocessor</code></a></p>
 </blockquote>
 <table>
 <thead><tr>
@@ -381,16 +405,17 @@ transformers: 4.16.2
 <td>The number of examples to process at a time</td>
 </tr>
 <tr>
-<td><strong><code>is_multilabel</code></strong></td>
-<td><code>bool</code></td>
-<td><code>False</code></td>
-<td>Whether the dataset should be processed for multi-label; if True, will ensure <code>label_attrs</code> are<br />converted to a value of either 0 or 1 indiciating the existence of the class in the example</td>
+<td><strong><code>chunk_size</code></strong></td>
+<td><code>Optional[int]</code></td>
+<td>``</td>
+<td>How big each chunk of text should be (default: hf_tokenizer.model_max_length)</td>
 </tr>
 <tr>
-<td><strong><code>id_attr</code></strong></td>
+<td><strong><code>sep_token</code></strong></td>
 <td><code>Optional[str]</code></td>
 <td>``</td>
-<td>The unique identifier in the dataset</td>
+<td>How to indicate the beginning on a new text example (default is hf_tokenizer.eos_token</td>
+<td>sep_token</td>
 </tr>
 <tr>
 <td><strong><code>text_attr</code></strong></td>
@@ -399,28 +424,10 @@ transformers: 4.16.2
 <td>The attribute holding the text</td>
 </tr>
 <tr>
-<td><strong><code>text_pair_attr</code></strong></td>
-<td><code>Optional[str]</code></td>
-<td>``</td>
-<td>The attribute holding the text_pair</td>
-</tr>
-<tr>
-<td><strong><code>label_attrs</code></strong></td>
-<td><code>List[str]]</code></td>
-<td><code>label</code></td>
-<td>The attribute holding the label(s) of the example</td>
-</tr>
-<tr>
 <td><strong><code>is_valid_attr</code></strong></td>
 <td><code>Optional[str]</code></td>
 <td><code>is_valid</code></td>
 <td>The attribute that should be created if your are processing individual training and validation<br />datasets into a single dataset, and will indicate to which each example is associated</td>
-</tr>
-<tr>
-<td><strong><code>label_mapping</code></strong></td>
-<td><code>List[str]]</code></td>
-<td>``</td>
-<td>A list indicating the valid labels for the dataset (optional, defaults to the unique set of labels<br />found in the full dataset)</td>
 </tr>
 <tr>
 <td><strong><code>tok_kwargs</code></strong></td>
@@ -461,12 +468,70 @@ transformers: 4.16.2
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># proc_df = preprocessor.process_df(df)</span>
-<span class="c1"># proc_df.columns, len(proc_df)</span>
-<span class="c1"># proc_df.head(2)</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">preprocessor</span> <span class="o">=</span> <span class="n">LMPreprocessor</span><span class="p">(</span><span class="n">hf_tokenizer</span><span class="p">,</span> <span class="n">chunk_size</span><span class="o">=</span><span class="mi">128</span><span class="p">,</span> <span class="n">text_attr</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">proc_df</span> <span class="o">=</span> <span class="n">preprocessor</span><span class="o">.</span><span class="n">process_df</span><span class="p">(</span><span class="n">train_df</span><span class="p">,</span> <span class="n">valid_df</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">proc_df</span><span class="p">))</span>
+<span class="n">proc_df</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
 </pre></div>
 
     </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>21330
+</pre>
+</div>
+</div>
+
+<div class="output_area">
+
+
+<div class="output_html rendered_html output_subarea output_execute_result"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>proc_0</th>
+      <th>is_valid</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>\n = 2013 – 14 York City F.C. season = \n \n The 2013 – 14 season was the &lt;unk&gt; season of competitive association football and 77th season in the Football League played by York City Football Club , a professional football club based in York , North Yorkshire , England . Their 17th @-@ place finish in 2012 – 13 meant it was their second consecutive season in League Two . The season ran from 1 July 2013 to 30 June 2014 . \n Nigel Worthington , starting his first full season as York manager , made eight permanent summer signings . By the turn of the year York were only</td>
+      <td>False</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>above the relegation zone on goal difference , before a 17 @-@ match unbeaten run saw the team finish in seventh @-@ place in the 24 @-@ team 2013 – 14 Football League Two . This meant York qualified for the play @-@ offs , and they were eliminated in the semi @-@ final by Fleetwood Town . York were knocked out of the 2013 – 14 FA Cup , Football League Cup and Football League Trophy in their opening round matches . \n 35 players made at least one appearance in nationally organised first @-@ team competition , and there were 12 different &lt;unk&gt; . Defender Ben Davies missed</td>
+      <td>False</td>
+    </tr>
+  </tbody>
+</table>
+</div></div>
+
+</div>
+
 </div>
 </div>
 
@@ -479,6 +544,23 @@ transformers: 4.16.2
 </div>
 </div>
 </div>
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span> 
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    {% endraw %}
+
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <h2 id="LM-Strategies">LM Strategies<a class="anchor-link" href="#LM-Strategies"> </a></h2>
@@ -503,7 +585,7 @@ transformers: 4.16.2
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h2 id="LMType" class="doc_header"><code>LMType</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/data/language_modeling.py#L118" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>Enum</code> = [CAUSAL, MASKED]</p>
+<h2 id="LMType" class="doc_header"><code>LMType</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/data/language_modeling.py#L99" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>Enum</code> = [CAUSAL, MASKED]</p>
 </blockquote>
 <p>An enumeration.</p>
 
@@ -542,7 +624,7 @@ transformers: 4.16.2
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h2 id="BaseLMStrategy" class="doc_header"><code>class</code> <code>BaseLMStrategy</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/data/language_modeling.py#L124" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>BaseLMStrategy</code>(<strong><code>hf_tokenizer</code></strong>, <strong><code>ignore_token_id</code></strong>=<em><code>-100</code></em>) :: <code>ABC</code></p>
+<h2 id="BaseLMStrategy" class="doc_header"><code>class</code> <code>BaseLMStrategy</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/data/language_modeling.py#L105" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>BaseLMStrategy</code>(<strong><code>hf_tokenizer</code></strong>, <strong><code>ignore_token_id</code></strong>=<em><code>-100</code></em>) :: <code>ABC</code></p>
 </blockquote>
 <p>ABC for various language modeling strategies (e.g., causal, BertMLM, WholeWordMLM, etc...)</p>
 
@@ -581,7 +663,7 @@ transformers: 4.16.2
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h2 id="CausalLMStrategy" class="doc_header"><code>class</code> <code>CausalLMStrategy</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/data/language_modeling.py#L145" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>CausalLMStrategy</code>(<strong><code>hf_tokenizer</code></strong>, <strong><code>ignore_token_id</code></strong>=<em><code>-100</code></em>) :: <a href="/blurr/data-language-modeling.html#BaseLMStrategy"><code>BaseLMStrategy</code></a></p>
+<h2 id="CausalLMStrategy" class="doc_header"><code>class</code> <code>CausalLMStrategy</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/data/language_modeling.py#L126" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>CausalLMStrategy</code>(<strong><code>hf_tokenizer</code></strong>, <strong><code>ignore_token_id</code></strong>=<em><code>-100</code></em>) :: <a href="/blurr/data-language-modeling.html#BaseLMStrategy"><code>BaseLMStrategy</code></a></p>
 </blockquote>
 <p>For next token prediction language modeling tasks, we want to use the <a href="/blurr/data-language-modeling.html#CausalLMStrategy"><code>CausalLMStrategy</code></a> which makes the
 necessary changes in your inputs/targets for causal LMs</p>
@@ -621,7 +703,7 @@ necessary changes in your inputs/targets for causal LMs</p>
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h2 id="BertMLMStrategy" class="doc_header"><code>class</code> <code>BertMLMStrategy</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/data/language_modeling.py#L167" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>BertMLMStrategy</code>(<strong><code>hf_tokenizer</code></strong>, <strong><code>ignore_token_id</code></strong>=<em><code>-100</code></em>) :: <a href="/blurr/data-language-modeling.html#BaseLMStrategy"><code>BaseLMStrategy</code></a></p>
+<h2 id="BertMLMStrategy" class="doc_header"><code>class</code> <code>BertMLMStrategy</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/data/language_modeling.py#L150" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>BertMLMStrategy</code>(<strong><code>hf_tokenizer</code></strong>, <strong><code>ignore_token_id</code></strong>=<em><code>-100</code></em>) :: <a href="/blurr/data-language-modeling.html#BaseLMStrategy"><code>BaseLMStrategy</code></a></p>
 </blockquote>
 <p>A masked language modeling strategy using the default BERT masking definition.</p>
 
@@ -666,7 +748,7 @@ necessary changes in your inputs/targets for causal LMs</p>
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h2 id="CausalLMTextInput" class="doc_header"><code>class</code> <code>CausalLMTextInput</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/data/language_modeling.py#L224" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>CausalLMTextInput</code>(<strong><code>x</code></strong>, <strong>**<code>kwargs</code></strong>) :: <a href="/blurr/data-core.html#TextInput"><code>TextInput</code></a></p>
+<h2 id="CausalLMTextInput" class="doc_header"><code>class</code> <code>CausalLMTextInput</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/data/language_modeling.py#L209" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>CausalLMTextInput</code>(<strong><code>x</code></strong>, <strong>**<code>kwargs</code></strong>) :: <a href="/blurr/data-core.html#TextInput"><code>TextInput</code></a></p>
 </blockquote>
 <p>The base represenation of your inputs; used by the various fastai <code>show</code> methods</p>
 
@@ -691,7 +773,7 @@ necessary changes in your inputs/targets for causal LMs</p>
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h2 id="MLMTextInput" class="doc_header"><code>class</code> <code>MLMTextInput</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/data/language_modeling.py#L229" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>MLMTextInput</code>(<strong><code>x</code></strong>, <strong>**<code>kwargs</code></strong>) :: <a href="/blurr/data-core.html#TextInput"><code>TextInput</code></a></p>
+<h2 id="MLMTextInput" class="doc_header"><code>class</code> <code>MLMTextInput</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/data/language_modeling.py#L214" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>MLMTextInput</code>(<strong><code>x</code></strong>, <strong>**<code>kwargs</code></strong>) :: <a href="/blurr/data-core.html#TextInput"><code>TextInput</code></a></p>
 </blockquote>
 <p>The base represenation of your inputs; used by the various fastai <code>show</code> methods</p>
 
@@ -731,7 +813,7 @@ necessary changes in your inputs/targets for causal LMs</p>
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h2 id="LMBatchTokenizeTransform" class="doc_header"><code>class</code> <code>LMBatchTokenizeTransform</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/data/language_modeling.py#L234" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>LMBatchTokenizeTransform</code>(<strong><code>hf_arch</code></strong>:<code>str</code>, <strong><code>hf_config</code></strong>:<code>PretrainedConfig</code>, <strong><code>hf_tokenizer</code></strong>:<code>PreTrainedTokenizerBase</code>, <strong><code>hf_model</code></strong>:<code>PreTrainedModel</code>, <strong><code>include_labels</code></strong>:<code>bool</code>=<em><code>True</code></em>, <strong><code>ignore_token_id</code></strong>:<code>int</code>=<em><code>-100</code></em>, <strong><code>lm_strategy_cls</code></strong>:<a href="/blurr/data-language-modeling.html#BaseLMStrategy"><code>BaseLMStrategy</code></a>=<em><code>CausalLMStrategy</code></em>, <strong><code>max_length</code></strong>:<code>int</code>=<em><code>None</code></em>, <strong><code>padding</code></strong>:<code>Union</code>[<code>bool</code>, <code>str</code>]=<em><code>True</code></em>, <strong><code>truncation</code></strong>:<code>Union</code>[<code>bool</code>, <code>str</code>]=<em><code>True</code></em>, <strong><code>is_split_into_words</code></strong>:<code>bool</code>=<em><code>False</code></em>, <strong><code>tok_kwargs</code></strong>=<em><code>{}</code></em>, <strong><code>text_gen_kwargs</code></strong>=<em><code>{}</code></em>, <strong>**<code>kwargs</code></strong>) :: <a href="/blurr/data-core.html#BatchTokenizeTransform"><code>BatchTokenizeTransform</code></a></p>
+<h2 id="LMBatchTokenizeTransform" class="doc_header"><code>class</code> <code>LMBatchTokenizeTransform</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/data/language_modeling.py#L219" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>LMBatchTokenizeTransform</code>(<strong><code>hf_arch</code></strong>:<code>str</code>, <strong><code>hf_config</code></strong>:<code>PretrainedConfig</code>, <strong><code>hf_tokenizer</code></strong>:<code>PreTrainedTokenizerBase</code>, <strong><code>hf_model</code></strong>:<code>PreTrainedModel</code>, <strong><code>include_labels</code></strong>:<code>bool</code>=<em><code>True</code></em>, <strong><code>ignore_token_id</code></strong>:<code>int</code>=<em><code>-100</code></em>, <strong><code>lm_strategy_cls</code></strong>:<a href="/blurr/data-language-modeling.html#BaseLMStrategy"><code>BaseLMStrategy</code></a>=<em><code>CausalLMStrategy</code></em>, <strong><code>max_length</code></strong>:<code>int</code>=<em><code>None</code></em>, <strong><code>padding</code></strong>:<code>Union</code>[<code>bool</code>, <code>str</code>]=<em><code>True</code></em>, <strong><code>truncation</code></strong>:<code>Union</code>[<code>bool</code>, <code>str</code>]=<em><code>True</code></em>, <strong><code>is_split_into_words</code></strong>:<code>bool</code>=<em><code>False</code></em>, <strong><code>tok_kwargs</code></strong>=<em><code>{}</code></em>, <strong><code>text_gen_kwargs</code></strong>=<em><code>{}</code></em>, <strong>**<code>kwargs</code></strong>) :: <a href="/blurr/data-core.html#BatchTokenizeTransform"><code>BatchTokenizeTransform</code></a></p>
 </blockquote>
 <p>Handles everything you need to assemble a mini-batch of inputs and targets, as well as
 decode the dictionary produced as a byproduct of the tokenization process in the <code>encodes</code> method.</p>
@@ -888,8 +970,6 @@ decode the dictionary produced as a byproduct of the tokenization process in the
 <span class="c1"># of setting the &quot;labels&quot; key appropriately (see below)</span>
 <span class="k">if</span> <span class="n">hf_tokenizer</span><span class="o">.</span><span class="n">pad_token</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
     <span class="n">hf_tokenizer</span><span class="o">.</span><span class="n">pad_token</span> <span class="o">=</span> <span class="s2">&quot;[PAD]&quot;</span>
-
-<span class="n">hf_tokenizer</span><span class="o">.</span><span class="n">pad_token</span><span class="p">,</span> <span class="n">hf_tokenizer</span><span class="o">.</span><span class="n">pad_token_id</span>
 </pre></div>
 
     </div>
@@ -907,13 +987,86 @@ decode the dictionary produced as a byproduct of the tokenization process in the
 </div>
 </div>
 
+</div>
+</div>
+
+</div>
+    {% endraw %}
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h5 id="Step-2:-Preprocess-data">Step 2: Preprocess data<a class="anchor-link" href="#Step-2:-Preprocess-data"> </a></h5>
+</div>
+</div>
+</div>
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">preprocessor</span> <span class="o">=</span> <span class="n">LMPreprocessor</span><span class="p">(</span><span class="n">hf_tokenizer</span><span class="p">,</span> <span class="n">chunk_size</span><span class="o">=</span><span class="mi">128</span><span class="p">,</span> <span class="n">text_attr</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">proc_df</span> <span class="o">=</span> <span class="n">preprocessor</span><span class="o">.</span><span class="n">process_df</span><span class="p">(</span><span class="n">train_df</span><span class="p">,</span> <span class="n">valid_df</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">proc_df</span><span class="p">))</span>
+<span class="n">proc_df</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>21330
+</pre>
+</div>
+</div>
+
 <div class="output_area">
 
 
+<div class="output_html rendered_html output_subarea output_execute_result"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
 
-<div class="output_text output_subarea output_execute_result">
-<pre>(&#39;[PAD]&#39;, 50256)</pre>
-</div>
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>proc_0</th>
+      <th>is_valid</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>\n = 2013 – 14 York City F.C. season = \n \n The 2013 – 14 season was the &lt;unk&gt; season of competitive association football and 77th season in the Football League played by York City Football Club , a professional football club based in York , North Yorkshire , England . Their 17th @-@ place finish in 2012 – 13 meant it was their second consecutive season in League Two . The season ran from 1 July 2013 to 30 June 2014 . \n Nigel Worthington , starting his first full season as York manager , made eight permanent summer signings . By the turn of the year York were only</td>
+      <td>False</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>above the relegation zone on goal difference , before a 17 @-@ match unbeaten run saw the team finish in seventh @-@ place in the 24 @-@ team 2013 – 14 Football League Two . This meant York qualified for the play @-@ offs , and they were eliminated in the semi @-@ final by Fleetwood Town . York were knocked out of the 2013 – 14 FA Cup , Football League Cup and Football League Trophy in their opening round matches . \n 35 players made at least one appearance in nationally organised first @-@ team competition , and there were 12 different &lt;unk&gt; . Defender Ben Davies missed</td>
+      <td>False</td>
+    </tr>
+  </tbody>
+</table>
+</div></div>
 
 </div>
 
@@ -925,7 +1078,7 @@ decode the dictionary produced as a byproduct of the tokenization process in the
 
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h5 id="Step-2:-Create-your-DataBlock">Step 2: Create your <code>DataBlock</code><a class="anchor-link" href="#Step-2:-Create-your-DataBlock"> </a></h5>
+<h5 id="Step-3:-Create-your-DataBlock">Step 3: Create your <code>DataBlock</code><a class="anchor-link" href="#Step-3:-Create-your-DataBlock"> </a></h5>
 </div>
 </div>
 </div>
@@ -940,7 +1093,7 @@ decode the dictionary produced as a byproduct of the tokenization process in the
 
 <span class="n">blocks</span> <span class="o">=</span> <span class="p">(</span><span class="n">TextBlock</span><span class="p">(</span><span class="n">batch_tokenize_tfm</span><span class="o">=</span><span class="n">batch_tok_tfm</span><span class="p">,</span> <span class="n">input_return_type</span><span class="o">=</span><span class="n">CausalLMTextInput</span><span class="p">),</span> <span class="n">noop</span><span class="p">)</span>
 
-<span class="n">dblock</span> <span class="o">=</span> <span class="n">DataBlock</span><span class="p">(</span><span class="n">blocks</span><span class="o">=</span><span class="n">blocks</span><span class="p">,</span> <span class="n">get_x</span><span class="o">=</span><span class="n">ColReader</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span> <span class="n">splitter</span><span class="o">=</span><span class="n">ColSplitter</span><span class="p">(</span><span class="n">col</span><span class="o">=</span><span class="s2">&quot;is_valid&quot;</span><span class="p">))</span>
+<span class="n">dblock</span> <span class="o">=</span> <span class="n">DataBlock</span><span class="p">(</span><span class="n">blocks</span><span class="o">=</span><span class="n">blocks</span><span class="p">,</span> <span class="n">get_x</span><span class="o">=</span><span class="n">ColReader</span><span class="p">(</span><span class="s2">&quot;proc_0&quot;</span><span class="p">),</span> <span class="n">splitter</span><span class="o">=</span><span class="n">ColSplitter</span><span class="p">(</span><span class="n">col</span><span class="o">=</span><span class="s2">&quot;is_valid&quot;</span><span class="p">))</span>
 </pre></div>
 
     </div>
@@ -952,7 +1105,7 @@ decode the dictionary produced as a byproduct of the tokenization process in the
 
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h5 id="Step-3:-Build-your-DataLoaders">Step 3: Build your <code>DataLoaders</code><a class="anchor-link" href="#Step-3:-Build-your-DataLoaders"> </a></h5>
+<h5 id="Step-4:-Build-your-DataLoaders">Step 4: Build your <code>DataLoaders</code><a class="anchor-link" href="#Step-4:-Build-your-DataLoaders"> </a></h5>
 </div>
 </div>
 </div>
@@ -963,7 +1116,7 @@ decode the dictionary produced as a byproduct of the tokenization process in the
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">dls</span> <span class="o">=</span> <span class="n">dblock</span><span class="o">.</span><span class="n">dataloaders</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">bs</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">dls</span> <span class="o">=</span> <span class="n">dblock</span><span class="o">.</span><span class="n">dataloaders</span><span class="p">(</span><span class="n">proc_df</span><span class="p">,</span> <span class="n">bs</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
 </pre></div>
 
     </div>
@@ -1012,7 +1165,7 @@ decode the dictionary produced as a byproduct of the tokenization process in the
 
 
 <div class="output_text output_subarea output_execute_result">
-<pre>(torch.Size([4, 1024]), torch.Size([4, 1024]), torch.Size([4, 1024]))</pre>
+<pre>(torch.Size([4, 129]), torch.Size([4, 129]), torch.Size([4, 129]))</pre>
 </div>
 
 </div>
@@ -1094,13 +1247,13 @@ decode the dictionary produced as a byproduct of the tokenization process in the
   <tbody>
     <tr>
       <th>0</th>
-      <td>\n = Bob Dylan = \n \n Bob Dylan ( / &lt;unk&gt; / ; born Robert Allen Zimmerman, May 24, 1941 ) is an American singer @-@ songwriter, artist and writer. He has been influential in popular music and culture for more than five decades. Much of his most celebrated work dates from the 1960s when his songs chronicled social unrest, although Dylan repudiated suggestions from journalists that he was a spokesman for his generation. Nevertheless, early songs such as " Blowin'in the Wind " and " The Times They A</td>
-      <td>\n = Bob Dylan = \n \n Bob Dylan ( / &lt;unk&gt; / ; born Robert Allen Zimmerman, May 24, 1941 ) is an American singer @-@ songwriter, artist and writer. He has been influential in popular music and culture for more than five decades. Much of his most celebrated work dates from the 1960s when his songs chronicled social unrest, although Dylan repudiated suggestions from journalists that he was a spokesman for his generation. Nevertheless, early songs such as " Blowin'in the Wind " and " The Times They Ar</td>
+      <td>₹ 40 million ( US $ 590 @,@ 000 ) was spent solely on VFX for Magadheera. \n \n = = = &lt;unk&gt; = = = \n \n During the film's shoot at Ramoji Film City in late November 2008, a 500 square feet ( 46 m2 ) film can, containing two or three scenes, was discovered missing from Rainbow lab. The filmmakers filed a case at &lt;unk&gt; police station. Security personnel and film unit members searched, but failed to recover the reels. Rajamouli's unit said it was not important if the scenes from</td>
+      <td>�� 40 million ( US $ 590 @,@ 000 ) was spent solely on VFX for Magadheera. \n \n = = = &lt;unk&gt; = = = \n \n During the film's shoot at Ramoji Film City in late November 2008, a 500 square feet ( 46 m2 ) film can, containing two or three scenes, was discovered missing from Rainbow lab. The filmmakers filed a case at &lt;unk&gt; police station. Security personnel and film unit members searched, but failed to recover the reels. Rajamouli's unit said it was not important if the scenes from</td>
     </tr>
     <tr>
       <th>1</th>
-      <td>\n = Laurence Olivier = \n \n Laurence Kerr Olivier, Baron Olivier, &lt;unk&gt; ( / &lt;unk&gt; &lt;unk&gt; &lt;unk&gt; / ; 22 May 1907 – 11 July 1989 ) was an English actor who, along with his contemporaries Ralph Richardson and John Gielgud, dominated the British stage of the mid @-@ 20th century. He also worked in films throughout his career, playing more than fifty cinema roles. Late in his career, he had considerable success in television roles. \n His family had no theatrical connections, but Olivier's father, a cle</td>
-      <td>\n = Laurence Olivier = \n \n Laurence Kerr Olivier, Baron Olivier, &lt;unk&gt; ( / &lt;unk&gt; &lt;unk&gt; &lt;unk&gt; / ; 22 May 1907 – 11 July 1989 ) was an English actor who, along with his contemporaries Ralph Richardson and John Gielgud, dominated the British stage of the mid @-@ 20th century. He also worked in films throughout his career, playing more than fifty cinema roles. Late in his career, he had considerable success in television roles. \n His family had no theatrical connections, but Olivier's father, a cler</td>
+      <td>ơng, Bình Long and Phước Long to carry out their mission. During the first phase of their campaign, the Viet Cong regiments overran several strategic hamlets at &lt;unk&gt; Sang, Cam Xe, &lt;unk&gt; &lt;unk&gt;, and Thai &lt;unk&gt;. Between August and September 1964, Viet Cong regiments executed deep &lt;unk&gt; into Bình Dương and &lt;unk&gt; &lt;unk&gt; to apply additional pressure on South Vietnamese outposts situated on Route 14. During the second phase of their campaign, the Viet Cong ambushed</td>
+      <td>ơng, Bình Long and Phước Long to carry out their mission. During the first phase of their campaign, the Viet Cong regiments overran several strategic hamlets at &lt;unk&gt; Sang, Cam Xe, &lt;unk&gt; &lt;unk&gt;, and Thai &lt;unk&gt;. Between August and September 1964, Viet Cong regiments executed deep &lt;unk&gt; into Bình Dương and &lt;unk&gt; &lt;unk&gt; to apply additional pressure on South Vietnamese outposts situated on Route 14. During the second phase of their campaign, the Viet Cong ambushed</td>
     </tr>
   </tbody>
 </table></div>
@@ -1141,8 +1294,33 @@ decode the dictionary produced as a byproduct of the tokenization process in the
 <span class="c1"># of setting the &quot;labels&quot; key appropriately (see below)</span>
 <span class="k">if</span> <span class="n">hf_tokenizer</span><span class="o">.</span><span class="n">pad_token</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
     <span class="n">hf_tokenizer</span><span class="o">.</span><span class="n">pad_token</span> <span class="o">=</span> <span class="s2">&quot;[PAD]&quot;</span>
+</pre></div>
 
-<span class="n">hf_tokenizer</span><span class="o">.</span><span class="n">pad_token</span><span class="p">,</span> <span class="n">hf_tokenizer</span><span class="o">.</span><span class="n">pad_token_id</span>
+    </div>
+</div>
+</div>
+
+</div>
+    {% endraw %}
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h5 id="Step-2:-Preprocess-data">Step 2: Preprocess data<a class="anchor-link" href="#Step-2:-Preprocess-data"> </a></h5>
+</div>
+</div>
+</div>
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">preprocessor</span> <span class="o">=</span> <span class="n">LMPreprocessor</span><span class="p">(</span><span class="n">hf_tokenizer</span><span class="p">,</span> <span class="n">chunk_size</span><span class="o">=</span><span class="mi">128</span><span class="p">,</span> <span class="n">text_attr</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">proc_df</span> <span class="o">=</span> <span class="n">preprocessor</span><span class="o">.</span><span class="n">process_df</span><span class="p">(</span><span class="n">train_df</span><span class="p">,</span> <span class="n">valid_df</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">proc_df</span><span class="p">))</span>
+<span class="n">proc_df</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
 </pre></div>
 
     </div>
@@ -1154,11 +1332,59 @@ decode the dictionary produced as a byproduct of the tokenization process in the
 
 <div class="output_area">
 
-
-
-<div class="output_text output_subarea output_execute_result">
-<pre>(&#39;[PAD]&#39;, 0)</pre>
+<div class="output_subarea output_stream output_stderr output_text">
+<pre>Using eos_token, but it is not set yet.
+</pre>
 </div>
+</div>
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>21227
+</pre>
+</div>
+</div>
+
+<div class="output_area">
+
+
+<div class="output_html rendered_html output_subarea output_execute_result"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>proc_0</th>
+      <th>is_valid</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>\n = 2013 – 14 York City F.C. season = \n \n The 2013 – 14 season was the &lt;unk&gt; season of competitive association football and 77th season in the Football League played by York City Football Club , a professional football club based in York , North Yorkshire , England . Their 17th @-@ place finish in 2012 – 13 meant it was their second consecutive season in League Two . The season ran from 1 July 2013 to 30 June 2014 . \n Nigel Worthington , starting his first full season as York manager , made eight permanent summer signings . By the turn of the year York were only above the relegation z...</td>
+      <td>False</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>goal difference , before a 17 @-@ match unbeaten run saw the team finish in seventh @-@ place in the 24 @-@ team 2013 – 14 Football League Two . This meant York qualified for the play @-@ offs , and they were eliminated in the semi @-@ final by Fleetwood Town . York were knocked out of the 2013 – 14 FA Cup , Football League Cup and Football League Trophy in their opening round matches . \n 35 players made at least one appearance in nationally organised first @-@ team competition , and there were 12 different &lt;unk&gt; . Defender Ben Davies missed only five of the fifty @</td>
+      <td>False</td>
+    </tr>
+  </tbody>
+</table>
+</div></div>
 
 </div>
 
@@ -1170,7 +1396,7 @@ decode the dictionary produced as a byproduct of the tokenization process in the
 
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h5 id="Step-2:-Create-your-DataBlock">Step 2: Create your <code>DataBlock</code><a class="anchor-link" href="#Step-2:-Create-your-DataBlock"> </a></h5>
+<h5 id="Step-3:-Create-your-DataBlock">Step 3: Create your <code>DataBlock</code><a class="anchor-link" href="#Step-3:-Create-your-DataBlock"> </a></h5>
 </div>
 </div>
 </div>
@@ -1185,7 +1411,7 @@ decode the dictionary produced as a byproduct of the tokenization process in the
 
 <span class="n">blocks</span> <span class="o">=</span> <span class="p">(</span><span class="n">TextBlock</span><span class="p">(</span><span class="n">batch_tokenize_tfm</span><span class="o">=</span><span class="n">batch_tok_tfm</span><span class="p">,</span> <span class="n">input_return_type</span><span class="o">=</span><span class="n">MLMTextInput</span><span class="p">),</span> <span class="n">noop</span><span class="p">)</span>
 
-<span class="n">dblock</span> <span class="o">=</span> <span class="n">DataBlock</span><span class="p">(</span><span class="n">blocks</span><span class="o">=</span><span class="n">blocks</span><span class="p">,</span> <span class="n">get_x</span><span class="o">=</span><span class="n">ColReader</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span> <span class="n">splitter</span><span class="o">=</span><span class="n">ColSplitter</span><span class="p">(</span><span class="n">col</span><span class="o">=</span><span class="s2">&quot;is_valid&quot;</span><span class="p">))</span>
+<span class="n">dblock</span> <span class="o">=</span> <span class="n">DataBlock</span><span class="p">(</span><span class="n">blocks</span><span class="o">=</span><span class="n">blocks</span><span class="p">,</span> <span class="n">get_x</span><span class="o">=</span><span class="n">ColReader</span><span class="p">(</span><span class="s2">&quot;proc_0&quot;</span><span class="p">),</span> <span class="n">splitter</span><span class="o">=</span><span class="n">ColSplitter</span><span class="p">(</span><span class="n">col</span><span class="o">=</span><span class="s2">&quot;is_valid&quot;</span><span class="p">))</span>
 </pre></div>
 
     </div>
@@ -1197,7 +1423,7 @@ decode the dictionary produced as a byproduct of the tokenization process in the
 
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h5 id="Step-3:-Build-your-DataLoaders">Step 3: Build your <code>DataLoaders</code><a class="anchor-link" href="#Step-3:-Build-your-DataLoaders"> </a></h5>
+<h5 id="Step-4:-Build-your-DataLoaders">Step 4: Build your <code>DataLoaders</code><a class="anchor-link" href="#Step-4:-Build-your-DataLoaders"> </a></h5>
 </div>
 </div>
 </div>
@@ -1208,7 +1434,7 @@ decode the dictionary produced as a byproduct of the tokenization process in the
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">dls</span> <span class="o">=</span> <span class="n">dblock</span><span class="o">.</span><span class="n">dataloaders</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">bs</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">dls</span> <span class="o">=</span> <span class="n">dblock</span><span class="o">.</span><span class="n">dataloaders</span><span class="p">(</span><span class="n">proc_df</span><span class="p">,</span> <span class="n">bs</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
 </pre></div>
 
     </div>
@@ -1241,7 +1467,7 @@ decode the dictionary produced as a byproduct of the tokenization process in the
 
 
 <div class="output_text output_subarea output_execute_result">
-<pre>(torch.Size([4, 512]), torch.Size([4, 512]), torch.Size([4, 512]))</pre>
+<pre>(torch.Size([4, 128]), torch.Size([4, 128]), torch.Size([4, 128]))</pre>
 </div>
 
 </div>
@@ -1274,13 +1500,13 @@ decode the dictionary produced as a byproduct of the tokenization process in the
 
 
 <div class="output_text output_subarea output_execute_result">
-<pre>(tensor([  101,   103,  3960,  7758,  1027,  3960,  7758,  1006,  1013,   103,
-          4895,  2243,  1028,   103,  1025,  2141,   103,  5297, 27946,  1010],
+<pre>(tensor([  101,  2003,  2098,  2340,  2781,  2101,  2083,  1026,  4895,  2243,
+          1028,  1026,  4895, 19868,  1028,  1998,   103,   103,  2736,  1037],
         device=&#39;cuda:1&#39;),
- tensor([-100, 1027, -100, -100, -100, 3960, -100, -100, -100, 1026, -100, -100,
-         -100, 1013, -100, -100, 2728, -100, -100, -100], device=&#39;cuda:1&#39;),
- tensor([-100, 1027, -100, -100, -100, 3960, -100, -100, -100, 1026, -100, -100,
-         -100, 1013, -100, -100, 2728, -100, -100, -100], device=&#39;cuda:1&#39;))</pre>
+ tensor([-100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100,
+         -100, 2243, -100, -100, 1996, 2674, -100, -100], device=&#39;cuda:1&#39;),
+ tensor([-100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100,
+         -100, 2243, -100, -100, 1996, 2674, -100, -100], device=&#39;cuda:1&#39;))</pre>
 </div>
 
 </div>
@@ -1362,13 +1588,13 @@ decode the dictionary produced as a byproduct of the tokenization process in the
   <tbody>
     <tr>
       <th>0</th>
-      <td>= bob dylan = [MASK] dylan ( / &lt; un [MASK] &gt; / [baton] born robert allen zimmerman , may 24 , 1941 [)] is an american singer @ - @ [MASK] , artist and [##igny] . he has been influential in popular music [MASK] culture for more than [MASK] decades [MASK] much of his most celebrated work dates from the 1960s when his [MASK] chronicle ##d social unrest , although dylan rep ##udi ##ated suggestions from [MASK] that he was a spokesman for his [MASK] . nevertheless , early songs such as " blow ##in ' [MASK] the wind " and " the [MASK] they are a @ - [MASK] &lt; un ##k &gt; ' [MASK] became anthem ##s for the american civil rights and anti @ - @ war movements . after [MASK] left his initial base [MASK] the american folk music revival , his six @ - [MASK] minute single " like a rolling stone " [MASK] the range [MASK] popular music in 1965 . [MASK] [MASK] @ - @ 1960s recordings , backed [MASK] rock musicians , reached the top end [MASK] [rpg] united states music charts [MASK] also attracting &lt; un ##k &gt; and criticism from others [MASK] the folk movement . dylan ' s lyrics have incorporated various political , social , [MASK] [MASK] [MASK] [MASK] influences . [MASK] def ##ied existing pop music conventions and appealed to the bu ##rgeon ##ing counter ##culture . initially inspired by the performances of little richard and</td>
-      <td>= bob dylan = [bob] dylan ( / &lt; un [##k] &gt; / [;] born robert allen zimmerman , may 24 , 1941 [)] is an american singer @ - @ [songwriter] , artist and [writer] . he has been influential in popular music [and] culture for more than [five] decades [.] much of his most celebrated work dates from the 1960s when his [songs] chronicle ##d social unrest , although dylan rep ##udi ##ated suggestions from [journalists] that he was a spokesman for his [generation] . nevertheless , early songs such as " blow ##in ' [in] the wind " and " the [times] they are a @ - [@] &lt; un ##k &gt; ' ["] became anthem ##s for the american civil rights and anti @ - @ war movements . after [he] left his initial base [in] the american folk music revival , his six @ - [@] minute single " like a rolling stone " [altered] the range [of] popular music in 1965 . [his] [mid] @ - @ 1960s recordings , backed [by] rock musicians , reached the top end [of] [the] united states music charts [while] also attracting &lt; un ##k &gt; and criticism from others [in] the folk movement . dylan ' s lyrics have incorporated various political , social , [philosophical] [,] [and] [literary] influences . [they] def ##ied existing pop music conventions and appealed to the bu ##rgeon ##ing counter ##culture . initially inspired by the performances of little richard and</td>
+      <td>is ##ed 11 minutes later through &lt; un ##k &gt; &lt; [un] [MASK] &gt; and the [match] finished a 1 – 1 draw . york [MASK] knocked out of the fa cup after losing 3 – 2 at home to bristol rovers [MASK] a first round [MASK] ; the [MASK] were 3 – 0 up by 50 @ - @ [minutes] before fletcher pulled two back for york [MASK] a [MASK] and [MASK] long @ - @ [MASK] strike . defender keith lowe , of cheltenham , and goalkeeper nick pope , [MASK] charlton athletic , were [MASK] on loan until [MASK] [MASK] . they both played in [tend] ' [MASK] first league defeat in four weeks , 2 – 1 away , to southend [MASK]</td>
+      <td>is ##ed 11 minutes later through &lt; un ##k &gt; &lt; [un] [##k] &gt; and the [match] finished a 1 – 1 draw . york [were] knocked out of the fa cup after losing 3 – 2 at home to bristol rovers [in] a first round [replay] ; the [visitors] were 3 – 0 up by 50 @ - @ [minutes] before fletcher pulled two back for york [with] a [penalty] and [a] long @ - @ [range] strike . defender keith lowe , of cheltenham , and goalkeeper nick pope , [of] charlton athletic , were [signed] on loan until [january] [2014] . they both played in [york] ' [s] first league defeat in four weeks , 2 – 1 away , to southend [united]</td>
     </tr>
     <tr>
       <th>1</th>
-      <td>[MASK] [MASK] of romani = the battle of [MASK] was the last ground attack of the central powers on the suez [canal] at the beginning [MASK] the sinai and palestine campaign during the [MASK] world war . the [MASK] was fought between 3 and 5 august 1916 near [MASK] [MASK] [MASK] of romani and the [MASK] of [ancient] pe ##lus ##ium on the sinai [MASK] , 23 miles [MASK] 37 [MASK] ) east of the suez canal . [MASK] victory by the 52nd [MASK] lowland ) division and the anzac mounted division of [MASK] egyptian expeditionary force ( ee ##f ) over a joint [emergence] and german [MASK] , which had marched across the sinai , marked the end of [MASK] defence of the [MASK] [MASK] campaign , also [MASK] as the [MASK] zur &lt; un ##k &gt; [MASK] &lt; un ##k &gt; and the &lt; [un] ##k &gt; &lt; un ##k &gt; &lt; un ##k &gt; , which had begun on 26 [MASK] [MASK] . this british empire [MASK] [,] the first against the ottoman [MASK] in the war [MASK] ensured the safety [of] [MASK] suez canal from ground attacks , and [MASK] the central powers [MASK] ambitions [vicinity] [MASK] [differing] traffic through the canal by gaining control of the strategically important northern [MASK] to [MASK] suez canal . the pursuit [by] the [MASK] [mounted] division which ended [MASK] bi ##r el [MASK] on 12 august began the sinai and palestine campaign . thereafter , [##wicz] anzac mounted [MASK]</td>
-      <td>[=] [battle] of romani = the battle of [romani] was the last ground attack of the central powers on the suez [canal] at the beginning [of] the sinai and palestine campaign during the [first] world war . the [battle] was fought between 3 and 5 august 1916 near [the] [egyptian] [town] of romani and the [site] of [ancient] pe ##lus ##ium on the sinai [peninsula] , 23 miles [(] 37 [km] ) east of the suez canal . [this] victory by the 52nd [(] lowland ) division and the anzac mounted division of [the] egyptian expeditionary force ( ee ##f ) over a joint [ottoman] and german [force] , which had marched across the sinai , marked the end of [the] defence of the [suez] [canal] campaign , also [known] as the [offensive] zur &lt; un ##k &gt; [des] &lt; un ##k &gt; and the &lt; [un] ##k &gt; &lt; un ##k &gt; &lt; un ##k &gt; , which had begun on 26 [january] [1915] . this british empire [victory] [,] the first against the ottoman [empire] in the war [,] ensured the safety [of] [the] suez canal from ground attacks , and [ended] the central powers ['] ambitions [of] [disrupt] [##ing] traffic through the canal by gaining control of the strategically important northern [approaches] to [the] suez canal . the pursuit [by] the [anzac] [mounted] division which ended [at] bi ##r el [abd] on 12 august began the sinai and palestine campaign . thereafter , [the] anzac mounted [division]</td>
+      <td>ul ##i = = as ##om ##ta ##vr ##uli ( georgian : &lt; un [MASK] &gt; ) is the oldest [shipping] script . the [MASK] [MASK] ##om ##ta ##vr ##uli means [MASK] capital letters " , from &lt; un [##k] &gt; [MASK] &lt; un ##k &gt; [MASK] " letter " [MASK] &lt; un ##k &gt; ( &lt; un [MASK] [MASK] ) " principal [MASK] head " [MASK] it is also known as &lt; un ##k &gt; ( [MASK] : &lt; un ##k &gt; ) [MASK] rounded " , from &lt; un ##k &gt; ( &lt; un ##k &gt; ) " [MASK] ["] , so named [because] of its round letter shapes . [MASK] its name , this " capital " script is un ##ica ##meral ,</td>
+      <td>ul ##i = = as ##om ##ta ##vr ##uli ( georgian : &lt; un [##k] &gt; ) is the oldest [georgian] script . the [name] [as] ##om ##ta ##vr ##uli means ["] capital letters " , from &lt; un [##k] &gt; [(] &lt; un ##k &gt; [)] " letter " [and] &lt; un ##k &gt; ( &lt; un [##k] [&gt;] ) " principal [/] head " [.] it is also known as &lt; un ##k &gt; ( [georgian] : &lt; un ##k &gt; ) ["] rounded " , from &lt; un ##k &gt; ( &lt; un ##k &gt; ) " [round] ["] , so named [because] of its round letter shapes . [despite] its name , this " capital " script is un ##ica ##meral ,</td>
     </tr>
   </tbody>
 </table></div>

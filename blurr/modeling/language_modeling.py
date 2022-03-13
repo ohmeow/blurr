@@ -28,6 +28,7 @@ from .core import Blearner, PreCalculatedCrossEntropyLoss
 from ..data.language_modeling import (
     BaseLMStrategy,
     LMBatchTokenizeTransform,
+    LMPreprocessor,
     LMType,
     CausalLMTextInput,
     CausalLMStrategy,
