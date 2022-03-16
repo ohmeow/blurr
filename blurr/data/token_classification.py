@@ -134,7 +134,7 @@ class TokenClassPreprocessor(Preprocessor):
             words = row[self.text_attr] if is_listy(row[self.text_attr]) else row[self.text_attr].split()
             word_labels = row[self.label_list_attr]
 
-            inputs = hf_tokenizer(words, truncation=False, **self.tok_kwargs)
+            inputs = hf_tokenizer(words, **self.tok_kwargs)
             word_ids = inputs.word_ids() if self.hf_tokenizer.is_fast else self.slow_word_ids_func(self.hf_tokenizer, 0, inputs)
 
             non_special_word_ids = [id for id in word_ids if id is not None]
@@ -184,11 +184,12 @@ class TokenClassPreprocessor(Preprocessor):
 
 # Cell
 class BaseLabelingStrategy:
-    def __init__(self, hf_tokenizer: PreTrainedTokenizerBase, ignore_token_id: int = CrossEntropyLossFlat().ignore_index) -> None:
+    def __init__(self, hf_tokenizer: PreTrainedTokenizerBase, label_names: Optional[List[str]], ignore_token_id: int = CrossEntropyLossFlat().ignore_index) -> None:
         self.hf_tokenizer = hf_tokenizer
         self.ignore_token_id = ignore_token_id
+        self.label_names = label_names
 
-    def align_labels_with_tokens(self, word_ids, word_labels, label_names):
+    def align_labels_with_tokens(self, word_ids, word_labels):
         raise NotImplementedError()
 
 
@@ -199,7 +200,7 @@ class OnlyFirstTokenLabelingStrategy(BaseLabelingStrategy):
     are Ids or strings (in the later case we'll use the `label_names` to look up it's Id)
     """
 
-    def align_labels_with_tokens(self, word_ids, word_labels, label_names):
+    def align_labels_with_tokens(self, word_ids, word_labels):
         new_labels = []
         current_word = None
         for word_id in word_ids:
@@ -207,7 +208,7 @@ class OnlyFirstTokenLabelingStrategy(BaseLabelingStrategy):
                 # start of a new word
                 current_word = word_id
                 label = self.ignore_token_id if word_id is None else word_labels[word_id]
-                new_labels.append(label if isinstance(label, int) else label_names.index(label))
+                new_labels.append(label if isinstance(label, int) else self.label_names.index(label))
             else:
                 # special token or another subtoken of current word
                 new_labels.append(self.ignore_token_id)
@@ -221,14 +222,14 @@ class SameLabelLabelingStrategy(BaseLabelingStrategy):
     are Ids or strings (in the later case we'll use the `label_names` to look up it's Id)
     """
 
-    def align_labels_with_tokens(self, word_ids, word_labels, label_names):
+    def align_labels_with_tokens(self, word_ids, word_labels):
         new_labels = []
         for word_id in word_ids:
             if word_id == None:
                 new_labels.append(self.ignore_token_id)
             else:
                 label = word_labels[word_id]
-                new_labels.append(label if isinstance(label, int) else label_names.index(label))
+                new_labels.append(label if isinstance(label, int) else self.label_names.index(label))
 
         return new_labels
 
@@ -240,7 +241,7 @@ class BILabelingStrategy(BaseLabelingStrategy):
     Works where labels are Ids or strings (in the later case we'll use the `label_names` to look up it's Id)
     """
 
-    def align_labels_with_tokens(self, word_ids, word_labels, label_names):
+    def align_labels_with_tokens(self, word_ids, word_labels):
         new_labels = []
         current_word = None
         for word_id in word_ids:
@@ -248,18 +249,18 @@ class BILabelingStrategy(BaseLabelingStrategy):
                 # start of a new word
                 current_word = word_id
                 label = self.ignore_token_id if word_id is None else word_labels[word_id]
-                new_labels.append(label if isinstance(label, int) else label_names.index(label))
+                new_labels.append(label if isinstance(label, int) else self.label_names.index(label))
             elif word_id is None:
                 # special token
                 new_labels.append(self.ignore_token_id)
             else:
                 # we're in the same word
                 label = word_labels[word_id]
-                label_name = label_names[label] if isinstance(label, int) else label
+                label_name = self.label_names[label] if isinstance(label, int) else label
 
                 # append the I-{ENTITY} if it exists in `labels`, else default to the `same_label` strategy
                 iLabel = f"I-{label_name[2:]}"
-                new_labels.append(label_names.index(iLabel) if iLabel in label_names else self.ignore_token_id)
+                new_labels.append(self.label_names.index(iLabel) if iLabel in self.label_names else self.ignore_token_id)
 
         return new_labels
 
@@ -400,6 +401,8 @@ class TokenClassBatchTokenizeTransform(BatchTokenizeTransform):
         ignore_token_id: int = CrossEntropyLossFlat().ignore_index,
         # The labeling strategy you want to apply when associating labels with word tokens
         labeling_strategy_cls: BaseLabelingStrategy = OnlyFirstTokenLabelingStrategy,
+        # the target label names
+        target_label_names: Optional[List[str]] = None,
         # To control the length of the padding/truncation. It can be an integer or None,
         # in which case it will default to the maximum length the model can accept. If the model has no
         # specific maximum input length, truncation/padding to max_length is deactivated.
@@ -441,7 +444,8 @@ class TokenClassBatchTokenizeTransform(BatchTokenizeTransform):
             **kwargs
         )
 
-        self.labeling_strategy = labeling_strategy_cls(hf_tokenizer, ignore_token_id=ignore_token_id)
+        self.labeling_strategy = labeling_strategy_cls(hf_tokenizer, label_names=target_label_names, ignore_token_id=ignore_token_id)
+        self.target_label_names = target_label_names
         self.slow_word_ids_func = slow_word_ids_func
 
     def encodes(self, samples):
@@ -459,7 +463,7 @@ class TokenClassBatchTokenizeTransform(BatchTokenizeTransform):
             # with batch-time tokenization, we have to align each token with the correct label using the `word_ids` in the
             # batch encoding object we get from calling our *fast* tokenizer
             word_ids = inputs.word_ids(idx) if self.hf_tokenizer.is_fast else self.slow_word_ids_func(self.hf_tokenizer, idx, inputs)
-            targ_ids = target_cls(self.labeling_strategy.align_labels_with_tokens(word_ids, s[1].tolist(), None))
+            targ_ids = target_cls(self.labeling_strategy.align_labels_with_tokens(word_ids, s[1].tolist()))
 
             if self.include_labels and len(targ_ids) > 0:
                 s[0]["labels"] = targ_ids

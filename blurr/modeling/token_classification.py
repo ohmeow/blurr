@@ -207,6 +207,12 @@ class TokenAggregationStrategies:
         self.non_entity_label = non_entity_label
         self.valid_strategies = ["simple", "first", "max", "average"]
 
+        self.uses_BI_label_strategy = False
+        for lbl in self.labels:
+            if lbl.startswith("I-"):
+                self.uses_BI_label_strategy = True
+                break
+
     def by_token(self, tokens, input_ids, offsets, preds, probs):
         results = []
         for tok_idx, (token, input_id, offset, pred, prob) in enumerate(zip(tokens, input_ids, offsets, preds, probs)):
@@ -241,7 +247,7 @@ class TokenAggregationStrategies:
                 continue
 
             # Remove the B- or I-
-            label = label[2:]
+            label = label[2:] if self.uses_BI_label_strategy else label
             start, end = offsets[idx]
 
             all_scores = []
@@ -251,7 +257,8 @@ class TokenAggregationStrategies:
             if strategy_name == "average":
                 word_scores[word_ids[idx]] = [probs[idx][pred]]
 
-            while idx + 1 < len(preds) and self.labels[preds[idx + 1]] == f"I-{label}":
+            lbl_to_search = f"I-{label}" if self.uses_BI_label_strategy else label
+            while idx + 1 < len(preds) and self.labels[preds[idx + 1]] == lbl_to_search:
                 idx += 1
                 _, end = offsets[idx]
 
