@@ -184,10 +184,17 @@ class TokenClassPreprocessor(Preprocessor):
 
 # Cell
 class BaseLabelingStrategy:
-    def __init__(self, hf_tokenizer: PreTrainedTokenizerBase, label_names: Optional[List[str]], ignore_token_id: int = CrossEntropyLossFlat().ignore_index) -> None:
+    def __init__(
+        self,
+        hf_tokenizer: PreTrainedTokenizerBase,
+        label_names: Optional[List[str]],
+        non_entity_label: str = "O",
+        ignore_token_id: int = CrossEntropyLossFlat().ignore_index,
+    ) -> None:
         self.hf_tokenizer = hf_tokenizer
         self.ignore_token_id = ignore_token_id
         self.label_names = label_names
+        self.non_entity_label = non_entity_label
 
     def align_labels_with_tokens(self, word_ids, word_labels):
         raise NotImplementedError()
@@ -260,7 +267,9 @@ class BILabelingStrategy(BaseLabelingStrategy):
 
                 # append the I-{ENTITY} if it exists in `labels`, else default to the `same_label` strategy
                 iLabel = f"I-{label_name[2:]}"
-                new_labels.append(self.label_names.index(iLabel) if iLabel in self.label_names else self.ignore_token_id)
+                new_labels.append(
+                    self.label_names.index(iLabel) if iLabel in self.label_names else self.label_names.index(self.non_entity_label)
+                )
 
         return new_labels
 
@@ -403,6 +412,8 @@ class TokenClassBatchTokenizeTransform(BatchTokenizeTransform):
         labeling_strategy_cls: BaseLabelingStrategy = OnlyFirstTokenLabelingStrategy,
         # the target label names
         target_label_names: Optional[List[str]] = None,
+        # the label for non-entity
+        non_entity_label: str = "O",
         # To control the length of the padding/truncation. It can be an integer or None,
         # in which case it will default to the maximum length the model can accept. If the model has no
         # specific maximum input length, truncation/padding to max_length is deactivated.
@@ -444,9 +455,13 @@ class TokenClassBatchTokenizeTransform(BatchTokenizeTransform):
             **kwargs
         )
 
-        self.labeling_strategy = labeling_strategy_cls(hf_tokenizer, label_names=target_label_names, ignore_token_id=ignore_token_id)
         self.target_label_names = target_label_names
+        self.non_entity_label = non_entity_label
         self.slow_word_ids_func = slow_word_ids_func
+
+        self.labeling_strategy = labeling_strategy_cls(
+            hf_tokenizer, label_names=self.target_label_names, non_entity_label=self.non_entity_label, ignore_token_id=ignore_token_id
+        )
 
     def encodes(self, samples):
         encoded_samples, inputs = super().encodes(samples, return_batch_encoding=True)
