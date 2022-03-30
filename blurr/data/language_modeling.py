@@ -276,9 +276,9 @@ class LMBatchTokenizeTransform(BatchTokenizeTransform):
         self.lm_strategy = lm_strategy_cls(hf_tokenizer=hf_tokenizer, ignore_token_id=ignore_token_id)
         self.text_gen_kwargs, self.ignore_token_id = text_gen_kwargs, ignore_token_id
 
-    def encodes(self, samples):
+    def encodes(self, samples, return_batch_encoding=True):
         # because no target is specific in CLM, fastai will duplicate the inputs (which is just the raw text)
-        samples, inputs = super().encodes(samples, return_batch_encoding=True)
+        samples, inputs = super().encodes(samples, return_batch_encoding=return_batch_encoding)
         if len(samples[0]) == 1:
             return samples
 

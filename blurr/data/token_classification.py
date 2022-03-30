@@ -463,8 +463,8 @@ class TokenClassBatchTokenizeTransform(BatchTokenizeTransform):
             hf_tokenizer, label_names=self.target_label_names, non_entity_label=self.non_entity_label, ignore_token_id=ignore_token_id
         )
 
-    def encodes(self, samples):
-        encoded_samples, inputs = super().encodes(samples, return_batch_encoding=True)
+    def encodes(self, samples, return_batch_encoding=True):
+        encoded_samples, inputs = super().encodes(samples, return_batch_encoding=return_batch_encoding)
 
         # if there are no targets (e.g., when used for inference)
         if len(encoded_samples[0]) == 1:
@@ -478,7 +478,7 @@ class TokenClassBatchTokenizeTransform(BatchTokenizeTransform):
             # with batch-time tokenization, we have to align each token with the correct label using the `word_ids` in the
             # batch encoding object we get from calling our *fast* tokenizer
             word_ids = inputs.word_ids(idx) if self.hf_tokenizer.is_fast else self.slow_word_ids_func(self.hf_tokenizer, idx, inputs)
-            targ_ids = target_cls(self.labeling_strategy.align_labels_with_tokens(word_ids, s[1].tolist()))
+            targ_ids = target_cls(self.labeling_strategy.align_labels_with_tokens(word_ids, s[-1].tolist()))
 
             if self.include_labels and len(targ_ids) > 0:
                 s[0]["labels"] = targ_ids

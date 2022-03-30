@@ -213,8 +213,8 @@ class QABatchTokenizeTransform(BatchTokenizeTransform):
             **kwargs
         )
 
-    def encodes(self, samples):
-        samples, batch_encoding = super().encodes(samples, return_batch_encoding=True)
+    def encodes(self, samples, return_batch_encoding=True):
+        samples, batch_encoding = super().encodes(samples, return_batch_encoding=return_batch_encoding)
 
         for idx, s in enumerate(samples):
             # cls_index: location of CLS token (used by xlnet and xlm); is a list.index(value) for pytorch tensor's
