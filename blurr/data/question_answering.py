@@ -213,10 +213,10 @@ class QABatchTokenizeTransform(BatchTokenizeTransform):
             **kwargs
         )
 
-    def encodes(self, samples, return_batch_encoding=True):
-        samples, batch_encoding = super().encodes(samples, return_batch_encoding=return_batch_encoding)
+    def encodes(self, samples, return_batch_encoding=False):
+        updated_samples, batch_encoding = super().encodes(samples, return_batch_encoding=True)
 
-        for idx, s in enumerate(samples):
+        for idx, s in enumerate(updated_samples):
             # cls_index: location of CLS token (used by xlnet and xlm); is a list.index(value) for pytorch tensor's
             s[0]["cls_index"] = (s[0]["input_ids"] == self.hf_tokenizer.cls_token_id).nonzero()[0]
             # p_mask: mask with 1 for token than cannot be in the answer, else 0 (used by xlnet and xlm)
@@ -228,7 +228,10 @@ class QABatchTokenizeTransform(BatchTokenizeTransform):
                 s[0]["start_positions"] = trgs[0]
                 s[0]["end_positions"] = trgs[1]
 
-        return samples
+        if return_batch_encoding:
+            return updated_samples, inputs
+
+        return updated_samples
 
 
 # Cell

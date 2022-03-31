@@ -463,8 +463,8 @@ class TokenClassBatchTokenizeTransform(BatchTokenizeTransform):
             hf_tokenizer, label_names=self.target_label_names, non_entity_label=self.non_entity_label, ignore_token_id=ignore_token_id
         )
 
-    def encodes(self, samples, return_batch_encoding=True):
-        encoded_samples, inputs = super().encodes(samples, return_batch_encoding=return_batch_encoding)
+    def encodes(self, samples, return_batch_encoding=False):
+        encoded_samples, inputs = super().encodes(samples, return_batch_encoding=True)
 
         # if there are no targets (e.g., when used for inference)
         if len(encoded_samples[0]) == 1:
@@ -484,6 +484,9 @@ class TokenClassBatchTokenizeTransform(BatchTokenizeTransform):
                 s[0]["labels"] = targ_ids
 
             updated_samples.append((s[0], targ_ids))
+
+        if return_batch_encoding:
+            return updated_samples, inputs
 
         return updated_samples
 
