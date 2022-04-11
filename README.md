@@ -15,10 +15,10 @@ pip install -e ".[dev]"
 
 ## How to use
 
-The initial release includes everything you need for sequence classification and question answering tasks.  Support for token classification and summarization are incoming. Please check the documentation for more thorough examples of how to use this package.
+Please check the documentation for more thorough examples of how to use this package.
 
 The following two packages need to be installed for blurr to work:
-1. fastai2 (see http://docs.fast.ai/ for installation instructions)
+1. fastai (see http://docs.fast.ai/ for installation instructions)
 2. huggingface transformers (see https://huggingface.co/transformers/installation.html for details)
 
 ### Imports
@@ -28,8 +28,9 @@ import torch
 from transformers import *
 from fastai.text.all import *
 
-from blurr.data.all import *
-from blurr.modeling.all import *
+from blurr.text.data.all import *
+from blurr.text.modeling.all import *
+
 ```
 
 ### Get your data
@@ -37,14 +38,16 @@ from blurr.modeling.all import *
 ```python
 path = untar_data(URLs.IMDB_SAMPLE)
 
-model_path = Path('models')
-imdb_df = pd.read_csv(path/'texts.csv')
+model_path = Path("models")
+imdb_df = pd.read_csv(path / "texts.csv")
+
 ```
 
 ### Get `n_labels` from data for config later
 
 ```python
-n_labels = len(imdb_df['label'].unique())
+n_labels = len(imdb_df["label"].unique())
+
 ```
 
 ### Get your 🤗 objects
@@ -57,21 +60,24 @@ pretrained_model_name = "bert-base-uncased"
 config = AutoConfig.from_pretrained(pretrained_model_name)
 config.num_labels = n_labels
 
-hf_arch, hf_config, hf_tokenizer, hf_model = BLURR.get_hf_objects(pretrained_model_name, model_cls=model_cls, config=config)
+hf_arch, hf_config, hf_tokenizer, hf_model = NLP.get_hf_objects(pretrained_model_name, model_cls=model_cls, config=config)
+
 ```
 
 ### Build your Data 🧱 and your DataLoaders
 
 ```python
 # single input
-blocks = (HF_TextBlock(hf_arch, hf_config, hf_tokenizer, hf_model), CategoryBlock)
-dblock = DataBlock(blocks=blocks,  get_x=ColReader('text'), get_y=ColReader('label'), splitter=ColSplitter())
+blocks = (TextBlock(hf_arch, hf_config, hf_tokenizer, hf_model), CategoryBlock)
+dblock = DataBlock(blocks=blocks, get_x=ColReader("text"), get_y=ColReader("label"), splitter=ColSplitter())
 
 dls = dblock.dataloaders(imdb_df, bs=4)
+
 ```
 
 ```python
 dls.show_batch(dataloaders=dls, max_n=2)
+
 ```
 
 
@@ -91,8 +97,8 @@ dls.show_batch(dataloaders=dls, max_n=2)
     </tr>
     <tr>
       <th>1</th>
-      <td>many neglect that this isn't just a classic due to the fact that it's the first 3d game, or even the first shoot -'em - up. it's also one of the first stealth games, one of the only ( and definitely the first ) truly claustrophobic games, and just a pretty well - rounded gaming experience in general. with graphics that are terribly dated today, the game thrusts you into the role of b. j. ( don't even * think * i'm going to attempt spelling his last name! ), an american p. o. w. caught in an underground bunker. you fight and search your way through tunnels in order to achieve different objectives for the six episodes ( but, let's face it, most of them are just an excuse to hand you a weapon, surround you with nazis and send you out to waste one of the nazi leaders ). the graphics are, as i mentioned before, quite dated and very simple. the least detailed of basically any 3d game released by a professional team of creators. if you can get over that, however ( and some would suggest that this simplicity only adds to the effect the game has on you ), then you've got one heck of a good shooter / sneaking game. the game play consists of searching for keys, health and ammo, blasting enemies ( aforementioned nazis, and a " boss enemy " per chapter ) of varying difficulty ( which, of course, grows as you move further in the game ), unlocking doors and looking for secret rooms. there is a bonus count after each level is beaten... it goes by how fast you were ( basically, if you beat the'par time ', which is the time it took a tester to go through the same level ; this can be quite fun to try and beat, and with how difficult the levels are to find your way in, they are even challenging after many play - throughs ), how much nazi gold ( treasure ) you collected and how many bad guys you killed. basically, if you got 100 % of any of aforementioned, you get a bonus, helping you reach the coveted high score placings. the game ( mostly, but not always ) allows for two contrastingly different methods of playing... stealthily or gunning down anything and everything you see. you can either run or walk, and amongst your weapons is also a knife... running is heard instantly the moment you enter the same room as the guard, as</td>
-      <td>positive</td>
+      <td>now that che ( 2008 ) has finished its relatively short australian cinema run ( extremely limited release : 1 screen in sydney, after 6wks ), i can guiltlessly join both hosts of " at the movies " in taking steven soderbergh to task. &lt; br / &gt; &lt; br / &gt; it's usually satisfying to watch a film director change his style / subject, but soderbergh's most recent stinker, the girlfriend experience ( 2009 ), was also missing a story, so narrative ( and editing? ) seem to suddenly be soderbergh's main challenge. strange, after 20 - odd years in the business. he was probably never much good at narrative, just hid it well inside " edgy " projects. &lt; br / &gt; &lt; br / &gt; none of this excuses him this present, almost diabolical failure. as david stratton warns, " two parts of che don't ( even ) make a whole ". &lt; br / &gt; &lt; br / &gt; epic biopic in name only, che ( 2008 ) barely qualifies as a feature film! it certainly has no legs, inasmuch as except for its uncharacteristic ultimate resolution forced upon it by history, soderbergh's 4. 5hrs - long dirge just goes nowhere. &lt; br / &gt; &lt; br / &gt; even margaret pomeranz, the more forgiving of australia's at the movies duo, noted about soderbergh's repetitious waste of ( hd digital storage ) : " you're in the woods... you're in the woods... you're in the woods... ". i too am surprised soderbergh didn't give us another 2. 5hrs of that somewhere between his existing two parts, because he still left out massive chunks of che's " revolutionary " life! &lt; br / &gt; &lt; br / &gt; for a biopic of an important but infamous historical figure, soderbergh unaccountably alienates, if not deliberately insults, his audiences by &lt; br / &gt; &lt; br / &gt; 1. never providing most of che's story ; &lt; br / &gt; &lt; br / &gt; 2. imposing unreasonable film lengths with mere dullard repetition ; &lt; br / &gt; &lt; br / &gt; 3. ignoring both true hindsight and a narrative of events ; &lt; br / &gt; &lt; br / &gt; 4. barely developing an idea, or a character ;</td>
+      <td>negative</td>
     </tr>
   </tbody>
 </table>
@@ -101,20 +107,23 @@ dls.show_batch(dataloaders=dls, max_n=2)
 ### ... and 🚂
 
 ```python
-#slow
-model = HF_BaseModelWrapper(hf_model)
+# slow
+model = BaseModelWrapper(hf_model)
 
-learn = Learner(dls, 
-                model,
-                opt_func=partial(Adam, decouple_wd=True),
-                loss_func=CrossEntropyLossFlat(),
-                metrics=[accuracy],
-                cbs=[HF_BaseModelCallback],
-                splitter=hf_splitter)
+learn = Learner(
+    dls,
+    model,
+    opt_func=partial(Adam, decouple_wd=True),
+    loss_func=CrossEntropyLossFlat(),
+    metrics=[accuracy],
+    cbs=[BaseModelCallback],
+    splitter=blurr_splitter,
+)
 
 learn.freeze()
 
 learn.fit_one_cycle(3, lr_max=1e-3)
+
 ```
 
 
@@ -131,23 +140,23 @@ learn.fit_one_cycle(3, lr_max=1e-3)
   <tbody>
     <tr>
       <td>0</td>
-      <td>0.594905</td>
-      <td>0.374806</td>
-      <td>0.850000</td>
+      <td>0.552236</td>
+      <td>0.434265</td>
+      <td>0.775000</td>
       <td>00:21</td>
     </tr>
     <tr>
       <td>1</td>
-      <td>0.348940</td>
-      <td>0.413091</td>
-      <td>0.830000</td>
+      <td>0.393933</td>
+      <td>0.307428</td>
+      <td>0.895000</td>
       <td>00:21</td>
     </tr>
     <tr>
       <td>2</td>
-      <td>0.288840</td>
-      <td>0.270606</td>
-      <td>0.905000</td>
+      <td>0.270851</td>
+      <td>0.279640</td>
+      <td>0.900000</td>
       <td>00:21</td>
     </tr>
   </tbody>
@@ -155,8 +164,9 @@ learn.fit_one_cycle(3, lr_max=1e-3)
 
 
 ```python
-#slow
+# slow
 learn.show_results(learner=learn, max_n=2)
+
 ```
 
 
@@ -197,13 +207,15 @@ Using the high-level API we can reduce DataBlock, DataLoaders, and Learner creat
 Included in the high-level API is a general `BLearner` class (pronouned **"Blurrner"**) that you can use with hand crafted DataLoaders, as well as, task specific BLearners like `BLearnerForSequenceClassification` that will handle everything given your raw data sourced from a pandas DataFrame, CSV file, or list of dictionaries (for example a huggingface datasets dataset)
 
 ```python
-#slow
-learn = BlearnerForSequenceClassification.from_dataframe(imdb_df, pretrained_model_name, dl_kwargs={ 'bs': 4})
+# slow
+learn = BlearnerForSequenceClassification.from_data(imdb_df, pretrained_model_name, dl_kwargs={"bs": 4})
+
 ```
 
 ```python
-#slow
+# slow
 learn.fit_one_cycle(1, lr_max=1e-3)
+
 ```
 
 
@@ -221,10 +233,10 @@ learn.fit_one_cycle(1, lr_max=1e-3)
   <tbody>
     <tr>
       <td>0</td>
-      <td>0.532659</td>
-      <td>0.433739</td>
-      <td>0.819672</td>
-      <td>0.835000</td>
+      <td>0.532850</td>
+      <td>0.459422</td>
+      <td>0.814815</td>
+      <td>0.825000</td>
       <td>00:21</td>
     </tr>
   </tbody>
@@ -232,8 +244,9 @@ learn.fit_one_cycle(1, lr_max=1e-3)
 
 
 ```python
-#slow
+# slow
 learn.show_results(learner=learn, max_n=2)
+
 ```
 
 
@@ -364,8 +377,8 @@ As I'm sure there is plenty I can do to make this library better, please don't h
 
 **10/08/2020** 
 * Updated all models to use [ModelOutput](https://huggingface.co/transformers/main_classes/output.html) classes instead of traditional tuples. `ModelOutput` attributes are assigned to the appropriate fastai bits like `Learner.pred` and `Learner.loss` and anything else you've requested the huggingface model to return is available via the `Learner.blurr_model_outputs` dictionary (see next two bullet items)
-* Added ability to grab attentions and hidden state from `Learner`. You can get at them via `Learner.blurr_model_outputs` dictionary if you tell `HF_BaseModelWrapper` to provide them.
-* Added `model_kwargs` to `HF_BaseModelWrapper` should you need to request a huggingface model to return something specific to it's type. These outputs will be available via the `Learner.blurr_model_outputs` dictionary as well.
+* Added ability to grab attentions and hidden state from `Learner`. You can get at them via `Learner.blurr_model_outputs` dictionary if you tell `BaseModelWrapper` to provide them.
+* Added `model_kwargs` to `BaseModelWrapper` should you need to request a huggingface model to return something specific to it's type. These outputs will be available via the `Learner.blurr_model_outputs` dictionary as well.
 
 **09/16/2020** 
 * Major overhaul to do *everything* at batch time (including tokenization/numericalization). If this backfires, I'll roll everything back but as of now, I think this approach not only meshes better with how huggingface tokenization works and reduce RAM utilization for big datasets, but also opens up opportunities for incorporating augmentation, building adversarial models, etc....  Thoughts?
@@ -378,7 +391,7 @@ As I'm sure there is plenty I can do to make this library better, please don't h
 
 **08/20/2020** 
 * Updated everything to work latest version of fastai (tested against 2.0.0)
-* Added batch-time padding, so that by default now, `HF_TokenizerTransform` doesn't add any padding tokens and all huggingface inputs are padded simply to the max sequence length in each batch rather than to the max length (passed in and/or acceptable to the model).  This should create efficiencies across the board, from memory consumption to GPU utilization.  The old tried and true method of padding during tokenization requires you to pass in `padding='max_length` to `HF_TextBlock`.
+* Added batch-time padding, so that by default now, `HF_TokenizerTransform` doesn't add any padding tokens and all huggingface inputs are padded simply to the max sequence length in each batch rather than to the max length (passed in and/or acceptable to the model).  This should create efficiencies across the board, from memory consumption to GPU utilization.  The old tried and true method of padding during tokenization requires you to pass in `padding='max_length` to `TextBlock`.
 * Removed code to remove fastai2 @patched summary methods which had previously conflicted with a couple of the huggingface transformers
 
 **08/13/2020** 
@@ -401,13 +414,13 @@ As I'm sure there is plenty I can do to make this library better, please don't h
 * Major code restructuring to make it easier to build out the library.
 * `HF_TokenizerTransform` replaces `HF_Tokenizer`, handling the tokenization and numericalization in one place.  DataBlock code has been dramatically simplified.
 * Tokenization correctly handles huggingface tokenizers that require `add_prefix_space=True`.
-* `HF_BaseModelCallback` and `HF_BaseModelCallback` are required and work together in order to allow developers to tie into any callback friendly event exposed by fastai2 and also pass in named arguments to the huggingface models.
+* `BaseModelCallback` and `BaseModelCallback` are required and work together in order to allow developers to tie into any callback friendly event exposed by fastai2 and also pass in named arguments to the huggingface models.
 * `show_batch` and `show_results` have been updated for Question/Answer and Token Classification models to represent the data and results in a more easily intepretable manner than the defaults.
 
 **05/06/2020** 
 * Initial support for Token classification (e.g., NER) models now included
 * Extended fastai's `Learner` object with a `predict_tokens` method used specifically in token classification
-* `HF_BaseModelCallback` can be used (or extended) instead of the model wrapper to ensure your inputs into the huggingface model is correct (recommended). See docs for examples (and thanks to fastai's Sylvain for the suggestion!)
+* `BaseModelCallback` can be used (or extended) instead of the model wrapper to ensure your inputs into the huggingface model is correct (recommended). See docs for examples (and thanks to fastai's Sylvain for the suggestion!)
 * `HF_Tokenizer` can work with strings or a string representation of a list (the later helpful for token classification tasks)
 * `show_batch` and `show_results` methods have been updated to allow better control on how huggingface tokenized data is represented in those methods
 
@@ -420,5 +433,5 @@ A word of gratitude to the following individuals, repos, and articles upon which
 - [FastHugs](https://github.com/morganmcg1/fasthugs)
 - [Fastai with 🤗Transformers (BERT, RoBERTa, XLNet, XLM, DistilBERT)](https://towardsdatascience.com/fastai-with-transformers-bert-roberta-xlnet-xlm-distilbert-4f41ee18ecb2)
 - [Fastai integration with BERT: Multi-label text classification identifying toxicity in texts](https://medium.com/@abhikjha/fastai-integration-with-bert-a0a66b1cecbe)
-- [A Tutorial to Fine-Tuning BERT with Fast AI](https://mlexplained.com/2019/05/13/a-tutorial-to-fine-tuning-bert-with-fast-ai/)
 - [fastinference](https://muellerzr.github.io/fastinference/)
+
