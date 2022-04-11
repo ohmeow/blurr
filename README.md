@@ -15,10 +15,10 @@ pip install -e ".[dev]"
 
 ## How to use
 
-The initial release includes everything you need for sequence classification and question answering tasks.  Support for token classification and summarization are incoming. Please check the documentation for more thorough examples of how to use this package.
+Please check the documentation for more thorough examples of how to use this package.
 
 The following two packages need to be installed for blurr to work:
-1. fastai2 (see http://docs.fast.ai/ for installation instructions)
+1. fastai (see http://docs.fast.ai/ for installation instructions)
 2. huggingface transformers (see https://huggingface.co/transformers/installation.html for details)
 
 ### Imports
@@ -28,8 +28,8 @@ import torch
 from transformers import *
 from fastai.text.all import *
 
-from blurr.data.all import *
-from blurr.modeling.all import *
+from blurr.text.data.all import *
+from blurr.text.modeling.all import *
 
 ```
 
@@ -60,7 +60,7 @@ pretrained_model_name = "bert-base-uncased"
 config = AutoConfig.from_pretrained(pretrained_model_name)
 config.num_labels = n_labels
 
-hf_arch, hf_config, hf_tokenizer, hf_model = BLURR.get_hf_objects(pretrained_model_name, model_cls=model_cls, config=config)
+hf_arch, hf_config, hf_tokenizer, hf_model = NLP.get_hf_objects(pretrained_model_name, model_cls=model_cls, config=config)
 
 ```
 
@@ -97,8 +97,8 @@ dls.show_batch(dataloaders=dls, max_n=2)
     </tr>
     <tr>
       <th>1</th>
-      <td>although recognized as the best film treatment of the difficulties of having a house in the country built ( or bought ) to your specifications, it is not the first, nor the last. in 1940 jack benny and ann sheridan were the leads in the film version of the comedy george washington slept here by george s. kaufman and moss hart. and about fifteen years ago shelly long and tom hanks had the lead in the money pit. the former was about moving into an 18th century country house that... err, needs work. the latter was about building your dream house - in the late 1980s. although the two films have their moments, both are not as good as blandings, which was based on an autobiographical novel of the same name. &lt; br / &gt; &lt; br / &gt; jim blandings and his wife muriel ( cary grant and myrna loy ) are noticing the tight corners of their apartment, which they share with their two daughters joan and betsy ( sharyn moffett and connie marshall ). although blandings has a good income as an advertising executive ( in 1948 he is making $ 15, 000. 00 a year, which was like making $ 90, 000. 00 today ), and lives in a luxury apartment - which in the new york city of that day he rents! - he feels they should seek something better. he and muriel take a drive into the country ( connecticut ) and soon find an old ruin that both imagine can be fixed up as that dream house they want. &lt; br / &gt; &lt; br / &gt; and they both fall into the financial worm hole that buying land and construction can lead to. for one thing, they are so gung ho about the idea of building a home like this they fail to heed warning after warning by their wise, if cynical friend and lawyer bill cole ( melvin douglas, in a nicely sardonic role ). for example, jim buys land from a connecticut dealer ( ian wolfe, sucking his chops quietly ), with a check before double checking the correct cost for the land in that part of connecticut. bill points out he's paid about five or six thousand dollars more for the land than it is worth. there are problems about water supply that both blandings just never think about, such as hard and soft water - which leads to the zis - zis water softening machine. they find that the designs they have in mind, and have worked out with their architect ( reginald denny ), can't be dropped cheaply at a spur of the</td>
-      <td>positive</td>
+      <td>now that che ( 2008 ) has finished its relatively short australian cinema run ( extremely limited release : 1 screen in sydney, after 6wks ), i can guiltlessly join both hosts of " at the movies " in taking steven soderbergh to task. &lt; br / &gt; &lt; br / &gt; it's usually satisfying to watch a film director change his style / subject, but soderbergh's most recent stinker, the girlfriend experience ( 2009 ), was also missing a story, so narrative ( and editing? ) seem to suddenly be soderbergh's main challenge. strange, after 20 - odd years in the business. he was probably never much good at narrative, just hid it well inside " edgy " projects. &lt; br / &gt; &lt; br / &gt; none of this excuses him this present, almost diabolical failure. as david stratton warns, " two parts of che don't ( even ) make a whole ". &lt; br / &gt; &lt; br / &gt; epic biopic in name only, che ( 2008 ) barely qualifies as a feature film! it certainly has no legs, inasmuch as except for its uncharacteristic ultimate resolution forced upon it by history, soderbergh's 4. 5hrs - long dirge just goes nowhere. &lt; br / &gt; &lt; br / &gt; even margaret pomeranz, the more forgiving of australia's at the movies duo, noted about soderbergh's repetitious waste of ( hd digital storage ) : " you're in the woods... you're in the woods... you're in the woods... ". i too am surprised soderbergh didn't give us another 2. 5hrs of that somewhere between his existing two parts, because he still left out massive chunks of che's " revolutionary " life! &lt; br / &gt; &lt; br / &gt; for a biopic of an important but infamous historical figure, soderbergh unaccountably alienates, if not deliberately insults, his audiences by &lt; br / &gt; &lt; br / &gt; 1. never providing most of che's story ; &lt; br / &gt; &lt; br / &gt; 2. imposing unreasonable film lengths with mere dullard repetition ; &lt; br / &gt; &lt; br / &gt; 3. ignoring both true hindsight and a narrative of events ; &lt; br / &gt; &lt; br / &gt; 4. barely developing an idea, or a character ;</td>
+      <td>negative</td>
     </tr>
   </tbody>
 </table>
@@ -140,23 +140,23 @@ learn.fit_one_cycle(3, lr_max=1e-3)
   <tbody>
     <tr>
       <td>0</td>
-      <td>0.593744</td>
-      <td>0.470853</td>
-      <td>0.785000</td>
+      <td>0.552236</td>
+      <td>0.434265</td>
+      <td>0.775000</td>
       <td>00:21</td>
     </tr>
     <tr>
       <td>1</td>
-      <td>0.352055</td>
-      <td>0.333391</td>
-      <td>0.875000</td>
-      <td>00:20</td>
+      <td>0.393933</td>
+      <td>0.307428</td>
+      <td>0.895000</td>
+      <td>00:21</td>
     </tr>
     <tr>
       <td>2</td>
-      <td>0.315534</td>
-      <td>0.326376</td>
-      <td>0.865000</td>
+      <td>0.270851</td>
+      <td>0.279640</td>
+      <td>0.900000</td>
       <td>00:21</td>
     </tr>
   </tbody>
@@ -233,10 +233,10 @@ learn.fit_one_cycle(1, lr_max=1e-3)
   <tbody>
     <tr>
       <td>0</td>
-      <td>0.539261</td>
-      <td>0.476592</td>
-      <td>0.759777</td>
-      <td>0.785000</td>
+      <td>0.532850</td>
+      <td>0.459422</td>
+      <td>0.814815</td>
+      <td>0.825000</td>
       <td>00:21</td>
     </tr>
   </tbody>

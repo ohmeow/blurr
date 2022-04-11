@@ -55,10 +55,10 @@ pip install -e ".[dev]"</code></pre>
 </div>
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>The initial release includes everything you need for sequence classification and question answering tasks.  Support for token classification and summarization are incoming. Please check the documentation for more thorough examples of how to use this package.</p>
+<p>Please check the documentation for more thorough examples of how to use this package.</p>
 <p>The following two packages need to be installed for blurr to work:</p>
 <ol>
-<li>fastai2 (see <a href="http://docs.fast.ai/">http://docs.fast.ai/</a> for installation instructions)</li>
+<li>fastai (see <a href="http://docs.fast.ai/">http://docs.fast.ai/</a> for installation instructions)</li>
 <li>huggingface transformers (see <a href="https://huggingface.co/transformers/installation.html">https://huggingface.co/transformers/installation.html</a> for details)</li>
 </ol>
 
@@ -82,8 +82,8 @@ pip install -e ".[dev]"</code></pre>
 <span class="kn">from</span> <span class="nn">transformers</span> <span class="kn">import</span> <span class="o">*</span>
 <span class="kn">from</span> <span class="nn">fastai.text.all</span> <span class="kn">import</span> <span class="o">*</span>
 
-<span class="kn">from</span> <span class="nn">blurr.data.all</span> <span class="kn">import</span> <span class="o">*</span>
-<span class="kn">from</span> <span class="nn">blurr.modeling.all</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">blurr.text.data.all</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">blurr.text.modeling.all</span> <span class="kn">import</span> <span class="o">*</span>
 </pre></div>
 
     </div>
@@ -162,7 +162,7 @@ pip install -e ".[dev]"</code></pre>
 <span class="n">config</span> <span class="o">=</span> <span class="n">AutoConfig</span><span class="o">.</span><span class="n">from_pretrained</span><span class="p">(</span><span class="n">pretrained_model_name</span><span class="p">)</span>
 <span class="n">config</span><span class="o">.</span><span class="n">num_labels</span> <span class="o">=</span> <span class="n">n_labels</span>
 
-<span class="n">hf_arch</span><span class="p">,</span> <span class="n">hf_config</span><span class="p">,</span> <span class="n">hf_tokenizer</span><span class="p">,</span> <span class="n">hf_model</span> <span class="o">=</span> <span class="n">BLURR</span><span class="o">.</span><span class="n">get_hf_objects</span><span class="p">(</span><span class="n">pretrained_model_name</span><span class="p">,</span> <span class="n">model_cls</span><span class="o">=</span><span class="n">model_cls</span><span class="p">,</span> <span class="n">config</span><span class="o">=</span><span class="n">config</span><span class="p">)</span>
+<span class="n">hf_arch</span><span class="p">,</span> <span class="n">hf_config</span><span class="p">,</span> <span class="n">hf_tokenizer</span><span class="p">,</span> <span class="n">hf_model</span> <span class="o">=</span> <span class="n">NLP</span><span class="o">.</span><span class="n">get_hf_objects</span><span class="p">(</span><span class="n">pretrained_model_name</span><span class="p">,</span> <span class="n">model_cls</span><span class="o">=</span><span class="n">model_cls</span><span class="p">,</span> <span class="n">config</span><span class="o">=</span><span class="n">config</span><span class="p">)</span>
 </pre></div>
 
     </div>
@@ -234,8 +234,8 @@ pip install -e ".[dev]"</code></pre>
     </tr>
     <tr>
       <th>1</th>
-      <td>although recognized as the best film treatment of the difficulties of having a house in the country built ( or bought ) to your specifications, it is not the first, nor the last. in 1940 jack benny and ann sheridan were the leads in the film version of the comedy george washington slept here by george s. kaufman and moss hart. and about fifteen years ago shelly long and tom hanks had the lead in the money pit. the former was about moving into an 18th century country house that... err, needs work. the latter was about building your dream house - in the late 1980s. although the two films have their moments, both are not as good as blandings, which was based on an autobiographical novel of the same name. &lt; br / &gt; &lt; br / &gt; jim blandings and his wife muriel ( cary grant and myrna loy ) are noticing the tight corners of their apartment, which they share with their two daughters joan and betsy ( sharyn moffett and connie marshall ). although blandings has a good income as an advertising executive ( in 1948 he is making $ 15, 000. 00 a year, which was like making $ 90, 000. 00 today ), and lives in a luxury apartment - which in the new york city of that day he rents! - he feels they should seek something better. he and muriel take a drive into the country ( connecticut ) and soon find an old ruin that both imagine can be fixed up as that dream house they want. &lt; br / &gt; &lt; br / &gt; and they both fall into the financial worm hole that buying land and construction can lead to. for one thing, they are so gung ho about the idea of building a home like this they fail to heed warning after warning by their wise, if cynical friend and lawyer bill cole ( melvin douglas, in a nicely sardonic role ). for example, jim buys land from a connecticut dealer ( ian wolfe, sucking his chops quietly ), with a check before double checking the correct cost for the land in that part of connecticut. bill points out he's paid about five or six thousand dollars more for the land than it is worth. there are problems about water supply that both blandings just never think about, such as hard and soft water - which leads to the zis - zis water softening machine. they find that the designs they have in mind, and have worked out with their architect ( reginald denny ), can't be dropped cheaply at a spur of the</td>
-      <td>positive</td>
+      <td>now that che ( 2008 ) has finished its relatively short australian cinema run ( extremely limited release : 1 screen in sydney, after 6wks ), i can guiltlessly join both hosts of " at the movies " in taking steven soderbergh to task. &lt; br / &gt; &lt; br / &gt; it's usually satisfying to watch a film director change his style / subject, but soderbergh's most recent stinker, the girlfriend experience ( 2009 ), was also missing a story, so narrative ( and editing? ) seem to suddenly be soderbergh's main challenge. strange, after 20 - odd years in the business. he was probably never much good at narrative, just hid it well inside " edgy " projects. &lt; br / &gt; &lt; br / &gt; none of this excuses him this present, almost diabolical failure. as david stratton warns, " two parts of che don't ( even ) make a whole ". &lt; br / &gt; &lt; br / &gt; epic biopic in name only, che ( 2008 ) barely qualifies as a feature film! it certainly has no legs, inasmuch as except for its uncharacteristic ultimate resolution forced upon it by history, soderbergh's 4. 5hrs - long dirge just goes nowhere. &lt; br / &gt; &lt; br / &gt; even margaret pomeranz, the more forgiving of australia's at the movies duo, noted about soderbergh's repetitious waste of ( hd digital storage ) : " you're in the woods... you're in the woods... you're in the woods... ". i too am surprised soderbergh didn't give us another 2. 5hrs of that somewhere between his existing two parts, because he still left out massive chunks of che's " revolutionary " life! &lt; br / &gt; &lt; br / &gt; for a biopic of an important but infamous historical figure, soderbergh unaccountably alienates, if not deliberately insults, his audiences by &lt; br / &gt; &lt; br / &gt; 1. never providing most of che's story ; &lt; br / &gt; &lt; br / &gt; 2. imposing unreasonable film lengths with mere dullard repetition ; &lt; br / &gt; &lt; br / &gt; 3. ignoring both true hindsight and a narrative of events ; &lt; br / &gt; &lt; br / &gt; 4. barely developing an idea, or a character ;</td>
+      <td>negative</td>
     </tr>
   </tbody>
 </table></div>
@@ -301,23 +301,23 @@ pip install -e ".[dev]"</code></pre>
   <tbody>
     <tr>
       <td>0</td>
-      <td>0.593744</td>
-      <td>0.470853</td>
-      <td>0.785000</td>
+      <td>0.552236</td>
+      <td>0.434265</td>
+      <td>0.775000</td>
       <td>00:21</td>
     </tr>
     <tr>
       <td>1</td>
-      <td>0.352055</td>
-      <td>0.333391</td>
-      <td>0.875000</td>
-      <td>00:20</td>
+      <td>0.393933</td>
+      <td>0.307428</td>
+      <td>0.895000</td>
+      <td>00:21</td>
     </tr>
     <tr>
       <td>2</td>
-      <td>0.315534</td>
-      <td>0.326376</td>
-      <td>0.865000</td>
+      <td>0.270851</td>
+      <td>0.279640</td>
+      <td>0.900000</td>
       <td>00:21</td>
     </tr>
   </tbody>
@@ -456,10 +456,10 @@ pip install -e ".[dev]"</code></pre>
   <tbody>
     <tr>
       <td>0</td>
-      <td>0.539261</td>
-      <td>0.476592</td>
-      <td>0.759777</td>
-      <td>0.785000</td>
+      <td>0.532850</td>
+      <td>0.459422</td>
+      <td>0.814815</td>
+      <td>0.825000</td>
       <td>00:21</td>
     </tr>
   </tbody>
@@ -550,14 +550,14 @@ pip install -e ".[dev]"</code></pre>
 </ul>
 <p><strong>07/11/2021</strong> - v0.0.30</p>
 <ul>
-<li>Finished initial <a href="/blurr/modeling-core.html#Blearner"><code>Blearner</code></a> high-level API for all Blurr supported tasks</li>
+<li>Finished initial <a href="/blurr/text-modeling-core.html#Blearner"><code>Blearner</code></a> high-level API for all Blurr supported tasks</li>
 <li>Finished high-level APIs examples for all Blurr supported tasks</li>
 <li>Fixed squad preprocessing</li>
 </ul>
 <p><strong>07/01/2021</strong> - v0.0.29</p>
 <ul>
 <li>Updated to work with tranformers 4.8</li>
-<li>Introducing the <a href="/blurr/modeling-core.html#Blearner"><code>Blearner</code></a> high-level API with task specific blearners for building your DataBlock, DataLoaders, and Learner in one line of code (usually :))</li>
+<li>Introducing the <a href="/blurr/text-modeling-core.html#Blearner"><code>Blearner</code></a> high-level API with task specific blearners for building your DataBlock, DataLoaders, and Learner in one line of code (usually :))</li>
 <li>Added LOTS of examples (using low/high-level APIs, using Hugging Face datasets, and handling all the GLUE tasks)</li>
 <li>Updated setup.py so you can now use Blurr on Windows (H/T to @EinAeffchen for the fix)</li>
 </ul>
@@ -584,7 +584,7 @@ pip install -e ".[dev]"</code></pre>
 <li>A few <strong>breaking changes</strong>:</li>
 </ul>
 <ol>
-<li><code>BLURR_MODEL_HELPER</code> is now just <a href="/blurr/utils.html#BLURR"><code>BLURR</code></a></li>
+<li><code>BLURR_MODEL_HELPER</code> is now just <code>BLURR</code></li>
 </ol>
 <ol>
 <li>Task specific auto models need to be built using the new Huggingface <code>AutoModelFor&lt;Insert task here&gt;</code> classes. The docs have been updated to show you how it works; the prior way of building such models not longer works.</li>
@@ -596,7 +596,7 @@ pip install -e ".[dev]"</code></pre>
 <li>Separated out the Seq2Seq and Token Classification metrics into metrics-specific callbacks for a better separation of concerns. As a best practice, you should now <em>only</em> use them as <code>fit_one_cycle</code>, etc.. callbacks rather than attach them to your <code>Learner</code>.</li>
 <li><strong>NEW</strong>: Translation are now available in blurr, joining causal language modeling and summarization in our core Seq2Seq stack</li>
 <li><strong>NEW</strong>: Integration of huggingface's Seq2Seq metrics (rouge, bertscore, meteor, bleu, and sacrebleu). Plenty of info on how to set this up in the docs.</li>
-<li><strong>NEW</strong>: Added <a href="/blurr/data-seq2seq-core.html#default_text_gen_kwargs"><code>default_text_gen_kwargs</code></a>, a method that given a huggingface config, model, and task (optional), will return the default/recommended kwargs for any text generation models.</li>
+<li><strong>NEW</strong>: Added <a href="/blurr/text-data-seq2seq-core.html#default_text_gen_kwargs"><code>default_text_gen_kwargs</code></a>, a method that given a huggingface config, model, and task (optional), will return the default/recommended kwargs for any text generation models.</li>
 <li>A lot of code cleanup (e.g., refactored naming and removal of redundant code into classes/methods)</li>
 <li><strong>More model support</strong> and <strong>more tests</strong> across the board!  Check out the docs for more info</li>
 <li>Misc. validation improvements and bug fixes.</li>
@@ -604,8 +604,8 @@ pip install -e ".[dev]"</code></pre>
 <p>As I'm sure there is plenty I can do to make this library better, please don't hesitate to join in and help the effort by submitting PRs, pointing out problems with my code, or letting me know what and how I can improve things generally. Some models, like mbart and mt5 for example, aren't giving good results and I'd love to get any and all feedback from the community on how to resolve such issues ... so hit me up, I promise I won't bit :)</p>
 <p><strong>12/20/2020</strong></p>
 <ul>
-<li>Updated <a href="/blurr/modeling-core.html#Learner.blurr_predict"><code>Learner.blurr_predict</code></a> and <a href="/blurr/modeling-token-classification.html#Learner.blurr_predict_tokens"><code>Learner.blurr_predict_tokens</code></a> to support single or multiple items</li>
-<li>Added ONNX support for sequence classification, token classification, and question/answering tasks. <code>blurrONNX</code> provides ONNX friendly variants of <a href="/blurr/modeling-core.html#Learner.blurr_predict"><code>Learner.blurr_predict</code></a> and <a href="/blurr/modeling-token-classification.html#Learner.blurr_predict_tokens"><code>Learner.blurr_predict_tokens</code></a> in the form of <code>blurrONNX.predict</code> and <code>blurrONNX.predict_tokens</code> respectively.  Like their Learner equivalents, these methods support single or multiple items for inferece.  See the docs/code for examples and speed gains you get with ONNX.</li>
+<li>Updated <a href="/blurr/text-modeling-core.html#Learner.blurr_predict"><code>Learner.blurr_predict</code></a> and <a href="/blurr/text-modeling-token-classification.html#Learner.blurr_predict_tokens"><code>Learner.blurr_predict_tokens</code></a> to support single or multiple items</li>
+<li>Added ONNX support for sequence classification, token classification, and question/answering tasks. <code>blurrONNX</code> provides ONNX friendly variants of <a href="/blurr/text-modeling-core.html#Learner.blurr_predict"><code>Learner.blurr_predict</code></a> and <a href="/blurr/text-modeling-token-classification.html#Learner.blurr_predict_tokens"><code>Learner.blurr_predict_tokens</code></a> in the form of <code>blurrONNX.predict</code> and <code>blurrONNX.predict_tokens</code> respectively.  Like their Learner equivalents, these methods support single or multiple items for inferece.  See the docs/code for examples and speed gains you get with ONNX.</li>
 <li>Added quantization support when converting your blurr models to ONNX.</li>
 <li>Requires fast.ai &gt;= 2.1.5 and huggingface transformers &gt;= 4.x</li>
 </ul>
@@ -632,8 +632,8 @@ pip install -e ".[dev]"</code></pre>
 <p><strong>10/08/2020</strong></p>
 <ul>
 <li>Updated all models to use <a href="https://huggingface.co/transformers/main_classes/output.html">ModelOutput</a> classes instead of traditional tuples. <code>ModelOutput</code> attributes are assigned to the appropriate fastai bits like <code>Learner.pred</code> and <code>Learner.loss</code> and anything else you've requested the huggingface model to return is available via the <code>Learner.blurr_model_outputs</code> dictionary (see next two bullet items)</li>
-<li>Added ability to grab attentions and hidden state from <code>Learner</code>. You can get at them via <code>Learner.blurr_model_outputs</code> dictionary if you tell <a href="/blurr/modeling-core.html#BaseModelWrapper"><code>BaseModelWrapper</code></a> to provide them.</li>
-<li>Added <code>model_kwargs</code> to <a href="/blurr/modeling-core.html#BaseModelWrapper"><code>BaseModelWrapper</code></a> should you need to request a huggingface model to return something specific to it's type. These outputs will be available via the <code>Learner.blurr_model_outputs</code> dictionary as well.</li>
+<li>Added ability to grab attentions and hidden state from <code>Learner</code>. You can get at them via <code>Learner.blurr_model_outputs</code> dictionary if you tell <a href="/blurr/text-modeling-core.html#BaseModelWrapper"><code>BaseModelWrapper</code></a> to provide them.</li>
+<li>Added <code>model_kwargs</code> to <a href="/blurr/text-modeling-core.html#BaseModelWrapper"><code>BaseModelWrapper</code></a> should you need to request a huggingface model to return something specific to it's type. These outputs will be available via the <code>Learner.blurr_model_outputs</code> dictionary as well.</li>
 </ul>
 <p><strong>09/16/2020</strong></p>
 <ul>
@@ -649,7 +649,7 @@ pip install -e ".[dev]"</code></pre>
 <p><strong>08/20/2020</strong></p>
 <ul>
 <li>Updated everything to work latest version of fastai (tested against 2.0.0)</li>
-<li>Added batch-time padding, so that by default now, <code>HF_TokenizerTransform</code> doesn't add any padding tokens and all huggingface inputs are padded simply to the max sequence length in each batch rather than to the max length (passed in and/or acceptable to the model).  This should create efficiencies across the board, from memory consumption to GPU utilization.  The old tried and true method of padding during tokenization requires you to pass in <code>padding='max_length</code> to <a href="/blurr/data-core.html#TextBlock"><code>TextBlock</code></a>.</li>
+<li>Added batch-time padding, so that by default now, <code>HF_TokenizerTransform</code> doesn't add any padding tokens and all huggingface inputs are padded simply to the max sequence length in each batch rather than to the max length (passed in and/or acceptable to the model).  This should create efficiencies across the board, from memory consumption to GPU utilization.  The old tried and true method of padding during tokenization requires you to pass in <code>padding='max_length</code> to <a href="/blurr/text-data-core.html#TextBlock"><code>TextBlock</code></a>.</li>
 <li>Removed code to remove fastai2 @patched summary methods which had previously conflicted with a couple of the huggingface transformers</li>
 </ul>
 <p><strong>08/13/2020</strong></p>
@@ -677,14 +677,14 @@ pip install -e ".[dev]"</code></pre>
 <li>Major code restructuring to make it easier to build out the library.</li>
 <li><code>HF_TokenizerTransform</code> replaces <code>HF_Tokenizer</code>, handling the tokenization and numericalization in one place.  DataBlock code has been dramatically simplified.</li>
 <li>Tokenization correctly handles huggingface tokenizers that require <code>add_prefix_space=True</code>.</li>
-<li><a href="/blurr/modeling-core.html#BaseModelCallback"><code>BaseModelCallback</code></a> and <a href="/blurr/modeling-core.html#BaseModelCallback"><code>BaseModelCallback</code></a> are required and work together in order to allow developers to tie into any callback friendly event exposed by fastai2 and also pass in named arguments to the huggingface models.</li>
+<li><a href="/blurr/text-modeling-core.html#BaseModelCallback"><code>BaseModelCallback</code></a> and <a href="/blurr/text-modeling-core.html#BaseModelCallback"><code>BaseModelCallback</code></a> are required and work together in order to allow developers to tie into any callback friendly event exposed by fastai2 and also pass in named arguments to the huggingface models.</li>
 <li><code>show_batch</code> and <code>show_results</code> have been updated for Question/Answer and Token Classification models to represent the data and results in a more easily intepretable manner than the defaults.</li>
 </ul>
 <p><strong>05/06/2020</strong></p>
 <ul>
 <li>Initial support for Token classification (e.g., NER) models now included</li>
 <li>Extended fastai's <code>Learner</code> object with a <code>predict_tokens</code> method used specifically in token classification</li>
-<li><a href="/blurr/modeling-core.html#BaseModelCallback"><code>BaseModelCallback</code></a> can be used (or extended) instead of the model wrapper to ensure your inputs into the huggingface model is correct (recommended). See docs for examples (and thanks to fastai's Sylvain for the suggestion!)</li>
+<li><a href="/blurr/text-modeling-core.html#BaseModelCallback"><code>BaseModelCallback</code></a> can be used (or extended) instead of the model wrapper to ensure your inputs into the huggingface model is correct (recommended). See docs for examples (and thanks to fastai's Sylvain for the suggestion!)</li>
 <li><code>HF_Tokenizer</code> can work with strings or a string representation of a list (the later helpful for token classification tasks)</li>
 <li><code>show_batch</code> and <code>show_results</code> methods have been updated to allow better control on how huggingface tokenized data is represented in those methods</li>
 </ul>
