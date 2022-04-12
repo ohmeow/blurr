@@ -83,13 +83,6 @@ transformers: 4.16.2
 </div>
 </div>
 </div>
-<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<h3 id="blurr_seq2seq_splitter"><a href="/blurr/text-modeling-seq2seq-core.html#blurr_seq2seq_splitter"><code>blurr_seq2seq_splitter</code></a><a class="anchor-link" href="#blurr_seq2seq_splitter"> </a></h3><p>We add a custom param splitter to give us a bit more depth in applying discriminative learning rates for Seq2Seq tasks.</p>
-
-</div>
-</div>
-</div>
     {% raw %}
     
 <div class="cell border-box-sizing code_cell rendered">
@@ -97,6 +90,13 @@ transformers: 4.16.2
 </div>
     {% endraw %}
 
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>We add a custom param splitter to give us a bit more depth in applying discriminative learning rates for Seq2Seq tasks.</p>
+
+</div>
+</div>
+</div>
     {% raw %}
     
 <div class="cell border-box-sizing code_cell rendered">
@@ -108,7 +108,7 @@ transformers: 4.16.2
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h4 id="blurr_seq2seq_splitter" class="doc_header"><code>blurr_seq2seq_splitter</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/text/modeling/seq2seq/core.py#L33" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>blurr_seq2seq_splitter</code>(<strong><code>m</code></strong>:<code>PreTrainedModel</code>, <strong><code>arch</code></strong>:<code>str</code>)</p>
+<h3 id="blurr_seq2seq_splitter" class="doc_header"><code>blurr_seq2seq_splitter</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/text/modeling/seq2seq/core.py#L33" class="source_link" style="float:right">[source]</a></h3><blockquote><p><code>blurr_seq2seq_splitter</code>(<strong><code>m</code></strong>:<code>PreTrainedModel</code>, <strong><code>arch</code></strong>:<code>str</code>)</p>
 </blockquote>
 <p>Custom param splitter for summarization models</p>
 <table>
@@ -145,21 +145,6 @@ transformers: 4.16.2
 </div>
     {% endraw %}
 
-<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<h3 id="Seq2SeqMetricsCallback"><a href="/blurr/text-modeling-seq2seq-core.html#Seq2SeqMetricsCallback"><code>Seq2SeqMetricsCallback</code></a><a class="anchor-link" href="#Seq2SeqMetricsCallback"> </a></h3><p>BLURR provides a special callback for seq2seq models for calculating a variety of useful metrics that require decoding both given and predicted input_ids to be calculated.  The are:</p>
-<ul>
-<li>rouge (e.g., "rouge1", "rouge2", "rougeL", "rougeLsum")</li>
-<li>bert_score (e.g., "precision", "recall", "f1")</li>
-<li>bleu</li>
-<li>bleurt</li>
-<li>meteor</li>
-<li>sacrebleu</li>
-</ul>
-
-</div>
-</div>
-</div>
     {% raw %}
     
 <div class="cell border-box-sizing code_cell rendered">
@@ -171,7 +156,7 @@ transformers: 4.16.2
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h2 id="Seq2SeqMetricsCallback" class="doc_header"><code>class</code> <code>Seq2SeqMetricsCallback</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/text/modeling/seq2seq/core.py#L91" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>Seq2SeqMetricsCallback</code>(<strong><code>custom_metrics</code></strong>:<code>dict</code>=<em><code>None</code></em>, <strong><code>calc_every</code></strong>:<code>str</code>=<em><code>'epoch'</code></em>, <strong><code>ignore_token_id</code></strong>=<em><code>-100</code></em>, <strong><code>text_gen_kwargs</code></strong>:<code>dict</code>=<em><code>{}</code></em>, <strong>**<code>kwargs</code></strong>) :: <code>Callback</code></p>
+<h3 id="Seq2SeqMetricsCallback" class="doc_header"><code>class</code> <code>Seq2SeqMetricsCallback</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/text/modeling/seq2seq/core.py#L91" class="source_link" style="float:right">[source]</a></h3><blockquote><p><code>Seq2SeqMetricsCallback</code>(<strong><code>custom_metrics</code></strong>:<code>dict</code>=<em><code>None</code></em>, <strong><code>calc_every</code></strong>:<code>str</code>=<em><code>'epoch'</code></em>, <strong><code>ignore_token_id</code></strong>=<em><code>-100</code></em>, <strong><code>text_gen_kwargs</code></strong>:<code>dict</code>=<em><code>{}</code></em>, <strong>**<code>kwargs</code></strong>) :: <code>Callback</code></p>
 </blockquote>
 <p>A callback that adds seq2seq metrics</p>
 <table>
@@ -186,7 +171,7 @@ transformers: 4.16.2
 <tr>
 <td><strong><code>custom_metrics</code></strong></td>
 <td><code>dict</code></td>
-<td>``</td>
+<td><code>None</code></td>
 <td>A dictionary of seq2seq metrics we want to use. See below and the various task specific seq2seq docs<br />for examples of how to configure this per task</td>
 </tr>
 <tr>
@@ -204,7 +189,7 @@ transformers: 4.16.2
 <tr>
 <td><strong><code>text_gen_kwargs</code></strong></td>
 <td><code>dict</code></td>
-<td>``</td>
+<td><code>None</code></td>
 <td>Any keyword arguments to pass to the <code>hf_model.generate</code> method</td>
 </tr>
 <tr>
@@ -233,6 +218,21 @@ transformers: 4.16.2
 </div>
     {% endraw %}
 
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><code>BLURR</code> provides a special callback for seq2seq models for calculating a variety of useful metrics that require decoding both given and predicted input_ids to be calculated.  The are:</p>
+<ul>
+<li>rouge (e.g., "rouge1", "rouge2", "rougeL", "rougeLsum")</li>
+<li>bert_score (e.g., "precision", "recall", "f1")</li>
+<li>bleu</li>
+<li>bleurt</li>
+<li>meteor</li>
+<li>sacrebleu</li>
+</ul>
+
+</div>
+</div>
+</div>
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <h3 id="Example">Example<a class="anchor-link" href="#Example"> </a></h3>
@@ -1059,19 +1059,6 @@ Explore the story and the reasons why a problem won&#39;t solve itself.
 </div>
     {% endraw %}
 
-<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Summary">Summary<a class="anchor-link" href="#Summary"> </a></h2>
-</div>
-</div>
-</div>
-<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<p>This module includes the fundamental bits to all Seq2Seq transformers training and inference.</p>
-
-</div>
-</div>
-</div>
 </div>
  
 

@@ -77,38 +77,6 @@ transformers: 4.16.2
 </div>
     {% endraw %}
 
-    {% raw %}
-    
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">set_device</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Using GPU #</span><span class="si">{</span><span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">current_device</span><span class="p">()</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">get_device_name</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-<div class="output_area">
-
-<div class="output_subarea output_stream output_stdout output_text">
-<pre>Using GPU #1: GeForce GTX 1080 Ti
-</pre>
-</div>
-</div>
-
-</div>
-</div>
-
-</div>
-    {% endraw %}
-
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <h2 id="Mid-level-API">Mid-level API<a class="anchor-link" href="#Mid-level-API"> </a></h2>
@@ -929,13 +897,6 @@ Loading cached shuffled indices for dataset at /home/wgilliam/.cache/huggingface
 </div>
 </div>
 </div>
-<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<h3 id="BlearnerForTranslation"><a href="/blurr/text-modeling-seq2seq-translation.html#BlearnerForTranslation"><code>BlearnerForTranslation</code></a><a class="anchor-link" href="#BlearnerForTranslation"> </a></h3><p>We also introduce a task specific <a href="/blurr/text-modeling-core.html#Blearner"><code>Blearner</code></a> that get you your DataBlock, DataLoaders, and BLearner in one line of code!</p>
-
-</div>
-</div>
-</div>
     {% raw %}
     
 <div class="cell border-box-sizing code_cell rendered">
@@ -947,7 +908,7 @@ Loading cached shuffled indices for dataset at /home/wgilliam/.cache/huggingface
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h2 id="BlearnerForTranslation" class="doc_header"><code>class</code> <code>BlearnerForTranslation</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/text/modeling/seq2seq/translation.py#L36" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>BlearnerForTranslation</code>(<strong><code>dls</code></strong>:<code>DataLoaders</code>, <strong><code>hf_model</code></strong>:<code>PreTrainedModel</code>, <strong><code>base_model_cb</code></strong>:<a href="/blurr/text-modeling-core.html#BaseModelCallback"><code>BaseModelCallback</code></a>=<em><code>BaseModelCallback</code></em>, <strong><code>loss_func</code></strong>=<em><code>None</code></em>, <strong><code>opt_func</code></strong>=<em><code>Adam</code></em>, <strong><code>lr</code></strong>=<em><code>0.001</code></em>, <strong><code>splitter</code></strong>=<em><code>trainable_params</code></em>, <strong><code>cbs</code></strong>=<em><code>None</code></em>, <strong><code>metrics</code></strong>=<em><code>None</code></em>, <strong><code>path</code></strong>=<em><code>None</code></em>, <strong><code>model_dir</code></strong>=<em><code>'models'</code></em>, <strong><code>wd</code></strong>=<em><code>None</code></em>, <strong><code>wd_bn_bias</code></strong>=<em><code>False</code></em>, <strong><code>train_bn</code></strong>=<em><code>True</code></em>, <strong><code>moms</code></strong>=<em><code>(0.95, 0.85, 0.95)</code></em>) :: <a href="/blurr/text-modeling-core.html#Blearner"><code>Blearner</code></a></p>
+<h3 id="BlearnerForTranslation" class="doc_header"><code>class</code> <code>BlearnerForTranslation</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/text/modeling/seq2seq/translation.py#L36" class="source_link" style="float:right">[source]</a></h3><blockquote><p><code>BlearnerForTranslation</code>(<strong><code>dls</code></strong>:<code>DataLoaders</code>, <strong><code>hf_model</code></strong>:<code>PreTrainedModel</code>, <strong><code>base_model_cb</code></strong>:<a href="/blurr/text-modeling-core.html#BaseModelCallback"><code>BaseModelCallback</code></a>=<em><code>BaseModelCallback</code></em>, <strong><code>loss_func</code></strong>=<em><code>None</code></em>, <strong><code>opt_func</code></strong>=<em><code>Adam</code></em>, <strong><code>lr</code></strong>=<em><code>0.001</code></em>, <strong><code>splitter</code></strong>=<em><code>trainable_params</code></em>, <strong><code>cbs</code></strong>=<em><code>None</code></em>, <strong><code>metrics</code></strong>=<em><code>None</code></em>, <strong><code>path</code></strong>=<em><code>None</code></em>, <strong><code>model_dir</code></strong>=<em><code>'models'</code></em>, <strong><code>wd</code></strong>=<em><code>None</code></em>, <strong><code>wd_bn_bias</code></strong>=<em><code>False</code></em>, <strong><code>train_bn</code></strong>=<em><code>True</code></em>, <strong><code>moms</code></strong>=<em><code>(0.95, 0.85, 0.95)</code></em>) :: <a href="/blurr/text-modeling-core.html#Blearner"><code>Blearner</code></a></p>
 </blockquote>
 <p>Group together a <code>model</code>, some <code>dls</code> and a <code>loss_func</code> to handle training</p>
 
@@ -1514,19 +1475,6 @@ Loading cached shuffled indices for dataset at /home/wgilliam/.cache/huggingface
 </div>
     {% endraw %}
 
-<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Summary">Summary<a class="anchor-link" href="#Summary"> </a></h2>
-</div>
-</div>
-</div>
-<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<p>This module includes the fundamental bits to use Blurr for translation tasks training and inference.</p>
-
-</div>
-</div>
-</div>
 </div>
  
 

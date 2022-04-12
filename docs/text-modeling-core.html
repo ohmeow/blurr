@@ -84,12 +84,6 @@ transformers: 4.16.2
 </div>
 </div>
 </div>
-<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<h3 id="blurr_splitter"><a href="/blurr/text-modeling-core.html#blurr_splitter"><code>blurr_splitter</code></a><a class="anchor-link" href="#blurr_splitter"> </a></h3>
-</div>
-</div>
-</div>
     {% raw %}
     
 <div class="cell border-box-sizing code_cell rendered">
@@ -108,7 +102,7 @@ transformers: 4.16.2
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h4 id="blurr_splitter" class="doc_header"><code>blurr_splitter</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/text/modeling/core.py#L30" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>blurr_splitter</code>(<strong><code>m</code></strong>:<code>Module</code>)</p>
+<h3 id="blurr_splitter" class="doc_header"><code>blurr_splitter</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/text/modeling/core.py#L30" class="source_link" style="float:right">[source]</a></h3><blockquote><p><code>blurr_splitter</code>(<strong><code>m</code></strong>:<code>Module</code>)</p>
 </blockquote>
 <p>Splits the Hugging Face model based on various model architecture conventions</p>
 
@@ -122,13 +116,6 @@ transformers: 4.16.2
 </div>
     {% endraw %}
 
-<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<h3 id="BaseModelWrapper"><a href="/blurr/text-modeling-core.html#BaseModelWrapper"><code>BaseModelWrapper</code></a><a class="anchor-link" href="#BaseModelWrapper"> </a></h3><p>Note that <a href="/blurr/text-modeling-core.html#BaseModelWrapper"><code>BaseModelWrapper</code></a> includes some nifty code for just passing in the things your model needs, as not all transformer architectures require/use the same information.</p>
-
-</div>
-</div>
-</div>
     {% raw %}
     
 <div class="cell border-box-sizing code_cell rendered">
@@ -140,7 +127,7 @@ transformers: 4.16.2
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h2 id="BaseModelWrapper" class="doc_header"><code>class</code> <code>BaseModelWrapper</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/text/modeling/core.py#L43" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>BaseModelWrapper</code>(<strong><code>hf_model</code></strong>:<code>PreTrainedModel</code>, <strong><code>output_hidden_states</code></strong>:<code>bool</code>=<em><code>False</code></em>, <strong><code>output_attentions</code></strong>:<code>bool</code>=<em><code>False</code></em>, <strong><code>hf_model_kwargs</code></strong>=<em><code>{}</code></em>) :: <code>Module</code></p>
+<h3 id="BaseModelWrapper" class="doc_header"><code>class</code> <code>BaseModelWrapper</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/text/modeling/core.py#L43" class="source_link" style="float:right">[source]</a></h3><blockquote><p><code>BaseModelWrapper</code>(<strong><code>hf_model</code></strong>:<code>PreTrainedModel</code>, <strong><code>output_hidden_states</code></strong>:<code>bool</code>=<em><code>False</code></em>, <strong><code>output_attentions</code></strong>:<code>bool</code>=<em><code>False</code></em>, <strong><code>hf_model_kwargs</code></strong>=<em><code>{}</code></em>) :: <code>Module</code></p>
 </blockquote>
 <p>Same as <code>nn.Module</code>, but no need for subclasses to call <code>super().__init__</code></p>
 <table>
@@ -173,7 +160,7 @@ transformers: 4.16.2
 <tr>
 <td><strong><code>hf_model_kwargs</code></strong></td>
 <td><code>dict</code></td>
-<td>``</td>
+<td><code>None</code></td>
 <td>Any additional keyword arguments you want passed into your models forward method</td>
 </tr>
 </tbody>
@@ -198,9 +185,7 @@ transformers: 4.16.2
 
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h3 id="BaseModelCallback"><a href="/blurr/text-modeling-core.html#BaseModelCallback"><code>BaseModelCallback</code></a><a class="anchor-link" href="#BaseModelCallback"> </a></h3><p>We use a <code>Callback</code> for handling the <code>ModelOutput</code> returned by Hugging Face transformers. It allows us to associate anything we want from that object to our <code>Learner</code>.</p>
-<p><strong>Note</strong> that your <code>Learner</code>'s loss will be set for you only if the Hugging Face model returns one <em>and</em> you are using the <a href="/blurr/utils.html#PreCalculatedLoss"><code>PreCalculatedLoss</code></a> loss function.</p>
-<p>Also note that anything else you asked the model to return (for example, last hidden state, etc..) will be available for you via the <code>blurr_model_outputs</code> property attached to your <code>Learner</code>. For example, assuming you are using BERT for a classification task ... if you have told your <a href="/blurr/text-modeling-core.html#BaseModelWrapper"><code>BaseModelWrapper</code></a> instance to return attentions, you'd be able to access them via <code>learn.blurr_model_outputs['attentions']</code>.</p>
+<p>Note that <a href="/blurr/text-modeling-core.html#BaseModelWrapper"><code>BaseModelWrapper</code></a> includes some nifty code for just passing in the things your model needs, as not all transformer architectures require/use the same information.</p>
 
 </div>
 </div>
@@ -216,7 +201,7 @@ transformers: 4.16.2
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h2 id="BaseModelCallback" class="doc_header"><code>class</code> <code>BaseModelCallback</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/text/modeling/core.py#L76" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>BaseModelCallback</code>(<strong><code>after_create</code></strong>=<em><code>None</code></em>, <strong><code>before_fit</code></strong>=<em><code>None</code></em>, <strong><code>before_epoch</code></strong>=<em><code>None</code></em>, <strong><code>before_train</code></strong>=<em><code>None</code></em>, <strong><code>before_batch</code></strong>=<em><code>None</code></em>, <strong><code>after_pred</code></strong>=<em><code>None</code></em>, <strong><code>after_loss</code></strong>=<em><code>None</code></em>, <strong><code>before_backward</code></strong>=<em><code>None</code></em>, <strong><code>before_step</code></strong>=<em><code>None</code></em>, <strong><code>after_cancel_step</code></strong>=<em><code>None</code></em>, <strong><code>after_step</code></strong>=<em><code>None</code></em>, <strong><code>after_cancel_batch</code></strong>=<em><code>None</code></em>, <strong><code>after_batch</code></strong>=<em><code>None</code></em>, <strong><code>after_cancel_train</code></strong>=<em><code>None</code></em>, <strong><code>after_train</code></strong>=<em><code>None</code></em>, <strong><code>before_validate</code></strong>=<em><code>None</code></em>, <strong><code>after_cancel_validate</code></strong>=<em><code>None</code></em>, <strong><code>after_validate</code></strong>=<em><code>None</code></em>, <strong><code>after_cancel_epoch</code></strong>=<em><code>None</code></em>, <strong><code>after_epoch</code></strong>=<em><code>None</code></em>, <strong><code>after_cancel_fit</code></strong>=<em><code>None</code></em>, <strong><code>after_fit</code></strong>=<em><code>None</code></em>) :: <code>Callback</code></p>
+<h3 id="BaseModelCallback" class="doc_header"><code>class</code> <code>BaseModelCallback</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/text/modeling/core.py#L76" class="source_link" style="float:right">[source]</a></h3><blockquote><p><code>BaseModelCallback</code>(<strong><code>after_create</code></strong>=<em><code>None</code></em>, <strong><code>before_fit</code></strong>=<em><code>None</code></em>, <strong><code>before_epoch</code></strong>=<em><code>None</code></em>, <strong><code>before_train</code></strong>=<em><code>None</code></em>, <strong><code>before_batch</code></strong>=<em><code>None</code></em>, <strong><code>after_pred</code></strong>=<em><code>None</code></em>, <strong><code>after_loss</code></strong>=<em><code>None</code></em>, <strong><code>before_backward</code></strong>=<em><code>None</code></em>, <strong><code>before_step</code></strong>=<em><code>None</code></em>, <strong><code>after_cancel_step</code></strong>=<em><code>None</code></em>, <strong><code>after_step</code></strong>=<em><code>None</code></em>, <strong><code>after_cancel_batch</code></strong>=<em><code>None</code></em>, <strong><code>after_batch</code></strong>=<em><code>None</code></em>, <strong><code>after_cancel_train</code></strong>=<em><code>None</code></em>, <strong><code>after_train</code></strong>=<em><code>None</code></em>, <strong><code>before_validate</code></strong>=<em><code>None</code></em>, <strong><code>after_cancel_validate</code></strong>=<em><code>None</code></em>, <strong><code>after_validate</code></strong>=<em><code>None</code></em>, <strong><code>after_cancel_epoch</code></strong>=<em><code>None</code></em>, <strong><code>after_epoch</code></strong>=<em><code>None</code></em>, <strong><code>after_cancel_fit</code></strong>=<em><code>None</code></em>, <strong><code>after_fit</code></strong>=<em><code>None</code></em>) :: <code>Callback</code></p>
 </blockquote>
 <p>Basic class handling tweaks of the training loop by changing a <code>Learner</code> in various events</p>
 
@@ -237,6 +222,15 @@ transformers: 4.16.2
 </div>
     {% endraw %}
 
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>We use a <code>Callback</code> for handling the <code>ModelOutput</code> returned by Hugging Face transformers. It allows us to associate anything we want from that object to our <code>Learner</code>.</p>
+<p><strong>Note</strong> that your <code>Learner</code>'s loss will be set for you only if the Hugging Face model returns one <em>and</em> you are using the <a href="/blurr/utils.html#PreCalculatedLoss"><code>PreCalculatedLoss</code></a> loss function.</p>
+<p>Also note that anything else you asked the model to return (for example, last hidden state, etc..) will be available for you via the <code>blurr_model_outputs</code> property attached to your <code>Learner</code>. For example, assuming you are using BERT for a classification task ... if you have told your <a href="/blurr/text-modeling-core.html#BaseModelWrapper"><code>BaseModelWrapper</code></a> instance to return attentions, you'd be able to access them via <code>learn.blurr_model_outputs['attentions']</code>.</p>
+
+</div>
+</div>
+</div>
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <h3 id="Example">Example<a class="anchor-link" href="#Example"> </a></h3><p>Below demonstrates how to setup your pipeline for a sequence classification task (e.g., a model that requires a single text input) using the mid, high, and low-level API</p>
@@ -1196,13 +1190,6 @@ for a list of arguments you can pass in)</p>
 </div>
 </div>
 </div>
-<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<h4 id="Blearner"><a href="/blurr/text-modeling-core.html#Blearner"><code>Blearner</code></a><a class="anchor-link" href="#Blearner"> </a></h4><p>Instead of constructing our low-level <code>Learner</code>, we can use the <a href="/blurr/text-modeling-core.html#Blearner"><code>Blearner</code></a> class which provides sensible defaults for training</p>
-
-</div>
-</div>
-</div>
     {% raw %}
     
 <div class="cell border-box-sizing code_cell rendered">
@@ -1236,7 +1223,7 @@ for a list of arguments you can pass in)</p>
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h2 id="Blearner" class="doc_header"><code>class</code> <code>Blearner</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/text/modeling/core.py#L263" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>Blearner</code>(<strong><code>dls</code></strong>:<code>DataLoaders</code>, <strong><code>hf_model</code></strong>:<code>PreTrainedModel</code>, <strong><code>base_model_cb</code></strong>:<a href="/blurr/text-modeling-core.html#BaseModelCallback"><code>BaseModelCallback</code></a>=<em><code>BaseModelCallback</code></em>, <strong><code>loss_func</code></strong>=<em><code>None</code></em>, <strong><code>opt_func</code></strong>=<em><code>Adam</code></em>, <strong><code>lr</code></strong>=<em><code>0.001</code></em>, <strong><code>splitter</code></strong>=<em><code>trainable_params</code></em>, <strong><code>cbs</code></strong>=<em><code>None</code></em>, <strong><code>metrics</code></strong>=<em><code>None</code></em>, <strong><code>path</code></strong>=<em><code>None</code></em>, <strong><code>model_dir</code></strong>=<em><code>'models'</code></em>, <strong><code>wd</code></strong>=<em><code>None</code></em>, <strong><code>wd_bn_bias</code></strong>=<em><code>False</code></em>, <strong><code>train_bn</code></strong>=<em><code>True</code></em>, <strong><code>moms</code></strong>=<em><code>(0.95, 0.85, 0.95)</code></em>) :: <code>Learner</code></p>
+<h3 id="Blearner" class="doc_header"><code>class</code> <code>Blearner</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/text/modeling/core.py#L263" class="source_link" style="float:right">[source]</a></h3><blockquote><p><code>Blearner</code>(<strong><code>dls</code></strong>:<code>DataLoaders</code>, <strong><code>hf_model</code></strong>:<code>PreTrainedModel</code>, <strong><code>base_model_cb</code></strong>:<a href="/blurr/text-modeling-core.html#BaseModelCallback"><code>BaseModelCallback</code></a>=<em><code>BaseModelCallback</code></em>, <strong><code>loss_func</code></strong>=<em><code>None</code></em>, <strong><code>opt_func</code></strong>=<em><code>Adam</code></em>, <strong><code>lr</code></strong>=<em><code>0.001</code></em>, <strong><code>splitter</code></strong>=<em><code>trainable_params</code></em>, <strong><code>cbs</code></strong>=<em><code>None</code></em>, <strong><code>metrics</code></strong>=<em><code>None</code></em>, <strong><code>path</code></strong>=<em><code>None</code></em>, <strong><code>model_dir</code></strong>=<em><code>'models'</code></em>, <strong><code>wd</code></strong>=<em><code>None</code></em>, <strong><code>wd_bn_bias</code></strong>=<em><code>False</code></em>, <strong><code>train_bn</code></strong>=<em><code>True</code></em>, <strong><code>moms</code></strong>=<em><code>(0.95, 0.85, 0.95)</code></em>) :: <code>Learner</code></p>
 </blockquote>
 <p>Group together a <code>model</code>, some <code>dls</code> and a <code>loss_func</code> to handle training</p>
 <table>
@@ -1292,6 +1279,13 @@ for a list of arguments you can pass in)</p>
 </div>
     {% endraw %}
 
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Instead of constructing our low-level <code>Learner</code>, we can use the <a href="/blurr/text-modeling-core.html#Blearner"><code>Blearner</code></a> class which provides sensible defaults for training</p>
+
+</div>
+</div>
+</div>
     {% raw %}
     
 <div class="cell border-box-sizing code_cell rendered">
@@ -1494,13 +1488,6 @@ for a list of arguments you can pass in)</p>
 </div>
     {% endraw %}
 
-<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<h4 id="BlearnerForSequenceClassification"><a href="/blurr/text-modeling-core.html#BlearnerForSequenceClassification"><code>BlearnerForSequenceClassification</code></a><a class="anchor-link" href="#BlearnerForSequenceClassification"> </a></h4><p>We also introduce a classification task specific <a href="/blurr/text-modeling-core.html#Blearner"><code>Blearner</code></a> that get you your DataBlock, DataLoaders, and BLearner in one line of code!</p>
-
-</div>
-</div>
-</div>
     {% raw %}
     
 <div class="cell border-box-sizing code_cell rendered">
@@ -1512,7 +1499,7 @@ for a list of arguments you can pass in)</p>
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h2 id="BlearnerForSequenceClassification" class="doc_header"><code>class</code> <code>BlearnerForSequenceClassification</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/text/modeling/core.py#L301" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>BlearnerForSequenceClassification</code>(<strong><code>dls</code></strong>:<code>DataLoaders</code>, <strong><code>hf_model</code></strong>:<code>PreTrainedModel</code>, <strong><code>base_model_cb</code></strong>:<a href="/blurr/text-modeling-core.html#BaseModelCallback"><code>BaseModelCallback</code></a>=<em><code>BaseModelCallback</code></em>, <strong><code>loss_func</code></strong>=<em><code>None</code></em>, <strong><code>opt_func</code></strong>=<em><code>Adam</code></em>, <strong><code>lr</code></strong>=<em><code>0.001</code></em>, <strong><code>splitter</code></strong>=<em><code>trainable_params</code></em>, <strong><code>cbs</code></strong>=<em><code>None</code></em>, <strong><code>metrics</code></strong>=<em><code>None</code></em>, <strong><code>path</code></strong>=<em><code>None</code></em>, <strong><code>model_dir</code></strong>=<em><code>'models'</code></em>, <strong><code>wd</code></strong>=<em><code>None</code></em>, <strong><code>wd_bn_bias</code></strong>=<em><code>False</code></em>, <strong><code>train_bn</code></strong>=<em><code>True</code></em>, <strong><code>moms</code></strong>=<em><code>(0.95, 0.85, 0.95)</code></em>) :: <a href="/blurr/text-modeling-core.html#Blearner"><code>Blearner</code></a></p>
+<h3 id="BlearnerForSequenceClassification" class="doc_header"><code>class</code> <code>BlearnerForSequenceClassification</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/text/modeling/core.py#L301" class="source_link" style="float:right">[source]</a></h3><blockquote><p><code>BlearnerForSequenceClassification</code>(<strong><code>dls</code></strong>:<code>DataLoaders</code>, <strong><code>hf_model</code></strong>:<code>PreTrainedModel</code>, <strong><code>base_model_cb</code></strong>:<a href="/blurr/text-modeling-core.html#BaseModelCallback"><code>BaseModelCallback</code></a>=<em><code>BaseModelCallback</code></em>, <strong><code>loss_func</code></strong>=<em><code>None</code></em>, <strong><code>opt_func</code></strong>=<em><code>Adam</code></em>, <strong><code>lr</code></strong>=<em><code>0.001</code></em>, <strong><code>splitter</code></strong>=<em><code>trainable_params</code></em>, <strong><code>cbs</code></strong>=<em><code>None</code></em>, <strong><code>metrics</code></strong>=<em><code>None</code></em>, <strong><code>path</code></strong>=<em><code>None</code></em>, <strong><code>model_dir</code></strong>=<em><code>'models'</code></em>, <strong><code>wd</code></strong>=<em><code>None</code></em>, <strong><code>wd_bn_bias</code></strong>=<em><code>False</code></em>, <strong><code>train_bn</code></strong>=<em><code>True</code></em>, <strong><code>moms</code></strong>=<em><code>(0.95, 0.85, 0.95)</code></em>) :: <a href="/blurr/text-modeling-core.html#Blearner"><code>Blearner</code></a></p>
 </blockquote>
 <p>Group together a <code>model</code>, some <code>dls</code> and a <code>loss_func</code> to handle training</p>
 
@@ -1533,6 +1520,13 @@ for a list of arguments you can pass in)</p>
 </div>
     {% endraw %}
 
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>We also introduce a classification task specific <a href="/blurr/text-modeling-core.html#Blearner"><code>Blearner</code></a> that get you your DataBlock, DataLoaders, and BLearner in one line of code!</p>
+
+</div>
+</div>
+</div>
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <h3 id="Examples">Examples<a class="anchor-link" href="#Examples"> </a></h3>
@@ -2471,19 +2465,6 @@ Loading cached processed dataset at /home/wgilliam/.cache/huggingface/datasets/g
 </div>
     {% endraw %}
 
-<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Summary">Summary<a class="anchor-link" href="#Summary"> </a></h2>
-</div>
-</div>
-</div>
-<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<p>This module includes the fundamental building blocks for training using <code>BLURR</code></p>
-
-</div>
-</div>
-</div>
 </div>
  
 

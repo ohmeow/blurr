@@ -189,13 +189,6 @@ transformers: 4.16.2
 </div>
 </div>
 </div>
-<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<h3 id="LMMetricsCallback"><a href="/blurr/text-modeling-language-modeling.html#LMMetricsCallback"><code>LMMetricsCallback</code></a><a class="anchor-link" href="#LMMetricsCallback"> </a></h3><p>In this section, we'll add helpful metrics for calculating accuracy and perplexity for both causal and masked language modeling tasks.</p>
-
-</div>
-</div>
-</div>
     {% raw %}
     
 <div class="cell border-box-sizing code_cell rendered">
@@ -207,7 +200,7 @@ transformers: 4.16.2
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h2 id="LMMetricsCallback" class="doc_header"><code>class</code> <code>LMMetricsCallback</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/text/modeling/language_modeling.py#L43" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>LMMetricsCallback</code>(<strong>**<code>kwargs</code></strong>) :: <code>Callback</code></p>
+<h3 id="LMMetricsCallback" class="doc_header"><code>class</code> <code>LMMetricsCallback</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/text/modeling/language_modeling.py#L43" class="source_link" style="float:right">[source]</a></h3><blockquote><p><code>LMMetricsCallback</code>(<strong>**<code>kwargs</code></strong>) :: <code>Callback</code></p>
 </blockquote>
 <p>A fastai friendly metric implemented as a callback so that we can handle use cases where we don't
 want to count tokens marked to be ignored or else not count batches where there are no targs</p>
@@ -229,6 +222,13 @@ want to count tokens marked to be ignored or else not count batches where there 
 </div>
     {% endraw %}
 
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>In this section, we'll add helpful metrics for calculating accuracy and perplexity for both causal and masked language modeling tasks.</p>
+
+</div>
+</div>
+</div>
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <h3 id="Examples">Examples<a class="anchor-link" href="#Examples"> </a></h3>
@@ -1184,7 +1184,7 @@ want to count tokens marked to be ignored or else not count batches where there 
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h4 id="Learner.blurr_fill_mask" class="doc_header"><code>Learner.blurr_fill_mask</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/text/modeling/language_modeling.py#L214" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>Learner.blurr_fill_mask</code>(<strong><code>inp</code></strong>:<code>Union</code>[List[int]<code>,</code>str<code>\], **</code>n_preds<code>**:</code>int<code>=*</code>1<code>*, **\*\*</code>kwargs`**)</p>
+<h4 id="Learner.blurr_fill_mask" class="doc_header"><code>Learner.blurr_fill_mask</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/text/modeling/language_modeling.py#L214" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>Learner.blurr_fill_mask</code>(<strong><code>inp</code></strong>:<code>Union</code>[<code>typing.List[int]</code>, <code>str</code>], <strong><code>n_preds</code></strong>:<code>int</code>=<em><code>1</code></em>, <strong>**<code>kwargs</code></strong>)</p>
 </blockquote>
 <p>For MLM models</p>
 <table>
@@ -1198,7 +1198,7 @@ want to count tokens marked to be ignored or else not count batches where there 
 <tbody>
 <tr>
 <td><strong><code>inp</code></strong></td>
-<td><code>List[int], str]</code></td>
+<td><code>typing.Union[typing.List[int], str]</code></td>
 <td></td>
 <td>Your input_ids or raw text string with a <code>hf_tokenizer.mask_token</code></td>
 </tr>
@@ -1277,13 +1277,6 @@ want to count tokens marked to be ignored or else not count batches where there 
 </div>
 </div>
 </div>
-<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<h3 id="BlearnerForLM"><a href="/blurr/text-modeling-language-modeling.html#BlearnerForLM"><code>BlearnerForLM</code></a><a class="anchor-link" href="#BlearnerForLM"> </a></h3><p>We can use the <a href="/blurr/text-modeling-language-modeling.html#BlearnerForLM"><code>BlearnerForLM</code></a> for either Causal or Masked language models.  With one line of code, we get our DataBlock, DataLoaders, and Blearner with sensible defaults and ready for training</p>
-
-</div>
-</div>
-</div>
     {% raw %}
     
 <div class="cell border-box-sizing code_cell rendered">
@@ -1295,7 +1288,7 @@ want to count tokens marked to be ignored or else not count batches where there 
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h2 id="BlearnerForLM" class="doc_header"><code>class</code> <code>BlearnerForLM</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/text/modeling/language_modeling.py#L254" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>BlearnerForLM</code>(<strong><code>dls</code></strong>:<code>DataLoaders</code>, <strong><code>hf_model</code></strong>:<code>PreTrainedModel</code>, <strong><code>base_model_cb</code></strong>:<a href="/blurr/text-modeling-core.html#BaseModelCallback"><code>BaseModelCallback</code></a>=<em><code>BaseModelCallback</code></em>, <strong><code>loss_func</code></strong>=<em><code>None</code></em>, <strong><code>opt_func</code></strong>=<em><code>Adam</code></em>, <strong><code>lr</code></strong>=<em><code>0.001</code></em>, <strong><code>splitter</code></strong>=<em><code>trainable_params</code></em>, <strong><code>cbs</code></strong>=<em><code>None</code></em>, <strong><code>metrics</code></strong>=<em><code>None</code></em>, <strong><code>path</code></strong>=<em><code>None</code></em>, <strong><code>model_dir</code></strong>=<em><code>'models'</code></em>, <strong><code>wd</code></strong>=<em><code>None</code></em>, <strong><code>wd_bn_bias</code></strong>=<em><code>False</code></em>, <strong><code>train_bn</code></strong>=<em><code>True</code></em>, <strong><code>moms</code></strong>=<em><code>(0.95, 0.85, 0.95)</code></em>) :: <a href="/blurr/text-modeling-core.html#Blearner"><code>Blearner</code></a></p>
+<h3 id="BlearnerForLM" class="doc_header"><code>class</code> <code>BlearnerForLM</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/text/modeling/language_modeling.py#L254" class="source_link" style="float:right">[source]</a></h3><blockquote><p><code>BlearnerForLM</code>(<strong><code>dls</code></strong>:<code>DataLoaders</code>, <strong><code>hf_model</code></strong>:<code>PreTrainedModel</code>, <strong><code>base_model_cb</code></strong>:<a href="/blurr/text-modeling-core.html#BaseModelCallback"><code>BaseModelCallback</code></a>=<em><code>BaseModelCallback</code></em>, <strong><code>loss_func</code></strong>=<em><code>None</code></em>, <strong><code>opt_func</code></strong>=<em><code>Adam</code></em>, <strong><code>lr</code></strong>=<em><code>0.001</code></em>, <strong><code>splitter</code></strong>=<em><code>trainable_params</code></em>, <strong><code>cbs</code></strong>=<em><code>None</code></em>, <strong><code>metrics</code></strong>=<em><code>None</code></em>, <strong><code>path</code></strong>=<em><code>None</code></em>, <strong><code>model_dir</code></strong>=<em><code>'models'</code></em>, <strong><code>wd</code></strong>=<em><code>None</code></em>, <strong><code>wd_bn_bias</code></strong>=<em><code>False</code></em>, <strong><code>train_bn</code></strong>=<em><code>True</code></em>, <strong><code>moms</code></strong>=<em><code>(0.95, 0.85, 0.95)</code></em>) :: <a href="/blurr/text-modeling-core.html#Blearner"><code>Blearner</code></a></p>
 </blockquote>
 <p>Group together a <code>model</code>, some <code>dls</code> and a <code>loss_func</code> to handle training</p>
 
@@ -1316,6 +1309,13 @@ want to count tokens marked to be ignored or else not count batches where there 
 </div>
     {% endraw %}
 
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>We can use the <a href="/blurr/text-modeling-language-modeling.html#BlearnerForLM"><code>BlearnerForLM</code></a> for either Causal or Masked language models.  With one line of code, we get our DataBlock, DataLoaders, and Blearner with sensible defaults and ready for training</p>
+
+</div>
+</div>
+</div>
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <h3 id="Example">Example<a class="anchor-link" href="#Example"> </a></h3>
@@ -1791,13 +1791,6 @@ want to count tokens marked to be ignored or else not count batches where there 
 </div>
     {% endraw %}
 
-<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Summary">Summary<a class="anchor-link" href="#Summary"> </a></h2><p>Whether you're using the low, mid, or high-level APIs, the <code>text.modeling.language_modeling</code> provides everything you need to train causual and masked language models</p>
-
-</div>
-</div>
-</div>
 </div>
  
 
