@@ -65,7 +65,7 @@ nb_path: "nbs/21_text-data-seq2seq-summarization.ipynb"
 <div class="output_subarea output_stream output_stdout output_text">
 <pre>What we&#39;re running with at the time this documentation was generated:
 torch: 1.10.1+cu111
-fastai: 2.5.3
+fastai: 2.5.6
 transformers: 4.16.2
 </pre>
 </div>
@@ -701,7 +701,7 @@ Loading cached shuffled indices for dataset at /home/wgilliam/.cache/huggingface
 
 
 <div class="output_text output_subarea output_execute_result">
-<pre>(2, torch.Size([4, 1024]), torch.Size([4, 61]), torch.Size([4, 61]))</pre>
+<pre>(2, torch.Size([4, 1024]), torch.Size([4, 152]), torch.Size([4, 152]))</pre>
 </div>
 
 </div>
@@ -740,14 +740,32 @@ Loading cached shuffled indices for dataset at /home/wgilliam/.cache/huggingface
             11,   188,   469,   479,     2,  -100,  -100,  -100,  -100,  -100,
           -100,  -100,  -100,  -100,  -100,  -100,  -100,  -100,  -100,  -100,
           -100,  -100,  -100,  -100,  -100,  -100,  -100,  -100,  -100,  -100,
-          -100], device=&#39;cuda:1&#39;),
+          -100,  -100,  -100,  -100,  -100,  -100,  -100,  -100,  -100,  -100,
+          -100,  -100,  -100,  -100,  -100,  -100,  -100,  -100,  -100,  -100,
+          -100,  -100,  -100,  -100,  -100,  -100,  -100,  -100,  -100,  -100,
+          -100,  -100,  -100,  -100,  -100,  -100,  -100,  -100,  -100,  -100,
+          -100,  -100,  -100,  -100,  -100,  -100,  -100,  -100,  -100,  -100,
+          -100,  -100,  -100,  -100,  -100,  -100,  -100,  -100,  -100,  -100,
+          -100,  -100,  -100,  -100,  -100,  -100,  -100,  -100,  -100,  -100,
+          -100,  -100,  -100,  -100,  -100,  -100,  -100,  -100,  -100,  -100,
+          -100,  -100,  -100,  -100,  -100,  -100,  -100,  -100,  -100,  -100,
+          -100,  -100], device=&#39;cuda:1&#39;),
  tensor([    0,   270,  3905,  2950,   516,     9,   908,    25,    37,  5586,
            940,  2355,   375,   479, 50118,  9167,   703,    15,     5,   276,
            183,  1284,  2922, 11137,  4457,    30,   299,   940,  2355,  3504,
             11,   188,   469,   479,     2,  -100,  -100,  -100,  -100,  -100,
           -100,  -100,  -100,  -100,  -100,  -100,  -100,  -100,  -100,  -100,
           -100,  -100,  -100,  -100,  -100,  -100,  -100,  -100,  -100,  -100,
-          -100], device=&#39;cuda:1&#39;))</pre>
+          -100,  -100,  -100,  -100,  -100,  -100,  -100,  -100,  -100,  -100,
+          -100,  -100,  -100,  -100,  -100,  -100,  -100,  -100,  -100,  -100,
+          -100,  -100,  -100,  -100,  -100,  -100,  -100,  -100,  -100,  -100,
+          -100,  -100,  -100,  -100,  -100,  -100,  -100,  -100,  -100,  -100,
+          -100,  -100,  -100,  -100,  -100,  -100,  -100,  -100,  -100,  -100,
+          -100,  -100,  -100,  -100,  -100,  -100,  -100,  -100,  -100,  -100,
+          -100,  -100,  -100,  -100,  -100,  -100,  -100,  -100,  -100,  -100,
+          -100,  -100,  -100,  -100,  -100,  -100,  -100,  -100,  -100,  -100,
+          -100,  -100,  -100,  -100,  -100,  -100,  -100,  -100,  -100,  -100,
+          -100,  -100], device=&#39;cuda:1&#39;))</pre>
 </div>
 
 </div>
@@ -794,8 +812,8 @@ Loading cached shuffled indices for dataset at /home/wgilliam/.cache/huggingface
     </tr>
     <tr>
       <th>1</th>
-      <td>&lt;s&gt; By. Daily Mail Reporter. PUBLISHED:. 08:09 EST, 29 October 2012. |. UPDATED:. 16:23 EST, 29 October 2012. Barack Obama has cancelled a campaign event in Florida in order to return to Washington and oversee the response to Hurricane Sandy. Mitt Romney has followed suit, pulling out of all campaigning on Monday evening and throughout Tuesday, along with his running mate Paul Ryan. The President had been due to appear alongside Bill Clinton in Orlando this morning, but will instead take a lead in monitoring conditions on the East Coast as it is battered by the deadly storm. He has also cancelled a planned appearance in Green Bay, Wisconsin on Tuesday, indicating officials believe the damage will continue throughout the week. Scroll down for video. Into the storm: Barack Obama landed at the wet and windy Andrews Air Force base in Maryland on Monday. Braving the elements: The President plans to take charge of the national response to Hurricane Sandy. 'Due to deteriorating weather. condi</td>
-      <td>Both campaigns affected by hurricane striking East Coast.\nObama cancels events in Florida, Ohio and Virginia in Monday, and abandons trip to Wisconsin planned for Tuesday.\n'I'm not worried about the impact on the election,' President says.\nMitt Romn</td>
+      <td>&lt;s&gt; (CNN) -- Voters in North Carolina, Indiana and Ohio on Tuesday kick off five straight weeks of primary contests that could give us a clearer indication of whether establishment Republicans have the upper hand against the tea party movement for control of the party. The results could back up recent tough talk from Senate GOP leader Mitch McConnell, who predicted big wins for incumbents facing primary challenges from the right, saying, "I think we are going to crush them everywhere." And they may have a major impact in determining whether Republicans retake the majority in the Senate. Since the birth of the tea party movement in 2009, primary challenges from the right have produced major headlines and headaches for the GOP and hurt the party's chances of winning back the Senate from Democrats in the past two election cycles. Candidates backed by the tea party movement and other grass-roots conservatives effectively cost the GOP five winnable Senate elections the last two cycles in Ne</td>
+      <td>Establishment Republicans are fighting back more strongly against challenges from the right.\nWith a number of vulnerable Democrats in the Senate, GOP thinks it can win control.\nNorth Carolina primary seen as a key test of establishment-vs.-tea party</td>
     </tr>
   </tbody>
 </table></div>
@@ -955,8 +973,8 @@ Loading cached shuffled indices for dataset at /home/wgilliam/.cache/huggingface
     </tr>
     <tr>
       <th>1</th>
-      <td>&lt;s&gt; According to a report by the Vienna-based Observatory on Intolerance and Discrimination against Christians in Europe in the past year hundreds of attacks have been carried out against Christianity. The 2013 report was released on Thursday and documents 241 cases of intolerance against Christians. The voluntary group's report includes details of hate-based attacks on Christians and their institutions, including arson, graffiti and vandalism. According to a report by the Vienna-based Observatory on Intolerance and Discrimination against Christians in Europe in the past year hundreds of attacks have been carried out against Christianity. In the report 133 cases of vandalism against Christian sites in 11 countries are documented. In May 2013 &lt;/s&gt;</td>
-      <td>The 2013 report documents 241 cases of intolerance against Christians.\nIncludes details of hate-based attacks including arson, graffiti and vandalism.\nOne</td>
+      <td>&lt;s&gt; Scientists believe they have discovered how to'switch off' autoimmune diseases, prompting hope the breakthrough could pave the way for a new treatment for multiple sclerosis. Researchers at the University of Bristol, who describe the work as an 'important breakthrough', say it could improve the lives of millions around the world. The study reveals how to stop cells from attacking healthy body tissue. The team discovered how cells convert from being aggressive to protecting against disease, rather than the body's immune system destroying its own tissue by mistake. Scientists at the University of Bristol have discovered how to'switch off' autoimmune diseases, which they hope will pave the way for new &lt;/s&gt;</td>
+      <td>Team at Bristol University have described their work as a 'breakthrough'\nDiscovered a way to stop cells from attacking healthy body tissue.\n</td>
     </tr>
   </tbody>
 </table></div>
