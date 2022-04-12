@@ -73,7 +73,7 @@ class BlurrText:
         # only need these 3 functional areas for our querying purposes
         self._df = self._df[self._df["functional_area"].isin(["modeling", "configuration", "tokenization"])]
 
-    def get_tasks(self, arch: str = None):  # A transformer architecture (e.g., 'bert')  # A list of tasks you can use
+    def get_tasks(self, arch: str = None):
         """This method can be used to get a list of all tasks supported by your transformers install, or
         just those available to a specific architecture
         """
@@ -83,13 +83,13 @@ class BlurrText:
 
         return sorted(self._df.query(" & ".join(query), engine="python").model_task.unique().tolist())
 
-    def get_architectures(self):  # Returns a list of architectures supported by your transformers install
+    def get_architectures(self):
         return sorted(self._df[(self._df.arch.notna()) & (self._df.arch != None)].arch.unique().tolist())
 
     def get_models(
         self,
-        arch: str = None,  # A transformer architecture (e.g., 'bert')
-        task: str = None,  # A transformer task (e.g., 'TokenClassification')
+        arch: str = None,
+        task: str = None
     ):
         """The transformer models available for use (optional: by architecture | task)"""
         query = ['functional_area == "modeling"']
@@ -108,27 +108,17 @@ class BlurrText:
 
     def get_hf_objects(
         self,
-        # The name or path of the pretrained model you want to fine-tune
         pretrained_model_name_or_path: Optional[Union[str, os.PathLike]],
-        # The model class you want to use (e.g., AutoModelFor<task>)
         model_cls: PreTrainedModel,
-        # A specific configuration instance you want to use. If None, a configuration object will be instantiated
-        # using the AutoConfig class along with any supplied `config_kwargs`
         config: Union[PretrainedConfig, str, os.PathLike] = None,
-        # A specific tokenizer class you want to use. If None, a tokenizer will be instantiated
-        # using the AutoTokenizer class along with any supplied `tokenizer_kwargs`
         tokenizer_cls: PreTrainedTokenizerBase = None,
-        # Any keyword arguments you want to pass to the `AutoConfig` (only used if you do NOT pass int a config above)
         config_kwargs: dict = {},
-        # Any keyword arguments you want to pass in the creation of your tokenizer
         tokenizer_kwargs: dict = {},
-        # Any keyword arguments you want to pass in the creation of your model
         model_kwargs: dict = {},
-        # If you want to change the location Hugging Face objects are cached
         cache_dir: Union[str, os.PathLike] = None
-        # A tuple containg the (architecture (str), config (obj), tokenizer (obj), and model (obj)
     ) -> Tuple[str, PretrainedConfig, PreTrainedTokenizerBase, PreTrainedModel]:
-        """Given at minimum a `pretrained_model_name_or_path` and `model_cls (such as
+        """
+        Given at minimum a `pretrained_model_name_or_path` and `model_cls (such as
         `AutoModelForSequenceClassification"), this method returns all the Hugging Face objects you need to train
         a model using Blurr
         """
