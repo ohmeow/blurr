@@ -48,7 +48,6 @@ from fastai.text.all import *
 
 from blurr.text.data.all import *
 from blurr.text.modeling.all import *
-
 ```
 
 ### Get your data

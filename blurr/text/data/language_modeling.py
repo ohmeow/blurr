@@ -97,6 +97,7 @@ class LMPreprocessor(Preprocessor):
 
 # Cell
 class LMType(Enum):
+    """Use this enum to indicate what kind of language model you are training"""
     CAUSAL = 1
     MASKED = 2
 
