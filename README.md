@@ -2,6 +2,24 @@
 > A library that integrates huggingface transformers with version 2 of the fastai framework
 
 
+Named after the **fast**est **transformer** (well, at least of the Autobots), ***blurr*** provides both a comprehensive and extensible framework for training and deploying 🤗 [huggingface](https://huggingface.co/transformers/) transformer models with [fastai](http://docs.fast.ai/) >= 2.0.
+
+Utilizing features like fastai's new `@typedispatch` and `@patch` decorators, and a simple class hiearchy, **blurr** provides fastai developers with the ability to train and deploy transformers for a variety of . Though much of this works out-of-the-box, users will be able to customize the tokenization strategies and model inputs based on task and/or architecture as needed.
+
+**Supported NLP Tasks**:
+- Sequence Classification (multiclassification and multi-label classification)
+- Token Classification
+- Question Answering
+- Summarization
+- Tranlsation
+- Language Modeling (Causal and Masked)
+
+**Supported Vision Tasks**:
+- *In progress*
+
+**Supported Audio Tasks**:
+- *In progress*
+
 ## Install
 
 You can now pip install blurr via `pip install ohmeow-blurr`
@@ -23,7 +41,7 @@ The following two packages need to be installed for blurr to work:
 
 ### Imports
 
-```
+```python
 import torch
 from transformers import *
 from fastai.text.all import *
@@ -35,7 +53,7 @@ from blurr.text.modeling.all import *
 
 ### Get your data
 
-```
+```python
 path = untar_data(URLs.IMDB_SAMPLE)
 
 model_path = Path("models")
@@ -45,14 +63,14 @@ imdb_df = pd.read_csv(path / "texts.csv")
 
 ### Get `n_labels` from data for config later
 
-```
+```python
 n_labels = len(imdb_df["label"].unique())
 
 ```
 
 ### Get your 🤗 objects
 
-```
+```python
 model_cls = AutoModelForSequenceClassification
 
 pretrained_model_name = "bert-base-uncased"
@@ -66,7 +84,7 @@ hf_arch, hf_config, hf_tokenizer, hf_model = NLP.get_hf_objects(pretrained_model
 
 ### Build your Data 🧱 and your DataLoaders
 
-```
+```python
 # single input
 blocks = (TextBlock(hf_arch, hf_config, hf_tokenizer, hf_model), CategoryBlock)
 dblock = DataBlock(blocks=blocks, get_x=ColReader("text"), get_y=ColReader("label"), splitter=ColSplitter())
@@ -75,7 +93,7 @@ dls = dblock.dataloaders(imdb_df, bs=4)
 
 ```
 
-```
+```python
 dls.show_batch(dataloaders=dls, max_n=2)
 
 ```
@@ -106,7 +124,7 @@ dls.show_batch(dataloaders=dls, max_n=2)
 
 ### ... and 🚂
 
-```
+```python
 # slow
 model = BaseModelWrapper(hf_model)
 
@@ -163,7 +181,7 @@ learn.fit_one_cycle(3, lr_max=1e-3)
 </table>
 
 
-```
+```python
 # slow
 learn.show_results(learner=learn, max_n=2)
 
@@ -206,13 +224,13 @@ Using the high-level API we can reduce DataBlock, DataLoaders, and Learner creat
 
 Included in the high-level API is a general `BLearner` class (pronouned **"Blurrner"**) that you can use with hand crafted DataLoaders, as well as, task specific BLearners like `BLearnerForSequenceClassification` that will handle everything given your raw data sourced from a pandas DataFrame, CSV file, or list of dictionaries (for example a huggingface datasets dataset)
 
-```
+```python
 # slow
 learn = BlearnerForSequenceClassification.from_data(imdb_df, pretrained_model_name, dl_kwargs={"bs": 4})
 
 ```
 
-```
+```python
 # slow
 learn.fit_one_cycle(1, lr_max=1e-3)
 
@@ -243,7 +261,7 @@ learn.fit_one_cycle(1, lr_max=1e-3)
 </table>
 
 
-```
+```python
 # slow
 learn.show_results(learner=learn, max_n=2)
 
