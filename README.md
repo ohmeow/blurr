@@ -1,12 +1,12 @@
 # blurr
-> A library that integrates huggingface transformers with version 2 of the fastai framework
+> A library designed for fastai developers who want to train and deploy Hugging Face transformers
 
 
-Named after the **fast**est **transformer** (well, at least of the Autobots), ***blurr*** provides both a comprehensive and extensible framework for training and deploying 🤗 [huggingface](https://huggingface.co/transformers/) transformer models with [fastai](http://docs.fast.ai/) >= 2.0.
+Named after the **fast**est **transformer** (well, at least of the Autobots), **BLURR** provides both a comprehensive and extensible framework for training and deploying 🤗 [huggingface](https://huggingface.co/transformers/) transformer models with [fastai](http://docs.fast.ai/) >= 2.0.
 
-Utilizing features like fastai's new `@typedispatch` and `@patch` decorators, and a simple class hiearchy, **blurr** provides fastai developers with the ability to train and deploy transformers for a variety of . Though much of this works out-of-the-box, users will be able to customize the tokenization strategies and model inputs based on task and/or architecture as needed.
+Utilizing features like fastai's new `@typedispatch` and `@patch` decorators, along with a simple class hiearchy, **BLURR** provides fastai developers with the ability to train and deploy transformers on a variety of tasks. It includes a high, mid, and low-level API that will allow developers to use much of it out-of-the-box or customize it as needed.
 
-**Supported NLP Tasks**:
+**Supported Text/NLP Tasks**:
 - Sequence Classification (multiclassification and multi-label classification)
 - Token Classification
 - Question Answering
@@ -115,7 +115,7 @@ dls.show_batch(dataloaders=dls, max_n=2)
     </tr>
     <tr>
       <th>1</th>
-      <td>now that che ( 2008 ) has finished its relatively short australian cinema run ( extremely limited release : 1 screen in sydney, after 6wks ), i can guiltlessly join both hosts of " at the movies " in taking steven soderbergh to task. &lt; br / &gt; &lt; br / &gt; it's usually satisfying to watch a film director change his style / subject, but soderbergh's most recent stinker, the girlfriend experience ( 2009 ), was also missing a story, so narrative ( and editing? ) seem to suddenly be soderbergh's main challenge. strange, after 20 - odd years in the business. he was probably never much good at narrative, just hid it well inside " edgy " projects. &lt; br / &gt; &lt; br / &gt; none of this excuses him this present, almost diabolical failure. as david stratton warns, " two parts of che don't ( even ) make a whole ". &lt; br / &gt; &lt; br / &gt; epic biopic in name only, che ( 2008 ) barely qualifies as a feature film! it certainly has no legs, inasmuch as except for its uncharacteristic ultimate resolution forced upon it by history, soderbergh's 4. 5hrs - long dirge just goes nowhere. &lt; br / &gt; &lt; br / &gt; even margaret pomeranz, the more forgiving of australia's at the movies duo, noted about soderbergh's repetitious waste of ( hd digital storage ) : " you're in the woods... you're in the woods... you're in the woods... ". i too am surprised soderbergh didn't give us another 2. 5hrs of that somewhere between his existing two parts, because he still left out massive chunks of che's " revolutionary " life! &lt; br / &gt; &lt; br / &gt; for a biopic of an important but infamous historical figure, soderbergh unaccountably alienates, if not deliberately insults, his audiences by &lt; br / &gt; &lt; br / &gt; 1. never providing most of che's story ; &lt; br / &gt; &lt; br / &gt; 2. imposing unreasonable film lengths with mere dullard repetition ; &lt; br / &gt; &lt; br / &gt; 3. ignoring both true hindsight and a narrative of events ; &lt; br / &gt; &lt; br / &gt; 4. barely developing an idea, or a character ;</td>
+      <td>i rented the dubbed - english version of lensman, hoping that since it came from well - known novels it would have some substance. while there were hints of substance in the movie, it mostly didn't rise above the level of kiddie cartoon. maybe the movie was a bad adaptation of the book, or it lost a lot in the dubbed version. or maybe even the source novels were lightweight. but for whatever reason, there wasn't much there. &lt; br / &gt; &lt; br / &gt; i noticed lots of details that were derivative, sloppy, poorly dramatized, or otherwise deficient. some examples : the opening scenes looked borrowed from the 2001 " star gate " scene and the star wars image of hyperspace. the robot on the harvester looked like an anthropomorphized " r2 - d2 ". &lt; br / &gt; &lt; br / &gt; it starts out trying to borrow its comic relief style of star wars, but mercifully ( since the humor doesn't work ) gives up on comedy and plays it serious. in that sense, it's superior to the star wars franchise, which started with a clever sense of humor, and eventually deteriorated to jar - jar's annoying silliness. &lt; br / &gt; &lt; br / &gt; the agricultural details were apparently drawn by someone who had never seen a farm. the harvester was driving through the unharvested middle of a field, dumping silage onto unharvested crops, rather than working from one side to the other and dumping the silage onto already - harvested rows or into a truck. corn ( maize ) was pouring out the grain chute, but the farm lands were drawn like a wheat field. &lt; br / &gt; &lt; br / &gt; when it was time for kim's father had to face his fate, there wasn't any dramatic weight to the scene. that could have been partly the fault of the english - language voice actor, but the drawings didn't show much weight either. kim's reactions in that scene were similarly unconvincing. &lt; br / &gt; &lt; br / &gt; similarly, when a character named henderson was killed, chris showed very little reaction, even though they were apparently supposed to have been close. ( henderson's death is no spoiler ; his name isn't revealed until his death scene. ) she seems to promptly forget him. someone's expression of sympathy shows more feeling than she does. i think the voice actor deserves most of the blame in that</td>
       <td>negative</td>
     </tr>
   </tbody>
@@ -158,22 +158,22 @@ learn.fit_one_cycle(3, lr_max=1e-3)
   <tbody>
     <tr>
       <td>0</td>
-      <td>0.552236</td>
-      <td>0.434265</td>
-      <td>0.775000</td>
+      <td>0.566530</td>
+      <td>0.379829</td>
+      <td>0.835000</td>
       <td>00:21</td>
     </tr>
     <tr>
       <td>1</td>
-      <td>0.393933</td>
-      <td>0.307428</td>
-      <td>0.895000</td>
+      <td>0.349256</td>
+      <td>0.327990</td>
+      <td>0.875000</td>
       <td>00:21</td>
     </tr>
     <tr>
       <td>2</td>
-      <td>0.270851</td>
-      <td>0.279640</td>
+      <td>0.271702</td>
+      <td>0.276152</td>
       <td>0.900000</td>
       <td>00:21</td>
     </tr>
@@ -251,11 +251,11 @@ learn.fit_one_cycle(1, lr_max=1e-3)
   <tbody>
     <tr>
       <td>0</td>
-      <td>0.532850</td>
-      <td>0.459422</td>
-      <td>0.814815</td>
-      <td>0.825000</td>
-      <td>00:21</td>
+      <td>0.547502</td>
+      <td>0.527624</td>
+      <td>0.757576</td>
+      <td>0.760000</td>
+      <td>00:22</td>
     </tr>
   </tbody>
 </table>
@@ -298,156 +298,12 @@ learn.show_results(learner=learn, max_n=2)
 </table>
 
 
-## ❗ Updates
-
-**09/06/2021** - v0.1.0
-
-* Complete overhaul of documentation for entire library (using [nbverbose](https://github.com/muellerzr/nbverbose))
-* Updated all the [nbdev](https://github.com/fastai/nbdev) bits and users now have the ability to open ***any*** doc in colab (H/T Zach Mueller)
-* Added `calc_every` argument to the `HF_Seq2SeqMetricsCallback` so that you can speed up training by NOT calculating the seq2seq metrics on every epoch (this can be time consuming).
-* Misc. bug fixes and addition of other helper methods throughout the library
-
-**08/24/2021** - v0.0.33
-
-* Complete overhaul of documentation for sequence classification bits
-* Finished low-level API to support Blurr training with PyTorch and/or fast.ai Datasets/DataLoaders
-* Misc. bug fixes
-
-**07/11/2021** - v0.0.30
-
-* Finished initial `Blearner` high-level API for all Blurr supported tasks
-* Finished high-level APIs examples for all Blurr supported tasks
-* Fixed squad preprocessing
-
-**07/01/2021** - v0.0.29
-
-* Updated to work with tranformers 4.8
-* Introducing the `Blearner` high-level API with task specific blearners for building your DataBlock, DataLoaders, and Learner in one line of code (usually :))
-* Added LOTS of examples (using low/high-level APIs, using Hugging Face datasets, and handling all the GLUE tasks)
-* Updated setup.py so you can now use Blurr on Windows (H/T to @EinAeffchen for the fix)
-
-
-**06/16/2021**
-
-* Updated to work with fastai 2.4
-* Removed `blurr_summary` as `Learner.summary` works with fastai 2.4
-* Updated `Learner.lr_find` code in docs to the updated API in fastai 2.4
-
-
-**06/10/2021**
-
-* Updated to work with Huggingface 4.6.x
-* Added MLM fine-tuning
-* Reorganized code/docs
-
-**05/04/2021**
-
-***The "May the Fourth be with you" release:***
-* Updated to work with Huggingface 4.5.x and Fastai 2.3.1 (there is a bug in 2.3.0 that breaks blurr so make sure you are using the latest)
-* Fixed Github issues [#36](https://github.com/ohmeow/blurr/issues/36), [#34](https://github.com/ohmeow/blurr/issues/34)
-* Misc. improvements to get blurr in line with the upcoming Huggingface 5.0 release
-
-
-* A few **breaking changes**:
-
-1. `BLURR_MODEL_HELPER` is now just `BLURR`
-
-
-2. Task specific auto models need to be built using the new Huggingface `AutoModelFor<Insert task here>` classes. The docs have been updated to show you how it works; the prior way of building such models not longer works.
-
-
-**12/31/2020**
-
-***The "Goodbye 2020" release with lots of goodies for blurr users:***
-* Updated the Seq2Seq models to use some of the latest huggingface bits like `tokenizer.prepare_seq2seq_batch`.
-* Separated out the Seq2Seq and Token Classification metrics into metrics-specific callbacks for a better separation of concerns. As a best practice, you should now *only* use them as `fit_one_cycle`, etc.. callbacks rather than attach them to your `Learner`.
-* **NEW**: Translation are now available in blurr, joining causal language modeling and summarization in our core Seq2Seq stack
-* **NEW**: Integration of huggingface's Seq2Seq metrics (rouge, bertscore, meteor, bleu, and sacrebleu). Plenty of info on how to set this up in the docs.
-* **NEW**: Added `default_text_gen_kwargs`, a method that given a huggingface config, model, and task (optional), will return the default/recommended kwargs for any text generation models.
-* A lot of code cleanup (e.g., refactored naming and removal of redundant code into classes/methods)
-* **More model support** and **more tests** across the board!  Check out the docs for more info
-* Misc. validation improvements and bug fixes.
-
-As I'm sure there is plenty I can do to make this library better, please don't hesitate to join in and help the effort by submitting PRs, pointing out problems with my code, or letting me know what and how I can improve things generally. Some models, like mbart and mt5 for example, aren't giving good results and I'd love to get any and all feedback from the community on how to resolve such issues ... so hit me up, I promise I won't bit :)
-
-**12/20/2020** 
-* Updated `Learner.blurr_predict` and `Learner.blurr_predict_tokens` to support single or multiple items
-* Added ONNX support for sequence classification, token classification, and question/answering tasks. `blurrONNX` provides ONNX friendly variants of `Learner.blurr_predict` and `Learner.blurr_predict_tokens` in the form of `blurrONNX.predict` and `blurrONNX.predict_tokens` respectively.  Like their Learner equivalents, these methods support single or multiple items for inferece.  See the docs/code for examples and speed gains you get with ONNX.
-* Added quantization support when converting your blurr models to ONNX.
-* Requires fast.ai >= 2.1.5 and huggingface transformers >= 4.x
-
-**12/12/2020** 
-* Updated to work with the latest version of fast.ai (2.1.8) and huggingface transformers >= 4.x
-* Fixed `Learner.blurr_summary` to work with fast.ai >= 2.1.8
-* Fixed inclusion of `add_prefix_space` in tokenizer `BLURR_MODEL_HELPER`
-* Fixed token classification `show_results` for tokenizers that add a prefix space
-* Notebooks run with environment variable "TOKENIZERS_PARALLELISM=false" to avoid fast tokenizer warnings
-* Updated docs
-
-**11/12/2020** 
-* Updated documentation
-* Updated model callbacks to support mixed precision training regardless of whether you are calculating the loss yourself or letting huggingface do it for you.
-
-**11/10/2020** 
-* Major update just about everywhere to facilitate a breaking change in fastai's treatment of `before_batch` transforms.
-* Reorganized code as I being to work on LM and other text2text tasks
-* Misc. fixes
-
-**10/08/2020** 
-* Updated all models to use [ModelOutput](https://huggingface.co/transformers/main_classes/output.html) classes instead of traditional tuples. `ModelOutput` attributes are assigned to the appropriate fastai bits like `Learner.pred` and `Learner.loss` and anything else you've requested the huggingface model to return is available via the `Learner.blurr_model_outputs` dictionary (see next two bullet items)
-* Added ability to grab attentions and hidden state from `Learner`. You can get at them via `Learner.blurr_model_outputs` dictionary if you tell `BaseModelWrapper` to provide them.
-* Added `model_kwargs` to `BaseModelWrapper` should you need to request a huggingface model to return something specific to it's type. These outputs will be available via the `Learner.blurr_model_outputs` dictionary as well.
-
-**09/16/2020** 
-* Major overhaul to do *everything* at batch time (including tokenization/numericalization). If this backfires, I'll roll everything back but as of now, I think this approach not only meshes better with how huggingface tokenization works and reduce RAM utilization for big datasets, but also opens up opportunities for incorporating augmentation, building adversarial models, etc....  Thoughts?
-* Added tests for summarization bits
-* New change may require some small modifications (see docs or ask on issues thread if you have problems you can't fiture out).  I'm NOT doing a release until pypi until folks have a chance to work with the latest.
-
-**09/07/2020** 
-* Added tests for question/answer and summarization transformer models
-* Updated summarization to support BART, T5, and Pegasus
-
-**08/20/2020** 
-* Updated everything to work latest version of fastai (tested against 2.0.0)
-* Added batch-time padding, so that by default now, `HF_TokenizerTransform` doesn't add any padding tokens and all huggingface inputs are padded simply to the max sequence length in each batch rather than to the max length (passed in and/or acceptable to the model).  This should create efficiencies across the board, from memory consumption to GPU utilization.  The old tried and true method of padding during tokenization requires you to pass in `padding='max_length` to `TextBlock`.
-* Removed code to remove fastai2 @patched summary methods which had previously conflicted with a couple of the huggingface transformers
-
-**08/13/2020** 
-* Updated everything to work latest transformers and fastai
-* Reorganized code to bring it more inline with how huggingface separates out their "tasks".
-
-**07/06/2020** 
-* Updated everything to work huggingface>=3.02
-* Changed a lot of the internals to make everything more efficient and performant along with the latest version of huggingface ... meaning, I have broken things for folks using previous versions of blurr :).
-
-**06/27/2020** 
-* Simplified the `BLURR_MODEL_HELPER.get_hf_objects` method to support a wide range of options in terms of building the necessary huggingface objects (architecture, config, tokenizer, and model).  Also added `cache_dir` for saving pre-trained objects in a custom directory.
-* Misc. renaming and cleanup that may break existing code (please see the docs/source if things blow up)
-* Added missing required libraries to requirements.txt (e.g., nlp)
-
-**05/23/2020** 
-* Initial support for text generation (e.g., summarization, conversational agents) models now included. Only tested with BART so if you try it with other models before I do, lmk what works ... and what doesn't
-
-**05/17/2020** 
-* Major code restructuring to make it easier to build out the library.
-* `HF_TokenizerTransform` replaces `HF_Tokenizer`, handling the tokenization and numericalization in one place.  DataBlock code has been dramatically simplified.
-* Tokenization correctly handles huggingface tokenizers that require `add_prefix_space=True`.
-* `BaseModelCallback` and `BaseModelCallback` are required and work together in order to allow developers to tie into any callback friendly event exposed by fastai2 and also pass in named arguments to the huggingface models.
-* `show_batch` and `show_results` have been updated for Question/Answer and Token Classification models to represent the data and results in a more easily intepretable manner than the defaults.
-
-**05/06/2020** 
-* Initial support for Token classification (e.g., NER) models now included
-* Extended fastai's `Learner` object with a `predict_tokens` method used specifically in token classification
-* `BaseModelCallback` can be used (or extended) instead of the model wrapper to ensure your inputs into the huggingface model is correct (recommended). See docs for examples (and thanks to fastai's Sylvain for the suggestion!)
-* `HF_Tokenizer` can work with strings or a string representation of a list (the later helpful for token classification tasks)
-* `show_batch` and `show_results` methods have been updated to allow better control on how huggingface tokenized data is represented in those methods
-
 ## ⭐ Props
 
 A word of gratitude to the following individuals, repos, and articles upon which much of this work is inspired from:
 
 - The wonderful community that is the [fastai forum](https://forums.fast.ai/) and especially the tireless work of both Jeremy and Sylvain in building this amazing framework and place to learn deep learning.
-- All the great tokenizers, transformers, docs and examples over at [huggingface](https://huggingface.co/)
+- All the great tokenizers, transformers, docs, examples, and people over at [huggingface](https://huggingface.co/)
 - [FastHugs](https://github.com/morganmcg1/fasthugs)
 - [Fastai with 🤗Transformers (BERT, RoBERTa, XLNet, XLM, DistilBERT)](https://towardsdatascience.com/fastai-with-transformers-bert-roberta-xlnet-xlm-distilbert-4f41ee18ecb2)
 - [Fastai integration with BERT: Multi-label text classification identifying toxicity in texts](https://medium.com/@abhikjha/fastai-integration-with-bert-a0a66b1cecbe)
