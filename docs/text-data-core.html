@@ -63,30 +63,6 @@ nb_path: "nbs/11_text-data-core.ipynb"
 <div class="output_area">
 
 <div class="output_subarea output_stream output_stdout output_text">
-<pre>What we&#39;re running with at the time this documentation was generated:
-torch: 1.10.1+cu111
-fastai: 2.5.6
-transformers: 4.16.2
-</pre>
-</div>
-</div>
-
-</div>
-</div>
-
-</div>
-    {% endraw %}
-
-    {% raw %}
-    
-<div class="cell border-box-sizing code_cell rendered">
-
-<div class="output_wrapper">
-<div class="output">
-
-<div class="output_area">
-
-<div class="output_subarea output_stream output_stdout output_text">
 <pre>Using GPU #1: GeForce GTX 1080 Ti
 </pre>
 </div>
@@ -483,7 +459,7 @@ Loading cached shuffled indices for dataset at /home/wgilliam/.cache/huggingface
 </div>
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h3 id="Using-a-DataFrame">Using a <code>DataFrame</code><a class="anchor-link" href="#Using-a-DataFrame"> </a></h3>
+<h4 id="Using-a-DataFrame">Using a <code>DataFrame</code><a class="anchor-link" href="#Using-a-DataFrame"> </a></h4>
 </div>
 </div>
 </div>
@@ -572,7 +548,7 @@ Loading cached shuffled indices for dataset at /home/wgilliam/.cache/huggingface
 
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h3 id="Using-a-Hugging-Face-Dataset">Using a Hugging Face <code>Dataset</code><a class="anchor-link" href="#Using-a-Hugging-Face-Dataset"> </a></h3>
+<h4 id="Using-a-Hugging-Face-Dataset">Using a Hugging Face <code>Dataset</code><a class="anchor-link" href="#Using-a-Hugging-Face-Dataset"> </a></h4>
 </div>
 </div>
 </div>
@@ -895,7 +871,7 @@ decode the dictionary produced as a byproduct of the tokenization process in the
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h3 id="event" class="doc_header"><code>event</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/text/data/core.py#L330" class="source_link" style="float:right">[source]</a></h3><blockquote><p><code>event</code>(<strong><code>example</code></strong>, <strong><code>hf_tokenizer</code></strong>:<code>PreTrainedTokenizerBase</code>, <strong><code>is_split_into_words</code></strong>:<code>bool</code>=<em><code>False</code></em>, <strong><code>tok_kwargs</code></strong>:<code>dict</code>=<em><code>{}</code></em>)</p>
+<h3 id="blurr_sort_func" class="doc_header"><code>blurr_sort_func</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/text/data/core.py#L330" class="source_link" style="float:right">[source]</a></h3><blockquote><p><code>blurr_sort_func</code>(<strong><code>example</code></strong>, <strong><code>hf_tokenizer</code></strong>:<code>PreTrainedTokenizerBase</code>, <strong><code>is_split_into_words</code></strong>:<code>bool</code>=<em><code>False</code></em>, <strong><code>tok_kwargs</code></strong>:<code>dict</code>=<em><code>{}</code></em>)</p>
 </blockquote>
 <p>This method is used by the <code>SortedDL</code> to ensure your dataset is sorted <em>after</em> tokenization</p>
 <table>
@@ -1135,7 +1111,7 @@ decode the dictionary produced as a byproduct of the tokenization process in the
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h2 id="get_blurr_tfm" class="doc_header"><code>get_blurr_tfm</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/text/data/core.py#L441" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>get_blurr_tfm</code>(<strong><code>tfms_list</code></strong>:<code>Pipeline</code>, <strong><code>tfm_class</code></strong>:<code>Transform</code>=<em><code>BatchTokenizeTransform</code></em>)</p>
+<h3 id="get_blurr_tfm" class="doc_header"><code>get_blurr_tfm</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/text/data/core.py#L441" class="source_link" style="float:right">[source]</a></h3><blockquote><p><code>get_blurr_tfm</code>(<strong><code>tfms_list</code></strong>:<code>Pipeline</code>, <strong><code>tfm_class</code></strong>:<code>Transform</code>=<em><code>BatchTokenizeTransform</code></em>)</p>
 </blockquote>
 <p>Given a fastai DataLoaders batch transforms, this method can be used to get at a transform
 instance used in your Blurr DataBlock</p>
@@ -1191,7 +1167,7 @@ instance used in your Blurr DataBlock</p>
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h2 id="first_blurr_tfm" class="doc_header"><code>first_blurr_tfm</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/text/data/core.py#L455" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>first_blurr_tfm</code>(<strong><code>dls</code></strong>:<code>DataLoaders</code>, <strong><code>tfms</code></strong>:<code>List</code>[<code>Transform</code>]=<em><code>[&lt;class 'blurr.text.data.core.BatchTokenizeTransform'&gt;, &lt;class 'blurr.text.data.core.BatchDecodeTransform'&gt;]</code></em>)</p>
+<h3 id="first_blurr_tfm" class="doc_header"><code>first_blurr_tfm</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/text/data/core.py#L455" class="source_link" style="float:right">[source]</a></h3><blockquote><p><code>first_blurr_tfm</code>(<strong><code>dls</code></strong>:<code>DataLoaders</code>, <strong><code>tfms</code></strong>:<code>List</code>[<code>Transform</code>]=<em><code>[&lt;class 'blurr.text.data.core.BatchTokenizeTransform'&gt;, &lt;class 'blurr.text.data.core.BatchDecodeTransform'&gt;]</code></em>)</p>
 </blockquote>
 <p>This convenience method will find the first Blurr transform required for methods such as
 <code>show_batch</code> and <code>show_results</code>. The returned transform should have everything you need to properly
@@ -2034,7 +2010,7 @@ for the callbacks <code>after_item</code>, <code>before_batch</code> and <code>a
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h3 id="preproc_hf_dataset" class="doc_header"><code>preproc_hf_dataset</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/text/data/core.py#L649" class="source_link" style="float:right">[source]</a></h3><blockquote><p><code>preproc_hf_dataset</code>(<strong><code>dataset</code></strong>:<code>Union</code>[<code>Dataset</code>, <code>Datasets</code>], <strong><code>hf_tokenizer</code></strong>:<code>PreTrainedTokenizerBase</code>, <strong><code>hf_model</code></strong>:<code>PreTrainedModel</code>)</p>
+<h4 id="preproc_hf_dataset" class="doc_header"><code>preproc_hf_dataset</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/text/data/core.py#L649" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>preproc_hf_dataset</code>(<strong><code>dataset</code></strong>:<code>Union</code>[<code>Dataset</code>, <code>Datasets</code>], <strong><code>hf_tokenizer</code></strong>:<code>PreTrainedTokenizerBase</code>, <strong><code>hf_model</code></strong>:<code>PreTrainedModel</code>)</p>
 </blockquote>
 <p>This method can be used to preprocess most Hugging Face Datasets for use in Blurr and other training
 libraries</p>
