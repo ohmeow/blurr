@@ -285,13 +285,6 @@ transformers: 4.16.2
 </div>
 </div>
 </div>
-<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<h3 id="TranslationPreprocessor"><a href="/blurr/text-data-seq2seq-translation.html#TranslationPreprocessor"><code>TranslationPreprocessor</code></a><a class="anchor-link" href="#TranslationPreprocessor"> </a></h3><p>This class can be used for preprocessing translation tasks, and includes a <code>proc_{your_text_attr}</code> and <code>proc_{target_text_attr}</code> attributes containing your modified input and target texts as a result of tokenization (e.g., if you specify a <code>max_length</code> the <code>proc_{your_text_attr}</code> may contain truncated text).</p>
-
-</div>
-</div>
-</div>
     {% raw %}
     
 <div class="cell border-box-sizing code_cell rendered">
@@ -303,7 +296,7 @@ transformers: 4.16.2
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h2 id="TranslationPreprocessor" class="doc_header"><code>class</code> <code>TranslationPreprocessor</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/text/data/seq2seq/translation.py#L22" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>TranslationPreprocessor</code>(<strong><code>hf_tokenizer</code></strong>:<code>PreTrainedTokenizerBase</code>, <strong><code>batch_size</code></strong>:<code>int</code>=<em><code>1000</code></em>, <strong><code>id_attr</code></strong>:<code>Optional</code>[<code>str</code>]=<em><code>None</code></em>, <strong><code>text_attr</code></strong>:<code>str</code>=<em><code>'original_text'</code></em>, <strong><code>max_input_tok_length</code></strong>:<code>Optional</code>[<code>int</code>]=<em><code>None</code></em>, <strong><code>target_text_attr</code></strong>:<code>str</code>=<em><code>'translated_text'</code></em>, <strong><code>max_target_tok_length</code></strong>:<code>Optional</code>[<code>int</code>]=<em><code>None</code></em>, <strong><code>is_valid_attr</code></strong>:<code>Optional</code>[<code>str</code>]=<em><code>'is_valid'</code></em>, <strong><code>tok_kwargs</code></strong>:<code>dict</code>=<em><code>{}</code></em>) :: <a href="/blurr/text-data-seq2seq-core.html#Seq2SeqPreprocessor"><code>Seq2SeqPreprocessor</code></a></p>
+<h3 id="TranslationPreprocessor" class="doc_header"><code>class</code> <code>TranslationPreprocessor</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/text/data/seq2seq/translation.py#L22" class="source_link" style="float:right">[source]</a></h3><blockquote><p><code>TranslationPreprocessor</code>(<strong><code>hf_tokenizer</code></strong>:<code>PreTrainedTokenizerBase</code>, <strong><code>batch_size</code></strong>:<code>int</code>=<em><code>1000</code></em>, <strong><code>id_attr</code></strong>:<code>Optional</code>[<code>str</code>]=<em><code>None</code></em>, <strong><code>text_attr</code></strong>:<code>str</code>=<em><code>'original_text'</code></em>, <strong><code>max_input_tok_length</code></strong>:<code>Optional</code>[<code>int</code>]=<em><code>None</code></em>, <strong><code>target_text_attr</code></strong>:<code>str</code>=<em><code>'translated_text'</code></em>, <strong><code>max_target_tok_length</code></strong>:<code>Optional</code>[<code>int</code>]=<em><code>None</code></em>, <strong><code>is_valid_attr</code></strong>:<code>Optional</code>[<code>str</code>]=<em><code>'is_valid'</code></em>, <strong><code>tok_kwargs</code></strong>:<code>dict</code>=<em><code>{}</code></em>) :: <a href="/blurr/text-data-seq2seq-core.html#Seq2SeqPreprocessor"><code>Seq2SeqPreprocessor</code></a></p>
 </blockquote>
 <table>
 <thead><tr>
@@ -328,8 +321,8 @@ transformers: 4.16.2
 </tr>
 <tr>
 <td><strong><code>id_attr</code></strong></td>
-<td><code>Optional[str]</code></td>
-<td>``</td>
+<td><code>typing.Optional[str]</code></td>
+<td><code>None</code></td>
 <td>The unique identifier in the dataset</td>
 </tr>
 <tr>
@@ -340,8 +333,8 @@ transformers: 4.16.2
 </tr>
 <tr>
 <td><strong><code>max_input_tok_length</code></strong></td>
-<td><code>Optional[int]</code></td>
-<td>``</td>
+<td><code>typing.Optional[int]</code></td>
+<td><code>None</code></td>
 <td>The maximum length (# of tokens) allowed for inputs. Will default to the max length allowed<br />by the model if not provided</td>
 </tr>
 <tr>
@@ -352,20 +345,20 @@ transformers: 4.16.2
 </tr>
 <tr>
 <td><strong><code>max_target_tok_length</code></strong></td>
-<td><code>Optional[int]</code></td>
-<td>``</td>
+<td><code>typing.Optional[int]</code></td>
+<td><code>None</code></td>
 <td>The maximum length (# of tokens) allowed for targets</td>
 </tr>
 <tr>
 <td><strong><code>is_valid_attr</code></strong></td>
-<td><code>Optional[str]</code></td>
+<td><code>typing.Optional[str]</code></td>
 <td><code>is_valid</code></td>
 <td>The attribute that should be created if your are processing individual training and validation<br />datasets into a single dataset, and will indicate to which each example is associated</td>
 </tr>
 <tr>
 <td><strong><code>tok_kwargs</code></strong></td>
 <td><code>dict</code></td>
-<td>``</td>
+<td><code>None</code></td>
 <td>Tokenization kwargs that will be applied with calling the tokenizer</td>
 </tr>
 </tbody>
@@ -388,6 +381,13 @@ transformers: 4.16.2
 </div>
     {% endraw %}
 
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>This class can be used for preprocessing translation tasks, and includes a <code>proc_{your_text_attr}</code> and <code>proc_{target_text_attr}</code> attributes containing your modified input and target texts as a result of tokenization (e.g., if you specify a <code>max_length</code> the <code>proc_{your_text_attr}</code> may contain truncated text).</p>
+
+</div>
+</div>
+</div>
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <h4 id="Using-a-DataFrame">Using a <code>DataFrame</code><a class="anchor-link" href="#Using-a-DataFrame"> </a></h4>
@@ -1194,19 +1194,6 @@ transformers: 4.16.2
 </div>
     {% endraw %}
 
-<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Summary">Summary<a class="anchor-link" href="#Summary"> </a></h2>
-</div>
-</div>
-</div>
-<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<p>This module includes the fundamental data preprocessing bits to use <code>BLURR</code> for translation.</p>
-
-</div>
-</div>
-</div>
 </div>
  
 

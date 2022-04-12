@@ -280,7 +280,7 @@ transformers: 4.16.2
 
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Preprocessing">Preprocessing<a class="anchor-link" href="#Preprocessing"> </a></h2><p>Starting with version 2.0, BLURR provides a token classification preprocessing class that can be used to preprocess DataFrames or Hugging Face Datasets. We also introduce a novel way of handling long documents for this task that ensures tokens associated to a word is not split up in "chunked" documents.  See below for an example.</p>
+<h2 id="Preprocessing">Preprocessing<a class="anchor-link" href="#Preprocessing"> </a></h2><p>Starting with version 2.0, <code>BLURR</code> provides a token classification preprocessing class that can be used to preprocess DataFrames or Hugging Face Datasets. We also introduce a novel way of handling long documents for this task that ensures tokens associated to a word is not split up in "chunked" documents.  See below for an example.</p>
 
 </div>
 </div>
@@ -296,7 +296,7 @@ transformers: 4.16.2
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h2 id="TokenClassPreprocessor" class="doc_header"><code>class</code> <code>TokenClassPreprocessor</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/text/data/token_classification.py#L28" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>TokenClassPreprocessor</code>(<strong><code>hf_tokenizer</code></strong>:<code>PreTrainedTokenizerBase</code>, <strong><code>chunk_examples</code></strong>:<code>bool</code>=<em><code>False</code></em>, <strong><code>word_stride</code></strong>:<code>int</code>=<em><code>2</code></em>, <strong><code>ignore_token_id</code></strong>:<code>int</code>=<em><code>-100</code></em>, <strong><code>label_names</code></strong>:<code>Optional</code>[<code>List</code>[<code>str</code>]]=<em><code>None</code></em>, <strong><code>batch_size</code></strong>:<code>int</code>=<em><code>1000</code></em>, <strong><code>id_attr</code></strong>:<code>Optional</code>[<code>str</code>]=<em><code>None</code></em>, <strong><code>word_list_attr</code></strong>:<code>str</code>=<em><code>'tokens'</code></em>, <strong><code>label_list_attr</code></strong>:<code>str</code>=<em><code>'labels'</code></em>, <strong><code>is_valid_attr</code></strong>:<code>Optional</code>[<code>str</code>]=<em><code>'is_valid'</code></em>, <strong><code>slow_word_ids_func</code></strong>:<code>Optional</code>[<code>Callable</code>]=<em><code>None</code></em>, <strong><code>tok_kwargs</code></strong>:<code>dict</code>=<em><code>{}</code></em>) :: <a href="/blurr/text-data-core.html#Preprocessor"><code>Preprocessor</code></a></p>
+<h3 id="TokenClassPreprocessor" class="doc_header"><code>class</code> <code>TokenClassPreprocessor</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/text/data/token_classification.py#L28" class="source_link" style="float:right">[source]</a></h3><blockquote><p><code>TokenClassPreprocessor</code>(<strong><code>hf_tokenizer</code></strong>:<code>PreTrainedTokenizerBase</code>, <strong><code>chunk_examples</code></strong>:<code>bool</code>=<em><code>False</code></em>, <strong><code>word_stride</code></strong>:<code>int</code>=<em><code>2</code></em>, <strong><code>ignore_token_id</code></strong>:<code>int</code>=<em><code>-100</code></em>, <strong><code>label_names</code></strong>:<code>Optional</code>[<code>List</code>[<code>str</code>]]=<em><code>None</code></em>, <strong><code>batch_size</code></strong>:<code>int</code>=<em><code>1000</code></em>, <strong><code>id_attr</code></strong>:<code>Optional</code>[<code>str</code>]=<em><code>None</code></em>, <strong><code>word_list_attr</code></strong>:<code>str</code>=<em><code>'tokens'</code></em>, <strong><code>label_list_attr</code></strong>:<code>str</code>=<em><code>'labels'</code></em>, <strong><code>is_valid_attr</code></strong>:<code>Optional</code>[<code>str</code>]=<em><code>'is_valid'</code></em>, <strong><code>slow_word_ids_func</code></strong>:<code>Optional</code>[<code>typing.Callable</code>]=<em><code>None</code></em>, <strong><code>tok_kwargs</code></strong>:<code>dict</code>=<em><code>{}</code></em>) :: <a href="/blurr/text-data-core.html#Preprocessor"><code>Preprocessor</code></a></p>
 </blockquote>
 <table>
 <thead><tr>
@@ -333,8 +333,8 @@ transformers: 4.16.2
 </tr>
 <tr>
 <td><strong><code>label_names</code></strong></td>
-<td><code>List[str]]</code></td>
-<td>``</td>
+<td><code>typing.Optional[typing.List[str]]</code></td>
+<td><code>None</code></td>
 <td>The label names (if not specified, will build from DataFrame)</td>
 </tr>
 <tr>
@@ -345,8 +345,8 @@ transformers: 4.16.2
 </tr>
 <tr>
 <td><strong><code>id_attr</code></strong></td>
-<td><code>Optional[str]</code></td>
-<td>``</td>
+<td><code>typing.Optional[str]</code></td>
+<td><code>None</code></td>
 <td>The unique identifier in the dataset</td>
 </tr>
 <tr>
@@ -363,20 +363,20 @@ transformers: 4.16.2
 </tr>
 <tr>
 <td><strong><code>is_valid_attr</code></strong></td>
-<td><code>Optional[str]</code></td>
+<td><code>typing.Optional[str]</code></td>
 <td><code>is_valid</code></td>
 <td>The attribute that should be created if your are processing individual training and validation<br />datasets into a single dataset, and will indicate to which each example is associated</td>
 </tr>
 <tr>
 <td><strong><code>slow_word_ids_func</code></strong></td>
-<td><code>Callable]</code></td>
-<td>``</td>
+<td><code>typing.Optional[typing.Callable]</code></td>
+<td><code>None</code></td>
 <td>If using a slow tokenizer, users will need to prove a <code>slow_word_ids_func</code> that accepts a<br />tokenizzer, example index, and a batch encoding as arguments and in turn returnes the<br />equavlient of fast tokenizer's <code>word_ids</code></td>
 </tr>
 <tr>
 <td><strong><code>tok_kwargs</code></strong></td>
 <td><code>dict</code></td>
-<td>``</td>
+<td><code>None</code></td>
 <td>Tokenization kwargs that will be applied with calling the tokenizer</td>
 </tr>
 </tbody>
@@ -401,8 +401,7 @@ transformers: 4.16.2
 
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>How to preprocess your data (labels are Ids)</p>
-
+<h4 id="labels-are-Ids">labels are Ids<a class="anchor-link" href="#labels-are-Ids"> </a></h4>
 </div>
 </div>
 </div>
@@ -531,8 +530,7 @@ transformers: 4.16.2
 
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>How to preprocess your data (labels are entity names)</p>
-
+<h4 id="labels-are-entity-names">labels are entity names<a class="anchor-link" href="#labels-are-entity-names"> </a></h4>
 </div>
 </div>
 </div>
@@ -758,13 +756,6 @@ transformers: 4.16.2
 </div>
 </div>
 </div>
-<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<h3 id="BaseLabelingStrategy-and-implementations"><a href="/blurr/text-data-token-classification.html#BaseLabelingStrategy"><code>BaseLabelingStrategy</code></a> and implementations<a class="anchor-link" href="#BaseLabelingStrategy-and-implementations"> </a></h3><p>Here we include a <a href="/blurr/text-data-token-classification.html#BaseLabelingStrategy"><code>BaseLabelingStrategy</code></a> abstract class and several different strategies for assigning labels to your tokenized inputs. The "only first token" and "B/I" labeling strategies are discussed in the <a href="https://huggingface.co/course/chapter7/2?fw=pt">"Token Classification"</a> section in part 7 of the Hugging Face's Transformers course.</p>
-
-</div>
-</div>
-</div>
     {% raw %}
     
 <div class="cell border-box-sizing code_cell rendered">
@@ -776,7 +767,7 @@ transformers: 4.16.2
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h2 id="BaseLabelingStrategy" class="doc_header"><code>class</code> <code>BaseLabelingStrategy</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/text/data/token_classification.py#L186" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>BaseLabelingStrategy</code>(<strong><code>hf_tokenizer</code></strong>:<code>PreTrainedTokenizerBase</code>, <strong><code>label_names</code></strong>:<code>Optional</code>[<code>List</code>[<code>str</code>]], <strong><code>non_entity_label</code></strong>:<code>str</code>=<em><code>'O'</code></em>, <strong><code>ignore_token_id</code></strong>:<code>int</code>=<em><code>-100</code></em>)</p>
+<h3 id="BaseLabelingStrategy" class="doc_header"><code>class</code> <code>BaseLabelingStrategy</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/text/data/token_classification.py#L186" class="source_link" style="float:right">[source]</a></h3><blockquote><p><code>BaseLabelingStrategy</code>(<strong><code>hf_tokenizer</code></strong>:<code>PreTrainedTokenizerBase</code>, <strong><code>label_names</code></strong>:<code>Optional</code>[<code>List</code>[<code>str</code>]], <strong><code>non_entity_label</code></strong>:<code>str</code>=<em><code>'O'</code></em>, <strong><code>ignore_token_id</code></strong>:<code>int</code>=<em><code>-100</code></em>)</p>
 </blockquote>
 
 </div>
@@ -796,6 +787,13 @@ transformers: 4.16.2
 </div>
     {% endraw %}
 
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Here we include a <a href="/blurr/text-data-token-classification.html#BaseLabelingStrategy"><code>BaseLabelingStrategy</code></a> abstract class and several different strategies for assigning labels to your tokenized inputs. The "only first token" and "B/I" labeling strategies are discussed in the <a href="https://huggingface.co/course/chapter7/2?fw=pt">"Token Classification"</a> section in part 7 of the Hugging Face's Transformers course.</p>
+
+</div>
+</div>
+</div>
     {% raw %}
     
 <div class="cell border-box-sizing code_cell rendered">
@@ -807,7 +805,7 @@ transformers: 4.16.2
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h2 id="OnlyFirstTokenLabelingStrategy" class="doc_header"><code>class</code> <code>OnlyFirstTokenLabelingStrategy</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/text/data/token_classification.py#L204" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>OnlyFirstTokenLabelingStrategy</code>(<strong><code>hf_tokenizer</code></strong>:<code>PreTrainedTokenizerBase</code>, <strong><code>label_names</code></strong>:<code>Optional</code>[<code>List</code>[<code>str</code>]], <strong><code>non_entity_label</code></strong>:<code>str</code>=<em><code>'O'</code></em>, <strong><code>ignore_token_id</code></strong>:<code>int</code>=<em><code>-100</code></em>) :: <a href="/blurr/text-data-token-classification.html#BaseLabelingStrategy"><code>BaseLabelingStrategy</code></a></p>
+<h3 id="OnlyFirstTokenLabelingStrategy" class="doc_header"><code>class</code> <code>OnlyFirstTokenLabelingStrategy</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/text/data/token_classification.py#L204" class="source_link" style="float:right">[source]</a></h3><blockquote><p><code>OnlyFirstTokenLabelingStrategy</code>(<strong><code>hf_tokenizer</code></strong>:<code>PreTrainedTokenizerBase</code>, <strong><code>label_names</code></strong>:<code>Optional</code>[<code>List</code>[<code>str</code>]], <strong><code>non_entity_label</code></strong>:<code>str</code>=<em><code>'O'</code></em>, <strong><code>ignore_token_id</code></strong>:<code>int</code>=<em><code>-100</code></em>) :: <a href="/blurr/text-data-token-classification.html#BaseLabelingStrategy"><code>BaseLabelingStrategy</code></a></p>
 </blockquote>
 <p>Only the first token of word is associated with the label (all other subtokens with the <code>ignore_index_id</code>). Works where labels
 are Ids or strings (in the later case we'll use the <code>label_names</code> to look up it's Id)</p>
@@ -833,7 +831,7 @@ are Ids or strings (in the later case we'll use the <code>label_names</code> to 
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h2 id="SameLabelLabelingStrategy" class="doc_header"><code>class</code> <code>SameLabelLabelingStrategy</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/text/data/token_classification.py#L226" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>SameLabelLabelingStrategy</code>(<strong><code>hf_tokenizer</code></strong>:<code>PreTrainedTokenizerBase</code>, <strong><code>label_names</code></strong>:<code>Optional</code>[<code>List</code>[<code>str</code>]], <strong><code>non_entity_label</code></strong>:<code>str</code>=<em><code>'O'</code></em>, <strong><code>ignore_token_id</code></strong>:<code>int</code>=<em><code>-100</code></em>) :: <a href="/blurr/text-data-token-classification.html#BaseLabelingStrategy"><code>BaseLabelingStrategy</code></a></p>
+<h3 id="SameLabelLabelingStrategy" class="doc_header"><code>class</code> <code>SameLabelLabelingStrategy</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/text/data/token_classification.py#L226" class="source_link" style="float:right">[source]</a></h3><blockquote><p><code>SameLabelLabelingStrategy</code>(<strong><code>hf_tokenizer</code></strong>:<code>PreTrainedTokenizerBase</code>, <strong><code>label_names</code></strong>:<code>Optional</code>[<code>List</code>[<code>str</code>]], <strong><code>non_entity_label</code></strong>:<code>str</code>=<em><code>'O'</code></em>, <strong><code>ignore_token_id</code></strong>:<code>int</code>=<em><code>-100</code></em>) :: <a href="/blurr/text-data-token-classification.html#BaseLabelingStrategy"><code>BaseLabelingStrategy</code></a></p>
 </blockquote>
 <p>Every token associated with a given word is associated with the word's label. Works where labels
 are Ids or strings (in the later case we'll use the <code>label_names</code> to look up it's Id)</p>
@@ -859,7 +857,7 @@ are Ids or strings (in the later case we'll use the <code>label_names</code> to 
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h2 id="BILabelingStrategy" class="doc_header"><code>class</code> <code>BILabelingStrategy</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/text/data/token_classification.py#L244" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>BILabelingStrategy</code>(<strong><code>hf_tokenizer</code></strong>:<code>PreTrainedTokenizerBase</code>, <strong><code>label_names</code></strong>:<code>Optional</code>[<code>List</code>[<code>str</code>]], <strong><code>non_entity_label</code></strong>:<code>str</code>=<em><code>'O'</code></em>, <strong><code>ignore_token_id</code></strong>:<code>int</code>=<em><code>-100</code></em>) :: <a href="/blurr/text-data-token-classification.html#BaseLabelingStrategy"><code>BaseLabelingStrategy</code></a></p>
+<h3 id="BILabelingStrategy" class="doc_header"><code>class</code> <code>BILabelingStrategy</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/text/data/token_classification.py#L244" class="source_link" style="float:right">[source]</a></h3><blockquote><p><code>BILabelingStrategy</code>(<strong><code>hf_tokenizer</code></strong>:<code>PreTrainedTokenizerBase</code>, <strong><code>label_names</code></strong>:<code>Optional</code>[<code>List</code>[<code>str</code>]], <strong><code>non_entity_label</code></strong>:<code>str</code>=<em><code>'O'</code></em>, <strong><code>ignore_token_id</code></strong>:<code>int</code>=<em><code>-100</code></em>) :: <a href="/blurr/text-data-token-classification.html#BaseLabelingStrategy"><code>BaseLabelingStrategy</code></a></p>
 </blockquote>
 <p>If using B/I labels, the first token assoicated to a given word gets the "B" label while all other tokens related
 to that same word get "I" labels.  If "I" labels don't exist, this strategy behaves like the <a href="/blurr/text-data-token-classification.html#OnlyFirstTokenLabelingStrategy"><code>OnlyFirstTokenLabelingStrategy</code></a>.
@@ -957,19 +955,19 @@ each tuple defines the "token" and its label name. For example:
 </tr>
 <tr>
 <td><strong><code>input_ids</code></strong></td>
-<td><code>List[int]</code></td>
+<td><code>typing.List[int]</code></td>
 <td></td>
 <td>List of input_ids for the tokens in a single piece of processed text</td>
 </tr>
 <tr>
 <td><strong><code>token_label_ids</code></strong></td>
-<td><code>List[int]</code></td>
+<td><code>typing.List[int]</code></td>
 <td></td>
 <td>List of label indexs for each token</td>
 </tr>
 <tr>
 <td><strong><code>vocab</code></strong></td>
-<td><code>List[str]</code></td>
+<td><code>typing.List[str]</code></td>
 <td></td>
 <td>List of label names from witch the <code>label</code> indicies can be used to find the name of the label</td>
 </tr>
@@ -1103,12 +1101,6 @@ allows the user to reconstruct the orginal raw inputs and labels.</p>
 </div>
 </div>
 </div>
-<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<h4 id="TokenTensorCategory"><a href="/blurr/text-data-token-classification.html#TokenTensorCategory"><code>TokenTensorCategory</code></a><a class="anchor-link" href="#TokenTensorCategory"> </a></h4>
-</div>
-</div>
-</div>
     {% raw %}
     
 <div class="cell border-box-sizing code_cell rendered">
@@ -1120,7 +1112,7 @@ allows the user to reconstruct the orginal raw inputs and labels.</p>
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h2 id="TokenTensorCategory" class="doc_header"><code>class</code> <code>TokenTensorCategory</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/text/data/token_classification.py#L339" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>TokenTensorCategory</code>(<strong><code>x</code></strong>, <strong>**<code>kwargs</code></strong>) :: <code>TensorBase</code></p>
+<h3 id="TokenTensorCategory" class="doc_header"><code>class</code> <code>TokenTensorCategory</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/text/data/token_classification.py#L339" class="source_link" style="float:right">[source]</a></h3><blockquote><p><code>TokenTensorCategory</code>(<strong><code>x</code></strong>, <strong>**<code>kwargs</code></strong>) :: <code>TensorBase</code></p>
 </blockquote>
 <p>A <code>Tensor</code> which support subclass pickling, and maintains metadata when casting or after methods</p>
 
@@ -1141,14 +1133,6 @@ allows the user to reconstruct the orginal raw inputs and labels.</p>
 </div>
     {% endraw %}
 
-<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<h4 id="TokenCategorize"><a href="/blurr/text-data-token-classification.html#TokenCategorize"><code>TokenCategorize</code></a><a class="anchor-link" href="#TokenCategorize"> </a></h4><p><a href="/blurr/text-data-token-classification.html#TokenCategorize"><code>TokenCategorize</code></a> modifies the fastai <code>Categorize</code> transform in a couple of ways.</p>
-<p>First, it allows your targets to consist of a <code>Category</code> <strong><em>per</em></strong> token, and second, it uses the idea of an <code>ignore_token_id</code> to mask subtokens that don't need a prediction.  For example, the target of special tokens (e.g., pad, cls, sep) are set to <code>ignore_token_id</code> as are subsequent sub-tokens of a given token should more than 1 sub-token make it up.</p>
-
-</div>
-</div>
-</div>
     {% raw %}
     
 <div class="cell border-box-sizing code_cell rendered">
@@ -1160,7 +1144,7 @@ allows the user to reconstruct the orginal raw inputs and labels.</p>
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h2 id="TokenCategorize" class="doc_header"><code>class</code> <code>TokenCategorize</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/text/data/token_classification.py#L344" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>TokenCategorize</code>(<strong><code>vocab</code></strong>:<code>List</code>[<code>str</code>]=<em><code>None</code></em>, <strong><code>ignore_token</code></strong>:<code>str</code>=<em><code>'[xIGNx]'</code></em>, <strong><code>ignore_token_id</code></strong>:<code>int</code>=<em><code>-100</code></em>) :: <code>Transform</code></p>
+<h3 id="TokenCategorize" class="doc_header"><code>class</code> <code>TokenCategorize</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/text/data/token_classification.py#L344" class="source_link" style="float:right">[source]</a></h3><blockquote><p><code>TokenCategorize</code>(<strong><code>vocab</code></strong>:<code>List</code>[<code>str</code>]=<em><code>None</code></em>, <strong><code>ignore_token</code></strong>:<code>str</code>=<em><code>'[xIGNx]'</code></em>, <strong><code>ignore_token_id</code></strong>:<code>int</code>=<em><code>-100</code></em>) :: <code>Transform</code></p>
 </blockquote>
 <p>Reversible transform of a list of category string to <code>vocab</code> id</p>
 <table>
@@ -1174,8 +1158,8 @@ allows the user to reconstruct the orginal raw inputs and labels.</p>
 <tbody>
 <tr>
 <td><strong><code>vocab</code></strong></td>
-<td><code>List[str]</code></td>
-<td>``</td>
+<td><code>typing.List[str]</code></td>
+<td><code>None</code></td>
 <td>The unique list of entities (e.g., B-LOC) (default: CategoryMap(vocab))</td>
 </tr>
 <tr>
@@ -1212,7 +1196,9 @@ allows the user to reconstruct the orginal raw inputs and labels.</p>
 
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h4 id="TokenCategoryBlock"><a href="/blurr/text-data-token-classification.html#TokenCategoryBlock"><code>TokenCategoryBlock</code></a><a class="anchor-link" href="#TokenCategoryBlock"> </a></h4>
+<p><a href="/blurr/text-data-token-classification.html#TokenCategorize"><code>TokenCategorize</code></a> modifies the fastai <code>Categorize</code> transform in a couple of ways.</p>
+<p>First, it allows your targets to consist of a <code>Category</code> <strong><em>per</em></strong> token, and second, it uses the idea of an <code>ignore_token_id</code> to mask subtokens that don't need a prediction.  For example, the target of special tokens (e.g., pad, cls, sep) are set to <code>ignore_token_id</code> as are subsequent sub-tokens of a given token should more than 1 sub-token make it up.</p>
+
 </div>
 </div>
 </div>
@@ -1248,8 +1234,8 @@ allows the user to reconstruct the orginal raw inputs and labels.</p>
 <tbody>
 <tr>
 <td><strong><code>vocab</code></strong></td>
-<td><code>List[str]]</code></td>
-<td>``</td>
+<td><code>typing.Optional[typing.List[str]]</code></td>
+<td><code>None</code></td>
 <td>The unique list of entities (e.g., B-LOC) (default: CategoryMap(vocab))</td>
 </tr>
 <tr>
@@ -1283,13 +1269,6 @@ allows the user to reconstruct the orginal raw inputs and labels.</p>
 </div>
 </div>
 </div>
-<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<h4 id="TokenClassTextInput"><a href="/blurr/text-data-token-classification.html#TokenClassTextInput"><code>TokenClassTextInput</code></a><a class="anchor-link" href="#TokenClassTextInput"> </a></h4><p>Again, we define a custom class, <a href="/blurr/text-data-token-classification.html#TokenClassTextInput"><code>TokenClassTextInput</code></a>, for the <code>@typedispatch</code>ed methods to use so that we can override how token classification inputs/targets are assembled, as well as, how the data is shown via methods like <code>show_batch</code> and <code>show_results</code>.</p>
-
-</div>
-</div>
-</div>
     {% raw %}
     
 <div class="cell border-box-sizing code_cell rendered">
@@ -1301,7 +1280,7 @@ allows the user to reconstruct the orginal raw inputs and labels.</p>
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h2 id="TokenClassTextInput" class="doc_header"><code>class</code> <code>TokenClassTextInput</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/text/data/token_classification.py#L390" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>TokenClassTextInput</code>(<strong><code>x</code></strong>, <strong>**<code>kwargs</code></strong>) :: <a href="/blurr/text-data-core.html#TextInput"><code>TextInput</code></a></p>
+<h3 id="TokenClassTextInput" class="doc_header"><code>class</code> <code>TokenClassTextInput</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/text/data/token_classification.py#L390" class="source_link" style="float:right">[source]</a></h3><blockquote><p><code>TokenClassTextInput</code>(<strong><code>x</code></strong>, <strong>**<code>kwargs</code></strong>) :: <a href="/blurr/text-data-core.html#TextInput"><code>TextInput</code></a></p>
 </blockquote>
 <p>The base represenation of your inputs; used by the various fastai <code>show</code> methods</p>
 
@@ -1324,8 +1303,7 @@ allows the user to reconstruct the orginal raw inputs and labels.</p>
 
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h4 id="TokenClassBatchTokenizeTransform"><a href="/blurr/text-data-token-classification.html#TokenClassBatchTokenizeTransform"><code>TokenClassBatchTokenizeTransform</code></a><a class="anchor-link" href="#TokenClassBatchTokenizeTransform"> </a></h4><p><a href="/blurr/text-data-token-classification.html#TokenClassBatchTokenizeTransform"><code>TokenClassBatchTokenizeTransform</code></a> is used to exclude any of the target's tokens we don't want to include in the loss calcuation (e.g. padding, cls, sep, etc...).</p>
-<p>Note also that we default <code>is_split_into_words = True</code> since token classification tasks expect a list of words and labels for each word.</p>
+<p>Again, we define a custom class, <a href="/blurr/text-data-token-classification.html#TokenClassTextInput"><code>TokenClassTextInput</code></a>, for the <code>@typedispatch</code>ed methods to use so that we can override how token classification inputs/targets are assembled, as well as, how the data is shown via methods like <code>show_batch</code> and <code>show_results</code>.</p>
 
 </div>
 </div>
@@ -1341,7 +1319,7 @@ allows the user to reconstruct the orginal raw inputs and labels.</p>
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h2 id="TokenClassBatchTokenizeTransform" class="doc_header"><code>class</code> <code>TokenClassBatchTokenizeTransform</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/text/data/token_classification.py#L395" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>TokenClassBatchTokenizeTransform</code>(<strong><code>hf_arch</code></strong>:<code>str</code>, <strong><code>hf_config</code></strong>:<code>PretrainedConfig</code>, <strong><code>hf_tokenizer</code></strong>:<code>PreTrainedTokenizerBase</code>, <strong><code>hf_model</code></strong>:<code>PreTrainedModel</code>, <strong><code>include_labels</code></strong>:<code>bool</code>=<em><code>True</code></em>, <strong><code>ignore_token_id</code></strong>:<code>int</code>=<em><code>-100</code></em>, <strong><code>labeling_strategy_cls</code></strong>:<a href="/blurr/text-data-token-classification.html#BaseLabelingStrategy"><code>BaseLabelingStrategy</code></a>=<em><code>OnlyFirstTokenLabelingStrategy</code></em>, <strong><code>target_label_names</code></strong>:<code>Optional</code>[<code>List</code>[<code>str</code>]]=<em><code>None</code></em>, <strong><code>non_entity_label</code></strong>:<code>str</code>=<em><code>'O'</code></em>, <strong><code>max_length</code></strong>:<code>Optional</code>[<code>int</code>]=<em><code>None</code></em>, <strong><code>padding</code></strong>:<code>Union</code>[<code>bool</code>, <code>str</code>]=<em><code>True</code></em>, <strong><code>truncation</code></strong>:<code>Union</code>[<code>bool</code>, <code>str</code>]=<em><code>True</code></em>, <strong><code>is_split_into_words</code></strong>:<code>bool</code>=<em><code>True</code></em>, <strong><code>slow_word_ids_func</code></strong>:<code>Optional</code>[<code>Callable</code>]=<em><code>None</code></em>, <strong><code>tok_kwargs</code></strong>:<code>dict</code>=<em><code>{}</code></em>, <strong>**<code>kwargs</code></strong>) :: <a href="/blurr/text-data-core.html#BatchTokenizeTransform"><code>BatchTokenizeTransform</code></a></p>
+<h3 id="TokenClassBatchTokenizeTransform" class="doc_header"><code>class</code> <code>TokenClassBatchTokenizeTransform</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/text/data/token_classification.py#L395" class="source_link" style="float:right">[source]</a></h3><blockquote><p><code>TokenClassBatchTokenizeTransform</code>(<strong><code>hf_arch</code></strong>:<code>str</code>, <strong><code>hf_config</code></strong>:<code>PretrainedConfig</code>, <strong><code>hf_tokenizer</code></strong>:<code>PreTrainedTokenizerBase</code>, <strong><code>hf_model</code></strong>:<code>PreTrainedModel</code>, <strong><code>include_labels</code></strong>:<code>bool</code>=<em><code>True</code></em>, <strong><code>ignore_token_id</code></strong>:<code>int</code>=<em><code>-100</code></em>, <strong><code>labeling_strategy_cls</code></strong>:<a href="/blurr/text-data-token-classification.html#BaseLabelingStrategy"><code>BaseLabelingStrategy</code></a>=<em><code>OnlyFirstTokenLabelingStrategy</code></em>, <strong><code>target_label_names</code></strong>:<code>Optional</code>[<code>List</code>[<code>str</code>]]=<em><code>None</code></em>, <strong><code>non_entity_label</code></strong>:<code>str</code>=<em><code>'O'</code></em>, <strong><code>max_length</code></strong>:<code>Optional</code>[<code>int</code>]=<em><code>None</code></em>, <strong><code>padding</code></strong>:<code>Union</code>[<code>bool</code>, <code>str</code>]=<em><code>True</code></em>, <strong><code>truncation</code></strong>:<code>Union</code>[<code>bool</code>, <code>str</code>]=<em><code>True</code></em>, <strong><code>is_split_into_words</code></strong>:<code>bool</code>=<em><code>True</code></em>, <strong><code>slow_word_ids_func</code></strong>:<code>Optional</code>[<code>typing.Callable</code>]=<em><code>None</code></em>, <strong><code>tok_kwargs</code></strong>:<code>dict</code>=<em><code>{}</code></em>, <strong>**<code>kwargs</code></strong>) :: <a href="/blurr/text-data-core.html#BatchTokenizeTransform"><code>BatchTokenizeTransform</code></a></p>
 </blockquote>
 <p>Handles everything you need to assemble a mini-batch of inputs and targets, as well as
 decode the dictionary produced as a byproduct of the tokenization process in the <code>encodes</code> method.</p>
@@ -1398,8 +1376,8 @@ decode the dictionary produced as a byproduct of the tokenization process in the
 </tr>
 <tr>
 <td><strong><code>target_label_names</code></strong></td>
-<td><code>List[str]]</code></td>
-<td>``</td>
+<td><code>typing.Optional[typing.List[str]]</code></td>
+<td><code>None</code></td>
 <td>the target label names</td>
 </tr>
 <tr>
@@ -1410,19 +1388,19 @@ decode the dictionary produced as a byproduct of the tokenization process in the
 </tr>
 <tr>
 <td><strong><code>max_length</code></strong></td>
-<td><code>Optional[int]</code></td>
-<td>``</td>
+<td><code>typing.Optional[int]</code></td>
+<td><code>None</code></td>
 <td>To control the length of the padding/truncation. It can be an integer or None,<br />in which case it will default to the maximum length the model can accept. If the model has no<br />specific maximum input length, truncation/padding to max_length is deactivated.<br />See <a href="https://huggingface.co/transformers/preprocessing.html#everything-you-always-wanted-to-know-about-padding-and-truncation">Everything you always wanted to know about padding and truncation</a></td>
 </tr>
 <tr>
 <td><strong><code>padding</code></strong></td>
-<td><code>Union[bool, str]</code></td>
+<td><code>typing.Union[bool, str]</code></td>
 <td><code>True</code></td>
 <td>To control the <code>padding</code> applied to your <code>hf_tokenizer</code> during tokenization. If None, will default to<br /><code>False</code> or `'do_not_pad'.<br />See <a href="https://huggingface.co/transformers/preprocessing.html#everything-you-always-wanted-to-know-about-padding-and-truncation">Everything you always wanted to know about padding and truncation</a></td>
 </tr>
 <tr>
 <td><strong><code>truncation</code></strong></td>
-<td><code>Union[bool, str]</code></td>
+<td><code>typing.Union[bool, str]</code></td>
 <td><code>True</code></td>
 <td>To control <code>truncation</code> applied to your <code>hf_tokenizer</code> during tokenization. If None, will default to<br /><code>False</code> or <code>do_not_truncate</code>.<br />See <a href="https://huggingface.co/transformers/preprocessing.html#everything-you-always-wanted-to-know-about-padding-and-truncation">Everything you always wanted to know about padding and truncation</a></td>
 </tr>
@@ -1434,14 +1412,14 @@ decode the dictionary produced as a byproduct of the tokenization process in the
 </tr>
 <tr>
 <td><strong><code>slow_word_ids_func</code></strong></td>
-<td><code>Callable]</code></td>
-<td>``</td>
+<td><code>typing.Optional[typing.Callable]</code></td>
+<td><code>None</code></td>
 <td>If using a slow tokenizer, users will need to prove a <code>slow_word_ids_func</code> that accepts a<br />tokenizzer, example index, and a batch encoding as arguments and in turn returnes the<br />equavlient of fast tokenizer's `word_ids``</td>
 </tr>
 <tr>
 <td><strong><code>tok_kwargs</code></strong></td>
 <td><code>dict</code></td>
-<td>``</td>
+<td><code>None</code></td>
 <td>Any other keyword arguments you want included when using your <code>hf_tokenizer</code> to tokenize your inputs</td>
 </tr>
 <tr>
@@ -1470,6 +1448,14 @@ decode the dictionary produced as a byproduct of the tokenization process in the
 </div>
     {% endraw %}
 
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><a href="/blurr/text-data-token-classification.html#TokenClassBatchTokenizeTransform"><code>TokenClassBatchTokenizeTransform</code></a> is used to exclude any of the target's tokens we don't want to include in the loss calcuation (e.g. padding, cls, sep, etc...).</p>
+<p>Note also that we default <code>is_split_into_words = True</code> since token classification tasks expect a list of words and labels for each word.</p>
+
+</div>
+</div>
+</div>
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <h2 id="Examples">Examples<a class="anchor-link" href="#Examples"> </a></h2>
@@ -2269,19 +2255,6 @@ decode the dictionary produced as a byproduct of the tokenization process in the
 </div>
     {% endraw %}
 
-<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Summary">Summary<a class="anchor-link" href="#Summary"> </a></h2>
-</div>
-</div>
-</div>
-<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<p>This module includes all the low, mid, and high-level API bits for token classification tasks data prep.</p>
-
-</div>
-</div>
-</div>
 </div>
  
 

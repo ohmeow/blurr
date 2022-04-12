@@ -483,7 +483,7 @@ transformers: 4.16.2
 
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Preprocessing">Preprocessing<a class="anchor-link" href="#Preprocessing"> </a></h2><p>With version 2.0.0 of BLURR, we include a <a href="/blurr/text-data-core.html#Preprocessor"><code>Preprocessor</code></a> for question answering that can either truncate texts or else chunk long documents into multiple examples.</p>
+<h2 id="Preprocessing">Preprocessing<a class="anchor-link" href="#Preprocessing"> </a></h2><p>With version 2.0.0 of <code>BLURR</code>, we include a <a href="/blurr/text-data-core.html#Preprocessor"><code>Preprocessor</code></a> for question answering that can either truncate texts or else chunk long documents into multiple examples.</p>
 <p><strong>Note</strong>: Unlike other NLP tasks in BLURR, extractive question answering <strong><em>requires</em></strong> preprocessing in order to convert our raw start/end character indices into start/end token indices unless your dataset includes the later.  Token indicies, rather than character indices, will be used as our targets and are dependent on your tokenizer of choice.</p>
 
 </div>
@@ -500,7 +500,7 @@ transformers: 4.16.2
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h2 id="QAPreprocessor" class="doc_header"><code>class</code> <code>QAPreprocessor</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/text/data/question_answering.py#L25" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>QAPreprocessor</code>(<strong><code>hf_tokenizer</code></strong>:<code>PreTrainedTokenizerBase</code>, <strong><code>batch_size</code></strong>:<code>int</code>=<em><code>1000</code></em>, <strong><code>id_attr</code></strong>:<code>Optional</code>[<code>str</code>]=<em><code>None</code></em>, <strong><code>ctx_attr</code></strong>:<code>str</code>=<em><code>'context'</code></em>, <strong><code>qst_attr</code></strong>:<code>str</code>=<em><code>'question'</code></em>, <strong><code>ans_attr</code></strong>:<code>str</code>=<em><code>'answer_text'</code></em>, <strong><code>ans_start_char_idx</code></strong>:<code>str</code>=<em><code>'ans_start_char_idx'</code></em>, <strong><code>ans_end_char_idx</code></strong>:<code>str</code>=<em><code>'ans_end_char_idx'</code></em>, <strong><code>is_valid_attr</code></strong>:<code>Optional</code>[<code>str</code>]=<em><code>'is_valid'</code></em>, <strong><code>tok_kwargs</code></strong>:<code>dict</code>=<em><code>{'return_overflowing_tokens': True}</code></em>) :: <a href="/blurr/text-data-core.html#Preprocessor"><code>Preprocessor</code></a></p>
+<h3 id="QAPreprocessor" class="doc_header"><code>class</code> <code>QAPreprocessor</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/text/data/question_answering.py#L25" class="source_link" style="float:right">[source]</a></h3><blockquote><p><code>QAPreprocessor</code>(<strong><code>hf_tokenizer</code></strong>:<code>PreTrainedTokenizerBase</code>, <strong><code>batch_size</code></strong>:<code>int</code>=<em><code>1000</code></em>, <strong><code>id_attr</code></strong>:<code>Optional</code>[<code>str</code>]=<em><code>None</code></em>, <strong><code>ctx_attr</code></strong>:<code>str</code>=<em><code>'context'</code></em>, <strong><code>qst_attr</code></strong>:<code>str</code>=<em><code>'question'</code></em>, <strong><code>ans_attr</code></strong>:<code>str</code>=<em><code>'answer_text'</code></em>, <strong><code>ans_start_char_idx</code></strong>:<code>str</code>=<em><code>'ans_start_char_idx'</code></em>, <strong><code>ans_end_char_idx</code></strong>:<code>str</code>=<em><code>'ans_end_char_idx'</code></em>, <strong><code>is_valid_attr</code></strong>:<code>Optional</code>[<code>str</code>]=<em><code>'is_valid'</code></em>, <strong><code>tok_kwargs</code></strong>:<code>dict</code>=<em><code>{'return_overflowing_tokens': True}</code></em>) :: <a href="/blurr/text-data-core.html#Preprocessor"><code>Preprocessor</code></a></p>
 </blockquote>
 <table>
 <thead><tr>
@@ -525,8 +525,8 @@ transformers: 4.16.2
 </tr>
 <tr>
 <td><strong><code>id_attr</code></strong></td>
-<td><code>Optional[str]</code></td>
-<td>``</td>
+<td><code>typing.Optional[str]</code></td>
+<td><code>None</code></td>
 <td>The unique identifier in the dataset. If not specified and "return_overflowing_tokens": True, an "_id" attribute<br />will be added to your dataset with its value a unique, sequential integer, assigned to each record</td>
 </tr>
 <tr>
@@ -561,7 +561,7 @@ transformers: 4.16.2
 </tr>
 <tr>
 <td><strong><code>is_valid_attr</code></strong></td>
-<td><code>Optional[str]</code></td>
+<td><code>typing.Optional[str]</code></td>
 <td><code>is_valid</code></td>
 <td>The attribute that should be created if your are processing individual training and validation<br />datasets into a single dataset, and will indicate to which each example is associated</td>
 </tr>
@@ -593,7 +593,7 @@ transformers: 4.16.2
 
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h3 id="How-to-preprocess-your-data">How to preprocess your data<a class="anchor-link" href="#How-to-preprocess-your-data"> </a></h3>
+<h4 id="How-to-preprocess-your-data">How to preprocess your data<a class="anchor-link" href="#How-to-preprocess-your-data"> </a></h4>
 </div>
 </div>
 </div>
@@ -903,12 +903,6 @@ transformers: 4.16.2
 </div>
 </div>
 </div>
-<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<h3 id="QATextInput"><a href="/blurr/text-data-question-answering.html#QATextInput"><code>QATextInput</code></a><a class="anchor-link" href="#QATextInput"> </a></h3>
-</div>
-</div>
-</div>
     {% raw %}
     
 <div class="cell border-box-sizing code_cell rendered">
@@ -920,7 +914,7 @@ transformers: 4.16.2
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h2 id="QATextInput" class="doc_header"><code>class</code> <code>QATextInput</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/text/data/question_answering.py#L155" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>QATextInput</code>(<strong><code>x</code></strong>, <strong>**<code>kwargs</code></strong>) :: <a href="/blurr/text-data-core.html#TextInput"><code>TextInput</code></a></p>
+<h3 id="QATextInput" class="doc_header"><code>class</code> <code>QATextInput</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/text/data/question_answering.py#L155" class="source_link" style="float:right">[source]</a></h3><blockquote><p><code>QATextInput</code>(<strong><code>x</code></strong>, <strong>**<code>kwargs</code></strong>) :: <a href="/blurr/text-data-core.html#TextInput"><code>TextInput</code></a></p>
 </blockquote>
 <p>The base represenation of your inputs; used by the various fastai <code>show</code> methods</p>
 
@@ -941,12 +935,6 @@ transformers: 4.16.2
 </div>
     {% endraw %}
 
-<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<h3 id="QABatchTokenizeTransform"><a href="/blurr/text-data-question-answering.html#QABatchTokenizeTransform"><code>QABatchTokenizeTransform</code></a><a class="anchor-link" href="#QABatchTokenizeTransform"> </a></h3>
-</div>
-</div>
-</div>
     {% raw %}
     
 <div class="cell border-box-sizing code_cell rendered">
@@ -958,7 +946,7 @@ transformers: 4.16.2
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h2 id="QABatchTokenizeTransform" class="doc_header"><code>class</code> <code>QABatchTokenizeTransform</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/text/data/question_answering.py#L160" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>QABatchTokenizeTransform</code>(<strong><code>hf_arch</code></strong>:<code>str</code>, <strong><code>hf_config</code></strong>:<code>PretrainedConfig</code>, <strong><code>hf_tokenizer</code></strong>:<code>PreTrainedTokenizerBase</code>, <strong><code>hf_model</code></strong>:<code>PreTrainedModel</code>, <strong><code>include_labels</code></strong>:<code>bool</code>=<em><code>True</code></em>, <strong><code>ignore_token_id</code></strong>=<em><code>-100</code></em>, <strong><code>max_length</code></strong>:<code>int</code>=<em><code>None</code></em>, <strong><code>padding</code></strong>:<code>Union</code>[<code>bool</code>, <code>str</code>]=<em><code>True</code></em>, <strong><code>truncation</code></strong>:<code>Union</code>[<code>bool</code>, <code>str</code>]=<em><code>'only_second'</code></em>, <strong><code>is_split_into_words</code></strong>:<code>bool</code>=<em><code>False</code></em>, <strong><code>tok_kwargs</code></strong>:<code>dict</code>=<em><code>{}</code></em>, <strong>**<code>kwargs</code></strong>) :: <a href="/blurr/text-data-core.html#BatchTokenizeTransform"><code>BatchTokenizeTransform</code></a></p>
+<h3 id="QABatchTokenizeTransform" class="doc_header"><code>class</code> <code>QABatchTokenizeTransform</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/text/data/question_answering.py#L160" class="source_link" style="float:right">[source]</a></h3><blockquote><p><code>QABatchTokenizeTransform</code>(<strong><code>hf_arch</code></strong>:<code>str</code>, <strong><code>hf_config</code></strong>:<code>PretrainedConfig</code>, <strong><code>hf_tokenizer</code></strong>:<code>PreTrainedTokenizerBase</code>, <strong><code>hf_model</code></strong>:<code>PreTrainedModel</code>, <strong><code>include_labels</code></strong>:<code>bool</code>=<em><code>True</code></em>, <strong><code>ignore_token_id</code></strong>=<em><code>-100</code></em>, <strong><code>max_length</code></strong>:<code>int</code>=<em><code>None</code></em>, <strong><code>padding</code></strong>:<code>Union</code>[<code>bool</code>, <code>str</code>]=<em><code>True</code></em>, <strong><code>truncation</code></strong>:<code>Union</code>[<code>bool</code>, <code>str</code>]=<em><code>'only_second'</code></em>, <strong><code>is_split_into_words</code></strong>:<code>bool</code>=<em><code>False</code></em>, <strong><code>tok_kwargs</code></strong>:<code>dict</code>=<em><code>{}</code></em>, <strong>**<code>kwargs</code></strong>) :: <a href="/blurr/text-data-core.html#BatchTokenizeTransform"><code>BatchTokenizeTransform</code></a></p>
 </blockquote>
 <p>Handles everything you need to assemble a mini-batch of inputs and targets, as well as
 decode the dictionary produced as a byproduct of the tokenization process in the <code>encodes</code> method.</p>
@@ -1010,18 +998,18 @@ decode the dictionary produced as a byproduct of the tokenization process in the
 <tr>
 <td><strong><code>max_length</code></strong></td>
 <td><code>int</code></td>
-<td>``</td>
+<td><code>None</code></td>
 <td>To control the length of the padding/truncation. It can be an integer or None,<br />in which case it will default to the maximum length the model can accept. If the model has no<br />specific maximum input length, truncation/padding to max_length is deactivated.<br />See <a href="https://huggingface.co/transformers/preprocessing.html#everything-you-always-wanted-to-know-about-padding-and-truncation">Everything you always wanted to know about padding and truncation</a></td>
 </tr>
 <tr>
 <td><strong><code>padding</code></strong></td>
-<td><code>Union[bool, str]</code></td>
+<td><code>typing.Union[bool, str]</code></td>
 <td><code>True</code></td>
 <td>To control the <code>padding</code> applied to your <code>hf_tokenizer</code> during tokenization. If None, will default to<br /><code>False</code> or `'do_not_pad'.<br />See <a href="https://huggingface.co/transformers/preprocessing.html#everything-you-always-wanted-to-know-about-padding-and-truncation">Everything you always wanted to know about padding and truncation</a></td>
 </tr>
 <tr>
 <td><strong><code>truncation</code></strong></td>
-<td><code>Union[bool, str]</code></td>
+<td><code>typing.Union[bool, str]</code></td>
 <td><code>only_second</code></td>
 <td>To control <code>truncation</code> applied to your <code>hf_tokenizer</code> during tokenization. If None, will default to<br /><code>False</code> or <code>do_not_truncate</code>.<br />See <a href="https://huggingface.co/transformers/preprocessing.html#everything-you-always-wanted-to-know-about-padding-and-truncation">Everything you always wanted to know about padding and truncation</a></td>
 </tr>
@@ -1034,7 +1022,7 @@ decode the dictionary produced as a byproduct of the tokenization process in the
 <tr>
 <td><strong><code>tok_kwargs</code></strong></td>
 <td><code>dict</code></td>
-<td>``</td>
+<td><code>None</code></td>
 <td>Any other keyword arguments you want included when using your <code>hf_tokenizer</code> to tokenize your inputs.</td>
 </tr>
 <tr>
@@ -1889,13 +1877,6 @@ decode the dictionary produced as a byproduct of the tokenization process in the
 </div>
     {% endraw %}
 
-<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Summary">Summary<a class="anchor-link" href="#Summary"> </a></h2><p>This module includes all the low, mid, and high-level API bits for extractive Q&amp;A tasks data preparation.</p>
-
-</div>
-</div>
-</div>
 </div>
  
 
