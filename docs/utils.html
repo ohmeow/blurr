@@ -45,8 +45,7 @@ nb_path: "nbs/00_utils.ipynb"
 
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Utility-classes-and-methods">Utility classes and methods<a class="anchor-link" href="#Utility-classes-and-methods"> </a></h2><p>The <a href="/blurr/utils.html#Singleton"><code>Singleton</code></a> class and <a href="/blurr/utils.html#str_to_type"><code>str_to_type</code></a> methods are used in the construction of the <code>BLURR</code> instance, as well as, in other parts of the library. <a href="/blurr/utils.html#print_versions"><code>print_versions</code></a> is a nicety added for developers wishing to know what versions of specific libraries are being used for documentation and troubleshooting.</p>
-
+<h2 id="Utility-classes-and-methods">Utility classes and methods<a class="anchor-link" href="#Utility-classes-and-methods"> </a></h2>
 </div>
 </div>
 </div>
@@ -61,7 +60,7 @@ nb_path: "nbs/00_utils.ipynb"
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h2 id="Singleton" class="doc_header"><code>class</code> <code>Singleton</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/utils.py#L20" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>Singleton</code>()</p>
+<h3 id="Singleton" class="doc_header"><code>class</code> <code>Singleton</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/utils.py#L20" class="source_link" style="float:right">[source]</a></h3><blockquote><p><code>Singleton</code>()</p>
 </blockquote>
 
 </div>
@@ -112,6 +111,12 @@ nb_path: "nbs/00_utils.ipynb"
 </div>
     {% endraw %}
 
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Utility-methods">Utility methods<a class="anchor-link" href="#Utility-methods"> </a></h2>
+</div>
+</div>
+</div>
     {% raw %}
     
 <div class="cell border-box-sizing code_cell rendered">
@@ -212,7 +217,7 @@ nb_path: "nbs/00_utils.ipynb"
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h4 id="print_versions" class="doc_header"><code>print_versions</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/utils.py#L37" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>print_versions</code>(<strong><code>packages</code></strong>:<code>Union</code>[<code>str</code>, List[str]`])</p>
+<h4 id="print_versions" class="doc_header"><code>print_versions</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/utils.py#L37" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>print_versions</code>(<strong><code>packages</code></strong>:<code>Union</code>[<code>str</code>, <code>typing.List[str]</code>])</p>
 </blockquote>
 <p>Prints the name and version of one or more packages in your environment</p>
 <table>
@@ -226,7 +231,7 @@ nb_path: "nbs/00_utils.ipynb"
 <tbody>
 <tr>
 <td><strong><code>packages</code></strong></td>
-<td><code>List[str]]</code></td>
+<td><code>typing.Union[str, typing.List[str]]</code></td>
 <td></td>
 <td>A string of space delimited package names or a list of package names</td>
 </tr>
@@ -351,14 +356,6 @@ fastai: 2.5.6
 </div>
 </div>
 </div>
-<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<h3 id="PreCalculatedLoss"><a href="/blurr/utils.html#PreCalculatedLoss"><code>PreCalculatedLoss</code></a><a class="anchor-link" href="#PreCalculatedLoss"> </a></h3><p>If you want to let your Hugging Face model calculate the loss for you, make sure you include the <code>labels</code> argument in your inputs and use <a href="/blurr/utils.html#PreCalculatedLoss"><code>PreCalculatedLoss</code></a> as your loss function. Even though we don't really need a loss function per se, we have to provide a custom loss class/function for fastai to function properly (e.g. one with a <code>decodes</code> and <code>activation</code> methods).  Why?  Because these methods will get called in methods like <code>show_results</code> to get the actual predictions.</p>
-<p><strong>Note</strong>: The Hugging Face models <strong><em>will always</em></strong> calculate the loss for you <strong><em>if</em></strong> you pass a <code>labels</code> dictionary along with your other inputs (so only include it if that is what you intend to happen)</p>
-
-</div>
-</div>
-</div>
     {% raw %}
     
 <div class="cell border-box-sizing code_cell rendered">
@@ -370,7 +367,7 @@ fastai: 2.5.6
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h2 id="PreCalculatedLoss" class="doc_header"><code>class</code> <code>PreCalculatedLoss</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/utils.py#L69" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>PreCalculatedLoss</code>(<strong><code>loss_cls</code></strong>, <strong>*<code>args</code></strong>, <strong><code>axis</code></strong>=<em><code>-1</code></em>, <strong><code>flatten</code></strong>=<em><code>True</code></em>, <strong><code>floatify</code></strong>=<em><code>False</code></em>, <strong><code>is_2d</code></strong>=<em><code>True</code></em>, <strong>**<code>kwargs</code></strong>) :: <code>BaseLoss</code></p>
+<h3 id="PreCalculatedLoss" class="doc_header"><code>class</code> <code>PreCalculatedLoss</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/utils.py#L69" class="source_link" style="float:right">[source]</a></h3><blockquote><p><code>PreCalculatedLoss</code>(<strong><code>loss_cls</code></strong>, <strong>*<code>args</code></strong>, <strong><code>axis</code></strong>=<em><code>-1</code></em>, <strong><code>flatten</code></strong>=<em><code>True</code></em>, <strong><code>floatify</code></strong>=<em><code>False</code></em>, <strong><code>is_2d</code></strong>=<em><code>True</code></em>, <strong>**<code>kwargs</code></strong>) :: <code>BaseLoss</code></p>
 </blockquote>
 <p>Same as <code>loss_cls</code>, but flattens input and target.</p>
 
@@ -395,7 +392,7 @@ fastai: 2.5.6
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h2 id="PreCalculatedCrossEntropyLoss" class="doc_header"><code>class</code> <code>PreCalculatedCrossEntropyLoss</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/utils.py#L74" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>PreCalculatedCrossEntropyLoss</code>(<strong>*<code>args</code></strong>, <strong><code>axis</code></strong>=<em><code>-1</code></em>, <strong><code>weight</code></strong>=<em><code>None</code></em>, <strong><code>ignore_index</code></strong>=<em><code>-100</code></em>, <strong><code>reduction</code></strong>=<em><code>'mean'</code></em>, <strong><code>flatten</code></strong>=<em><code>True</code></em>, <strong><code>floatify</code></strong>=<em><code>False</code></em>, <strong><code>is_2d</code></strong>=<em><code>True</code></em>) :: <a href="/blurr/utils.html#PreCalculatedLoss"><code>PreCalculatedLoss</code></a></p>
+<h3 id="PreCalculatedCrossEntropyLoss" class="doc_header"><code>class</code> <code>PreCalculatedCrossEntropyLoss</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/utils.py#L74" class="source_link" style="float:right">[source]</a></h3><blockquote><p><code>PreCalculatedCrossEntropyLoss</code>(<strong>*<code>args</code></strong>, <strong><code>axis</code></strong>=<em><code>-1</code></em>, <strong><code>weight</code></strong>=<em><code>None</code></em>, <strong><code>ignore_index</code></strong>=<em><code>-100</code></em>, <strong><code>reduction</code></strong>=<em><code>'mean'</code></em>, <strong><code>flatten</code></strong>=<em><code>True</code></em>, <strong><code>floatify</code></strong>=<em><code>False</code></em>, <strong><code>is_2d</code></strong>=<em><code>True</code></em>) :: <a href="/blurr/utils.html#PreCalculatedLoss"><code>PreCalculatedLoss</code></a></p>
 </blockquote>
 <p>Same as <code>nn.CrossEntropyLoss</code>, but flattens input and target.</p>
 
@@ -420,7 +417,7 @@ fastai: 2.5.6
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h2 id="PreCalculatedBCELoss" class="doc_header"><code>class</code> <code>PreCalculatedBCELoss</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/utils.py#L78" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>PreCalculatedBCELoss</code>(<strong>*<code>args</code></strong>, <strong><code>axis</code></strong>=<em><code>-1</code></em>, <strong><code>floatify</code></strong>=<em><code>True</code></em>, <strong><code>thresh</code></strong>=<em><code>0.5</code></em>, <strong><code>weight</code></strong>=<em><code>None</code></em>, <strong><code>reduction</code></strong>=<em><code>'mean'</code></em>, <strong><code>pos_weight</code></strong>=<em><code>None</code></em>, <strong><code>flatten</code></strong>=<em><code>True</code></em>, <strong><code>is_2d</code></strong>=<em><code>True</code></em>) :: <a href="/blurr/utils.html#PreCalculatedLoss"><code>PreCalculatedLoss</code></a></p>
+<h3 id="PreCalculatedBCELoss" class="doc_header"><code>class</code> <code>PreCalculatedBCELoss</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/utils.py#L78" class="source_link" style="float:right">[source]</a></h3><blockquote><p><code>PreCalculatedBCELoss</code>(<strong>*<code>args</code></strong>, <strong><code>axis</code></strong>=<em><code>-1</code></em>, <strong><code>floatify</code></strong>=<em><code>True</code></em>, <strong><code>thresh</code></strong>=<em><code>0.5</code></em>, <strong><code>weight</code></strong>=<em><code>None</code></em>, <strong><code>reduction</code></strong>=<em><code>'mean'</code></em>, <strong><code>pos_weight</code></strong>=<em><code>None</code></em>, <strong><code>flatten</code></strong>=<em><code>True</code></em>, <strong><code>is_2d</code></strong>=<em><code>True</code></em>) :: <a href="/blurr/utils.html#PreCalculatedLoss"><code>PreCalculatedLoss</code></a></p>
 </blockquote>
 <p>Same as <code>nn.BCEWithLogitsLoss</code>, but flattens input and target.</p>
 
@@ -445,7 +442,7 @@ fastai: 2.5.6
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h2 id="PreCalculatedMSELoss" class="doc_header"><code>class</code> <code>PreCalculatedMSELoss</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/utils.py#L82" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>PreCalculatedMSELoss</code>(<strong>*<code>args</code></strong>, <strong><code>axis</code></strong>=<em><code>-1</code></em>, <strong><code>floatify</code></strong>=<em><code>True</code></em>, <strong>**<code>kwargs</code></strong>) :: <a href="/blurr/utils.html#PreCalculatedLoss"><code>PreCalculatedLoss</code></a></p>
+<h3 id="PreCalculatedMSELoss" class="doc_header"><code>class</code> <code>PreCalculatedMSELoss</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/utils.py#L82" class="source_link" style="float:right">[source]</a></h3><blockquote><p><code>PreCalculatedMSELoss</code>(<strong>*<code>args</code></strong>, <strong><code>axis</code></strong>=<em><code>-1</code></em>, <strong><code>floatify</code></strong>=<em><code>True</code></em>, <strong>**<code>kwargs</code></strong>) :: <a href="/blurr/utils.html#PreCalculatedLoss"><code>PreCalculatedLoss</code></a></p>
 </blockquote>
 <p>Same as <code>loss_cls</code>, but flattens input and target.</p>
 
@@ -466,13 +463,6 @@ fastai: 2.5.6
 </div>
     {% endraw %}
 
-<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<h3 id="MultiTargetLoss"><a href="/blurr/utils.html#MultiTargetLoss"><code>MultiTargetLoss</code></a><a class="anchor-link" href="#MultiTargetLoss"> </a></h3><p>This new loss function can be used in many other multi-modal architectures, with any mix of loss functions.  For example, this can be ammended to include the <code>is_impossible</code> task, as well as the start/end token tasks in the SQUAD v2 dataset (or in any extractive question/answering task)</p>
-
-</div>
-</div>
-</div>
     {% raw %}
     
 <div class="cell border-box-sizing code_cell rendered">
@@ -484,7 +474,7 @@ fastai: 2.5.6
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h2 id="MultiTargetLoss" class="doc_header"><code>class</code> <code>MultiTargetLoss</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/utils.py#L88" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>MultiTargetLoss</code>(<strong><code>loss_classes</code></strong>:<code>List</code>[Callable<code>\]=*</code>[&lt;class 'fastai.losses.CrossEntropyLossFlat'&gt;, &lt;class 'fastai.losses.CrossEntropyLossFlat'&gt;]<code>*, **</code>loss_classes_kwargs<code>**:</code>List<code>\[</code>dict<code>\]=*</code>[{}, {}]<code>*, **</code>weights<code>**:</code>Union<code>\[List[float]</code>, List[int]<code>\]=*</code>[1, 1]<code>*, **</code>reduction<code>**:</code>str<code>=*</code>'mean'<code>*) ::</code>Module`</p>
+<h3 id="MultiTargetLoss" class="doc_header"><code>class</code> <code>MultiTargetLoss</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/utils.py#L88" class="source_link" style="float:right">[source]</a></h3><blockquote><p><code>MultiTargetLoss</code>(<strong><code>loss_classes</code></strong>:<code>List</code>[<code>typing.Callable</code>]=<em><code>[&lt;class 'fastai.losses.CrossEntropyLossFlat'&gt;, &lt;class 'fastai.losses.CrossEntropyLossFlat'&gt;]</code></em>, <strong><code>loss_classes_kwargs</code></strong>:<code>List</code>[<code>dict</code>]=<em><code>[{}, {}]</code></em>, <strong><code>weights</code></strong>:<code>Union</code>[<code>typing.List[float]</code>, <code>typing.List[int]</code>]=<em><code>[1, 1]</code></em>, <strong><code>reduction</code></strong>:<code>str</code>=<em><code>'mean'</code></em>) :: <code>Module</code></p>
 </blockquote>
 <p>Provides the ability to apply different loss functions to multi-modal targets/predictions</p>
 <table>
@@ -498,19 +488,19 @@ fastai: 2.5.6
 <tbody>
 <tr>
 <td><strong><code>loss_classes</code></strong></td>
-<td><code>Callable]</code></td>
+<td><code>typing.List[typing.Callable]</code></td>
 <td><code>(CrossEntropyLossFlat, CrossEntropyLossFlat)</code></td>
 <td>The loss function for each target</td>
 </tr>
 <tr>
 <td><strong><code>loss_classes_kwargs</code></strong></td>
-<td><code>List[dict]</code></td>
+<td><code>typing.List[dict]</code></td>
 <td><code>({}, {})</code></td>
 <td>Any kwargs you want to pass to the loss functions above</td>
 </tr>
 <tr>
 <td><strong><code>weights</code></strong></td>
-<td><code>List[int]]</code></td>
+<td><code>typing.Union[typing.List[float], typing.List[int]]</code></td>
 <td><code>(1, 1)</code></td>
 <td>The weights you want to apply to each loss (default: [1,1])</td>
 </tr>
