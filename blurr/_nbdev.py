@@ -115,5 +115,4 @@ doc_url = "https://ohmeow.github.io/blurr/"
 
 git_url = "https://github.com/ohmeow/blurr/tree/master/"
 
-def custom_doc_links(name):
-    return None
+def custom_doc_links(name): return None
