@@ -31,7 +31,7 @@ from ..data.token_classification import (
     TokenClassBatchTokenizeTransform,
 )
 from .core import Blearner
-from ..utils import NLP
+from ..utils import get_hf_objects
 from ...utils import PreCalculatedCrossEntropyLoss
 
 logging.set_verbosity_error()
@@ -403,7 +403,7 @@ class BlearnerForTokenClassification(Blearner):
 
         # get our hf objects
         n_labels = len(labels)
-        hf_arch, hf_config, hf_tokenizer, hf_model = NLP.get_hf_objects(
+        hf_arch, hf_config, hf_tokenizer, hf_model = get_hf_objects(
             pretrained_model_name_or_path, model_cls=cls.get_model_cls(), config_kwargs={"num_labels": n_labels}
         )
 

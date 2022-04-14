@@ -20,7 +20,7 @@ from fastai.torch_imports import *
 from transformers import AutoModelForSequenceClassification, PreTrainedModel, logging
 
 from ..data.core import TextBlock, TextInput, first_blurr_tfm
-from ..utils import NLP
+from ..utils import get_hf_objects
 from ...utils import PreCalculatedLoss, PreCalculatedBCELoss, PreCalculatedCrossEntropyLoss, PreCalculatedMSELoss, set_seed
 
 logging.set_verbosity_error()
@@ -366,7 +366,7 @@ class BlearnerForSequenceClassification(Blearner):
             dblock_splitter = ColSplitter() if hasattr(data, "is_valid") else RandomSplitter()
 
         # get our hf objects
-        hf_arch, hf_config, hf_tokenizer, hf_model = NLP.get_hf_objects(
+        hf_arch, hf_config, hf_tokenizer, hf_model = get_hf_objects(
             pretrained_model_name_or_path, model_cls=cls.get_model_cls(), config_kwargs={"num_labels": n_labels}
         )
 

@@ -28,7 +28,7 @@ from transformers import (
     logging,
 )
 
-from ..utils import NLP
+from ..utils import get_hf_objects
 
 logging.set_verbosity_error()
 

@@ -24,7 +24,7 @@ from transformers import AutoModelForQuestionAnswering, PreTrainedModel, logging
 from ..data.core import TextBlock, TextDataLoader, first_blurr_tfm
 from ..data.question_answering import QAPreprocessor, QATextInput, QABatchTokenizeTransform
 from .core import BaseModelCallback, Blearner
-from ..utils import NLP
+from ..utils import get_hf_objects
 from ...utils import PreCalculatedLoss, MultiTargetLoss
 
 # metrics we'll use in extractive qa
@@ -363,7 +363,7 @@ class BlearnerForQuestionAnswering(Blearner):
         if dblock_splitter is None:
             dblock_splitter = ColSplitter() if hasattr(data, "is_valid") else RandomSplitter()
 
-        hf_arch, hf_config, hf_tokenizer, hf_model = NLP.get_hf_objects(pretrained_model_name_or_path, model_cls=cls.get_model_cls())
+        hf_arch, hf_config, hf_tokenizer, hf_model = get_hf_objects(pretrained_model_name_or_path, model_cls=cls.get_model_cls())
 
         # potentially used by our preprocess_func, it is the basis for our CategoryBlock vocab
         if max_seq_len is None:

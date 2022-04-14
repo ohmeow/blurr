@@ -66,7 +66,7 @@ nb_path: "nbs/99e_text-examples-causal-lm-gpt2.ipynb"
 <pre>Here&#39;s what we&#39;re running with ...
 
 torch: 1.10.1+cu111
-fastai: 2.5.3
+fastai: 2.5.6
 transformers: 4.16.2
 </pre>
 </div>
@@ -200,7 +200,7 @@ transformers: 4.16.2
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">model_cls</span> <span class="o">=</span> <span class="n">AutoModelForCausalLM</span>
 
 <span class="n">pretrained_model_name</span> <span class="o">=</span> <span class="s2">&quot;gpt2&quot;</span>
-<span class="n">hf_arch</span><span class="p">,</span> <span class="n">hf_config</span><span class="p">,</span> <span class="n">hf_tokenizer</span><span class="p">,</span> <span class="n">hf_model</span> <span class="o">=</span> <span class="n">NLP</span><span class="o">.</span><span class="n">get_hf_objects</span><span class="p">(</span><span class="n">pretrained_model_name</span><span class="p">,</span> <span class="n">model_cls</span><span class="o">=</span><span class="n">model_cls</span><span class="p">)</span>
+<span class="n">hf_arch</span><span class="p">,</span> <span class="n">hf_config</span><span class="p">,</span> <span class="n">hf_tokenizer</span><span class="p">,</span> <span class="n">hf_model</span> <span class="o">=</span> <span class="n">get_hf_objects</span><span class="p">(</span><span class="n">pretrained_model_name</span><span class="p">,</span> <span class="n">model_cls</span><span class="o">=</span><span class="n">model_cls</span><span class="p">)</span>
 
 <span class="k">if</span> <span class="p">(</span><span class="n">hf_tokenizer</span><span class="o">.</span><span class="n">pad_token</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">):</span> 
     <span class="n">hf_tokenizer</span><span class="o">.</span><span class="n">add_special_tokens</span><span class="p">({</span><span class="s1">&#39;pad_token&#39;</span><span class="p">:</span> <span class="s1">&#39;&lt;pad&gt;&#39;</span><span class="p">})</span>  

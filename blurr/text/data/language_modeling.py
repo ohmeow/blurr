@@ -14,10 +14,18 @@ from fastai.imports import *
 from fastai.losses import CrossEntropyLossFlat
 from fastai.torch_core import *
 from fastai.torch_imports import *
-from transformers import AutoModelForCausalLM, AutoModelForMaskedLM, logging, PretrainedConfig, PreTrainedTokenizerBase, PreTrainedModel, BatchEncoding
+from transformers import (
+    AutoModelForCausalLM,
+    AutoModelForMaskedLM,
+    logging,
+    PretrainedConfig,
+    PreTrainedTokenizerBase,
+    PreTrainedModel,
+    BatchEncoding,
+)
 
 from .core import TextInput, BatchTokenizeTransform, Preprocessor, first_blurr_tfm
-from ..utils import NLP
+from ..utils import get_hf_objects
 
 logging.set_verbosity_error()
 
@@ -73,7 +81,7 @@ class LMPreprocessor(Preprocessor):
         batch_df.reset_index(drop=True, inplace=True)
 
         # concatenate our texts
-        concat_txts = {self.text_attr: f' {self.sep_token} '.join(batch_df[self.text_attr].values.tolist())}
+        concat_txts = {self.text_attr: f" {self.sep_token} ".join(batch_df[self.text_attr].values.tolist())}
         inputs = self._tokenize_function(concat_txts)
 
         # compute the length of our concatenated texts
@@ -88,8 +96,8 @@ class LMPreprocessor(Preprocessor):
         # break our concatenated into chunks of text of size max_chunk_size
         examples = []
         for i in range(0, total_length, max_chunk_size):
-            chunked_offsets = inputs["offset_mapping"][i: i + max_chunk_size]
-            chunked_text = concat_txts[self.text_attr][min(chunked_offsets)[0]:max(chunked_offsets)[1]]
+            chunked_offsets = inputs["offset_mapping"][i : i + max_chunk_size]
+            chunked_text = concat_txts[self.text_attr][min(chunked_offsets)[0] : max(chunked_offsets)[1]]
             examples.append(chunked_text)
 
         return pd.DataFrame(examples, columns=[f"proc_{self.text_attr}"])
@@ -98,6 +106,7 @@ class LMPreprocessor(Preprocessor):
 # Cell
 class LMType(Enum):
     """Use this enum to indicate what kind of language model you are training"""
+
     CAUSAL = 1
     MASKED = 2
 

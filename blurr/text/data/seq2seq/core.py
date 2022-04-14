@@ -15,7 +15,7 @@ from fastcore.all import *
 from transformers import PretrainedConfig, PreTrainedTokenizerBase, PreTrainedModel, logging
 
 from ..core import BatchDecodeTransform, BatchTokenizeTransform, Preprocessor, TextBlock, TextInput, first_blurr_tfm
-from ...utils import NLP
+from ...utils import get_hf_objects
 
 logging.set_verbosity_error()
 

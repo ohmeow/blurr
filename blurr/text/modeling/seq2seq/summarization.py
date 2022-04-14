@@ -19,7 +19,7 @@ from transformers import AutoModelForSeq2SeqLM, PreTrainedModel, logging
 from ...data.seq2seq.core import Seq2SeqBatchTokenizeTransform, Seq2SeqTextBlock, default_text_gen_kwargs
 from ..core import BaseModelCallback, BaseModelWrapper, Blearner
 from .core import Seq2SeqMetricsCallback, blurr_seq2seq_splitter
-from ...utils import NLP
+from ...utils import get_hf_objects
 from ....utils import PreCalculatedCrossEntropyLoss
 
 logging.set_verbosity_error()
@@ -116,7 +116,7 @@ class BlearnerForSummarization(Blearner):
             hf_tok_kwargs = {**{"src_lang": "en_XX", "tgt_lang": "en_XX"}, **hf_tok_kwargs}
 
         # get our hf objects
-        hf_arch, hf_config, hf_tokenizer, hf_model = NLP.get_hf_objects(
+        hf_arch, hf_config, hf_tokenizer, hf_model = get_hf_objects(
             pretrained_model_name_or_path, model_cls=model_cls, tokenizer_kwargs=hf_tok_kwargs
         )
 

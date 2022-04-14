@@ -32,8 +32,9 @@ from ..data.language_modeling import (
     MLMTextInput,
     BertMLMStrategy,
 )
+
 from .core import Blearner
-from ..utils import NLP
+from ..utils import get_hf_objects
 from ...utils import PreCalculatedCrossEntropyLoss
 
 logging.set_verbosity_error()
@@ -306,7 +307,7 @@ class BlearnerForLM(Blearner):
         # get our hf objects
         lm_type = lm_strategy_cls.get_lm_type()
         model_cls = cls.get_model_cls(lm_type=lm_type)
-        hf_arch, hf_config, hf_tokenizer, hf_model = NLP.get_hf_objects(pretrained_model_name_or_path, model_cls=model_cls)
+        hf_arch, hf_config, hf_tokenizer, hf_model = get_hf_objects(pretrained_model_name_or_path, model_cls=model_cls)
 
         # not all architectures include a native pad_token (e.g., gpt2, ctrl, etc...), so we add one here
         if hf_tokenizer.pad_token is None:

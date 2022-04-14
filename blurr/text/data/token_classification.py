@@ -19,7 +19,7 @@ from fastai.torch_imports import *
 from transformers import AutoModelForTokenClassification, logging, PretrainedConfig, PreTrainedTokenizerBase, PreTrainedModel
 
 from .core import Preprocessor, TextInput, BatchTokenizeTransform, first_blurr_tfm
-from ..utils import NLP
+from ..utils import get_hf_objects
 
 logging.set_verbosity_error()
 

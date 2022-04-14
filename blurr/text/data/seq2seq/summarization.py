@@ -13,7 +13,7 @@ from fastai.data.block import DataBlock
 from transformers import AutoModelForSeq2SeqLM, PreTrainedTokenizerBase, logging
 
 from .core import Seq2SeqBatchTokenizeTransform, Seq2SeqPreprocessor, Seq2SeqTextBlock
-from ...utils import NLP
+from ...utils import get_hf_objects
 
 logging.set_verbosity_error()
 

@@ -23,7 +23,7 @@ nltk.download("wordnet", quiet=True)  # download punctuation rules
 from ...data.core import first_blurr_tfm
 from ...data.seq2seq.core import Seq2SeqBatchTokenizeTransform, Seq2SeqTextBlock, Seq2SeqTextInput
 from ..core import BaseModelWrapper, BaseModelCallback
-from ...utils import NLP
+from ...utils import get_hf_objects
 from ....utils import PreCalculatedCrossEntropyLoss
 
 logging.set_verbosity_error()
