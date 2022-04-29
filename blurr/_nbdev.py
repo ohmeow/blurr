@@ -2,7 +2,9 @@
 
 __all__ = ["index", "modules", "custom_doc_links", "git_url"]
 
-index = {"Singleton": "00_utils.ipynb",
+index = {"CheckpointingNotSupported": "00_callbacks.ipynb",
+         "GradientCheckpointing": "00_callbacks.ipynb",
+         "Singleton": "00_utils.ipynb",
          "str_to_type": "00_utils.ipynb",
          "print_versions": "00_utils.ipynb",
          "set_seed": "00_utils.ipynb",
