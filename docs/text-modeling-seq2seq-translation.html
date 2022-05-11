@@ -64,9 +64,9 @@ nb_path: "nbs/22_text-modeling-seq2seq-translation.ipynb"
 
 <div class="output_subarea output_stream output_stdout output_text">
 <pre>What we&#39;re running with at the time this documentation was generated:
-torch: 1.10.1+cu111
-fastai: 2.5.6
-transformers: 4.16.2
+torch: 1.9.0+cu102
+fastai: 2.6.3
+transformers: 4.18.0
 </pre>
 </div>
 </div>
@@ -119,9 +119,14 @@ transformers: 4.16.2
 
 <div class="output_area">
 
-<div class="output_subarea output_stream output_stderr output_text">
-<pre>Reusing dataset wmt16 (/home/wgilliam/.cache/huggingface/datasets/wmt16/de-en/1.0.0/af3c5d746b307726d0de73ebe7f10545361b9cb6f75c83a1734c000e48b6264f)
-Loading cached shuffled indices for dataset at /home/wgilliam/.cache/huggingface/datasets/wmt16/de-en/1.0.0/af3c5d746b307726d0de73ebe7f10545361b9cb6f75c83a1734c000e48b6264f/cache-8fc54b133c8c43b7.arrow
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>Downloading and preparing dataset wmt16/de-en (download: 1.57 GiB, generated: 1.28 GiB, post-processed: Unknown size, total: 2.85 GiB) to /home/wgilliam/.cache/huggingface/datasets/wmt16/de-en/1.0.0/af3c5d746b307726d0de73ebe7f10545361b9cb6f75c83a1734c000e48b6264f...
+Generating examples from: %s europarl_v7
+Generating examples from: %s commoncrawl
+Generating examples from: %s newscommentary_v11
+Generating examples from: %s newstest2015
+Generating examples from: %s newstest2016
+Dataset wmt16 downloaded and prepared to /home/wgilliam/.cache/huggingface/datasets/wmt16/de-en/1.0.0/af3c5d746b307726d0de73ebe7f10545361b9cb6f75c83a1734c000e48b6264f. Subsequent calls will reuse this data.
 </pre>
 </div>
 </div>
@@ -194,6 +199,229 @@ Loading cached shuffled indices for dataset at /home/wgilliam/.cache/huggingface
 
 <div class="output_wrapper">
 <div class="output">
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stderr output_text">
+<pre>https://huggingface.co/Helsinki-NLP/opus-mt-de-en/resolve/main/config.json not found in cache or force_download set to True, downloading to /home/wgilliam/.cache/huggingface/transformers/tmppp9i08el
+storing https://huggingface.co/Helsinki-NLP/opus-mt-de-en/resolve/main/config.json in cache at /home/wgilliam/.cache/huggingface/transformers/1854c5c3f3aeab11cfc4ef9f74e960e7bf2300332cd7cdbd83077f02499cdfab.b1412cdfcd82522fbf1b1559d2bb133e7c34f871e99859d46b74f1533daa4757
+creating metadata file for /home/wgilliam/.cache/huggingface/transformers/1854c5c3f3aeab11cfc4ef9f74e960e7bf2300332cd7cdbd83077f02499cdfab.b1412cdfcd82522fbf1b1559d2bb133e7c34f871e99859d46b74f1533daa4757
+loading configuration file https://huggingface.co/Helsinki-NLP/opus-mt-de-en/resolve/main/config.json from cache at /home/wgilliam/.cache/huggingface/transformers/1854c5c3f3aeab11cfc4ef9f74e960e7bf2300332cd7cdbd83077f02499cdfab.b1412cdfcd82522fbf1b1559d2bb133e7c34f871e99859d46b74f1533daa4757
+Model config MarianConfig {
+  &#34;_name_or_path&#34;: &#34;Helsinki-NLP/opus-mt-de-en&#34;,
+  &#34;_num_labels&#34;: 3,
+  &#34;activation_dropout&#34;: 0.0,
+  &#34;activation_function&#34;: &#34;swish&#34;,
+  &#34;add_bias_logits&#34;: false,
+  &#34;add_final_layer_norm&#34;: false,
+  &#34;architectures&#34;: [
+    &#34;MarianMTModel&#34;
+  ],
+  &#34;attention_dropout&#34;: 0.0,
+  &#34;bad_words_ids&#34;: [
+    [
+      58100
+    ]
+  ],
+  &#34;bos_token_id&#34;: 0,
+  &#34;classif_dropout&#34;: 0.0,
+  &#34;classifier_dropout&#34;: 0.0,
+  &#34;d_model&#34;: 512,
+  &#34;decoder_attention_heads&#34;: 8,
+  &#34;decoder_ffn_dim&#34;: 2048,
+  &#34;decoder_layerdrop&#34;: 0.0,
+  &#34;decoder_layers&#34;: 6,
+  &#34;decoder_start_token_id&#34;: 58100,
+  &#34;decoder_vocab_size&#34;: 58101,
+  &#34;dropout&#34;: 0.1,
+  &#34;encoder_attention_heads&#34;: 8,
+  &#34;encoder_ffn_dim&#34;: 2048,
+  &#34;encoder_layerdrop&#34;: 0.0,
+  &#34;encoder_layers&#34;: 6,
+  &#34;eos_token_id&#34;: 0,
+  &#34;forced_eos_token_id&#34;: 0,
+  &#34;id2label&#34;: {
+    &#34;0&#34;: &#34;LABEL_0&#34;,
+    &#34;1&#34;: &#34;LABEL_1&#34;,
+    &#34;2&#34;: &#34;LABEL_2&#34;
+  },
+  &#34;init_std&#34;: 0.02,
+  &#34;is_encoder_decoder&#34;: true,
+  &#34;label2id&#34;: {
+    &#34;LABEL_0&#34;: 0,
+    &#34;LABEL_1&#34;: 1,
+    &#34;LABEL_2&#34;: 2
+  },
+  &#34;max_length&#34;: 512,
+  &#34;max_position_embeddings&#34;: 512,
+  &#34;model_type&#34;: &#34;marian&#34;,
+  &#34;normalize_before&#34;: false,
+  &#34;normalize_embedding&#34;: false,
+  &#34;num_beams&#34;: 4,
+  &#34;num_hidden_layers&#34;: 6,
+  &#34;pad_token_id&#34;: 58100,
+  &#34;scale_embedding&#34;: true,
+  &#34;share_encoder_decoder_embeddings&#34;: true,
+  &#34;static_position_embeddings&#34;: true,
+  &#34;transformers_version&#34;: &#34;4.18.0&#34;,
+  &#34;use_cache&#34;: true,
+  &#34;vocab_size&#34;: 58101
+}
+
+https://huggingface.co/Helsinki-NLP/opus-mt-de-en/resolve/main/tokenizer_config.json not found in cache or force_download set to True, downloading to /home/wgilliam/.cache/huggingface/transformers/tmpes7wybva
+storing https://huggingface.co/Helsinki-NLP/opus-mt-de-en/resolve/main/tokenizer_config.json in cache at /home/wgilliam/.cache/huggingface/transformers/3bb44a3386cfbb9cb18134066610daf2447a07f2f56a14bed4ef1ffee714851c.ab636688faaa6513d9a830ea57bdb7081f0dda90f9de5e3c857a239f0cc406e7
+creating metadata file for /home/wgilliam/.cache/huggingface/transformers/3bb44a3386cfbb9cb18134066610daf2447a07f2f56a14bed4ef1ffee714851c.ab636688faaa6513d9a830ea57bdb7081f0dda90f9de5e3c857a239f0cc406e7
+loading configuration file https://huggingface.co/Helsinki-NLP/opus-mt-de-en/resolve/main/config.json from cache at /home/wgilliam/.cache/huggingface/transformers/1854c5c3f3aeab11cfc4ef9f74e960e7bf2300332cd7cdbd83077f02499cdfab.b1412cdfcd82522fbf1b1559d2bb133e7c34f871e99859d46b74f1533daa4757
+Model config MarianConfig {
+  &#34;_name_or_path&#34;: &#34;Helsinki-NLP/opus-mt-de-en&#34;,
+  &#34;_num_labels&#34;: 3,
+  &#34;activation_dropout&#34;: 0.0,
+  &#34;activation_function&#34;: &#34;swish&#34;,
+  &#34;add_bias_logits&#34;: false,
+  &#34;add_final_layer_norm&#34;: false,
+  &#34;architectures&#34;: [
+    &#34;MarianMTModel&#34;
+  ],
+  &#34;attention_dropout&#34;: 0.0,
+  &#34;bad_words_ids&#34;: [
+    [
+      58100
+    ]
+  ],
+  &#34;bos_token_id&#34;: 0,
+  &#34;classif_dropout&#34;: 0.0,
+  &#34;classifier_dropout&#34;: 0.0,
+  &#34;d_model&#34;: 512,
+  &#34;decoder_attention_heads&#34;: 8,
+  &#34;decoder_ffn_dim&#34;: 2048,
+  &#34;decoder_layerdrop&#34;: 0.0,
+  &#34;decoder_layers&#34;: 6,
+  &#34;decoder_start_token_id&#34;: 58100,
+  &#34;decoder_vocab_size&#34;: 58101,
+  &#34;dropout&#34;: 0.1,
+  &#34;encoder_attention_heads&#34;: 8,
+  &#34;encoder_ffn_dim&#34;: 2048,
+  &#34;encoder_layerdrop&#34;: 0.0,
+  &#34;encoder_layers&#34;: 6,
+  &#34;eos_token_id&#34;: 0,
+  &#34;forced_eos_token_id&#34;: 0,
+  &#34;id2label&#34;: {
+    &#34;0&#34;: &#34;LABEL_0&#34;,
+    &#34;1&#34;: &#34;LABEL_1&#34;,
+    &#34;2&#34;: &#34;LABEL_2&#34;
+  },
+  &#34;init_std&#34;: 0.02,
+  &#34;is_encoder_decoder&#34;: true,
+  &#34;label2id&#34;: {
+    &#34;LABEL_0&#34;: 0,
+    &#34;LABEL_1&#34;: 1,
+    &#34;LABEL_2&#34;: 2
+  },
+  &#34;max_length&#34;: 512,
+  &#34;max_position_embeddings&#34;: 512,
+  &#34;model_type&#34;: &#34;marian&#34;,
+  &#34;normalize_before&#34;: false,
+  &#34;normalize_embedding&#34;: false,
+  &#34;num_beams&#34;: 4,
+  &#34;num_hidden_layers&#34;: 6,
+  &#34;pad_token_id&#34;: 58100,
+  &#34;scale_embedding&#34;: true,
+  &#34;share_encoder_decoder_embeddings&#34;: true,
+  &#34;static_position_embeddings&#34;: true,
+  &#34;transformers_version&#34;: &#34;4.18.0&#34;,
+  &#34;use_cache&#34;: true,
+  &#34;vocab_size&#34;: 58101
+}
+
+https://huggingface.co/Helsinki-NLP/opus-mt-de-en/resolve/main/source.spm not found in cache or force_download set to True, downloading to /home/wgilliam/.cache/huggingface/transformers/tmpmmic75d1
+storing https://huggingface.co/Helsinki-NLP/opus-mt-de-en/resolve/main/source.spm in cache at /home/wgilliam/.cache/huggingface/transformers/97f9ac1f9bf6b0e421cdf322cd4243cf20650839545200bf6b513ad03c168c8c.7bc2908774e59068751778d82930d24fe5b81375f4e06aa8f2a62298103c9587
+creating metadata file for /home/wgilliam/.cache/huggingface/transformers/97f9ac1f9bf6b0e421cdf322cd4243cf20650839545200bf6b513ad03c168c8c.7bc2908774e59068751778d82930d24fe5b81375f4e06aa8f2a62298103c9587
+https://huggingface.co/Helsinki-NLP/opus-mt-de-en/resolve/main/target.spm not found in cache or force_download set to True, downloading to /home/wgilliam/.cache/huggingface/transformers/tmp_780e_84
+storing https://huggingface.co/Helsinki-NLP/opus-mt-de-en/resolve/main/target.spm in cache at /home/wgilliam/.cache/huggingface/transformers/1c5dd1c09c6117b6da35a0bfc70dee4e4852bd9f1e019474ccd80f98014806b5.5ff349d0044d463eca29fbb3a3d21a2dd0511ced746d6c6941daa893faf53d79
+creating metadata file for /home/wgilliam/.cache/huggingface/transformers/1c5dd1c09c6117b6da35a0bfc70dee4e4852bd9f1e019474ccd80f98014806b5.5ff349d0044d463eca29fbb3a3d21a2dd0511ced746d6c6941daa893faf53d79
+https://huggingface.co/Helsinki-NLP/opus-mt-de-en/resolve/main/vocab.json not found in cache or force_download set to True, downloading to /home/wgilliam/.cache/huggingface/transformers/tmp9veehttl
+storing https://huggingface.co/Helsinki-NLP/opus-mt-de-en/resolve/main/vocab.json in cache at /home/wgilliam/.cache/huggingface/transformers/135ba2ed81322da617731039edec94c1b10b121b5499ea1bcdd7e60040cf4913.fe9bdbcb654d47ed6918ebaad81166b879fd0bc12ea76a2cc54359202fa854d7
+creating metadata file for /home/wgilliam/.cache/huggingface/transformers/135ba2ed81322da617731039edec94c1b10b121b5499ea1bcdd7e60040cf4913.fe9bdbcb654d47ed6918ebaad81166b879fd0bc12ea76a2cc54359202fa854d7
+loading file https://huggingface.co/Helsinki-NLP/opus-mt-de-en/resolve/main/source.spm from cache at /home/wgilliam/.cache/huggingface/transformers/97f9ac1f9bf6b0e421cdf322cd4243cf20650839545200bf6b513ad03c168c8c.7bc2908774e59068751778d82930d24fe5b81375f4e06aa8f2a62298103c9587
+loading file https://huggingface.co/Helsinki-NLP/opus-mt-de-en/resolve/main/target.spm from cache at /home/wgilliam/.cache/huggingface/transformers/1c5dd1c09c6117b6da35a0bfc70dee4e4852bd9f1e019474ccd80f98014806b5.5ff349d0044d463eca29fbb3a3d21a2dd0511ced746d6c6941daa893faf53d79
+loading file https://huggingface.co/Helsinki-NLP/opus-mt-de-en/resolve/main/vocab.json from cache at /home/wgilliam/.cache/huggingface/transformers/135ba2ed81322da617731039edec94c1b10b121b5499ea1bcdd7e60040cf4913.fe9bdbcb654d47ed6918ebaad81166b879fd0bc12ea76a2cc54359202fa854d7
+loading file https://huggingface.co/Helsinki-NLP/opus-mt-de-en/resolve/main/target_vocab.json from cache at None
+loading file https://huggingface.co/Helsinki-NLP/opus-mt-de-en/resolve/main/tokenizer_config.json from cache at /home/wgilliam/.cache/huggingface/transformers/3bb44a3386cfbb9cb18134066610daf2447a07f2f56a14bed4ef1ffee714851c.ab636688faaa6513d9a830ea57bdb7081f0dda90f9de5e3c857a239f0cc406e7
+loading file https://huggingface.co/Helsinki-NLP/opus-mt-de-en/resolve/main/added_tokens.json from cache at None
+loading file https://huggingface.co/Helsinki-NLP/opus-mt-de-en/resolve/main/special_tokens_map.json from cache at None
+loading configuration file https://huggingface.co/Helsinki-NLP/opus-mt-de-en/resolve/main/config.json from cache at /home/wgilliam/.cache/huggingface/transformers/1854c5c3f3aeab11cfc4ef9f74e960e7bf2300332cd7cdbd83077f02499cdfab.b1412cdfcd82522fbf1b1559d2bb133e7c34f871e99859d46b74f1533daa4757
+Model config MarianConfig {
+  &#34;_name_or_path&#34;: &#34;Helsinki-NLP/opus-mt-de-en&#34;,
+  &#34;_num_labels&#34;: 3,
+  &#34;activation_dropout&#34;: 0.0,
+  &#34;activation_function&#34;: &#34;swish&#34;,
+  &#34;add_bias_logits&#34;: false,
+  &#34;add_final_layer_norm&#34;: false,
+  &#34;architectures&#34;: [
+    &#34;MarianMTModel&#34;
+  ],
+  &#34;attention_dropout&#34;: 0.0,
+  &#34;bad_words_ids&#34;: [
+    [
+      58100
+    ]
+  ],
+  &#34;bos_token_id&#34;: 0,
+  &#34;classif_dropout&#34;: 0.0,
+  &#34;classifier_dropout&#34;: 0.0,
+  &#34;d_model&#34;: 512,
+  &#34;decoder_attention_heads&#34;: 8,
+  &#34;decoder_ffn_dim&#34;: 2048,
+  &#34;decoder_layerdrop&#34;: 0.0,
+  &#34;decoder_layers&#34;: 6,
+  &#34;decoder_start_token_id&#34;: 58100,
+  &#34;decoder_vocab_size&#34;: 58101,
+  &#34;dropout&#34;: 0.1,
+  &#34;encoder_attention_heads&#34;: 8,
+  &#34;encoder_ffn_dim&#34;: 2048,
+  &#34;encoder_layerdrop&#34;: 0.0,
+  &#34;encoder_layers&#34;: 6,
+  &#34;eos_token_id&#34;: 0,
+  &#34;forced_eos_token_id&#34;: 0,
+  &#34;id2label&#34;: {
+    &#34;0&#34;: &#34;LABEL_0&#34;,
+    &#34;1&#34;: &#34;LABEL_1&#34;,
+    &#34;2&#34;: &#34;LABEL_2&#34;
+  },
+  &#34;init_std&#34;: 0.02,
+  &#34;is_encoder_decoder&#34;: true,
+  &#34;label2id&#34;: {
+    &#34;LABEL_0&#34;: 0,
+    &#34;LABEL_1&#34;: 1,
+    &#34;LABEL_2&#34;: 2
+  },
+  &#34;max_length&#34;: 512,
+  &#34;max_position_embeddings&#34;: 512,
+  &#34;model_type&#34;: &#34;marian&#34;,
+  &#34;normalize_before&#34;: false,
+  &#34;normalize_embedding&#34;: false,
+  &#34;num_beams&#34;: 4,
+  &#34;num_hidden_layers&#34;: 6,
+  &#34;pad_token_id&#34;: 58100,
+  &#34;scale_embedding&#34;: true,
+  &#34;share_encoder_decoder_embeddings&#34;: true,
+  &#34;static_position_embeddings&#34;: true,
+  &#34;transformers_version&#34;: &#34;4.18.0&#34;,
+  &#34;use_cache&#34;: true,
+  &#34;vocab_size&#34;: 58101
+}
+
+https://huggingface.co/Helsinki-NLP/opus-mt-de-en/resolve/main/pytorch_model.bin not found in cache or force_download set to True, downloading to /home/wgilliam/.cache/huggingface/transformers/tmp4evxfupq
+storing https://huggingface.co/Helsinki-NLP/opus-mt-de-en/resolve/main/pytorch_model.bin in cache at /home/wgilliam/.cache/huggingface/transformers/939fa8e38fdeb206b841054406fe90638dbe4a602679798fc35126e90fe54e12.9f2385d4ebdde4e5e8ef144654a4666f40c8423a85f51590fecb88452aec1514
+creating metadata file for /home/wgilliam/.cache/huggingface/transformers/939fa8e38fdeb206b841054406fe90638dbe4a602679798fc35126e90fe54e12.9f2385d4ebdde4e5e8ef144654a4666f40c8423a85f51590fecb88452aec1514
+loading weights file https://huggingface.co/Helsinki-NLP/opus-mt-de-en/resolve/main/pytorch_model.bin from cache at /home/wgilliam/.cache/huggingface/transformers/939fa8e38fdeb206b841054406fe90638dbe4a602679798fc35126e90fe54e12.9f2385d4ebdde4e5e8ef144654a4666f40c8423a85f51590fecb88452aec1514
+All model checkpoint weights were used when initializing MarianMTModel.
+
+All the weights of MarianMTModel were initialized from the model checkpoint at Helsinki-NLP/opus-mt-de-en.
+If your task is similar to the task the model of the checkpoint was trained on, you can already use MarianMTModel for predictions without further training.
+</pre>
+</div>
+</div>
 
 <div class="output_area">
 
@@ -335,8 +563,8 @@ Loading cached shuffled indices for dataset at /home/wgilliam/.cache/huggingface
     </tr>
     <tr>
       <th>1</th>
-      <td>Die Oberligamannschaft Empor▁Lauter wurde 1954 nach Rostock▁delegiert und bestritt am▁14. November 1954 vor 17 000▁Zuschauern▁gegen Chemie Karl-Marx-Stadt (0:0) das▁erste Oberligapunktspiel im▁Ostseestadion. Die▁Gründung des FC Hansa Rostock▁fand▁dan</td>
-      <td>Bundesliga, was founded on December 28, 1965, when the football department of SC Empor was made independent of their parent sports club under a government sanctioned program that would groom young talent and provide the East German (DDR) national tea</td>
+      <td>Es▁ist▁jetzt▁wirklich an der Zeit,▁daß nicht▁nur in▁bezug auf den▁Jahreswirtschaftsbericht und die▁wirtschaftspolitischen▁Leitlinien,▁nein,▁auch in▁bezug auf die▁gesamten▁Fragen zum▁Verfahren zur▁Feststellung des▁übermäßigen▁Defizits und▁auch in▁bezu</td>
+      <td>It really is time for the European Parliament to be given a codecision right that is consistent with the further democratic development of this European Union; that right must apply not just to the annual economic report and the economic policy guide</td>
     </tr>
   </tbody>
 </table></div>
@@ -449,7 +677,7 @@ Loading cached shuffled indices for dataset at /home/wgilliam/.cache/huggingface
 
 
 <div class="output_text output_subarea output_execute_result">
-<pre>(4, torch.Size([]), torch.Size([2, 140, 58101]))</pre>
+<pre>(3, torch.Size([]), torch.Size([2, 140, 58101]))</pre>
 </div>
 
 </div>
@@ -553,7 +781,7 @@ Loading cached shuffled indices for dataset at /home/wgilliam/.cache/huggingface
 
 
 <div class="output_text output_subarea output_execute_result">
-<pre>SuggestedLRs(minimum=6.309573450380412e-08, steep=1.0964781722577754e-06, valley=0.0003981071640737355, slide=1.4454397387453355e-05)</pre>
+<pre>SuggestedLRs(minimum=3.981071640737355e-05, steep=6.309573450380412e-07, valley=5.248074739938602e-05, slide=7.585775892948732e-05)</pre>
 </div>
 
 </div>
@@ -563,7 +791,7 @@ Loading cached shuffled indices for dataset at /home/wgilliam/.cache/huggingface
 
 
 <div class="output_png output_subarea ">
-<img src="data:image/png;base64,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"
+<img src="data:image/png;base64,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"
 >
 </div>
 
@@ -610,12 +838,12 @@ Loading cached shuffled indices for dataset at /home/wgilliam/.cache/huggingface
   <tbody>
     <tr>
       <td>0</td>
-      <td>2.066144</td>
-      <td>2.020720</td>
-      <td>0.294544</td>
-      <td>0.547619</td>
-      <td>28.638813</td>
-      <td>00:56</td>
+      <td>2.088453</td>
+      <td>2.097524</td>
+      <td>0.295524</td>
+      <td>0.543777</td>
+      <td>28.882930</td>
+      <td>00:58</td>
     </tr>
   </tbody>
 </table></div>
@@ -674,9 +902,9 @@ Loading cached shuffled indices for dataset at /home/wgilliam/.cache/huggingface
   <tbody>
     <tr>
       <th>0</th>
-      <td>Die Messe Frankfurt hat im▁Jahr 2006 in▁Kooperation mit Stylepark ein▁neues und▁bisher so▁noch nicht▁existierendes Format▁etabliert: The Design Annual.Bei The Design Annual▁handelt es sich um eine▁jährlich▁stattfindende Veranstaltung für High-End Design, die Frankfurt am Main▁auch 2008▁wieder zum Zentrum des▁internationalen Designgeschehens▁werden▁lässt. In der▁Frankfurter Festhalle▁präsentieren die▁beiden Partner die▁besten▁Hersteller des High-End Designsegments▁aus den▁Bereichen▁Möbel und▁Auße</td>
-      <td>In 2006, Messe Frankfurt in cooperation with Stylepark established a new and quite unprecedented format for a trade fair, namely The Design Annual.</td>
-      <td>[Messe Frankfurt established a new format in 2006 in cooperation with Stylepark: The Design Annual.The Design Annual is an annual high-end design event that will once again make Frankfurt the centre of international design in 2008. In the Frankfurt Festhalle, the two partners will present the best manufacturers of the high-end design segment in the areas of furniture and outdoor furniture, textiles and floor coverings, bathroom and kitchens, office furniture, lighting, accessories, cutlery, electrical installations and home entertainment., If there are eggs that are not legally produced after January 2012, these eggs must not be marketed, and if there is evidence of non-compliance with the provision, the Commission could, of course, take all the measures it is entitled to under the current legal framework - and initiate infringement procedures to ensure that EU legislation is properly implemented.]</td>
+      <td>▁Schließen die▁vorgeschlagenen▁Anwendungszwecke▁Empfehlungen über die▁Bekämpfung von oder den▁Schutz▁gegen▁Organismen ein, die▁unter den in der▁vorgesehenen▁Anwendungsregion▁herrschenden▁Bedingungen in▁bezug auf▁Landwirtschaft,▁Pflanzenschutz und Umwelt -▁einschließlich der▁Witterungsverhältnisse - nach den▁Erfahrungen und dem▁wissenschaftlichen▁Erkenntnisstand nicht▁als▁schädlich▁gelten, oder▁ist▁davon▁auszugehen,▁daß die▁anderen▁Wirkungen▁unter▁diesen▁Bedingungen den▁beabsichtigten▁Zweck nicht</td>
+      <td>Where relevant, yield response when the product is used and reduction of loss in storage must be quantitatively and/or qualitatively similar to those resulting from the use of suitable reference products. If no suitable reference product exists, the plant protection product must be shown to give a consistent and defined quantitative and/or qualitative benefit in terms of yield response and reduction of loss in storage under the agricultural, plant health and environmental (including climatic) co</td>
+      <td>[Where the proposed uses include recommendations on the control of or protection against organisms which are not considered to be harmful under the conditions prevailing in the intended application region in respect of agriculture, plant health and the environment, including climatic conditions, in the light of experience and scientific knowledge, or where it is assumed that the other effects do not meet the intended purpose under such conditions, no authorisation shall be granted for such uses., That is why we have listened to you and asked you to introduce a further transparent consultation procedure on the Anti-Counterfeiting Agreement (ACTA) to ensure that the European Parliament and the citizens represented by this Parliament are regularly and comprehensively informed about the progress of the negotiations, while respecting the confidentiality clauses that you have just explained to us about the agreement.]</td>
     </tr>
   </tbody>
 </table></div>
@@ -738,7 +966,7 @@ Loading cached shuffled indices for dataset at /home/wgilliam/.cache/huggingface
 <div class="output_text output_subarea output_execute_result">
 <pre>[{&#39;translation_texts&#39;: [&#39;I like to drink beer&#39;,
    &#39;I like to drink beer.&#39;,
-   &#39;I like to drink&#39;]}]</pre>
+   &#39;I like drinking beer&#39;]}]</pre>
 </div>
 
 </div>
@@ -760,7 +988,7 @@ Loading cached shuffled indices for dataset at /home/wgilliam/.cache/huggingface
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h4 id="Learner.blurr_translate" class="doc_header"><code>Learner.blurr_translate</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/text/modeling/seq2seq/translation.py#L29" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>Learner.blurr_translate</code>(<strong><code>inp</code></strong>, <strong>**<code>kwargs</code></strong>)</p>
+<h4 id="Learner.blurr_translate" class="doc_header"><code>Learner.blurr_translate</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/text/modeling/seq2seq/translation.py#L30" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>Learner.blurr_translate</code>(<strong><code>inp</code></strong>, <strong>**<code>kwargs</code></strong>)</p>
 </blockquote>
 
 </div>
@@ -804,7 +1032,7 @@ Loading cached shuffled indices for dataset at /home/wgilliam/.cache/huggingface
 <div class="output_text output_subarea output_execute_result">
 <pre>[{&#39;translation_texts&#39;: [&#39;I like to drink beer&#39;,
    &#39;I like to drink beer.&#39;,
-   &#39;I like to drink&#39;]}]</pre>
+   &#39;I like drinking beer&#39;]}]</pre>
 </div>
 
 </div>
@@ -908,7 +1136,7 @@ Loading cached shuffled indices for dataset at /home/wgilliam/.cache/huggingface
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h3 id="BlearnerForTranslation" class="doc_header"><code>class</code> <code>BlearnerForTranslation</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/text/modeling/seq2seq/translation.py#L36" class="source_link" style="float:right">[source]</a></h3><blockquote><p><code>BlearnerForTranslation</code>(<strong><code>dls</code></strong>:<code>DataLoaders</code>, <strong><code>hf_model</code></strong>:<code>PreTrainedModel</code>, <strong><code>base_model_cb</code></strong>:<a href="/blurr/text-modeling-core.html#BaseModelCallback"><code>BaseModelCallback</code></a>=<em><code>BaseModelCallback</code></em>, <strong><code>loss_func</code></strong>=<em><code>None</code></em>, <strong><code>opt_func</code></strong>=<em><code>Adam</code></em>, <strong><code>lr</code></strong>=<em><code>0.001</code></em>, <strong><code>splitter</code></strong>=<em><code>trainable_params</code></em>, <strong><code>cbs</code></strong>=<em><code>None</code></em>, <strong><code>metrics</code></strong>=<em><code>None</code></em>, <strong><code>path</code></strong>=<em><code>None</code></em>, <strong><code>model_dir</code></strong>=<em><code>'models'</code></em>, <strong><code>wd</code></strong>=<em><code>None</code></em>, <strong><code>wd_bn_bias</code></strong>=<em><code>False</code></em>, <strong><code>train_bn</code></strong>=<em><code>True</code></em>, <strong><code>moms</code></strong>=<em><code>(0.95, 0.85, 0.95)</code></em>) :: <a href="/blurr/text-modeling-core.html#Blearner"><code>Blearner</code></a></p>
+<h3 id="BlearnerForTranslation" class="doc_header"><code>class</code> <code>BlearnerForTranslation</code><a href="https://github.com/ohmeow/blurr/tree/master/blurr/text/modeling/seq2seq/translation.py#L37" class="source_link" style="float:right">[source]</a></h3><blockquote><p><code>BlearnerForTranslation</code>(<strong><code>dls</code></strong>:<code>DataLoaders</code>, <strong><code>hf_model</code></strong>:<code>PreTrainedModel</code>, <strong><code>base_model_cb</code></strong>:<a href="/blurr/text-modeling-core.html#BaseModelCallback"><code>BaseModelCallback</code></a>=<em><code>BaseModelCallback</code></em>, <strong><code>loss_func</code></strong>=<em><code>None</code></em>, <strong><code>opt_func</code></strong>=<em><code>Adam</code></em>, <strong><code>lr</code></strong>=<em><code>0.001</code></em>, <strong><code>splitter</code></strong>=<em><code>trainable_params</code></em>, <strong><code>cbs</code></strong>=<em><code>None</code></em>, <strong><code>metrics</code></strong>=<em><code>None</code></em>, <strong><code>path</code></strong>=<em><code>None</code></em>, <strong><code>model_dir</code></strong>=<em><code>'models'</code></em>, <strong><code>wd</code></strong>=<em><code>None</code></em>, <strong><code>wd_bn_bias</code></strong>=<em><code>False</code></em>, <strong><code>train_bn</code></strong>=<em><code>True</code></em>, <strong><code>moms</code></strong>=<em><code>(0.95, 0.85, 0.95)</code></em>) :: <a href="/blurr/text-modeling-core.html#Blearner"><code>Blearner</code></a></p>
 </blockquote>
 <p>Group together a <code>model</code>, some <code>dls</code> and a <code>loss_func</code> to handle training</p>
 
@@ -948,6 +1176,284 @@ Loading cached shuffled indices for dataset at /home/wgilliam/.cache/huggingface
 </pre></div>
 
     </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stderr output_text">
+<pre>loading configuration file https://huggingface.co/Helsinki-NLP/opus-mt-de-en/resolve/main/config.json from cache at /home/wgilliam/.cache/huggingface/transformers/1854c5c3f3aeab11cfc4ef9f74e960e7bf2300332cd7cdbd83077f02499cdfab.b1412cdfcd82522fbf1b1559d2bb133e7c34f871e99859d46b74f1533daa4757
+Model config MarianConfig {
+  &#34;_name_or_path&#34;: &#34;Helsinki-NLP/opus-mt-de-en&#34;,
+  &#34;_num_labels&#34;: 3,
+  &#34;activation_dropout&#34;: 0.0,
+  &#34;activation_function&#34;: &#34;swish&#34;,
+  &#34;add_bias_logits&#34;: false,
+  &#34;add_final_layer_norm&#34;: false,
+  &#34;architectures&#34;: [
+    &#34;MarianMTModel&#34;
+  ],
+  &#34;attention_dropout&#34;: 0.0,
+  &#34;bad_words_ids&#34;: [
+    [
+      58100
+    ]
+  ],
+  &#34;bos_token_id&#34;: 0,
+  &#34;classif_dropout&#34;: 0.0,
+  &#34;classifier_dropout&#34;: 0.0,
+  &#34;d_model&#34;: 512,
+  &#34;decoder_attention_heads&#34;: 8,
+  &#34;decoder_ffn_dim&#34;: 2048,
+  &#34;decoder_layerdrop&#34;: 0.0,
+  &#34;decoder_layers&#34;: 6,
+  &#34;decoder_start_token_id&#34;: 58100,
+  &#34;decoder_vocab_size&#34;: 58101,
+  &#34;dropout&#34;: 0.1,
+  &#34;encoder_attention_heads&#34;: 8,
+  &#34;encoder_ffn_dim&#34;: 2048,
+  &#34;encoder_layerdrop&#34;: 0.0,
+  &#34;encoder_layers&#34;: 6,
+  &#34;eos_token_id&#34;: 0,
+  &#34;forced_eos_token_id&#34;: 0,
+  &#34;id2label&#34;: {
+    &#34;0&#34;: &#34;LABEL_0&#34;,
+    &#34;1&#34;: &#34;LABEL_1&#34;,
+    &#34;2&#34;: &#34;LABEL_2&#34;
+  },
+  &#34;init_std&#34;: 0.02,
+  &#34;is_encoder_decoder&#34;: true,
+  &#34;label2id&#34;: {
+    &#34;LABEL_0&#34;: 0,
+    &#34;LABEL_1&#34;: 1,
+    &#34;LABEL_2&#34;: 2
+  },
+  &#34;max_length&#34;: 512,
+  &#34;max_position_embeddings&#34;: 512,
+  &#34;model_type&#34;: &#34;marian&#34;,
+  &#34;normalize_before&#34;: false,
+  &#34;normalize_embedding&#34;: false,
+  &#34;num_beams&#34;: 4,
+  &#34;num_hidden_layers&#34;: 6,
+  &#34;pad_token_id&#34;: 58100,
+  &#34;scale_embedding&#34;: true,
+  &#34;share_encoder_decoder_embeddings&#34;: true,
+  &#34;static_position_embeddings&#34;: true,
+  &#34;transformers_version&#34;: &#34;4.18.0&#34;,
+  &#34;use_cache&#34;: true,
+  &#34;vocab_size&#34;: 58101
+}
+
+loading weights file https://huggingface.co/Helsinki-NLP/opus-mt-de-en/resolve/main/pytorch_model.bin from cache at /home/wgilliam/.cache/huggingface/transformers/939fa8e38fdeb206b841054406fe90638dbe4a602679798fc35126e90fe54e12.9f2385d4ebdde4e5e8ef144654a4666f40c8423a85f51590fecb88452aec1514
+All model checkpoint weights were used when initializing MarianMTModel.
+
+All the weights of MarianMTModel were initialized from the model checkpoint at Helsinki-NLP/opus-mt-de-en.
+If your task is similar to the task the model of the checkpoint was trained on, you can already use MarianMTModel for predictions without further training.
+loading configuration file https://huggingface.co/Helsinki-NLP/opus-mt-de-en/resolve/main/config.json from cache at /home/wgilliam/.cache/huggingface/transformers/1854c5c3f3aeab11cfc4ef9f74e960e7bf2300332cd7cdbd83077f02499cdfab.b1412cdfcd82522fbf1b1559d2bb133e7c34f871e99859d46b74f1533daa4757
+Model config MarianConfig {
+  &#34;_name_or_path&#34;: &#34;Helsinki-NLP/opus-mt-de-en&#34;,
+  &#34;_num_labels&#34;: 3,
+  &#34;activation_dropout&#34;: 0.0,
+  &#34;activation_function&#34;: &#34;swish&#34;,
+  &#34;add_bias_logits&#34;: false,
+  &#34;add_final_layer_norm&#34;: false,
+  &#34;architectures&#34;: [
+    &#34;MarianMTModel&#34;
+  ],
+  &#34;attention_dropout&#34;: 0.0,
+  &#34;bad_words_ids&#34;: [
+    [
+      58100
+    ]
+  ],
+  &#34;bos_token_id&#34;: 0,
+  &#34;classif_dropout&#34;: 0.0,
+  &#34;classifier_dropout&#34;: 0.0,
+  &#34;d_model&#34;: 512,
+  &#34;decoder_attention_heads&#34;: 8,
+  &#34;decoder_ffn_dim&#34;: 2048,
+  &#34;decoder_layerdrop&#34;: 0.0,
+  &#34;decoder_layers&#34;: 6,
+  &#34;decoder_start_token_id&#34;: 58100,
+  &#34;decoder_vocab_size&#34;: 58101,
+  &#34;dropout&#34;: 0.1,
+  &#34;encoder_attention_heads&#34;: 8,
+  &#34;encoder_ffn_dim&#34;: 2048,
+  &#34;encoder_layerdrop&#34;: 0.0,
+  &#34;encoder_layers&#34;: 6,
+  &#34;eos_token_id&#34;: 0,
+  &#34;forced_eos_token_id&#34;: 0,
+  &#34;id2label&#34;: {
+    &#34;0&#34;: &#34;LABEL_0&#34;,
+    &#34;1&#34;: &#34;LABEL_1&#34;,
+    &#34;2&#34;: &#34;LABEL_2&#34;
+  },
+  &#34;init_std&#34;: 0.02,
+  &#34;is_encoder_decoder&#34;: true,
+  &#34;label2id&#34;: {
+    &#34;LABEL_0&#34;: 0,
+    &#34;LABEL_1&#34;: 1,
+    &#34;LABEL_2&#34;: 2
+  },
+  &#34;max_length&#34;: 512,
+  &#34;max_position_embeddings&#34;: 512,
+  &#34;model_type&#34;: &#34;marian&#34;,
+  &#34;normalize_before&#34;: false,
+  &#34;normalize_embedding&#34;: false,
+  &#34;num_beams&#34;: 4,
+  &#34;num_hidden_layers&#34;: 6,
+  &#34;pad_token_id&#34;: 58100,
+  &#34;scale_embedding&#34;: true,
+  &#34;share_encoder_decoder_embeddings&#34;: true,
+  &#34;static_position_embeddings&#34;: true,
+  &#34;transformers_version&#34;: &#34;4.18.0&#34;,
+  &#34;use_cache&#34;: true,
+  &#34;vocab_size&#34;: 58101
+}
+
+loading configuration file https://huggingface.co/Helsinki-NLP/opus-mt-de-en/resolve/main/config.json from cache at /home/wgilliam/.cache/huggingface/transformers/1854c5c3f3aeab11cfc4ef9f74e960e7bf2300332cd7cdbd83077f02499cdfab.b1412cdfcd82522fbf1b1559d2bb133e7c34f871e99859d46b74f1533daa4757
+Model config MarianConfig {
+  &#34;_name_or_path&#34;: &#34;Helsinki-NLP/opus-mt-de-en&#34;,
+  &#34;_num_labels&#34;: 3,
+  &#34;activation_dropout&#34;: 0.0,
+  &#34;activation_function&#34;: &#34;swish&#34;,
+  &#34;add_bias_logits&#34;: false,
+  &#34;add_final_layer_norm&#34;: false,
+  &#34;architectures&#34;: [
+    &#34;MarianMTModel&#34;
+  ],
+  &#34;attention_dropout&#34;: 0.0,
+  &#34;bad_words_ids&#34;: [
+    [
+      58100
+    ]
+  ],
+  &#34;bos_token_id&#34;: 0,
+  &#34;classif_dropout&#34;: 0.0,
+  &#34;classifier_dropout&#34;: 0.0,
+  &#34;d_model&#34;: 512,
+  &#34;decoder_attention_heads&#34;: 8,
+  &#34;decoder_ffn_dim&#34;: 2048,
+  &#34;decoder_layerdrop&#34;: 0.0,
+  &#34;decoder_layers&#34;: 6,
+  &#34;decoder_start_token_id&#34;: 58100,
+  &#34;decoder_vocab_size&#34;: 58101,
+  &#34;dropout&#34;: 0.1,
+  &#34;encoder_attention_heads&#34;: 8,
+  &#34;encoder_ffn_dim&#34;: 2048,
+  &#34;encoder_layerdrop&#34;: 0.0,
+  &#34;encoder_layers&#34;: 6,
+  &#34;eos_token_id&#34;: 0,
+  &#34;forced_eos_token_id&#34;: 0,
+  &#34;id2label&#34;: {
+    &#34;0&#34;: &#34;LABEL_0&#34;,
+    &#34;1&#34;: &#34;LABEL_1&#34;,
+    &#34;2&#34;: &#34;LABEL_2&#34;
+  },
+  &#34;init_std&#34;: 0.02,
+  &#34;is_encoder_decoder&#34;: true,
+  &#34;label2id&#34;: {
+    &#34;LABEL_0&#34;: 0,
+    &#34;LABEL_1&#34;: 1,
+    &#34;LABEL_2&#34;: 2
+  },
+  &#34;max_length&#34;: 512,
+  &#34;max_position_embeddings&#34;: 512,
+  &#34;model_type&#34;: &#34;marian&#34;,
+  &#34;normalize_before&#34;: false,
+  &#34;normalize_embedding&#34;: false,
+  &#34;num_beams&#34;: 4,
+  &#34;num_hidden_layers&#34;: 6,
+  &#34;pad_token_id&#34;: 58100,
+  &#34;scale_embedding&#34;: true,
+  &#34;share_encoder_decoder_embeddings&#34;: true,
+  &#34;static_position_embeddings&#34;: true,
+  &#34;transformers_version&#34;: &#34;4.18.0&#34;,
+  &#34;use_cache&#34;: true,
+  &#34;vocab_size&#34;: 58101
+}
+
+loading file https://huggingface.co/Helsinki-NLP/opus-mt-de-en/resolve/main/source.spm from cache at /home/wgilliam/.cache/huggingface/transformers/97f9ac1f9bf6b0e421cdf322cd4243cf20650839545200bf6b513ad03c168c8c.7bc2908774e59068751778d82930d24fe5b81375f4e06aa8f2a62298103c9587
+loading file https://huggingface.co/Helsinki-NLP/opus-mt-de-en/resolve/main/target.spm from cache at /home/wgilliam/.cache/huggingface/transformers/1c5dd1c09c6117b6da35a0bfc70dee4e4852bd9f1e019474ccd80f98014806b5.5ff349d0044d463eca29fbb3a3d21a2dd0511ced746d6c6941daa893faf53d79
+loading file https://huggingface.co/Helsinki-NLP/opus-mt-de-en/resolve/main/vocab.json from cache at /home/wgilliam/.cache/huggingface/transformers/135ba2ed81322da617731039edec94c1b10b121b5499ea1bcdd7e60040cf4913.fe9bdbcb654d47ed6918ebaad81166b879fd0bc12ea76a2cc54359202fa854d7
+loading file https://huggingface.co/Helsinki-NLP/opus-mt-de-en/resolve/main/target_vocab.json from cache at None
+loading file https://huggingface.co/Helsinki-NLP/opus-mt-de-en/resolve/main/tokenizer_config.json from cache at /home/wgilliam/.cache/huggingface/transformers/3bb44a3386cfbb9cb18134066610daf2447a07f2f56a14bed4ef1ffee714851c.ab636688faaa6513d9a830ea57bdb7081f0dda90f9de5e3c857a239f0cc406e7
+loading file https://huggingface.co/Helsinki-NLP/opus-mt-de-en/resolve/main/added_tokens.json from cache at None
+loading file https://huggingface.co/Helsinki-NLP/opus-mt-de-en/resolve/main/special_tokens_map.json from cache at None
+loading configuration file https://huggingface.co/Helsinki-NLP/opus-mt-de-en/resolve/main/config.json from cache at /home/wgilliam/.cache/huggingface/transformers/1854c5c3f3aeab11cfc4ef9f74e960e7bf2300332cd7cdbd83077f02499cdfab.b1412cdfcd82522fbf1b1559d2bb133e7c34f871e99859d46b74f1533daa4757
+Model config MarianConfig {
+  &#34;_name_or_path&#34;: &#34;Helsinki-NLP/opus-mt-de-en&#34;,
+  &#34;_num_labels&#34;: 3,
+  &#34;activation_dropout&#34;: 0.0,
+  &#34;activation_function&#34;: &#34;swish&#34;,
+  &#34;add_bias_logits&#34;: false,
+  &#34;add_final_layer_norm&#34;: false,
+  &#34;architectures&#34;: [
+    &#34;MarianMTModel&#34;
+  ],
+  &#34;attention_dropout&#34;: 0.0,
+  &#34;bad_words_ids&#34;: [
+    [
+      58100
+    ]
+  ],
+  &#34;bos_token_id&#34;: 0,
+  &#34;classif_dropout&#34;: 0.0,
+  &#34;classifier_dropout&#34;: 0.0,
+  &#34;d_model&#34;: 512,
+  &#34;decoder_attention_heads&#34;: 8,
+  &#34;decoder_ffn_dim&#34;: 2048,
+  &#34;decoder_layerdrop&#34;: 0.0,
+  &#34;decoder_layers&#34;: 6,
+  &#34;decoder_start_token_id&#34;: 58100,
+  &#34;decoder_vocab_size&#34;: 58101,
+  &#34;dropout&#34;: 0.1,
+  &#34;encoder_attention_heads&#34;: 8,
+  &#34;encoder_ffn_dim&#34;: 2048,
+  &#34;encoder_layerdrop&#34;: 0.0,
+  &#34;encoder_layers&#34;: 6,
+  &#34;eos_token_id&#34;: 0,
+  &#34;forced_eos_token_id&#34;: 0,
+  &#34;id2label&#34;: {
+    &#34;0&#34;: &#34;LABEL_0&#34;,
+    &#34;1&#34;: &#34;LABEL_1&#34;,
+    &#34;2&#34;: &#34;LABEL_2&#34;
+  },
+  &#34;init_std&#34;: 0.02,
+  &#34;is_encoder_decoder&#34;: true,
+  &#34;label2id&#34;: {
+    &#34;LABEL_0&#34;: 0,
+    &#34;LABEL_1&#34;: 1,
+    &#34;LABEL_2&#34;: 2
+  },
+  &#34;max_length&#34;: 512,
+  &#34;max_position_embeddings&#34;: 512,
+  &#34;model_type&#34;: &#34;marian&#34;,
+  &#34;normalize_before&#34;: false,
+  &#34;normalize_embedding&#34;: false,
+  &#34;num_beams&#34;: 4,
+  &#34;num_hidden_layers&#34;: 6,
+  &#34;pad_token_id&#34;: 58100,
+  &#34;scale_embedding&#34;: true,
+  &#34;share_encoder_decoder_embeddings&#34;: true,
+  &#34;static_position_embeddings&#34;: true,
+  &#34;transformers_version&#34;: &#34;4.18.0&#34;,
+  &#34;use_cache&#34;: true,
+  &#34;vocab_size&#34;: 58101
+}
+
+loading weights file https://huggingface.co/Helsinki-NLP/opus-mt-de-en/resolve/main/pytorch_model.bin from cache at /home/wgilliam/.cache/huggingface/transformers/939fa8e38fdeb206b841054406fe90638dbe4a602679798fc35126e90fe54e12.9f2385d4ebdde4e5e8ef144654a4666f40c8423a85f51590fecb88452aec1514
+All model checkpoint weights were used when initializing MarianMTModel.
+
+All the weights of MarianMTModel were initialized from the model checkpoint at Helsinki-NLP/opus-mt-de-en.
+If your task is similar to the task the model of the checkpoint was trained on, you can already use MarianMTModel for predictions without further training.
+</pre>
+</div>
+</div>
+
 </div>
 </div>
 
@@ -1003,11 +1509,11 @@ Loading cached shuffled indices for dataset at /home/wgilliam/.cache/huggingface
   <tbody>
     <tr>
       <td>0</td>
-      <td>2.060747</td>
-      <td>2.086900</td>
-      <td>0.332818</td>
-      <td>0.555242</td>
-      <td>32.818199</td>
+      <td>2.014099</td>
+      <td>2.172663</td>
+      <td>0.307334</td>
+      <td>0.537191</td>
+      <td>29.823626</td>
       <td>00:52</td>
     </tr>
   </tbody>
@@ -1060,9 +1566,9 @@ Loading cached shuffled indices for dataset at /home/wgilliam/.cache/huggingface
   <tbody>
     <tr>
       <th>0</th>
-      <td>Die▁Zunahme der▁Gewalttätigkeiten▁bei▁nationalen und▁internationalen Sportveranstaltungen▁resultiert nicht▁aus dem▁Fehlen von▁Informationsnetzen und▁ausreichenden▁Unterdrückungsmechanismen,▁sondern▁ist auf die▁Kommerzialisierung des Sports, die▁damit▁zusammenhängenden▁enormen▁wirtschaftlichen▁Interessen, die▁Förderung▁eines desorientierenden'sportlichen'▁Geistes des Fanatismus (Fußballrowdytums)▁sowie die Propagierung▁einer▁Psychologie der▁Gewalt▁insbesondere▁unter den▁Jugendlichen▁zurückzuführe</td>
-      <td>The increase in violent clashes at national and international sporting events is not due to a lack of information networks or adequate suppression mechanisms; it is due to the commercialisation of sport, the huge financial interests tied up in it, th</td>
-      <td>[The increase in violence at national and international sporting events is not due to the lack of information networks and adequate mechanisms of repression, but to the commercialisation of sport, the associated enormous economic interests, the promotion of a disorienting 'sporty' spirit of fanaticism (football rovdytums) and the promotion of a psychology of violence, especially among young people., Perhaps, however, you would like to ask someone - as Mr Corbett will always be in such cases - to look at our Rules of Procedure, because it is rather strange in this respect: if more than 50 amendments are tabled in plenary on a report, the President, after consultation with the chairman, can ask the committee responsible to hold a meeting to consider the amendments.]</td>
+      <td>(IT) Herr▁Präsident, Herr▁Kommissar,▁meine▁Damen und Herren, so▁genau▁wie die▁Entschließung mit dem▁Titel "Naturkatastrophen", die von der▁Fraktion der▁Europäischen▁Volkspartei (Christdemokraten)▁vorgelegt wurde,▁ist,▁würde▁ich▁gerne▁trotzdem die▁Aufmerksamkeit auf▁einige▁Punkte▁lenken, die▁heute▁Abend▁angesprochen▁wurden, die▁aber nicht in der▁Entschließung zum▁Thema▁gemacht▁werden, und die▁Gegenstand▁meiner▁Änderungsvorschläge▁sind.</td>
+      <td>(IT) Mr President, Commissioner, ladies and gentlemen, as accurate as the resolution entitled 'Natural disasters', tabled by the Group of the European People's Party (Christian Democrats), is, I would nonetheless like to draw attention to some points</td>
+      <td>[(IT) Mr President, Commissioner, ladies and gentlemen, just as the resolution on natural disasters presented by the Group of the European People's Party (Christian Democrats), I would like to draw attention to some of the points raised this evening, which are not dealt with in the resolution, and which are the subject of my amendments., This Parliament has always been an example and a champion in the defence of human rights, and at this critical time it must prove that it is not doing a common cause with a corrupt dictator in full decline and that it will allow itself to be carried away by the collaboration of some Members who have always been manipulated by this dictatorship.]</td>
     </tr>
   </tbody>
 </table></div>
@@ -1225,6 +1731,7 @@ Loading cached shuffled indices for dataset at /home/wgilliam/.cache/huggingface
  &#39;M2M100ForConditionalGeneration&#39;,
  &#39;MBartForConditionalGeneration&#39;,
  &#39;MT5ForConditionalGeneration&#39;,
+ &#39;PLBartForConditionalGeneration&#39;,
  &#39;PegasusForConditionalGeneration&#39;,
  &#39;ProphetNetForConditionalGeneration&#39;,
  &#39;Speech2TextForConditionalGeneration&#39;,

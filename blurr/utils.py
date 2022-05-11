@@ -90,7 +90,7 @@ class PreCalculatedBCELoss(PreCalculatedLoss, BCEWithLogitsLossFlat):
 
 class PreCalculatedMSELoss(PreCalculatedLoss):
     def __init__(self, *args, axis=-1, floatify=True, **kwargs):
-        super.__init__(nn.MSELoss, *args, axis=axis, floatify=floatify, is_2d=False, **kwargs)
+        super().__init__(nn.MSELoss, *args, axis=axis, floatify=floatify, is_2d=False, **kwargs)
 
 
 # Cell

@@ -14,7 +14,7 @@ from fastai.learner import *
 from fastai.torch_core import *
 from fastai.torch_imports import *
 from fastcore.all import *
-from transformers import AutoModelForSeq2SeqLM, PreTrainedModel, logging
+from transformers import AutoModelForSeq2SeqLM, PreTrainedModel, logging as hf_logging
 
 from ...data.seq2seq.core import Seq2SeqBatchTokenizeTransform, Seq2SeqTextBlock, default_text_gen_kwargs
 from ..core import BaseModelCallback, BaseModelWrapper, Blearner
@@ -22,7 +22,8 @@ from .core import Seq2SeqMetricsCallback, blurr_seq2seq_splitter
 from ...utils import get_hf_objects
 from ....utils import PreCalculatedCrossEntropyLoss
 
-logging.set_verbosity_error()
+
+hf_logging.set_verbosity_error()
 
 
 # Cell
@@ -108,7 +109,7 @@ class BlearnerForTranslation(Blearner):
         # we need to find the architecture to ensure "mbart" specific tokenizer kwargs are included
         model_cls = cls.get_model_cls()
         model = model_cls.from_pretrained(pretrained_model_name_or_path)
-        hf_arch = NLP.get_model_architecture(type(model).__name__)
+        hf_arch = model.__module__.split(".")[2]
 
         if hf_arch == "mbart":
             hf_tok_kwargs = {**{"src_lang": "en_XX", "tgt_lang": "en_XX"}, **hf_tok_kwargs}
