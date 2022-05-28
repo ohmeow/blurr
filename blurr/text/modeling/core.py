@@ -74,6 +74,13 @@ class BaseModelWrapper(Module):
 
 # Cell
 class BaseModelCallback(Callback):
+    def before_fit(self):
+        if isinstance(self.learn.model, PreTrainedModel):
+            self.learn.model = BaseModelWrapper(self.learn.model)
+            self.was_wrapped = False
+        elif isinstance(self.learn.model, BaseModelWrapper):
+            self.was_wrapped = True
+
     def before_batch(self):
         self.hf_loss = None
 
@@ -97,6 +104,10 @@ class BaseModelCallback(Callback):
         if self.hf_loss is not None:
             self.learn.loss_grad = self.hf_loss
             self.learn.loss = self.learn.loss_grad.clone()
+
+    def after_fit(self):
+       if not self.was_wrapped:
+            self.learn.model = self.learn.model.hf_model
 
 
 # Cell
