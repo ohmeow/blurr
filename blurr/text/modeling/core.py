@@ -455,9 +455,15 @@ class Blearner(Learner):
             elif isinstance(loss_func.func, nn.MSELoss):
                 loss_func = PreCalculatedMSELoss()
 
+        # Prepend BaseModelCallback to list of callbacks.
+        # Add cbs to kwargs if doesn't not already present.
+        if "cbs" in kwargs:
+            kwargs["cbs"].insert(0, base_model_cb)
+        else:
+            kwargs["cbs"] = [base_model_cb]
+
         super().__init__(dls, model=model, loss_func=loss_func, splitter=splitter, **kwargs)
 
-        self.add_cb(base_model_cb)
         self.freeze()
 
 
