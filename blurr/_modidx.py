@@ -10,7 +10,7 @@ d = { 'settings': { 'audience': 'Developers',
                 'dev_requirements': 'ipykernel nbdev gputil',
                 'doc_baseurl': '/blurr/',
                 'doc_host': 'https://ohmeow.github.io',
-                'doc_path': 'docs',
+                'doc_path': '_docs',
                 'git_url': 'https://github.com/ohmeow/blurr/tree/master/',
                 'host': 'github',
                 'keywords': 'fastai huggingface transformers classification ner "token classification" "question answer" summarization translation "language '
