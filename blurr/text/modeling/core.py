@@ -74,6 +74,18 @@ class BaseModelWrapper(Module):
 
 # Cell
 class BaseModelCallback(Callback):
+
+    def __init__(
+        self,
+        # Additional keyword arguments passed to `BaseModelWrapper`
+        base_model_wrapper_kwargs: dict = {},
+    ):
+        self.base_model_wrapper_kwargs = base_model_wrapper_kwargs
+
+    def after_create(self):
+        if isinstance(self.learn.model, PreTrainedModel):
+            self.learn.model = BaseModelWrapper(self.learn.model, **self.base_model_wrapper_kwargs)
+
     def before_batch(self):
         self.hf_loss = None
 
@@ -291,9 +303,15 @@ class Blearner(Learner):
             elif isinstance(loss_func.func, nn.MSELoss):
                 loss_func = PreCalculatedMSELoss()
 
+        # Prepend BaseModelCallback to list of callbacks.
+        # Add cbs to kwargs if doesn't not already present.
+        if "cbs" in kwargs:
+            kwargs["cbs"].insert(0, base_model_cb)
+        else:
+            kwargs["cbs"] = [base_model_cb]
+
         super().__init__(dls, model=model, loss_func=loss_func, splitter=splitter, **kwargs)
 
-        self.add_cb(base_model_cb)
         self.freeze()
 
 
