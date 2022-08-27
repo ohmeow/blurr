@@ -4,8 +4,10 @@
 __all__ = []
 
 # %% ../../nbs/01_text-callbacks.ipynb 3
-import importlib, sys, torch
+import importlib, sys
 from typing import Any, Callable, Dict, List, Optional, Union, Type
+
+import torch
 
 from fastcore.all import *
 from fastai.callback.all import *

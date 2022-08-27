@@ -5,8 +5,10 @@ __all__ = ['Singleton', 'str_to_type', 'print_versions', 'set_seed', 'reset_memo
            'PreCalculatedCrossEntropyLoss', 'PreCalculatedBCELoss', 'PreCalculatedMSELoss', 'MultiTargetLoss']
 
 # %% ../nbs/00_utils.ipynb 3
-import gc, importlib, sys, torch
+import gc, importlib, sys
 from typing import Any, Callable, Dict, List, Optional, Union, Type
+
+import torch
 
 from fastcore.all import *
 from fastai.callback.all import *

@@ -4,10 +4,10 @@
 __all__ = ['CheckpointingNotSupported', 'GradientCheckpointing']
 
 # %% ../nbs/00b_callbacks.ipynb 4
-import os
-
-import importlib, sys, torch
+import os, importlib, sys
 from typing import Any, Callable, Dict, List, Optional, Union, Type
+
+import torch
 
 from fastcore.all import *
 from fastai.callback.all import *

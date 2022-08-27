@@ -4,11 +4,12 @@
 __all__ = ['get_hf_objects', 'BlurrText']
 
 # %% ../../nbs/01_text-utils.ipynb 3
-import os, importlib, inspect, random, sys, torch, warnings
+import importlib, inspect, os, random, sys, warnings
 from typing import List, Optional, Union, Tuple, Type
 
 import numpy as np
 import pandas as pd
+import torch
 
 from enum import Enum
 from fastcore.foundation import L
@@ -18,8 +19,7 @@ from transformers.utils import logging as hf_logging
 from ..utils import Singleton
 
 
-
-# %% ../../nbs/01_text-utils.ipynb 5
+# %% ../../nbs/01_text-utils.ipynb 4
 # silence all the HF warnings
 warnings.simplefilter("ignore")
 hf_logging.set_verbosity_error()
