@@ -69,24 +69,27 @@ def set_seed(seed_value: int = 42):
 # %% ../nbs/00_utils.ipynb 21
 def reset_memory(
     # Optional: fastai learner to delete
-    learn: Learner = None
+    learn: Learner = None,
 ):
-    """ A function which clears gpu memory. """
-    if learn is not None: del learn
+    """A function which clears gpu memory."""
+    if learn is not None:
+        del learn
     torch.cuda.empty_cache()
     gc.collect()
+
 
 # %% ../nbs/00_utils.ipynb 24
 class PreCalculatedLoss(BaseLoss):
     """
-    If you want to let your Hugging Face model calculate the loss for you, make sure you include the `labels` argument in your inputs and use 
-    `PreCalculatedLoss` as your loss function. Even though we don't really need a loss function per se, we have to provide a custom loss class/function 
-    for fastai to function properly (e.g. one with a `decodes` and `activation` methods).  Why?  Because these methods will get called in methods 
+    If you want to let your Hugging Face model calculate the loss for you, make sure you include the `labels` argument in your inputs and use
+    `PreCalculatedLoss` as your loss function. Even though we don't really need a loss function per se, we have to provide a custom loss class/function
+    for fastai to function properly (e.g. one with a `decodes` and `activation` methods).  Why?  Because these methods will get called in methods
     like `show_results` to get the actual predictions.
-    
-    Note: The Hugging Face models ***will always*** calculate the loss for you ***if*** you pass a `labels` dictionary along with your other inputs 
+
+    Note: The Hugging Face models ***will always*** calculate the loss for you ***if*** you pass a `labels` dictionary along with your other inputs
     (so only include it if that is what you intend to happen)
     """
+
     def __call__(self, inp, targ, **kwargs):
         return tensor(0.0)
 
@@ -108,9 +111,9 @@ class PreCalculatedMSELoss(PreCalculatedLoss):
 class MultiTargetLoss(Module):
     """
     Provides the ability to apply different loss functions to multi-modal targets/predictions.
-    
-    This new loss function can be used in many other multi-modal architectures, with any mix of loss functions.  
-    For example, this can be ammended to include the `is_impossible` task, as well as the start/end token tasks 
+
+    This new loss function can be used in many other multi-modal architectures, with any mix of loss functions.
+    For example, this can be ammended to include the `is_impossible` task, as well as the start/end token tasks
     in the SQUAD v2 dataset (or in any extractive question/answering task)
     """
 
