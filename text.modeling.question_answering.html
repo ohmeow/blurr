@@ -1,0 +1,1777 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.1.75">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="description" content="The text.modeling.question_answering module contains custom models, loss functions, custom splitters, etc… for question answering tasks">
+
+<title>blurr - Modeling</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: 1;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1.6em;
+  vertical-align: middle;
+}
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { color: #008000; } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { color: #008000; font-weight: bold; } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<link href="./favicon.ico" rel="icon">
+<script src="site_libs/quarto-html/quarto.js"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-dark.css" rel="prefetch" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-dark.min.css" rel="prefetch" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit"
+  }
+}</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" integrity="sha512-c3Nl8+7g4LMSTdrm621y7kf9v3SDPnhxLNhcjFJbKECVnmZHTdo+IRO05sNLTH/D3vA6u1X32ehoLC7WFVdheg==" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script>
+<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
+<script src="https://unpkg.com/@jupyter-widgets/html-manager@*/dist/embed-amd.js" crossorigin="anonymous"></script>
+
+
+<link rel="stylesheet" href="styles.css">
+<meta property="og:title" content="blurr - Modeling">
+<meta property="og:description" content="The text.modeling.question_answering module contains custom models, loss functions, custom splitters, etc… for question answering tasks">
+<meta property="og:site-name" content="blurr">
+<meta name="twitter:title" content="blurr - Modeling">
+<meta name="twitter:description" content="The text.modeling.question_answering module contains custom models, loss functions, custom splitters, etc… for question answering tasks">
+<meta name="twitter:card" content="summary">
+</head>
+
+<body class="nav-sidebar floating nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg navbar-dark ">
+      <div class="navbar-container container-fluid">
+      <a class="navbar-brand" href="./index.html">
+    <span class="navbar-title">blurr</span>
+  </a>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link active" href="./index.html" aria-current="page">Getting Started</a>
+  </li>  
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-resources" role="button" data-bs-toggle="dropdown" aria-expanded="false">Resources</a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-resources">    
+        <li>
+    <a class="dropdown-item" href="https://www.youtube.com/playlist?list=PLD80i8An1OEF8UOb9N9uSoidOGIMKW96t"><i class="bi bi-play-btn-fill" role="img">
+</i> 
+ <span class="dropdown-text">fastai x Hugging Face Study Group</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="https://huggingface.co/course/chapter1/1"><i class="bi bi-journal-bookmark-fill" role="img">
+</i> 
+ <span class="dropdown-text">Hugging Face Course</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="https://docs.fast.ai/"><i class="bi bi-link" role="img">
+</i> 
+ <span class="dropdown-text">fast.ai (docs)</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="https://huggingface.co/docs/transformers/index"><i class="bi bi-link" role="img">
+</i> 
+ <span class="dropdown-text">transformers (docs)</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-help" role="button" data-bs-toggle="dropdown" aria-expanded="false">Help</a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-help">    
+        <li>
+    <a class="dropdown-item" href="https://github.com/ohmeow/blurr/issues"><i class="bi bi-bug" role="img">
+</i> 
+ <span class="dropdown-text">Report an Issue</span></a>
+  </li>  
+    </ul>
+  </li>
+</ul>
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/ohmeow/blurr/"><i class="bi bi-github" role="img">
+</i> 
+ </a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://twitter.com/waydegilliam"><i class="bi bi-twitter" role="img">
+</i> 
+ </a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://www.ohmeow.com/"><i class="bi bi-house" role="img" aria-label="Twitter">
+</i> 
+ </a>
+  </li>  
+</ul>
+              <div class="quarto-toggle-container">
+                  <a href="" class="quarto-color-scheme-toggle nav-link" onclick="window.quartoToggleColorScheme(); return false;" title="Toggle dark mode"><i class="bi"></i></a>
+              </div>
+              <div id="quarto-search" class="" title="Search"></div>
+          </div> <!-- /navcollapse -->
+      </div> <!-- /container-fluid -->
+    </nav>
+  <nav class="quarto-secondary-nav" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+    <div class="container-fluid d-flex justify-content-between">
+      <h1 class="quarto-secondary-nav-title">Modeling</h1>
+      <button type="button" class="quarto-btn-toggle btn" aria-label="Show secondary navigation">
+        <i class="bi bi-chevron-right"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-full page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse sidebar-navigation floating overflow-auto">
+      <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+      </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true">Overview</a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">Getting Started</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./callbacks.html" class="sidebar-item-text sidebar-link">callbacks</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./utils.html" class="sidebar-item-text sidebar-link">utils</a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="true">Text</a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="true">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-expanded="false">Sequence Classification</a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-expanded="false">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./text.data.core.html" class="sidebar-item-text sidebar-link">Data</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./text.modeling.core.html" class="sidebar-item-text sidebar-link">Modeling</a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" aria-expanded="false">Token Classification</a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" aria-expanded="false">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./text.data.token_classification.html" class="sidebar-item-text sidebar-link">Data</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./text.modeling.token_classification.html" class="sidebar-item-text sidebar-link">Modeling</a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" aria-expanded="true">Question &amp; Answering</a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" aria-expanded="true">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth2 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./text.data.question_answering.html" class="sidebar-item-text sidebar-link">Data</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./text.modeling.question_answering.html" class="sidebar-item-text sidebar-link active">Modeling</a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" aria-expanded="false">Language Modeling</a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" aria-expanded="false">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-6" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./text.data.language_modeling.html" class="sidebar-item-text sidebar-link">Data</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./text.modeling.language_modeling.html" class="sidebar-item-text sidebar-link">Modeling</a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" aria-expanded="false">Seq2Seq: Core</a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" aria-expanded="false">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-7" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./text.data.seq2seq.core.html" class="sidebar-item-text sidebar-link">Data</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./text.modeling.seq2seq.core.html" class="sidebar-item-text sidebar-link">Modeling</a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" aria-expanded="false">Seq2Seq: Summarization</a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" aria-expanded="false">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-8" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./text.data.seq2seq.summarization.html" class="sidebar-item-text sidebar-link">Data</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./text.modeling.seq2seq.summarization.html" class="sidebar-item-text sidebar-link">Modeling</a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-9" aria-expanded="false">Seq2Seq: Translation</a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-9" aria-expanded="false">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-9" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./text.data.seq2seq.translation.html" class="sidebar-item-text sidebar-link">Data</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./text.modeling.seq2seq.translation.html" class="sidebar-item-text sidebar-link">Modeling</a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./text.callbacks.html" class="sidebar-item-text sidebar-link">callbacks</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./text.utils.html" class="sidebar-item-text sidebar-link">utils</a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-10" aria-expanded="true">Examples</a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-10" aria-expanded="true">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-10" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./examples.text.high_level_api.html" class="sidebar-item-text sidebar-link">Using the high-level Blurr API</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./examples.text.glue.html" class="sidebar-item-text sidebar-link">GLUE classification tasks</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./examples.text.glue_low_level_api.html" class="sidebar-item-text sidebar-link">Using the Low-level fastai API</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./examples.text.multilabel_classification.html" class="sidebar-item-text sidebar-link">Multi-label classification</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./examples.text.causal_lm_gpt2.html" class="sidebar-item-text sidebar-link">Causal Language Modeling with GPT-2</a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#setup" id="toc-setup" class="nav-link active" data-scroll-target="#setup">Setup</a></li>
+  <li><a href="#mid-level-api" id="toc-mid-level-api" class="nav-link" data-scroll-target="#mid-level-api">Mid-level API</a>
+  <ul>
+  <li><a href="#qamodelcallback" id="toc-qamodelcallback" class="nav-link" data-scroll-target="#qamodelcallback">QAModelCallback</a></li>
+  <li><a href="#qametricscallback" id="toc-qametricscallback" class="nav-link" data-scroll-target="#qametricscallback">QAMetricsCallback</a></li>
+  <li><a href="#compute_qa_metrics" id="toc-compute_qa_metrics" class="nav-link" data-scroll-target="#compute_qa_metrics">compute_qa_metrics</a></li>
+  <li><a href="#precalculatedqaloss" id="toc-precalculatedqaloss" class="nav-link" data-scroll-target="#precalculatedqaloss">PreCalculatedQALoss</a></li>
+  <li><a href="#example" id="toc-example" class="nav-link" data-scroll-target="#example">Example</a>
+  <ul class="collapse">
+  <li><a href="#training" id="toc-training" class="nav-link" data-scroll-target="#training">Training</a></li>
+  <li><a href="#showing-results" id="toc-showing-results" class="nav-link" data-scroll-target="#showing-results">Showing results</a></li>
+  <li><a href="#prediction" id="toc-prediction" class="nav-link" data-scroll-target="#prediction">Prediction</a></li>
+  </ul></li>
+  <li><a href="#learner.blurr_predict_answers" id="toc-learner.blurr_predict_answers" class="nav-link" data-scroll-target="#learner.blurr_predict_answers">Learner.blurr_predict_answers</a>
+  <ul class="collapse">
+  <li><a href="#inference" id="toc-inference" class="nav-link" data-scroll-target="#inference">Inference</a></li>
+  </ul></li>
+  </ul></li>
+  <li><a href="#high-level-api" id="toc-high-level-api" class="nav-link" data-scroll-target="#high-level-api">High-level API</a>
+  <ul>
+  <li><a href="#blearnerforquestionanswering" id="toc-blearnerforquestionanswering" class="nav-link" data-scroll-target="#blearnerforquestionanswering">BlearnerForQuestionAnswering</a></li>
+  <li><a href="#example-1" id="toc-example-1" class="nav-link" data-scroll-target="#example-1">Example</a>
+  <ul class="collapse">
+  <li><a href="#preprocess-data" id="toc-preprocess-data" class="nav-link" data-scroll-target="#preprocess-data">Preprocess data</a></li>
+  <li><a href="#define-your-blearner" id="toc-define-your-blearner" class="nav-link" data-scroll-target="#define-your-blearner">Define your <code>Blearner</code></a></li>
+  <li><a href="#train" id="toc-train" class="nav-link" data-scroll-target="#train">Train</a></li>
+  <li><a href="#inference-1" id="toc-inference-1" class="nav-link" data-scroll-target="#inference-1">Inference</a></li>
+  </ul></li>
+  </ul></li>
+  </ul>
+<div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/ohmeow/blurr/issues/new" class="toc-action">Report an issue</a></p></div></div></nav>
+    </div>
+<!-- main -->
+<main class="content column-body" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title d-none d-lg-block">Modeling</h1>
+</div>
+
+<div>
+  <div class="description">
+    The <code>text.modeling.question_answering</code> module contains custom models, loss functions, custom splitters, etc… for question answering tasks
+  </div>
+</div>
+
+
+<div class="quarto-title-meta">
+
+    
+    
+  </div>
+  
+
+</header>
+
+<!-- WARNING: THIS FILE WAS AUTOGENERATED! DO NOT EDIT! -->
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>What we're running with at the time this documentation was generated:
+torch: 1.9.0+cu102
+fastai: 2.7.9
+transformers: 4.21.2</code></pre>
+</div>
+</div>
+<section id="setup" class="level2">
+<h2 class="anchored" data-anchor-id="setup">Setup</h2>
+<p>We’ll use a subset of <code>squad_v2</code> to demonstrate how to configure your blurr code for training extractive question answering models. See the <code>data.question_answering</code> module if any of this setting up of the <code>squad_df</code> below looks unfamiliar to you.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>raw_datasets <span class="op">=</span> load_dataset(<span class="st">"squad"</span>, split<span class="op">=</span>[<span class="st">"train[:1000]"</span>, <span class="st">"validation[:200]"</span>])</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>raw_train_df <span class="op">=</span> pd.DataFrame(raw_datasets[<span class="dv">0</span>])</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>raw_valid_df <span class="op">=</span> pd.DataFrame(raw_datasets[<span class="dv">1</span>])</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>raw_train_df[<span class="st">"is_valid"</span>] <span class="op">=</span> <span class="va">False</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>raw_valid_df[<span class="st">"is_valid"</span>] <span class="op">=</span> <span class="va">True</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>squad_df <span class="op">=</span> pd.concat([raw_train_df, raw_valid_df])</span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>squad_df[<span class="st">"ans_start_char_idx"</span>] <span class="op">=</span> squad_df.answers.<span class="bu">apply</span>(<span class="kw">lambda</span> v: v[<span class="st">"answer_start"</span>][<span class="dv">0</span>] <span class="cf">if</span> <span class="bu">len</span>(v[<span class="st">"answer_start"</span>]) <span class="op">&gt;</span> <span class="dv">0</span> <span class="cf">else</span> <span class="st">"0"</span>)</span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>squad_df[<span class="st">"answer_text"</span>] <span class="op">=</span> squad_df.answers.<span class="bu">apply</span>(<span class="kw">lambda</span> v: v[<span class="st">"text"</span>][<span class="dv">0</span>] <span class="cf">if</span> <span class="bu">len</span>(v[<span class="st">"text"</span>]) <span class="op">&gt;</span> <span class="dv">0</span> <span class="cf">else</span> <span class="st">""</span>)</span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>squad_df[<span class="st">"ans_end_char_idx"</span>] <span class="op">=</span> squad_df[<span class="st">"ans_start_char_idx"</span>].astype(<span class="bu">int</span>) <span class="op">+</span> squad_df[<span class="st">"answer_text"</span>].<span class="bu">str</span>.<span class="bu">len</span>()</span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="bu">len</span>(squad_df))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Reusing dataset squad (/home/wgilliam/.cache/huggingface/datasets/squad/plain_text/1.0.0/d6ec3ceb99ca480ce37cdd35555d6cb2511d223b9150cce08a837ef62ffea453)</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<script type="application/vnd.jupyter.widget-view+json">
+{"model_id":"122dcdada93543d98bf9200b548802cb","version_major":2,"version_minor":0}
+</script>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>1200</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>model_cls <span class="op">=</span> AutoModelForQuestionAnswering</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>hf_logging.set_verbosity_error()</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>pretrained_model_name <span class="op">=</span> <span class="st">"bert-large-uncased-whole-word-masking-finetuned-squad"</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>hf_arch, hf_config, hf_tokenizer, hf_model <span class="op">=</span> get_hf_objects(pretrained_model_name, model_cls<span class="op">=</span>model_cls)</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>max_seq_len <span class="op">=</span> <span class="dv">128</span></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>vocab <span class="op">=</span> <span class="bu">dict</span>(<span class="bu">enumerate</span>(<span class="bu">range</span>(max_seq_len)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>preprocessor <span class="op">=</span> QAPreprocessor(</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>    hf_tokenizer, id_attr<span class="op">=</span><span class="st">"id"</span>, tok_kwargs<span class="op">=</span>{<span class="st">"return_overflowing_tokens"</span>: <span class="va">True</span>, <span class="st">"max_length"</span>: max_seq_len, <span class="st">"stride"</span>: <span class="dv">64</span>}</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>proc_df <span class="op">=</span> preprocessor.process_df(squad_df)</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>proc_df.head(<span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+
+<div>
+
+<table class="dataframe table table-sm table-striped">
+  <thead>
+    <tr>
+      <th></th>
+      <th>id</th>
+      <th>title</th>
+      <th>context</th>
+      <th>question</th>
+      <th>answers</th>
+      <th>is_valid</th>
+      <th>ans_start_char_idx</th>
+      <th>answer_text</th>
+      <th>ans_end_char_idx</th>
+      <th>proc_question</th>
+      <th>proc_context</th>
+      <th>ans_start_token_idx</th>
+      <th>ans_end_token_idx</th>
+      <th>is_answerable</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>5733be284776f41900661182</td>
+      <td>University_of_Notre_Dame</td>
+      <td>Architecturally, the school has a Catholic character. Atop the Main Building's gold dome is a golden statue of the Virgin Mary. Immediately in front of the Main Building and facing it, is a copper statue of Christ with arms upraised with the legend "Venite Ad Me Omnes". Next to the Main Building is the Basilica of the Sacred Heart. Immediately behind the basilica is the Grotto, a Marian place of prayer and reflection. It is a replica of the grotto at Lourdes, France where the Virgin Mary reputedly appeared to Saint Bernadette Soubirous in 1858. At the end of the main drive (and in a direct...</td>
+      <td>To whom did the Virgin Mary allegedly appear in 1858 in Lourdes France?</td>
+      <td>{'text': ['Saint Bernadette Soubirous'], 'answer_start': [515]}</td>
+      <td>False</td>
+      <td>515</td>
+      <td>Saint Bernadette Soubirous</td>
+      <td>541</td>
+      <td>To whom did the Virgin Mary allegedly appear in 1858 in Lourdes France?</td>
+      <td>Architecturally, the school has a Catholic character. Atop the Main Building's gold dome is a golden statue of the Virgin Mary. Immediately in front of the Main Building and facing it, is a copper statue of Christ with arms upraised with the legend "Venite Ad Me Omnes". Next to the Main Building is the Basilica of the Sacred Heart. Immediately behind the basilica is the Grotto, a Marian place of prayer and reflection. It is a replica of the grotto at Lourdes, France where the Virgin Mary reputed</td>
+      <td>0</td>
+      <td>0</td>
+      <td>False</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>before_batch_tfm <span class="op">=</span> QABatchTokenizeTransform(hf_arch, hf_config, hf_tokenizer, hf_model, max_length<span class="op">=</span>max_seq_len)</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>blocks <span class="op">=</span> (</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>    TextBlock(batch_tokenize_tfm<span class="op">=</span>before_batch_tfm, input_return_type<span class="op">=</span>QATextInput),</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>    CategoryBlock(vocab<span class="op">=</span>vocab),</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>    CategoryBlock(vocab<span class="op">=</span>vocab),</span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a><span class="co"># since its preprocessed, we include an "text" key with the values of our question and context</span></span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> get_x(item):</span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> {<span class="st">"text"</span>: (item.proc_question, item.proc_context), <span class="st">"id"</span>: item.<span class="bu">id</span>}</span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>dblock <span class="op">=</span> DataBlock(</span>
+<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a>    blocks<span class="op">=</span>blocks,</span>
+<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a>    get_x<span class="op">=</span>get_x,</span>
+<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a>    get_y<span class="op">=</span>[ItemGetter(<span class="st">"ans_start_token_idx"</span>), ItemGetter(<span class="st">"ans_end_token_idx"</span>)],</span>
+<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a>    splitter<span class="op">=</span>ColSplitter(),</span>
+<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a>    n_inp<span class="op">=</span><span class="dv">1</span>,</span>
+<span id="cb7-20"><a href="#cb7-20" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>dls <span class="op">=</span> dblock.dataloaders(proc_df, bs<span class="op">=</span><span class="dv">4</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="bu">len</span>(dls.vocab), dls.vocab[<span class="dv">0</span>], dls.vocab[<span class="dv">1</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>(2,
+ [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 124, 125, 126, 127],
+ [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 124, 125, 126, 127])</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>dls.valid.show_batch(dataloaders<span class="op">=</span>dls, max_n<span class="op">=</span><span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+
+<table class="dataframe table table-sm table-striped">
+  <thead>
+    <tr>
+      <th></th>
+      <th>text</th>
+      <th>found</th>
+      <th>start/end</th>
+      <th>answer</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>which nfl team represented the afc at super bowl 50? super bowl 50 was an american football game to determine the champion of the national football league ( nfl ) for the 2015 season. the american football conference ( afc ) champion denver broncos defeated the national football conference ( nfc ) champion carolina panthers 24 – 10 to earn their third super bowl title. the game was played on february 7, 2016, at levi's stadium in the san francisco bay area at santa clara, california. as this was the 50th super bowl, the league emphasized the " golden anniversary " with various gold - themed initiatives, as well as temporarily suspending the</td>
+      <td>True</td>
+      <td>(46, 48)</td>
+      <td>denver broncos</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>which nfl team represented the afc at super bowl 50? earn their third super bowl title. the game was played on february 7, 2016, at levi's stadium in the san francisco bay area at santa clara, california. as this was the 50th super bowl, the league emphasized the " golden anniversary " with various gold - themed initiatives, as well as temporarily suspending the tradition of naming each super bowl game with roman numerals ( under which the game would have been known as " super bowl l " ), so that the logo could prominently feature the arabic numerals 50.</td>
+      <td>False</td>
+      <td>(0, 0)</td>
+      <td></td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+</section>
+<section id="mid-level-api" class="level2">
+<h2 class="anchored" data-anchor-id="mid-level-api">Mid-level API</h2>
+<hr>
+<p><a href="https://github.com/ohmeow/blurr/blob/master/blurr/text/modeling/question_answering.py#L45" target="_blank" style="float:right; font-size:smaller">source</a></p>
+<section id="qamodelcallback" class="level3">
+<h3 class="anchored" data-anchor-id="qamodelcallback">QAModelCallback</h3>
+<blockquote class="blockquote">
+<pre><code> QAModelCallback (base_model_wrapper_kwargs:dict={})</code></pre>
+</blockquote>
+<p>The prediction is a combination start/end logits</p>
+<table class="table">
+<colgroup>
+<col style="width: 6%">
+<col style="width: 25%">
+<col style="width: 34%">
+<col style="width: 34%">
+</colgroup>
+<thead>
+<tr class="header">
+<th></th>
+<th><strong>Type</strong></th>
+<th><strong>Default</strong></th>
+<th><strong>Details</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>base_model_wrapper_kwargs</td>
+<td>dict</td>
+<td>{}</td>
+<td>Additional keyword arguments passed to <code>BaseModelWrapper</code></td>
+</tr>
+</tbody>
+</table>
+<p>Here we create a question/answer specific subclass of <a href="https://ohmeow.github.io/blurr/text-modeling-core.html#basemodelcallback"><code>BaseModelCallback</code></a> in order to get all the start and end prediction.</p>
+<hr>
+<p><a href="https://github.com/ohmeow/blurr/blob/master/blurr/text/modeling/question_answering.py#L54" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="qametricscallback" class="level3">
+<h3 class="anchored" data-anchor-id="qametricscallback">QAMetricsCallback</h3>
+<blockquote class="blockquote">
+<pre><code> QAMetricsCallback (compute_metrics_func, validation_ds,
+                    qa_metrics=['exact_match', 'f1'], **kwargs)</code></pre>
+</blockquote>
+<p>Basic class handling tweaks of the training loop by changing a <code>Learner</code> in various events</p>
+<hr>
+<p><a href="https://github.com/ohmeow/blurr/blob/master/blurr/text/modeling/question_answering.py#L116" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="compute_qa_metrics" class="level3">
+<h3 class="anchored" data-anchor-id="compute_qa_metrics">compute_qa_metrics</h3>
+<blockquote class="blockquote">
+<pre><code> compute_qa_metrics (results, dataset, hf_tokenizer, tok_kwargs,
+                     id_attr='id', n_best=20)</code></pre>
+</blockquote>
+<hr>
+<p><a href="https://github.com/ohmeow/blurr/blob/master/blurr/text/modeling/question_answering.py#L169" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="precalculatedqaloss" class="level3">
+<h3 class="anchored" data-anchor-id="precalculatedqaloss">PreCalculatedQALoss</h3>
+<blockquote class="blockquote">
+<pre><code> PreCalculatedQALoss (*args, axis=-1, **kwargs)</code></pre>
+</blockquote>
+<p>If you want to let your Hugging Face model calculate the loss for you, make sure you include the <code>labels</code> argument in your inputs and use <code>PreCalculatedLoss</code> as your loss function. Even though we don’t really need a loss function per se, we have to provide a custom loss class/function for fastai to function properly (e.g.&nbsp;one with a <code>decodes</code> and <code>activation</code> methods). Why? Because these methods will get called in methods like <code>show_results</code> to get the actual predictions.</p>
+<p>Note: The Hugging Face models <strong><em>will always</em></strong> calculate the loss for you <strong><em>if</em></strong> you pass a <code>labels</code> dictionary along with your other inputs (so only include it if that is what you intend to happen)</p>
+<p>Hugging Face question answering models will calculate the loss for you when you include both the <code>start_positions</code> and <code>end_positions</code> in the inputs dictionary. This is done by the <a href="https://ohmeow.github.io/blurr/text-data-question-answering.html#qabatchtokenizetransform"><code>QABatchTokenizeTransform</code></a> when <code>include_labels</code> = True (which is the default). This also requires fastai developers to set their <code>Learner</code>’s loss function to the <a href="https://ohmeow.github.io/blurr/text-modeling-question-answering.html#precalculatedqaloss"><code>PreCalculatedQALoss</code></a> for training to work properly.</p>
+</section>
+<section id="example" class="level3">
+<h3 class="anchored" data-anchor-id="example">Example</h3>
+<p>Notice below how I had to define the loss function <em>after</em> creating the <code>Learner</code> object. I’m not sure why, but the <a href="https://ohmeow.github.io/blurr/utils.html#multitargetloss"><code>MultiTargetLoss</code></a> above prohibits the learner from being exported if I do.</p>
+<section id="training" class="level4">
+<h4 class="anchored" data-anchor-id="training">Training</h4>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>model <span class="op">=</span> BaseModelWrapper(hf_model)</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>learn_cbs <span class="op">=</span> [QAModelCallback]</span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>validation_ds <span class="op">=</span> proc_df[proc_df.is_valid <span class="op">==</span> <span class="va">True</span>].to_dict(orient<span class="op">=</span><span class="st">"records"</span>)</span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>fit_cbs <span class="op">=</span> [QAMetricsCallback(compute_metrics_func<span class="op">=</span>compute_qa_metrics, validation_ds<span class="op">=</span>validation_ds)]</span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a>learn <span class="op">=</span> Learner(dls, model, opt_func<span class="op">=</span>partial(Adam), cbs<span class="op">=</span>learn_cbs, splitter<span class="op">=</span>blurr_splitter)</span>
+<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a>learn.loss_func <span class="op">=</span> PreCalculatedQALoss()  <span class="co"># MultiTargetLoss()</span></span>
+<span id="cb16-10"><a href="#cb16-10" aria-hidden="true" tabindex="-1"></a>learn.create_opt()  <span class="co"># -&gt; will create your layer groups based on your "splitter" function</span></span>
+<span id="cb16-11"><a href="#cb16-11" aria-hidden="true" tabindex="-1"></a>learn.freeze()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="co"># learn.summary() # no glory here :(</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="bu">len</span>(learn.opt.param_groups))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>3</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>learn.lr_find(suggest_funcs<span class="op">=</span>[minimum, steep, valley, slide])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+
+<style>
+    /* Turns off some styling */
+    progress {
+        /* gets rid of default border in Firefox and Opera. */
+        border: none;
+        /* Needs to be in here for Safari polyfill so background images work as expected. */
+        background-size: auto;
+    }
+    progress:not([value]), progress:not([value])::-webkit-progress-bar {
+        background: repeating-linear-gradient(45deg, #7e7e7e, #7e7e7e 10px, #5c5c5c 10px, #5c5c5c 20px);
+    }
+    .progress-bar-interrupted, .progress-bar-interrupted::-webkit-progress-bar {
+        background: #F44336;
+    }
+</style>
+</div>
+<div class="cell-output cell-output-display">
+
+</div>
+<div class="cell-output cell-output-display">
+<pre><code>SuggestedLRs(minimum=0.003981071710586548, steep=6.918309736647643e-06, valley=0.0014454397605732083, slide=0.0006918309954926372)</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<p><img src="14_text-modeling-question-answering_files/figure-html/cell-18-output-4.png" class="img-fluid"></p>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>learn.fit_one_cycle(<span class="dv">1</span>, lr_max<span class="op">=</span><span class="fl">1e-3</span>, cbs<span class="op">=</span>fit_cbs)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+
+<style>
+    /* Turns off some styling */
+    progress {
+        /* gets rid of default border in Firefox and Opera. */
+        border: none;
+        /* Needs to be in here for Safari polyfill so background images work as expected. */
+        background-size: auto;
+    }
+    progress:not([value]), progress:not([value])::-webkit-progress-bar {
+        background: repeating-linear-gradient(45deg, #7e7e7e, #7e7e7e 10px, #5c5c5c 10px, #5c5c5c 20px);
+    }
+    .progress-bar-interrupted, .progress-bar-interrupted::-webkit-progress-bar {
+        background: #F44336;
+    }
+</style>
+</div>
+<div class="cell-output cell-output-display">
+
+<table class="dataframe table table-sm table-striped">
+  <thead>
+    <tr>
+      <th>epoch</th>
+      <th>train_loss</th>
+      <th>valid_loss</th>
+      <th>exact_match</th>
+      <th>f1</th>
+      <th>time</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>0</td>
+      <td>1.132470</td>
+      <td>1.128738</td>
+      <td>79.672131</td>
+      <td>85.973167</td>
+      <td>01:29</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+</section>
+<section id="showing-results" class="level4">
+<h4 class="anchored" data-anchor-id="showing-results">Showing results</h4>
+<p>And here we create a <code>@typedispatch</code>ed implementation of <code>Learner.show_results</code> for a more intuitive QA task</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>learn.show_results(learner<span class="op">=</span>learn, skip_special_tokens<span class="op">=</span><span class="va">True</span>, max_n<span class="op">=</span><span class="dv">4</span>, trunc_at<span class="op">=</span><span class="dv">500</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+
+<style>
+    /* Turns off some styling */
+    progress {
+        /* gets rid of default border in Firefox and Opera. */
+        border: none;
+        /* Needs to be in here for Safari polyfill so background images work as expected. */
+        background-size: auto;
+    }
+    progress:not([value]), progress:not([value])::-webkit-progress-bar {
+        background: repeating-linear-gradient(45deg, #7e7e7e, #7e7e7e 10px, #5c5c5c 10px, #5c5c5c 20px);
+    }
+    .progress-bar-interrupted, .progress-bar-interrupted::-webkit-progress-bar {
+        background: #F44336;
+    }
+</style>
+</div>
+<div class="cell-output cell-output-display">
+
+</div>
+<div class="cell-output cell-output-display">
+
+<table class="dataframe table table-sm table-striped">
+  <thead>
+    <tr>
+      <th></th>
+      <th>text</th>
+      <th>found</th>
+      <th>start/end</th>
+      <th>answer</th>
+      <th>pred start/end</th>
+      <th>pred answer</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>which nfl team represented the afc at super bowl 50? super bowl 50 was an american football game to determine the champion of the national football league ( nfl ) for the 2015 season. the american football conference ( afc ) champion denver broncos defeated the national football conference ( nfc ) champion carolina panthers 24 – 10 to earn their third super bowl title. the game was played on february 7, 2016, at levi's stadium in the san francisco bay area at santa clara, california. as this was</td>
+      <td>True</td>
+      <td>(46, 48)</td>
+      <td>denver broncos</td>
+      <td>(46, 48)</td>
+      <td>denver broncos</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>when did the san francisco bay area last host the super bowl? recent one being super bowl xliv in 2010. the san francisco bay area last hosted in 1985 ( super bowl xix ), held at stanford stadium in stanford, california, won by the home team 49ers. the miami bid depended on whether the stadium underwent renovations. however, on may 3, 2013, the florida legislature refused to approve the funding plan to pay for the renovations, dealing a significant blow to miami's chances.</td>
+      <td>True</td>
+      <td>(33, 34)</td>
+      <td>1985</td>
+      <td>(33, 34)</td>
+      <td>1985</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>where did the spring meetings of the nfl owners take place? on may 21, 2013, nfl owners at their spring meetings in boston voted and awarded the game to levi's stadium. the $ 1. 2 billion stadium opened in 2014. it is the first super bowl held in the san francisco bay area since super bowl xix in 1985, and the first in california since super bowl xxxvii took place in san diego in 2003.</td>
+      <td>True</td>
+      <td>(27, 28)</td>
+      <td>boston</td>
+      <td>(27, 28)</td>
+      <td>boston</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>who was the commissioner of the nfl in 2012? in early 2012, nfl commissioner roger goodell stated that the league planned to make the 50th super bowl " spectacular " and that it would be " an important game for us as a league ".</td>
+      <td>True</td>
+      <td>(18, 21)</td>
+      <td>roger goodell</td>
+      <td>(18, 21)</td>
+      <td>roger goodell</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>learn.unfreeze()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>learn.fit_one_cycle(<span class="dv">1</span>, lr_max<span class="op">=</span><span class="bu">slice</span>(<span class="fl">1e-9</span>, <span class="fl">1e-7</span>), cbs<span class="op">=</span>fit_cbs)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+
+<style>
+    /* Turns off some styling */
+    progress {
+        /* gets rid of default border in Firefox and Opera. */
+        border: none;
+        /* Needs to be in here for Safari polyfill so background images work as expected. */
+        background-size: auto;
+    }
+    progress:not([value]), progress:not([value])::-webkit-progress-bar {
+        background: repeating-linear-gradient(45deg, #7e7e7e, #7e7e7e 10px, #5c5c5c 10px, #5c5c5c 20px);
+    }
+    .progress-bar-interrupted, .progress-bar-interrupted::-webkit-progress-bar {
+        background: #F44336;
+    }
+</style>
+</div>
+<div class="cell-output cell-output-display">
+
+<table class="dataframe table table-sm table-striped">
+  <thead>
+    <tr>
+      <th>epoch</th>
+      <th>train_loss</th>
+      <th>valid_loss</th>
+      <th>exact_match</th>
+      <th>f1</th>
+      <th>time</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>0</td>
+      <td>0.947245</td>
+      <td>1.128543</td>
+      <td>79.672131</td>
+      <td>85.973167</td>
+      <td>03:13</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>learn.recorder.plot_loss()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<p><img src="14_text-modeling-question-answering_files/figure-html/cell-24-output-1.png" class="img-fluid"></p>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>learn.show_results(learner<span class="op">=</span>learn, max_n<span class="op">=</span><span class="dv">2</span>, trunc_at<span class="op">=</span><span class="dv">100</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+
+<style>
+    /* Turns off some styling */
+    progress {
+        /* gets rid of default border in Firefox and Opera. */
+        border: none;
+        /* Needs to be in here for Safari polyfill so background images work as expected. */
+        background-size: auto;
+    }
+    progress:not([value]), progress:not([value])::-webkit-progress-bar {
+        background: repeating-linear-gradient(45deg, #7e7e7e, #7e7e7e 10px, #5c5c5c 10px, #5c5c5c 20px);
+    }
+    .progress-bar-interrupted, .progress-bar-interrupted::-webkit-progress-bar {
+        background: #F44336;
+    }
+</style>
+</div>
+<div class="cell-output cell-output-display">
+
+</div>
+<div class="cell-output cell-output-display">
+
+<table class="dataframe table table-sm table-striped">
+  <thead>
+    <tr>
+      <th></th>
+      <th>text</th>
+      <th>found</th>
+      <th>start/end</th>
+      <th>answer</th>
+      <th>pred start/end</th>
+      <th>pred answer</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>which nfl team represented the afc at super bowl 50? super bowl 50 was an american football game to</td>
+      <td>True</td>
+      <td>(46, 48)</td>
+      <td>denver broncos</td>
+      <td>(46, 48)</td>
+      <td>denver broncos</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>what day was the super bowl played on? third super bowl title. the game was played on february 7, 20</td>
+      <td>True</td>
+      <td>(21, 25)</td>
+      <td>february 7, 2016</td>
+      <td>(21, 23)</td>
+      <td>february 7</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+</section>
+<section id="prediction" class="level4">
+<h4 class="anchored" data-anchor-id="prediction">Prediction</h4>
+<p>Note that there is a bug currently in fastai v2 (or with how I’m assembling everything) that currently prevents us from seeing the decoded predictions and probabilities for the “end” token.</p>
+<hr>
+<p><a href="https://github.com/ohmeow/blurr/blob/master/blurr/text/modeling/question_answering.py#LNone" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+</section>
+<section id="learner.blurr_predict_answers" class="level3">
+<h3 class="anchored" data-anchor-id="learner.blurr_predict_answers">Learner.blurr_predict_answers</h3>
+<blockquote class="blockquote">
+<pre><code> Learner.blurr_predict_answers (question_contexts:Union[dict,List[dict]],
+                                slow_word_ids_func:Optional[Callable]=None
+                                )</code></pre>
+</blockquote>
+<table class="table">
+<colgroup>
+<col style="width: 6%">
+<col style="width: 25%">
+<col style="width: 34%">
+<col style="width: 34%">
+</colgroup>
+<thead>
+<tr class="header">
+<th></th>
+<th><strong>Type</strong></th>
+<th><strong>Default</strong></th>
+<th><strong>Details</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>question_contexts</td>
+<td>Union</td>
+<td></td>
+<td>The str (or list of strings) you want to get token classification predictions for</td>
+</tr>
+<tr class="even">
+<td>slow_word_ids_func</td>
+<td>Optional</td>
+<td>None</td>
+<td>If using a slow tokenizer, users will need to prove a <code>slow_word_ids_func</code> that accepts a</td>
+</tr>
+</tbody>
+</table>
+<p>tokenizzer, example index, and a batch encoding as arguments and in turn returnes the equavlient of fast tokenizer’s `word_ids`` |</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>context <span class="op">=</span> <span class="st">"George Lucas created Star Wars in 1977. He directed and produced it."</span></span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a>learn.blurr_predict_answers({<span class="st">"question"</span>: <span class="st">"What did George Lucas make?"</span>, <span class="st">"context"</span>: context})</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>[{'answer': 'Star Wars', 'start': 21, 'end': 30, 'score': 0.9519550800323486}]</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>context <span class="op">=</span> <span class="st">"George Lucas created Star Wars in 1977. He directed and produced it."</span></span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a>learn.blurr_predict_answers(</span>
+<span id="cb31-4"><a href="#cb31-4" aria-hidden="true" tabindex="-1"></a>    [</span>
+<span id="cb31-5"><a href="#cb31-5" aria-hidden="true" tabindex="-1"></a>        {<span class="st">"question"</span>: <span class="st">"What did George Lucas make?"</span>, <span class="st">"context"</span>: context},</span>
+<span id="cb31-6"><a href="#cb31-6" aria-hidden="true" tabindex="-1"></a>        {<span class="st">"question"</span>: <span class="st">"What year did Star Wars come out?"</span>, <span class="st">"context"</span>: context},</span>
+<span id="cb31-7"><a href="#cb31-7" aria-hidden="true" tabindex="-1"></a>        {<span class="st">"question"</span>: <span class="st">"What did George Lucas do?"</span>, <span class="st">"context"</span>: context},</span>
+<span id="cb31-8"><a href="#cb31-8" aria-hidden="true" tabindex="-1"></a>        {<span class="st">"question"</span>: <span class="st">"Who plays Spock in the movie?"</span>, <span class="st">"context"</span>: context},</span>
+<span id="cb31-9"><a href="#cb31-9" aria-hidden="true" tabindex="-1"></a>    ]</span>
+<span id="cb31-10"><a href="#cb31-10" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>[{'answer': 'Star Wars', 'start': 21, 'end': 30, 'score': 0.9519550800323486},
+ {'answer': '1977', 'start': 34, 'end': 38, 'score': 0.8868365287780762},
+ {'answer': 'created Star Wars in 1977. He directed and produced it',
+  'start': 13,
+  'end': 67,
+  'score': 0.17095458507537842},
+ {'answer': 'George Lucas',
+  'start': 0,
+  'end': 12,
+  'score': 0.3317754566669464}]</code></pre>
+</div>
+</div>
+<section id="inference" class="level4">
+<h4 class="anchored" data-anchor-id="inference">Inference</h4>
+<p>Note that I had to replace the loss function because of the above-mentioned issue to exporting the model with the <a href="https://ohmeow.github.io/blurr/utils.html#multitargetloss"><code>MultiTargetLoss</code></a> loss function. After getting our inference learner, we put it back and we’re good to go!</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a>export_name <span class="op">=</span> <span class="st">"q_and_a_learn_export"</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a>learn.loss_func <span class="op">=</span> CrossEntropyLossFlat()</span>
+<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a>learn.export(fname<span class="op">=</span><span class="ss">f"</span><span class="sc">{</span>export_name<span class="sc">}</span><span class="ss">.pkl"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a>inf_learn <span class="op">=</span> load_learner(fname<span class="op">=</span><span class="ss">f"</span><span class="sc">{</span>export_name<span class="sc">}</span><span class="ss">.pkl"</span>)</span>
+<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a>inf_learn.loss_func <span class="op">=</span> MultiTargetLoss()</span>
+<span id="cb35-3"><a href="#cb35-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb35-4"><a href="#cb35-4" aria-hidden="true" tabindex="-1"></a>context <span class="op">=</span> <span class="st">"George Lucas created Star Wars in 1977. He directed and produced it."</span></span>
+<span id="cb35-5"><a href="#cb35-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb35-6"><a href="#cb35-6" aria-hidden="true" tabindex="-1"></a>inf_learn.blurr_predict_answers(</span>
+<span id="cb35-7"><a href="#cb35-7" aria-hidden="true" tabindex="-1"></a>    [</span>
+<span id="cb35-8"><a href="#cb35-8" aria-hidden="true" tabindex="-1"></a>        {<span class="st">"question"</span>: <span class="st">"What did George Lucas make?"</span>, <span class="st">"context"</span>: context},</span>
+<span id="cb35-9"><a href="#cb35-9" aria-hidden="true" tabindex="-1"></a>        {<span class="st">"question"</span>: <span class="st">"What year did Star Wars come out?"</span>, <span class="st">"context"</span>: context},</span>
+<span id="cb35-10"><a href="#cb35-10" aria-hidden="true" tabindex="-1"></a>        {<span class="st">"question"</span>: <span class="st">"What did George Lucas do?"</span>, <span class="st">"context"</span>: context},</span>
+<span id="cb35-11"><a href="#cb35-11" aria-hidden="true" tabindex="-1"></a>        {<span class="st">"question"</span>: <span class="st">"Who plays Spock in the movie?"</span>, <span class="st">"context"</span>: context},</span>
+<span id="cb35-12"><a href="#cb35-12" aria-hidden="true" tabindex="-1"></a>    ]</span>
+<span id="cb35-13"><a href="#cb35-13" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>[{'answer': 'Star Wars', 'start': 21, 'end': 30, 'score': 0.9519549608230591},
+ {'answer': '1977', 'start': 34, 'end': 38, 'score': 0.8868366479873657},
+ {'answer': 'created Star Wars in 1977. He directed and produced it',
+  'start': 13,
+  'end': 67,
+  'score': 0.17095446586608887},
+ {'answer': 'George Lucas',
+  'start': 0,
+  'end': 12,
+  'score': 0.33177539706230164}]</code></pre>
+</div>
+</div>
+</section>
+</section>
+</section>
+<section id="high-level-api" class="level2">
+<h2 class="anchored" data-anchor-id="high-level-api">High-level API</h2>
+<hr>
+<p><a href="https://github.com/ohmeow/blurr/blob/master/blurr/text/modeling/question_answering.py#L308" target="_blank" style="float:right; font-size:smaller">source</a></p>
+<section id="blearnerforquestionanswering" class="level3">
+<h3 class="anchored" data-anchor-id="blearnerforquestionanswering">BlearnerForQuestionAnswering</h3>
+<blockquote class="blockquote">
+<pre><code> BlearnerForQuestionAnswering (dls:fastai.data.core.DataLoaders,
+                               hf_model:transformers.modeling_utils.PreTra
+                               inedModel, base_model_cb:blurr.text.modelin
+                               g.core.BaseModelCallback=&lt;class 'blurr.text
+                               .modeling.core.BaseModelCallback'&gt;,
+                               loss_func:callable|None=None,
+                               opt_func=&lt;function Adam&gt;, lr=0.001,
+                               splitter:callable=&lt;function
+                               trainable_params&gt;, cbs=None, metrics=None,
+                               path=None, model_dir='models', wd=None,
+                               wd_bn_bias=False, train_bn=True,
+                               moms=(0.95, 0.85, 0.95),
+                               default_cbs:bool=True)</code></pre>
+</blockquote>
+<p>Group together a <code>model</code>, some <code>dls</code> and a <code>loss_func</code> to handle training</p>
+<table class="table">
+<colgroup>
+<col style="width: 9%">
+<col style="width: 38%">
+<col style="width: 52%">
+</colgroup>
+<thead>
+<tr class="header">
+<th></th>
+<th><strong>Type</strong></th>
+<th><strong>Details</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>dls</td>
+<td></td>
+<td><code>DataLoaders</code> containing data for each dataset needed for <code>model</code></td>
+</tr>
+<tr class="even">
+<td>hf_model</td>
+<td>PreTrainedModel</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="example-1" class="level3">
+<h3 class="anchored" data-anchor-id="example-1">Example</h3>
+<p><code>BLearnerForQuestionAnswering</code> requires a question, context (within which to find the answer to the question), and the start/end indices of where the answer lies in the <em>tokenized context</em>. Because those indices vary by tokenizer, we can pass a <code>preprocess_func</code> that will take our raw data, perform any preprocessing we want, and return it in a way that will work for extractive QA.</p>
+<section id="preprocess-data" class="level4">
+<h4 class="anchored" data-anchor-id="preprocess-data">Preprocess data</h4>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb38"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a><span class="co"># build our training and validation DataFrames</span></span>
+<span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a>raw_datasets <span class="op">=</span> load_dataset(<span class="st">"squad"</span>, split<span class="op">=</span>[<span class="st">"train[:1000]"</span>, <span class="st">"validation[:200]"</span>])</span>
+<span id="cb38-3"><a href="#cb38-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-4"><a href="#cb38-4" aria-hidden="true" tabindex="-1"></a>raw_train_df <span class="op">=</span> pd.DataFrame(raw_datasets[<span class="dv">0</span>])</span>
+<span id="cb38-5"><a href="#cb38-5" aria-hidden="true" tabindex="-1"></a>raw_valid_df <span class="op">=</span> pd.DataFrame(raw_datasets[<span class="dv">1</span>])</span>
+<span id="cb38-6"><a href="#cb38-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-7"><a href="#cb38-7" aria-hidden="true" tabindex="-1"></a>raw_train_df[<span class="st">"is_valid"</span>] <span class="op">=</span> <span class="va">False</span></span>
+<span id="cb38-8"><a href="#cb38-8" aria-hidden="true" tabindex="-1"></a>raw_valid_df[<span class="st">"is_valid"</span>] <span class="op">=</span> <span class="va">True</span></span>
+<span id="cb38-9"><a href="#cb38-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-10"><a href="#cb38-10" aria-hidden="true" tabindex="-1"></a><span class="co"># concatenate into a single DataFrame</span></span>
+<span id="cb38-11"><a href="#cb38-11" aria-hidden="true" tabindex="-1"></a>squad_df <span class="op">=</span> pd.concat([raw_train_df, raw_valid_df])</span>
+<span id="cb38-12"><a href="#cb38-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-13"><a href="#cb38-13" aria-hidden="true" tabindex="-1"></a><span class="co"># include the required start/end character indicies and full text of the answer</span></span>
+<span id="cb38-14"><a href="#cb38-14" aria-hidden="true" tabindex="-1"></a>squad_df[<span class="st">"ans_start_char_idx"</span>] <span class="op">=</span> squad_df.answers.<span class="bu">apply</span>(<span class="kw">lambda</span> v: v[<span class="st">"answer_start"</span>][<span class="dv">0</span>] <span class="cf">if</span> <span class="bu">len</span>(v[<span class="st">"answer_start"</span>]) <span class="op">&gt;</span> <span class="dv">0</span> <span class="cf">else</span> <span class="st">"0"</span>)</span>
+<span id="cb38-15"><a href="#cb38-15" aria-hidden="true" tabindex="-1"></a>squad_df[<span class="st">"answer_text"</span>] <span class="op">=</span> squad_df.answers.<span class="bu">apply</span>(<span class="kw">lambda</span> v: v[<span class="st">"text"</span>][<span class="dv">0</span>] <span class="cf">if</span> <span class="bu">len</span>(v[<span class="st">"text"</span>]) <span class="op">&gt;</span> <span class="dv">0</span> <span class="cf">else</span> <span class="st">""</span>)</span>
+<span id="cb38-16"><a href="#cb38-16" aria-hidden="true" tabindex="-1"></a>squad_df[<span class="st">"ans_end_char_idx"</span>] <span class="op">=</span> squad_df[<span class="st">"ans_start_char_idx"</span>].astype(<span class="bu">int</span>) <span class="op">+</span> squad_df[<span class="st">"answer_text"</span>].<span class="bu">str</span>.<span class="bu">len</span>()</span>
+<span id="cb38-17"><a href="#cb38-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-18"><a href="#cb38-18" aria-hidden="true" tabindex="-1"></a><span class="co"># run our modified DataFrame thru the QAPreprocessor to get the start/end "token" indices we want to predict</span></span>
+<span id="cb38-19"><a href="#cb38-19" aria-hidden="true" tabindex="-1"></a>preprocessor <span class="op">=</span> QAPreprocessor(</span>
+<span id="cb38-20"><a href="#cb38-20" aria-hidden="true" tabindex="-1"></a>    hf_tokenizer, id_attr<span class="op">=</span><span class="st">"id"</span>, tok_kwargs<span class="op">=</span>{<span class="st">"return_overflowing_tokens"</span>: <span class="va">True</span>, <span class="st">"max_length"</span>: max_seq_len, <span class="st">"stride"</span>: <span class="dv">64</span>}</span>
+<span id="cb38-21"><a href="#cb38-21" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb38-22"><a href="#cb38-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-23"><a href="#cb38-23" aria-hidden="true" tabindex="-1"></a>proc_df <span class="op">=</span> preprocessor.process_df(squad_df)</span>
+<span id="cb38-24"><a href="#cb38-24" aria-hidden="true" tabindex="-1"></a>proc_df.head(<span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Reusing dataset squad (/home/wgilliam/.cache/huggingface/datasets/squad/plain_text/1.0.0/d6ec3ceb99ca480ce37cdd35555d6cb2511d223b9150cce08a837ef62ffea453)</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<script type="application/vnd.jupyter.widget-view+json">
+{"model_id":"12aee8f998674aa290ae5ebe4991874c","version_major":2,"version_minor":0}
+</script>
+</div>
+<div class="cell-output cell-output-display">
+
+<div>
+
+<table class="dataframe table table-sm table-striped">
+  <thead>
+    <tr>
+      <th></th>
+      <th>id</th>
+      <th>title</th>
+      <th>context</th>
+      <th>question</th>
+      <th>answers</th>
+      <th>is_valid</th>
+      <th>ans_start_char_idx</th>
+      <th>answer_text</th>
+      <th>ans_end_char_idx</th>
+      <th>proc_question</th>
+      <th>proc_context</th>
+      <th>ans_start_token_idx</th>
+      <th>ans_end_token_idx</th>
+      <th>is_answerable</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>5733be284776f41900661182</td>
+      <td>University_of_Notre_Dame</td>
+      <td>Architecturally, the school has a Catholic character. Atop the Main Building's gold dome is a golden statue of the Virgin Mary. Immediately in front of the Main Building and facing it, is a copper statue of Christ with arms upraised with the legend "Venite Ad Me Omnes". Next to the Main Building is the Basilica of the Sacred Heart. Immediately behind the basilica is the Grotto, a Marian place of prayer and reflection. It is a replica of the grotto at Lourdes, France where the Virgin Mary reputedly appeared to Saint Bernadette Soubirous in 1858. At the end of the main drive (and in a direct...</td>
+      <td>To whom did the Virgin Mary allegedly appear in 1858 in Lourdes France?</td>
+      <td>{'text': ['Saint Bernadette Soubirous'], 'answer_start': [515]}</td>
+      <td>False</td>
+      <td>515</td>
+      <td>Saint Bernadette Soubirous</td>
+      <td>541</td>
+      <td>To whom did the Virgin Mary allegedly appear in 1858 in Lourdes France?</td>
+      <td>Architecturally, the school has a Catholic character. Atop the Main Building's gold dome is a golden statue of the Virgin Mary. Immediately in front of the Main Building and facing it, is a copper statue of Christ with arms upraised with the legend "Venite Ad Me Omnes". Next to the Main Building is the Basilica of the Sacred Heart. Immediately behind the basilica is the Grotto, a Marian place of prayer and reflection. It is a replica of the grotto at Lourdes, France where the Virgin Mary reputed</td>
+      <td>0</td>
+      <td>0</td>
+      <td>False</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+</div>
+</section>
+<section id="define-your-blearner" class="level4">
+<h4 class="anchored" data-anchor-id="define-your-blearner">Define your <a href="https://ohmeow.github.io/blurr/text-modeling-core.html#blearner"><code>Blearner</code></a></h4>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb40"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a>hf_logging.set_verbosity_error()</span>
+<span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-3"><a href="#cb40-3" aria-hidden="true" tabindex="-1"></a>pretrained_model_name <span class="op">=</span> <span class="st">"bert-large-uncased-whole-word-masking-finetuned-squad"</span></span>
+<span id="cb40-4"><a href="#cb40-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-5"><a href="#cb40-5" aria-hidden="true" tabindex="-1"></a>learn <span class="op">=</span> BlearnerForQuestionAnswering.from_data(</span>
+<span id="cb40-6"><a href="#cb40-6" aria-hidden="true" tabindex="-1"></a>    proc_df,</span>
+<span id="cb40-7"><a href="#cb40-7" aria-hidden="true" tabindex="-1"></a>    pretrained_model_name,</span>
+<span id="cb40-8"><a href="#cb40-8" aria-hidden="true" tabindex="-1"></a>    id_attr<span class="op">=</span><span class="st">"id"</span>,</span>
+<span id="cb40-9"><a href="#cb40-9" aria-hidden="true" tabindex="-1"></a>    question_attr<span class="op">=</span><span class="st">"proc_question"</span>,</span>
+<span id="cb40-10"><a href="#cb40-10" aria-hidden="true" tabindex="-1"></a>    context_attr<span class="op">=</span><span class="st">"proc_context"</span>,</span>
+<span id="cb40-11"><a href="#cb40-11" aria-hidden="true" tabindex="-1"></a>    max_seq_len<span class="op">=</span><span class="dv">128</span>,</span>
+<span id="cb40-12"><a href="#cb40-12" aria-hidden="true" tabindex="-1"></a>    dl_kwargs<span class="op">=</span>{<span class="st">"bs"</span>: <span class="dv">4</span>},</span>
+<span id="cb40-13"><a href="#cb40-13" aria-hidden="true" tabindex="-1"></a>).to_fp16()</span>
+<span id="cb40-14"><a href="#cb40-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-15"><a href="#cb40-15" aria-hidden="true" tabindex="-1"></a>validation_ds <span class="op">=</span> proc_df[proc_df.is_valid <span class="op">==</span> <span class="va">True</span>].to_dict(orient<span class="op">=</span><span class="st">"records"</span>)</span>
+<span id="cb40-16"><a href="#cb40-16" aria-hidden="true" tabindex="-1"></a>fit_cbs <span class="op">=</span> [QAMetricsCallback(compute_metrics_func<span class="op">=</span>compute_qa_metrics, validation_ds<span class="op">=</span>validation_ds)]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb41"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a>learn.dls.show_batch(dataloaders<span class="op">=</span>learn.dls, max_n<span class="op">=</span><span class="dv">4</span>, trunc_at<span class="op">=</span><span class="dv">500</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+
+<table class="dataframe table table-sm table-striped">
+  <thead>
+    <tr>
+      <th></th>
+      <th>text</th>
+      <th>found</th>
+      <th>start/end</th>
+      <th>answer</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>with what institute did notre dame agree to an exchange program in the 1960s? ism. " thomas blantz, c. s. c., notre dame's vice president of student affairs, added that coeducation " opened up a whole other pool of very bright students. " two of the male residence halls were converted for the newly admitted female students that first year, while two others were converted for the next school year. in 1971 mary ann proctor became the first female undergraduate ; she transferred from st. mary's col</td>
+      <td>False</td>
+      <td>(0, 0)</td>
+      <td></td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>what types of garments are sold by beyonce's clothing line? eon, a respected seamstress. according to tina, the overall style of the line best reflects her and beyonce's taste and style. beyonce and her mother founded their family's company beyond productions, which provides the licensing and brand management for house of dereon, and its junior collection, dereon. house of dereon pieces were exhibited in destiny's child's shows and tours, during their destiny fulfilled era. the collection featur</td>
+      <td>True</td>
+      <td>(106, 125)</td>
+      <td>sportswear, denim offerings with fur, outerwear and accessories that include handbags and footwear</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>what notable football player played at notre dame from 1916 to 1920? george gipp was the school's legendary football player during 1916 – 20. he played semiprofessional baseball and smoked, drank, and gambled when not playing sports. he was also humble, generous to the needy, and a man of integrity. it was in 1928 that famed coach knute rockne used his final conversation with the dying gipp to inspire the notre dame team to beat the army team and " win one for the gipper. " the 1940 film, knute</td>
+      <td>True</td>
+      <td>(15, 18)</td>
+      <td>george gipp</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>beyonce's first modelling event was at where? in september 2010, beyonce made her runway modelling debut at tom ford's spring / summer 2011 fashion show. she was named " world's most beautiful woman " by people and the " hottest female singer of all time " by complex in 2012. in january 2013, gq placed her on its cover, featuring her atop its " 100 sexiest women of the 21st century " list. vh1 listed her at number 1 on its 100 sexiest artists list. several wax figures of beyonce are found at mad</td>
+      <td>True</td>
+      <td>(23, 33)</td>
+      <td>tom ford's spring / summer 2011 fashion show</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+</section>
+<section id="train" class="level4">
+<h4 class="anchored" data-anchor-id="train">Train</h4>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb42"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a>validation_ds <span class="op">=</span> proc_df[proc_df.is_valid <span class="op">==</span> <span class="va">True</span>].to_dict(orient<span class="op">=</span><span class="st">"records"</span>)</span>
+<span id="cb42-2"><a href="#cb42-2" aria-hidden="true" tabindex="-1"></a>fit_cbs <span class="op">=</span> [QAMetricsCallback(compute_metrics_func<span class="op">=</span>compute_qa_metrics, validation_ds<span class="op">=</span>validation_ds)]</span>
+<span id="cb42-3"><a href="#cb42-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-4"><a href="#cb42-4" aria-hidden="true" tabindex="-1"></a>learn.fit_one_cycle(<span class="dv">3</span>, lr_max<span class="op">=</span><span class="fl">1e-3</span>, cbs<span class="op">=</span>fit_cbs)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+
+<style>
+    /* Turns off some styling */
+    progress {
+        /* gets rid of default border in Firefox and Opera. */
+        border: none;
+        /* Needs to be in here for Safari polyfill so background images work as expected. */
+        background-size: auto;
+    }
+    progress:not([value]), progress:not([value])::-webkit-progress-bar {
+        background: repeating-linear-gradient(45deg, #7e7e7e, #7e7e7e 10px, #5c5c5c 10px, #5c5c5c 20px);
+    }
+    .progress-bar-interrupted, .progress-bar-interrupted::-webkit-progress-bar {
+        background: #F44336;
+    }
+</style>
+</div>
+<div class="cell-output cell-output-display">
+
+<table class="dataframe table table-sm table-striped">
+  <thead>
+    <tr>
+      <th>epoch</th>
+      <th>train_loss</th>
+      <th>valid_loss</th>
+      <th>exact_match</th>
+      <th>f1</th>
+      <th>time</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>0</td>
+      <td>0.864185</td>
+      <td>1.243750</td>
+      <td>71.803279</td>
+      <td>77.245525</td>
+      <td>01:56</td>
+    </tr>
+    <tr>
+      <td>1</td>
+      <td>0.558980</td>
+      <td>1.031230</td>
+      <td>77.377049</td>
+      <td>83.185627</td>
+      <td>01:58</td>
+    </tr>
+    <tr>
+      <td>2</td>
+      <td>0.361602</td>
+      <td>0.989997</td>
+      <td>78.688525</td>
+      <td>85.122314</td>
+      <td>02:04</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb43"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a>learn.show_results(learner<span class="op">=</span>learn, skip_special_tokens<span class="op">=</span><span class="va">True</span>, max_n<span class="op">=</span><span class="dv">2</span>, trunc_at<span class="op">=</span><span class="dv">500</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+
+<style>
+    /* Turns off some styling */
+    progress {
+        /* gets rid of default border in Firefox and Opera. */
+        border: none;
+        /* Needs to be in here for Safari polyfill so background images work as expected. */
+        background-size: auto;
+    }
+    progress:not([value]), progress:not([value])::-webkit-progress-bar {
+        background: repeating-linear-gradient(45deg, #7e7e7e, #7e7e7e 10px, #5c5c5c 10px, #5c5c5c 20px);
+    }
+    .progress-bar-interrupted, .progress-bar-interrupted::-webkit-progress-bar {
+        background: #F44336;
+    }
+</style>
+</div>
+<div class="cell-output cell-output-display">
+
+</div>
+<div class="cell-output cell-output-display">
+
+<table class="dataframe table table-sm table-striped">
+  <thead>
+    <tr>
+      <th></th>
+      <th>text</th>
+      <th>found</th>
+      <th>start/end</th>
+      <th>answer</th>
+      <th>pred start/end</th>
+      <th>pred answer</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>which nfl team represented the afc at super bowl 50? super bowl 50 was an american football game to determine the champion of the national football league ( nfl ) for the 2015 season. the american football conference ( afc ) champion denver broncos defeated the national football conference ( nfc ) champion carolina panthers 24 – 10 to earn their third super bowl title. the game was played on february 7, 2016, at levi's stadium in the san francisco bay area at santa clara, california. as this was</td>
+      <td>True</td>
+      <td>(46, 48)</td>
+      <td>denver broncos</td>
+      <td>(46, 48)</td>
+      <td>denver broncos</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>who was the head coach of the broncos in super bowl xlviii? for the third straight season, the number one seeds from both conferences met in the super bowl. the carolina panthers became one of only ten teams to have completed a regular season with only one loss, and one of only six teams to have acquired a 15 – 1 record, while the denver broncos became one of four teams to have made eight appearances in the super bowl. the broncos made their second super bowl appearance in three years, having re</td>
+      <td>False</td>
+      <td>(0, 0)</td>
+      <td></td>
+      <td>(0, 0)</td>
+      <td></td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+</section>
+<section id="inference-1" class="level4">
+<h4 class="anchored" data-anchor-id="inference-1">Inference</h4>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb44"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a>learn <span class="op">=</span> learn.to_fp32()</span>
+<span id="cb44-2"><a href="#cb44-2" aria-hidden="true" tabindex="-1"></a>learn.loss_func <span class="op">=</span> CrossEntropyLossFlat()</span>
+<span id="cb44-3"><a href="#cb44-3" aria-hidden="true" tabindex="-1"></a>learn.export(fname<span class="op">=</span><span class="ss">f"</span><span class="sc">{</span>export_name<span class="sc">}</span><span class="ss">.pkl"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb45"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a>inf_learn <span class="op">=</span> load_learner(fname<span class="op">=</span><span class="ss">f"</span><span class="sc">{</span>export_name<span class="sc">}</span><span class="ss">.pkl"</span>)</span>
+<span id="cb45-2"><a href="#cb45-2" aria-hidden="true" tabindex="-1"></a>inf_learn.loss_func <span class="op">=</span> MultiTargetLoss()</span>
+<span id="cb45-3"><a href="#cb45-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb45-4"><a href="#cb45-4" aria-hidden="true" tabindex="-1"></a>context <span class="op">=</span> <span class="st">"George Lucas created Star Wars in 1977. He directed and produced it."</span></span>
+<span id="cb45-5"><a href="#cb45-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb45-6"><a href="#cb45-6" aria-hidden="true" tabindex="-1"></a>inf_learn.blurr_predict_answers(</span>
+<span id="cb45-7"><a href="#cb45-7" aria-hidden="true" tabindex="-1"></a>    [</span>
+<span id="cb45-8"><a href="#cb45-8" aria-hidden="true" tabindex="-1"></a>        {<span class="st">"question"</span>: <span class="st">"What did George Lucas make?"</span>, <span class="st">"context"</span>: context},</span>
+<span id="cb45-9"><a href="#cb45-9" aria-hidden="true" tabindex="-1"></a>        {<span class="st">"question"</span>: <span class="st">"What year did Star Wars come out?"</span>, <span class="st">"context"</span>: context},</span>
+<span id="cb45-10"><a href="#cb45-10" aria-hidden="true" tabindex="-1"></a>        {<span class="st">"question"</span>: <span class="st">"What did George Lucas do?"</span>, <span class="st">"context"</span>: context},</span>
+<span id="cb45-11"><a href="#cb45-11" aria-hidden="true" tabindex="-1"></a>        {<span class="st">"question"</span>: <span class="st">"Who plays Spock in the movie?"</span>, <span class="st">"context"</span>: context},</span>
+<span id="cb45-12"><a href="#cb45-12" aria-hidden="true" tabindex="-1"></a>    ]</span>
+<span id="cb45-13"><a href="#cb45-13" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>[{'answer': 'Star Wars', 'start': 21, 'end': 30, 'score': 0.9926180243492126},
+ {'answer': '1977', 'start': 34, 'end': 38, 'score': 0.6034910082817078},
+ {'answer': 'directed and produced',
+  'start': 43,
+  'end': 64,
+  'score': 0.19618140161037445},
+ {'answer': None, 'start': 0, 'end': 0, 'score': 0.8134177327156067}]</code></pre>
+</div>
+</div>
+
+
+</section>
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const disableStylesheet = (stylesheets) => {
+    for (let i=0; i < stylesheets.length; i++) {
+      const stylesheet = stylesheets[i];
+      stylesheet.rel = 'prefetch';
+    }
+  }
+  const enableStylesheet = (stylesheets) => {
+    for (let i=0; i < stylesheets.length; i++) {
+      const stylesheet = stylesheets[i];
+      stylesheet.rel = 'stylesheet';
+    }
+  }
+  const manageTransitions = (selector, allowTransitions) => {
+    const els = window.document.querySelectorAll(selector);
+    for (let i=0; i < els.length; i++) {
+      const el = els[i];
+      if (allowTransitions) {
+        el.classList.remove('notransition');
+      } else {
+        el.classList.add('notransition');
+      }
+    }
+  }
+  const toggleColorMode = (alternate) => {
+    // Switch the stylesheets
+    const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+    manageTransitions('#quarto-margin-sidebar .nav-link', false);
+    if (alternate) {
+      enableStylesheet(alternateStylesheets);
+      for (const sheetNode of alternateStylesheets) {
+        if (sheetNode.id === "quarto-bootstrap") {
+          toggleBodyColorMode(sheetNode);
+        }
+      }
+    } else {
+      disableStylesheet(alternateStylesheets);
+      toggleBodyColorPrimary();
+    }
+    manageTransitions('#quarto-margin-sidebar .nav-link', true);
+    // Switch the toggles
+    const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+    for (let i=0; i < toggles.length; i++) {
+      const toggle = toggles[i];
+      if (toggle) {
+        if (alternate) {
+          toggle.classList.add("alternate");     
+        } else {
+          toggle.classList.remove("alternate");
+        }
+      }
+    }
+    // Hack to workaround the fact that safari doesn't
+    // properly recolor the scrollbar when toggling (#1455)
+    if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+      manageTransitions("body", false);
+      window.scrollTo(0, 1);
+      setTimeout(() => {
+        window.scrollTo(0, 0);
+        manageTransitions("body", true);
+      }, 40);  
+    }
+  }
+  const isFileUrl = () => { 
+    return window.location.protocol === 'file:';
+  }
+  const hasAlternateSentinel = () => {  
+    let styleSentinel = getColorSchemeSentinel();
+    if (styleSentinel !== null) {
+      return styleSentinel === "alternate";
+    } else {
+      return false;
+    }
+  }
+  const setStyleSentinel = (alternate) => {
+    const value = alternate ? "alternate" : "default";
+    if (!isFileUrl()) {
+      window.localStorage.setItem("quarto-color-scheme", value);
+    } else {
+      localAlternateSentinel = value;
+    }
+  }
+  const getColorSchemeSentinel = () => {
+    if (!isFileUrl()) {
+      const storageValue = window.localStorage.getItem("quarto-color-scheme");
+      return storageValue != null ? storageValue : localAlternateSentinel;
+    } else {
+      return localAlternateSentinel;
+    }
+  }
+  let localAlternateSentinel = 'default';
+  // Dark / light mode switch
+  window.quartoToggleColorScheme = () => {
+    // Read the current dark / light value 
+    let toAlternate = !hasAlternateSentinel();
+    toggleColorMode(toAlternate);
+    setStyleSentinel(toAlternate);
+  };
+  // Ensure there is a toggle, if there isn't float one in the top right
+  if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+    const a = window.document.createElement('a');
+    a.classList.add('top-right');
+    a.classList.add('quarto-color-scheme-toggle');
+    a.href = "";
+    a.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+    const i = window.document.createElement("i");
+    i.classList.add('bi');
+    a.appendChild(i);
+    window.document.body.appendChild(a);
+  }
+  // Switch to dark mode if need be
+  if (hasAlternateSentinel()) {
+    toggleColorMode(true);
+  } 
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    target: function(trigger) {
+      return trigger.previousElementSibling;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    setTimeout(function() {
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const cites = ref.parentNode.getAttribute('data-cites').split(' ');
+    tippyHover(ref, function() {
+      var popup = window.document.createElement('div');
+      cites.forEach(function(cite) {
+        var citeDiv = window.document.createElement('div');
+        citeDiv.classList.add('hanging-indent');
+        citeDiv.classList.add('csl-entry');
+        var biblioDiv = window.document.getElementById('ref-' + cite);
+        if (biblioDiv) {
+          citeDiv.innerHTML = biblioDiv.innerHTML;
+        }
+        popup.appendChild(citeDiv);
+      });
+      return popup.innerHTML;
+    });
+  }
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var filterRegex = new RegExp(/https:\/\/ohmeow\.github\.io\/blurr\//);
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+    var links = window.document.querySelectorAll('a:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+          // target, if specified
+          link.setAttribute("target", "_blank");
+      }
+    }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>

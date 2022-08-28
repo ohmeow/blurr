@@ -1,0 +1,1191 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.1.75">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="description" content="The text.modeling.seq2seq.core module contains core custom models, loss functions, etc… for Seq2Seq based tasks (e.g., language modeling, summarization, translation, etc…)">
+
+<title>blurr - Modeling</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: 1;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1.6em;
+  vertical-align: middle;
+}
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { color: #008000; } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { color: #008000; font-weight: bold; } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<link href="./favicon.ico" rel="icon">
+<script src="site_libs/quarto-html/quarto.js"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-dark.css" rel="prefetch" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-dark.min.css" rel="prefetch" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit"
+  }
+}</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" integrity="sha512-c3Nl8+7g4LMSTdrm621y7kf9v3SDPnhxLNhcjFJbKECVnmZHTdo+IRO05sNLTH/D3vA6u1X32ehoLC7WFVdheg==" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script>
+<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
+
+
+<link rel="stylesheet" href="styles.css">
+<meta property="og:title" content="blurr - Modeling">
+<meta property="og:description" content="The text.modeling.seq2seq.core module contains core custom models, loss functions, etc… for Seq2Seq based tasks (e.g., language modeling, summarization, translation, etc…)">
+<meta property="og:site-name" content="blurr">
+<meta name="twitter:title" content="blurr - Modeling">
+<meta name="twitter:description" content="The text.modeling.seq2seq.core module contains core custom models, loss functions, etc… for Seq2Seq based tasks (e.g., language modeling, summarization, translation, etc…)">
+<meta name="twitter:card" content="summary">
+</head>
+
+<body class="nav-sidebar floating nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg navbar-dark ">
+      <div class="navbar-container container-fluid">
+      <a class="navbar-brand" href="./index.html">
+    <span class="navbar-title">blurr</span>
+  </a>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link active" href="./index.html" aria-current="page">Getting Started</a>
+  </li>  
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-resources" role="button" data-bs-toggle="dropdown" aria-expanded="false">Resources</a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-resources">    
+        <li>
+    <a class="dropdown-item" href="https://www.youtube.com/playlist?list=PLD80i8An1OEF8UOb9N9uSoidOGIMKW96t"><i class="bi bi-play-btn-fill" role="img">
+</i> 
+ <span class="dropdown-text">fastai x Hugging Face Study Group</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="https://huggingface.co/course/chapter1/1"><i class="bi bi-journal-bookmark-fill" role="img">
+</i> 
+ <span class="dropdown-text">Hugging Face Course</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="https://docs.fast.ai/"><i class="bi bi-link" role="img">
+</i> 
+ <span class="dropdown-text">fast.ai (docs)</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="https://huggingface.co/docs/transformers/index"><i class="bi bi-link" role="img">
+</i> 
+ <span class="dropdown-text">transformers (docs)</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-help" role="button" data-bs-toggle="dropdown" aria-expanded="false">Help</a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-help">    
+        <li>
+    <a class="dropdown-item" href="https://github.com/ohmeow/blurr/issues"><i class="bi bi-bug" role="img">
+</i> 
+ <span class="dropdown-text">Report an Issue</span></a>
+  </li>  
+    </ul>
+  </li>
+</ul>
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/ohmeow/blurr/"><i class="bi bi-github" role="img">
+</i> 
+ </a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://twitter.com/waydegilliam"><i class="bi bi-twitter" role="img">
+</i> 
+ </a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://www.ohmeow.com/"><i class="bi bi-house" role="img" aria-label="Twitter">
+</i> 
+ </a>
+  </li>  
+</ul>
+              <div class="quarto-toggle-container">
+                  <a href="" class="quarto-color-scheme-toggle nav-link" onclick="window.quartoToggleColorScheme(); return false;" title="Toggle dark mode"><i class="bi"></i></a>
+              </div>
+              <div id="quarto-search" class="" title="Search"></div>
+          </div> <!-- /navcollapse -->
+      </div> <!-- /container-fluid -->
+    </nav>
+  <nav class="quarto-secondary-nav" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+    <div class="container-fluid d-flex justify-content-between">
+      <h1 class="quarto-secondary-nav-title">Modeling</h1>
+      <button type="button" class="quarto-btn-toggle btn" aria-label="Show secondary navigation">
+        <i class="bi bi-chevron-right"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-full page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse sidebar-navigation floating overflow-auto">
+      <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+      </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true">Overview</a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">Getting Started</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./callbacks.html" class="sidebar-item-text sidebar-link">callbacks</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./utils.html" class="sidebar-item-text sidebar-link">utils</a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="true">Text</a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="true">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-expanded="false">Sequence Classification</a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-expanded="false">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./text.data.core.html" class="sidebar-item-text sidebar-link">Data</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./text.modeling.core.html" class="sidebar-item-text sidebar-link">Modeling</a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" aria-expanded="false">Token Classification</a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" aria-expanded="false">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./text.data.token_classification.html" class="sidebar-item-text sidebar-link">Data</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./text.modeling.token_classification.html" class="sidebar-item-text sidebar-link">Modeling</a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" aria-expanded="false">Question &amp; Answering</a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" aria-expanded="false">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./text.data.question_answering.html" class="sidebar-item-text sidebar-link">Data</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./text.modeling.question_answering.html" class="sidebar-item-text sidebar-link">Modeling</a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" aria-expanded="false">Language Modeling</a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" aria-expanded="false">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-6" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./text.data.language_modeling.html" class="sidebar-item-text sidebar-link">Data</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./text.modeling.language_modeling.html" class="sidebar-item-text sidebar-link">Modeling</a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" aria-expanded="true">Seq2Seq: Core</a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" aria-expanded="true">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-7" class="collapse list-unstyled sidebar-section depth2 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./text.data.seq2seq.core.html" class="sidebar-item-text sidebar-link">Data</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./text.modeling.seq2seq.core.html" class="sidebar-item-text sidebar-link active">Modeling</a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" aria-expanded="false">Seq2Seq: Summarization</a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" aria-expanded="false">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-8" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./text.data.seq2seq.summarization.html" class="sidebar-item-text sidebar-link">Data</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./text.modeling.seq2seq.summarization.html" class="sidebar-item-text sidebar-link">Modeling</a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-9" aria-expanded="false">Seq2Seq: Translation</a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-9" aria-expanded="false">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-9" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./text.data.seq2seq.translation.html" class="sidebar-item-text sidebar-link">Data</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./text.modeling.seq2seq.translation.html" class="sidebar-item-text sidebar-link">Modeling</a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./text.callbacks.html" class="sidebar-item-text sidebar-link">callbacks</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./text.utils.html" class="sidebar-item-text sidebar-link">utils</a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-10" aria-expanded="true">Examples</a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-10" aria-expanded="true">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-10" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./examples.text.high_level_api.html" class="sidebar-item-text sidebar-link">Using the high-level Blurr API</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./examples.text.glue.html" class="sidebar-item-text sidebar-link">GLUE classification tasks</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./examples.text.glue_low_level_api.html" class="sidebar-item-text sidebar-link">Using the Low-level fastai API</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./examples.text.multilabel_classification.html" class="sidebar-item-text sidebar-link">Multi-label classification</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./examples.text.causal_lm_gpt2.html" class="sidebar-item-text sidebar-link">Causal Language Modeling with GPT-2</a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#mid-level-api" id="toc-mid-level-api" class="nav-link active" data-scroll-target="#mid-level-api">Mid-level API</a>
+  <ul>
+  <li><a href="#blurr_seq2seq_splitter" id="toc-blurr_seq2seq_splitter" class="nav-link" data-scroll-target="#blurr_seq2seq_splitter">blurr_seq2seq_splitter</a></li>
+  <li><a href="#seq2seqmetricscallback" id="toc-seq2seqmetricscallback" class="nav-link" data-scroll-target="#seq2seqmetricscallback">Seq2SeqMetricsCallback</a></li>
+  <li><a href="#example" id="toc-example" class="nav-link" data-scroll-target="#example">Example</a>
+  <ul class="collapse">
+  <li><a href="#training" id="toc-training" class="nav-link" data-scroll-target="#training">Training</a></li>
+  <li><a href="#prediction" id="toc-prediction" class="nav-link" data-scroll-target="#prediction">Prediction</a></li>
+  <li><a href="#showing-results" id="toc-showing-results" class="nav-link" data-scroll-target="#showing-results">Showing results</a></li>
+  </ul></li>
+  <li><a href="#inference" id="toc-inference" class="nav-link" data-scroll-target="#inference">Inference</a></li>
+  </ul></li>
+  </ul>
+<div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/ohmeow/blurr/issues/new" class="toc-action">Report an issue</a></p></div></div></nav>
+    </div>
+<!-- main -->
+<main class="content column-body" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title d-none d-lg-block">Modeling</h1>
+</div>
+
+<div>
+  <div class="description">
+    The <code>text.modeling.seq2seq.core</code> module contains core custom models, loss functions, etc… for Seq2Seq based tasks (e.g., language modeling, summarization, translation, etc…)
+  </div>
+</div>
+
+
+<div class="quarto-title-meta">
+
+    
+    
+  </div>
+  
+
+</header>
+
+<!-- WARNING: THIS FILE WAS AUTOGENERATED! DO NOT EDIT! -->
+<section id="mid-level-api" class="level2">
+<h2 class="anchored" data-anchor-id="mid-level-api">Mid-level API</h2>
+<p>We add a custom param splitter to give us a bit more depth in applying discriminative learning rates for Seq2Seq tasks.</p>
+<hr>
+<p><a href="https://github.com/ohmeow/blurr/blob/master/blurr/text/modeling/seq2seq/core.py#L38" target="_blank" style="float:right; font-size:smaller">source</a></p>
+<section id="blurr_seq2seq_splitter" class="level3">
+<h3 class="anchored" data-anchor-id="blurr_seq2seq_splitter">blurr_seq2seq_splitter</h3>
+<blockquote class="blockquote">
+<pre><code> blurr_seq2seq_splitter (m:transformers.modeling_utils.PreTrainedModel,
+                         arch:str)</code></pre>
+</blockquote>
+<p>Custom param splitter for summarization models</p>
+<table class="table">
+<colgroup>
+<col style="width: 9%">
+<col style="width: 38%">
+<col style="width: 52%">
+</colgroup>
+<thead>
+<tr class="header">
+<th></th>
+<th><strong>Type</strong></th>
+<th><strong>Details</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>m</td>
+<td>PreTrainedModel</td>
+<td>A Hugging Face model</td>
+</tr>
+<tr class="even">
+<td>arch</td>
+<td>str</td>
+<td>The name of the architecture you are working with (e.g., bart, fsmt, pegasus, etc…)</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<p><a href="https://github.com/ohmeow/blurr/blob/master/blurr/text/modeling/seq2seq/core.py#L96" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="seq2seqmetricscallback" class="level3">
+<h3 class="anchored" data-anchor-id="seq2seqmetricscallback">Seq2SeqMetricsCallback</h3>
+<blockquote class="blockquote">
+<pre><code> Seq2SeqMetricsCallback (custom_metrics:dict=None, calc_every:str='epoch',
+                         ignore_token_id=-100, text_gen_kwargs:dict={},
+                         **kwargs)</code></pre>
+</blockquote>
+<p>A callback that adds seq2seq metrics</p>
+<table class="table">
+<colgroup>
+<col style="width: 6%">
+<col style="width: 25%">
+<col style="width: 34%">
+<col style="width: 34%">
+</colgroup>
+<thead>
+<tr class="header">
+<th></th>
+<th><strong>Type</strong></th>
+<th><strong>Default</strong></th>
+<th><strong>Details</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>custom_metrics</td>
+<td>dict</td>
+<td>None</td>
+<td>A dictionary of seq2seq metrics we want to use. See below and the various task specific seq2seq docs</td>
+</tr>
+<tr class="even">
+<td>for examples of how to configure this per task</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>calc_every</td>
+<td>str</td>
+<td>epoch</td>
+<td>Calculation of these metrics requires text generation, which is expensive. You can choose to calculate</td>
+</tr>
+<tr class="even">
+<td>these metrics on every ‘epoch’, ‘other_epoch’, or ‘last_epoch’ instead (default: ‘epoch’)</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>ignore_token_id</td>
+<td>int</td>
+<td>-100</td>
+<td>The token ID that should be ignored when calculating the loss</td>
+</tr>
+<tr class="even">
+<td>text_gen_kwargs</td>
+<td>dict</td>
+<td>{}</td>
+<td>Any keyword arguments to pass to the <code>hf_model.generate</code> method</td>
+</tr>
+<tr class="odd">
+<td>kwargs</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p><code>BLURR</code> provides a special callback for seq2seq models for calculating a variety of useful metrics that require decoding both given and predicted input_ids to be calculated. The are:</p>
+<ul>
+<li>rouge (e.g., “rouge1”, “rouge2”, “rougeL”, “rougeLsum”)</li>
+<li>bert_score (e.g., “precision”, “recall”, “f1”)</li>
+<li>bleu</li>
+<li>bleurt</li>
+<li>meteor</li>
+<li>sacrebleu</li>
+</ul>
+</section>
+<section id="example" class="level3">
+<h3 class="anchored" data-anchor-id="example">Example</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>dataset <span class="op">=</span> load_dataset(<span class="st">"cnn_dailymail"</span>, <span class="st">"3.0.0"</span>, split<span class="op">=</span><span class="st">"train[:1000]"</span>)</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>cnndm_df <span class="op">=</span> pd.DataFrame(dataset)</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>cnndm_df.head(<span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Reusing dataset cnn_dailymail (/home/wgilliam/.cache/huggingface/datasets/cnn_dailymail/3.0.0/3.0.0/3cb851bf7cf5826e45d49db2863f627cba583cbc32342df7349dfe6c38060234)</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+
+<div>
+
+<table class="dataframe table table-sm table-striped">
+  <thead>
+    <tr>
+      <th></th>
+      <th>article</th>
+      <th>highlights</th>
+      <th>id</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>It's official: U.S. President Barack Obama wants lawmakers to weigh in on whether to use military force in Syria. Obama sent a letter to the heads of the House and Senate on Saturday night, hours after announcing that he believes military action against Syrian targets is the right step to take over the alleged use of chemical weapons. The proposed legislation from Obama asks Congress to approve the use of military force "to deter, disrupt, prevent and degrade the potential for future uses of chemical weapons or other weapons of mass destruction." It's a step that is set to turn an internat...</td>
+      <td>Syrian official: Obama climbed to the top of the tree, "doesn't know how to get down"\nObama sends a letter to the heads of the House and Senate .\nObama to seek congressional approval on military action against Syria .\nAim is to determine whether CW were used, not by whom, says U.N. spokesman .</td>
+      <td>0001d1afc246a7964130f43ae940af6bc6c57f01</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>(CNN) -- Usain Bolt rounded off the world championships Sunday by claiming his third gold in Moscow as he anchored Jamaica to victory in the men's 4x100m relay. The fastest man in the world charged clear of United States rival Justin Gatlin as the Jamaican quartet of Nesta Carter, Kemar Bailey-Cole, Nickel Ashmeade and Bolt won in 37.36 seconds. The U.S finished second in 37.56 seconds with Canada taking the bronze after Britain were disqualified for a faulty handover. The 26-year-old Bolt has now collected eight gold medals at world championships, equaling the record held by American trio...</td>
+      <td>Usain Bolt wins third gold of world championship .\nAnchors Jamaica to 4x100m relay victory .\nEighth gold at the championships for Bolt .\nJamaica double up in women's 4x100m relay .</td>
+      <td>0002095e55fcbd3a2f366d9bf92a95433dc305ef</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>pretrained_model_name <span class="op">=</span> <span class="st">"facebook/bart-large-cnn"</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>hf_arch, hf_config, hf_tokenizer, hf_model <span class="op">=</span> get_hf_objects(pretrained_model_name, model_cls<span class="op">=</span>BartForConditionalGeneration)</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>hf_arch, <span class="bu">type</span>(hf_config), <span class="bu">type</span>(hf_tokenizer), <span class="bu">type</span>(hf_model)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>('bart',
+ transformers.models.bart.configuration_bart.BartConfig,
+ transformers.models.bart.tokenization_bart_fast.BartTokenizerFast,
+ transformers.models.bart.modeling_bart.BartForConditionalGeneration)</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>batch_tokenize_tfm <span class="op">=</span> Seq2SeqBatchTokenizeTransform(hf_arch, hf_config, hf_tokenizer, hf_model, max_length<span class="op">=</span><span class="dv">256</span>, max_target_length<span class="op">=</span><span class="dv">130</span>)</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>blocks <span class="op">=</span> (Seq2SeqTextBlock(batch_tokenize_tfm<span class="op">=</span>batch_tokenize_tfm), noop)</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>dblock <span class="op">=</span> DataBlock(blocks<span class="op">=</span>blocks, get_x<span class="op">=</span>ColReader(<span class="st">"article"</span>), get_y<span class="op">=</span>ColReader(<span class="st">"highlights"</span>), splitter<span class="op">=</span>RandomSplitter())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>dls <span class="op">=</span> dblock.dataloaders(cnndm_df, bs<span class="op">=</span><span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>b <span class="op">=</span> dls.one_batch()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="bu">len</span>(b), b[<span class="dv">0</span>][<span class="st">"input_ids"</span>].shape, b[<span class="dv">1</span>].shape</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>(2, torch.Size([2, 256]), torch.Size([2, 54]))</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>dls.show_batch(dataloaders<span class="op">=</span>dls, max_n<span class="op">=</span><span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+
+<table class="dataframe table table-sm table-striped">
+  <thead>
+    <tr>
+      <th></th>
+      <th>text</th>
+      <th>target</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>&lt;s&gt; (CNN) -- When Ji Yeqing awakened, she was already in the recovery room. Chinese authorities had dragged her out of her home and down four flights of stairs, she said, restraining and beating her husband as he tried to come to her aid. They whisked her into a clinic, held her down on a bed and forced her to undergo an abortion. Her offense? Becoming pregnant with a second child, in violation of China's one-child policy. "After the abortion, I felt empty, as if something was scooped out of me," Ji told a congressional panel in September. "My husband and I had been so excited for our new baby. Now suddenly all that hope and joy and excitement disappeared.... I was very depressed and despondent. For a long time, whenever I thought about my lost child, I would cry." As she lay unconscious, she said, an IUD to prevent future pregnancies was inserted. The issue of forced abortions -- and in some cases, forced sterilizations -- in China has seized the spotlight in recent days with news of escaped activist Chen Guangcheng. Chen, a blind, self-taught lawyer, rose to fame in the late 1990s because of his advocacy for what he calls victims&lt;/s&gt;</td>
+      <td>China's one-child policy results in forced abortions and sterilizations, activists say.\nWomen tell of emotional and physical consequences from the procedures.\nActivist Chen Guangcheng works to advocate for victims of such practices.</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>&lt;s&gt; Few question that there was a major chemical attack in Syria last week, and the United States has made clear that it blames the government of President Bashar al-Assad. Now, the question is how President Barack Obama will respond. For almost two years, Obama has avoided direct military involvement in Syria's civil war, only escalating aid to rebel fighters in June after suspected smaller-scale chemical weapons attacks by Syrian government forces. However, last week's attack on a Damascus suburb that reportedly killed and wounded more than 3,000 people obliterated the "red line" Obama set just over a year ago against the use of Syria's chemical weapons stocks. At the White House, spokesman Jay Carney told reporters Monday that Obama was evaluating "a response to the clear use on a mass scale with repugnant results of chemical weapons," adding that "there is very little doubt that the Syrian regime... used those weapons." Meanwhile, U.S. Secretary of State John Kerry called the attack "inexcusable" and "undeniable," and said there was "a clear reason that the world has banned entirely chemical weapons." He said that evidence "strongly indicates" chemical weapons were used in Syria and that "we know the Syrian regime maintains custody" of such weapons and has&lt;/s&gt;</td>
+      <td>U.S. evidence includes satellite imagery, official says.\nObama is considering how to respond to Syrian chemical attack.\nOfficial: Obama could be presented with options within days.\nA U.S. strike "can't just be one and done," a Middle East analyst says.</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+<section id="training" class="level4">
+<h4 class="anchored" data-anchor-id="training">Training</h4>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>seq2seq_metrics <span class="op">=</span> {</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>    <span class="st">"rouge"</span>: {</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>        <span class="st">"compute_kwargs"</span>: {<span class="st">"rouge_types"</span>: [<span class="st">"rouge1"</span>, <span class="st">"rouge2"</span>, <span class="st">"rougeL"</span>, <span class="st">"rougeLsum"</span>], <span class="st">"use_stemmer"</span>: <span class="va">True</span>},</span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>        <span class="st">"returns"</span>: [<span class="st">"rouge1"</span>, <span class="st">"rouge2"</span>, <span class="st">"rougeL"</span>, <span class="st">"rougeLsum"</span>],</span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>    },</span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>    <span class="st">"bertscore"</span>: {<span class="st">"compute_kwargs"</span>: {<span class="st">"lang"</span>: <span class="st">"en"</span>}, <span class="st">"returns"</span>: [<span class="st">"precision"</span>, <span class="st">"recall"</span>, <span class="st">"f1"</span>]},</span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>    <span class="st">"bleu"</span>: {<span class="st">"returns"</span>: <span class="st">"bleu"</span>},</span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a>    <span class="st">"meteor"</span>: {<span class="st">"returns"</span>: <span class="st">"meteor"</span>},</span>
+<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a>    <span class="st">"sacrebleu"</span>: {<span class="st">"returns"</span>: <span class="st">"score"</span>},</span>
+<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb13-11"><a href="#cb13-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-12"><a href="#cb13-12" aria-hidden="true" tabindex="-1"></a>model <span class="op">=</span> BaseModelWrapper(hf_model)</span>
+<span id="cb13-13"><a href="#cb13-13" aria-hidden="true" tabindex="-1"></a>learn_cbs <span class="op">=</span> [BaseModelCallback]</span>
+<span id="cb13-14"><a href="#cb13-14" aria-hidden="true" tabindex="-1"></a>fit_cbs <span class="op">=</span> [Seq2SeqMetricsCallback(custom_metrics<span class="op">=</span>seq2seq_metrics, calc_every<span class="op">=</span><span class="st">"other_epoch"</span>)]</span>
+<span id="cb13-15"><a href="#cb13-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-16"><a href="#cb13-16" aria-hidden="true" tabindex="-1"></a>learn <span class="op">=</span> Learner(</span>
+<span id="cb13-17"><a href="#cb13-17" aria-hidden="true" tabindex="-1"></a>    dls,</span>
+<span id="cb13-18"><a href="#cb13-18" aria-hidden="true" tabindex="-1"></a>    model,</span>
+<span id="cb13-19"><a href="#cb13-19" aria-hidden="true" tabindex="-1"></a>    opt_func<span class="op">=</span>partial(Adam),</span>
+<span id="cb13-20"><a href="#cb13-20" aria-hidden="true" tabindex="-1"></a>    loss_func<span class="op">=</span>PreCalculatedCrossEntropyLoss(),  <span class="co"># CrossEntropyLossFlat()</span></span>
+<span id="cb13-21"><a href="#cb13-21" aria-hidden="true" tabindex="-1"></a>    cbs<span class="op">=</span>learn_cbs,</span>
+<span id="cb13-22"><a href="#cb13-22" aria-hidden="true" tabindex="-1"></a>    splitter<span class="op">=</span>partial(blurr_seq2seq_splitter, arch<span class="op">=</span>hf_arch),</span>
+<span id="cb13-23"><a href="#cb13-23" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb13-24"><a href="#cb13-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-25"><a href="#cb13-25" aria-hidden="true" tabindex="-1"></a><span class="co"># learn = learn.to_native_fp16() #.to_fp16()</span></span>
+<span id="cb13-26"><a href="#cb13-26" aria-hidden="true" tabindex="-1"></a>learn.unfreeze()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>[nltk_data] Downloading package wordnet to /home/wgilliam/nltk_data...
+[nltk_data]   Package wordnet is already up-to-date!
+[nltk_data] Downloading package punkt to /home/wgilliam/nltk_data...
+[nltk_data]   Package punkt is already up-to-date!
+[nltk_data] Downloading package omw-1.4 to /home/wgilliam/nltk_data...
+[nltk_data]   Package omw-1.4 is already up-to-date!</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>b <span class="op">=</span> dls.one_batch()</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>preds <span class="op">=</span> learn.model(b[<span class="dv">0</span>])</span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a><span class="bu">len</span>(preds), preds[<span class="st">"loss"</span>].shape, preds[<span class="st">"logits"</span>].shape</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>(4, torch.Size([]), torch.Size([2, 58, 50264]))</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>b <span class="op">=</span> dls.one_batch()</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>preds <span class="op">=</span> learn.model(b[<span class="dv">0</span>])</span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a><span class="bu">len</span>(preds), preds[<span class="st">"loss"</span>].shape, preds[<span class="st">"logits"</span>].shape</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>(4, torch.Size([]), torch.Size([2, 69, 50264]))</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="bu">len</span>(learn.opt.param_groups))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>3</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>learn.lr_find(suggest_funcs<span class="op">=</span>[minimum, steep, valley, slide])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+
+</div>
+<div class="cell-output cell-output-display">
+<pre><code>SuggestedLRs(minimum=2.7542287716642023e-05, steep=1.0964781722577754e-06, valley=1.737800812406931e-05, slide=9.999999747378752e-06)</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<p><img src="20_text-modeling-seq2seq-core_files/figure-html/cell-17-output-3.png" class="img-fluid"></p>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>learn.fit_one_cycle(<span class="dv">1</span>, lr_max<span class="op">=</span><span class="bu">slice</span>(<span class="fl">9e-7</span>, <span class="fl">9e-5</span>), cbs<span class="op">=</span>fit_cbs)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+
+<table class="dataframe table table-sm table-striped">
+  <thead>
+    <tr>
+      <th>epoch</th>
+      <th>train_loss</th>
+      <th>valid_loss</th>
+      <th>rouge1</th>
+      <th>rouge2</th>
+      <th>rougeL</th>
+      <th>rougeLsum</th>
+      <th>bertscore_precision</th>
+      <th>bertscore_recall</th>
+      <th>bertscore_f1</th>
+      <th>bleu</th>
+      <th>meteor</th>
+      <th>sacrebleu</th>
+      <th>time</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>0</td>
+      <td>1.926532</td>
+      <td>1.814343</td>
+      <td>0.376596</td>
+      <td>0.157966</td>
+      <td>0.260184</td>
+      <td>0.351594</td>
+      <td>0.877255</td>
+      <td>0.890926</td>
+      <td>0.883944</td>
+      <td>0.148116</td>
+      <td>0.350684</td>
+      <td>11.629698</td>
+      <td>03:56</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+</section>
+<section id="prediction" class="level4">
+<h4 class="anchored" data-anchor-id="prediction">Prediction</h4>
+<p>Below we’ll add in additional functionality to take advantage of Hugging Face’s <code>PreTrainedModel.generate</code> model, which can be used to easily implement beam search, top-k/nucleous sampling, etc… so that we get more human sounding results.</p>
+<p>To make things even easier, for text generation tasks you can simply call the <code>Learn.blurr_generate</code> method, optionally passing in whatever text generation kwargs you wish, to accomplish the same as above.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>test_article <span class="op">=</span> <span class="st">"""</span></span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a><span class="st">About 10 men armed with pistols and small machine guns raided a casino in Switzerland and made off </span></span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a><span class="st">into France with several hundred thousand Swiss francs in the early hours of Sunday morning, police said. </span></span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a><span class="st">The men, dressed in black clothes and black ski masks, split into two groups during the raid on the Grand Casino </span></span>
+<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a><span class="st">Basel, Chief Inspector Peter Gill told CNN. One group tried to break into the casino's vault on the lower level </span></span>
+<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a><span class="st">but could not get in, but they did rob the cashier of the money that was not secured, he said. The second group </span></span>
+<span id="cb24-7"><a href="#cb24-7" aria-hidden="true" tabindex="-1"></a><span class="st">of armed robbers entered the upper level where the roulette and blackjack tables are located and robbed the </span></span>
+<span id="cb24-8"><a href="#cb24-8" aria-hidden="true" tabindex="-1"></a><span class="st">cashier there, he said. As the thieves were leaving the casino, a woman driving by and unaware of what was </span></span>
+<span id="cb24-9"><a href="#cb24-9" aria-hidden="true" tabindex="-1"></a><span class="st">occurring unknowingly blocked the armed robbers' vehicles. A gunman pulled the woman from her vehicle, beat </span></span>
+<span id="cb24-10"><a href="#cb24-10" aria-hidden="true" tabindex="-1"></a><span class="st">her, and took off for the French border. The other gunmen followed into France, which is only about 100 </span></span>
+<span id="cb24-11"><a href="#cb24-11" aria-hidden="true" tabindex="-1"></a><span class="st">meters (yards) from the casino, Gill said. There were about 600 people in the casino at the time of the robbery. </span></span>
+<span id="cb24-12"><a href="#cb24-12" aria-hidden="true" tabindex="-1"></a><span class="st">There were no serious injuries, although one guest on the Casino floor was kicked in the head by one of the </span></span>
+<span id="cb24-13"><a href="#cb24-13" aria-hidden="true" tabindex="-1"></a><span class="st">robbers when he moved, the police officer said. Swiss authorities are working closely with French authorities, </span></span>
+<span id="cb24-14"><a href="#cb24-14" aria-hidden="true" tabindex="-1"></a><span class="st">Gill said. The robbers spoke French and drove vehicles with French lRicense plates. CNN's Andreena Narayan </span></span>
+<span id="cb24-15"><a href="#cb24-15" aria-hidden="true" tabindex="-1"></a><span class="st">contributed to this report.</span></span>
+<span id="cb24-16"><a href="#cb24-16" aria-hidden="true" tabindex="-1"></a><span class="st">"""</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>b <span class="op">=</span> dls.valid.one_batch()</span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>tfm <span class="op">=</span> first_blurr_tfm(dls)</span>
+<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a>b_hf_tokenizer <span class="op">=</span> tfm.hf_tokenizer</span>
+<span id="cb25-6"><a href="#cb25-6" aria-hidden="true" tabindex="-1"></a>b_ignore_token_id <span class="op">=</span> tfm.ignore_token_id</span>
+<span id="cb25-7"><a href="#cb25-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-8"><a href="#cb25-8" aria-hidden="true" tabindex="-1"></a>test_input_ids <span class="op">=</span> b[<span class="dv">0</span>][<span class="st">"input_ids"</span>][<span class="dv">0</span>].unsqueeze(<span class="dv">0</span>).to(learn.model.hf_model.device)</span>
+<span id="cb25-9"><a href="#cb25-9" aria-hidden="true" tabindex="-1"></a>test_trg_ids <span class="op">=</span> b[<span class="dv">1</span>][<span class="dv">0</span>].unsqueeze(<span class="dv">0</span>).to(learn.model.hf_model.device)</span>
+<span id="cb25-10"><a href="#cb25-10" aria-hidden="true" tabindex="-1"></a>test_trg_ids <span class="op">=</span> [trg[trg <span class="op">!=</span> b_ignore_token_id] <span class="cf">for</span> trg <span class="kw">in</span> test_trg_ids]</span>
+<span id="cb25-11"><a href="#cb25-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-12"><a href="#cb25-12" aria-hidden="true" tabindex="-1"></a>gen_text <span class="op">=</span> learn.model.hf_model.generate(test_input_ids, num_beams<span class="op">=</span><span class="dv">4</span>, max_length<span class="op">=</span><span class="dv">130</span>, min_length<span class="op">=</span><span class="dv">30</span>)</span>
+<span id="cb25-13"><a href="#cb25-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-14"><a href="#cb25-14" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"=== Target ==="</span>)</span>
+<span id="cb25-15"><a href="#cb25-15" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"</span><span class="sc">{</span>b_hf_tokenizer<span class="sc">.</span>decode(test_trg_ids[<span class="dv">0</span>], skip_special_tokens<span class="op">=</span><span class="va">True</span>, clean_up_tokenization_spaces<span class="op">=</span><span class="va">True</span>)<span class="sc">}</span><span class="ch">\n</span><span class="ss">"</span>)</span>
+<span id="cb25-16"><a href="#cb25-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-17"><a href="#cb25-17" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"=== Prediction ==="</span>)</span>
+<span id="cb25-18"><a href="#cb25-18" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(b_hf_tokenizer.decode(gen_text[<span class="dv">0</span>], skip_special_tokens<span class="op">=</span><span class="va">True</span>, clean_up_tokenization_spaces<span class="op">=</span><span class="va">True</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>=== Target ===
+ A winter storm slams the northeastern United States.
+The U.S. House of Representatives condemns the Arizona shooting.
+Massive floods leave vast areas of Australia underwater.
+Use the Daily Discussion to help students understand today's featured news stories.
+
+=== Prediction ===
+ This is a RUSH transcript of today's CNN Student News show.
+Use the Transcript to help students with reading comprehension and vocabulary.
+The Story of a problem that won't be solved, even if the solution is clear.
+A look at the storm system that iced out the southeast.
+Learn about the problem that will never be solved in Australia.
+Explore the story and the reasons why a problem won't solve itself.</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>outputs <span class="op">=</span> learn.blurr_generate(test_article, num_return_sequences<span class="op">=</span><span class="dv">3</span>)</span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>outputs</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>[{'generated_texts': [" The robbers made off with several hundred thousand Swiss francs in the early hours of Sunday morning .\nThe men, dressed in black clothes and black ski masks, split into two groups during the raid on the Grand Casino Basel .\nAs the thieves were leaving the casino, a woman driving by unknowingly blocked the armed robbers' vehicles .\nA gunman pulled the woman from her vehicle, beat her up, and took off for the French border .\nThere were about 600 people in the casino at the time of the robbery .",
+   " The robbers made off with several hundred thousand Swiss francs in the early hours of Sunday morning .\nThe men, dressed in black clothes and black ski masks, split into two groups during the raid on the Grand Casino Basel .\nAs the thieves were leaving the casino, a woman driving by unknowingly blocked the armed robbers' vehicles .\nA gunman pulled the woman from her vehicle, beat her up, and took off for the French border .\nThere were about 600 people in the casino at the time of the raid .",
+   " The robbers made off with several hundred thousand Swiss francs in the early hours of Sunday morning .\nThe men, dressed in black clothes and black ski masks, split into two groups during the raid on the Grand Casino Basel .\nAs the thieves were leaving the casino, a woman driving by unknowingly blocked the armed robbers' vehicles .\nA gunman pulled the woman from her vehicle, beat her up, and took off for the French border .\nFrench authorities are working closely with Swiss authorities ."]}]</code></pre>
+</div>
+</div>
+</section>
+<section id="showing-results" class="level4">
+<h4 class="anchored" data-anchor-id="showing-results">Showing results</h4>
+<p>Much nicer!!! Now, we can update our <span class="citation" data-cites="typedispatched">@typedispatched</span> <a href="https://ohmeow.github.io/blurr/text-modeling-token-classification.html#show_results"><code>show_results</code></a> to use this new method.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>learn.show_results(learner<span class="op">=</span>learn, input_trunc_at<span class="op">=</span><span class="dv">500</span>, target_trunc_at<span class="op">=</span><span class="dv">250</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+
+</div>
+<div class="cell-output cell-output-display">
+
+<table class="dataframe table table-sm table-striped">
+  <thead>
+    <tr>
+      <th></th>
+      <th>text</th>
+      <th>target</th>
+      <th>prediction</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>(CNN Student News) -- January 13, 2011. Download PDF maps related to today's show:. • Arizona • Australia. Transcript. THIS IS A RUSH TRANSCRIPT. THIS COPY MAY NOT BE IN ITS FINAL FORM AND MAY BE UPDATED. CARL AZUZ, CNN STUDENT NEWS ANCHOR: A problem that won't be solved, even if the solution is clear. The story and the reasons, leading off today's broadcast of CNN Student News! My name is Carl Azuz! First Up: Winter Storm Woes. AZUZ: Florida is the only state in the union without snow on the g</td>
+      <td>A winter storm slams the northeastern United States.\nThe U.S. House of Representatives condemns the Arizona shooting.\nMassive floods leave vast areas of Australia underwater.\nUse the Daily Discussion to help students understand today's featured news</td>
+      <td>[ This is a RUSH transcript of today's CNN Student News show .\nUse the Transcript to help students with reading comprehension and vocabulary .\nThe Story of a problem that won't be solved, even if the solution is clear .\nA look at the storm system that iced out the southeast .\nLearn about the problem that will never be solved in Australia .\nExplore the story and the reasons why a problem won't solve itself .,  The Cotswolds are a slice of picture-postcard England .\nThe wool trade boomed in these rolling hills in medieval times and today the region is littered with achingly pretty villages .\nLeading members of the arts and crafts movement were among the first to visit Chipping Campden with its long curving high street .]</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+</section>
+</section>
+<section id="inference" class="level3">
+<h3 class="anchored" data-anchor-id="inference">Inference</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a>export_fname <span class="op">=</span> <span class="st">"summarize_export"</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>learn.metrics <span class="op">=</span> <span class="va">None</span></span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a>learn.export(fname<span class="op">=</span><span class="ss">f"</span><span class="sc">{</span>export_fname<span class="sc">}</span><span class="ss">.pkl"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a>inf_learn <span class="op">=</span> load_learner(fname<span class="op">=</span><span class="ss">f"</span><span class="sc">{</span>export_fname<span class="sc">}</span><span class="ss">.pkl"</span>)</span>
+<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a>inf_learn.blurr_generate(test_article)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>[{'generated_texts': " The robbers made off with several hundred thousand Swiss francs in the early hours of Sunday morning .\nThe men, dressed in black clothes and black ski masks, split into two groups during the raid on the Grand Casino Basel .\nAs the thieves were leaving the casino, a woman driving by unknowingly blocked the armed robbers' vehicles .\nA gunman pulled the woman from her vehicle, beat her up, and took off for the French border .\nThere were about 600 people in the casino at the time of the robbery ."}]</code></pre>
+</div>
+</div>
+
+
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const disableStylesheet = (stylesheets) => {
+    for (let i=0; i < stylesheets.length; i++) {
+      const stylesheet = stylesheets[i];
+      stylesheet.rel = 'prefetch';
+    }
+  }
+  const enableStylesheet = (stylesheets) => {
+    for (let i=0; i < stylesheets.length; i++) {
+      const stylesheet = stylesheets[i];
+      stylesheet.rel = 'stylesheet';
+    }
+  }
+  const manageTransitions = (selector, allowTransitions) => {
+    const els = window.document.querySelectorAll(selector);
+    for (let i=0; i < els.length; i++) {
+      const el = els[i];
+      if (allowTransitions) {
+        el.classList.remove('notransition');
+      } else {
+        el.classList.add('notransition');
+      }
+    }
+  }
+  const toggleColorMode = (alternate) => {
+    // Switch the stylesheets
+    const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+    manageTransitions('#quarto-margin-sidebar .nav-link', false);
+    if (alternate) {
+      enableStylesheet(alternateStylesheets);
+      for (const sheetNode of alternateStylesheets) {
+        if (sheetNode.id === "quarto-bootstrap") {
+          toggleBodyColorMode(sheetNode);
+        }
+      }
+    } else {
+      disableStylesheet(alternateStylesheets);
+      toggleBodyColorPrimary();
+    }
+    manageTransitions('#quarto-margin-sidebar .nav-link', true);
+    // Switch the toggles
+    const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+    for (let i=0; i < toggles.length; i++) {
+      const toggle = toggles[i];
+      if (toggle) {
+        if (alternate) {
+          toggle.classList.add("alternate");     
+        } else {
+          toggle.classList.remove("alternate");
+        }
+      }
+    }
+    // Hack to workaround the fact that safari doesn't
+    // properly recolor the scrollbar when toggling (#1455)
+    if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+      manageTransitions("body", false);
+      window.scrollTo(0, 1);
+      setTimeout(() => {
+        window.scrollTo(0, 0);
+        manageTransitions("body", true);
+      }, 40);  
+    }
+  }
+  const isFileUrl = () => { 
+    return window.location.protocol === 'file:';
+  }
+  const hasAlternateSentinel = () => {  
+    let styleSentinel = getColorSchemeSentinel();
+    if (styleSentinel !== null) {
+      return styleSentinel === "alternate";
+    } else {
+      return false;
+    }
+  }
+  const setStyleSentinel = (alternate) => {
+    const value = alternate ? "alternate" : "default";
+    if (!isFileUrl()) {
+      window.localStorage.setItem("quarto-color-scheme", value);
+    } else {
+      localAlternateSentinel = value;
+    }
+  }
+  const getColorSchemeSentinel = () => {
+    if (!isFileUrl()) {
+      const storageValue = window.localStorage.getItem("quarto-color-scheme");
+      return storageValue != null ? storageValue : localAlternateSentinel;
+    } else {
+      return localAlternateSentinel;
+    }
+  }
+  let localAlternateSentinel = 'default';
+  // Dark / light mode switch
+  window.quartoToggleColorScheme = () => {
+    // Read the current dark / light value 
+    let toAlternate = !hasAlternateSentinel();
+    toggleColorMode(toAlternate);
+    setStyleSentinel(toAlternate);
+  };
+  // Ensure there is a toggle, if there isn't float one in the top right
+  if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+    const a = window.document.createElement('a');
+    a.classList.add('top-right');
+    a.classList.add('quarto-color-scheme-toggle');
+    a.href = "";
+    a.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+    const i = window.document.createElement("i");
+    i.classList.add('bi');
+    a.appendChild(i);
+    window.document.body.appendChild(a);
+  }
+  // Switch to dark mode if need be
+  if (hasAlternateSentinel()) {
+    toggleColorMode(true);
+  } 
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    target: function(trigger) {
+      return trigger.previousElementSibling;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    setTimeout(function() {
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const cites = ref.parentNode.getAttribute('data-cites').split(' ');
+    tippyHover(ref, function() {
+      var popup = window.document.createElement('div');
+      cites.forEach(function(cite) {
+        var citeDiv = window.document.createElement('div');
+        citeDiv.classList.add('hanging-indent');
+        citeDiv.classList.add('csl-entry');
+        var biblioDiv = window.document.getElementById('ref-' + cite);
+        if (biblioDiv) {
+          citeDiv.innerHTML = biblioDiv.innerHTML;
+        }
+        popup.appendChild(citeDiv);
+      });
+      return popup.innerHTML;
+    });
+  }
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var filterRegex = new RegExp(/https:\/\/ohmeow\.github\.io\/blurr\//);
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+    var links = window.document.querySelectorAll('a:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+          // target, if specified
+          link.setAttribute("target", "_blank");
+      }
+    }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>

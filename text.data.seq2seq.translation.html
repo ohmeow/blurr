@@ -1,0 +1,1306 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.1.75">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="description" content="The text.data.seq2seq.translation module contains the bits required to use the fastai DataBlock API and/or mid-level data processing pipelines to organize your data for translation tasks">
+
+<title>blurr - Data</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: 1;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1.6em;
+  vertical-align: middle;
+}
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { color: #008000; } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { color: #008000; font-weight: bold; } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<link href="./favicon.ico" rel="icon">
+<script src="site_libs/quarto-html/quarto.js"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-dark.css" rel="prefetch" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-dark.min.css" rel="prefetch" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit"
+  }
+}</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" integrity="sha512-c3Nl8+7g4LMSTdrm621y7kf9v3SDPnhxLNhcjFJbKECVnmZHTdo+IRO05sNLTH/D3vA6u1X32ehoLC7WFVdheg==" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script>
+<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
+
+
+<link rel="stylesheet" href="styles.css">
+<meta property="og:title" content="blurr - Data">
+<meta property="og:description" content="The text.data.seq2seq.translation module contains the bits required to use the fastai DataBlock API and/or mid-level data processing pipelines to organize your data for translation tasks">
+<meta property="og:site-name" content="blurr">
+<meta name="twitter:title" content="blurr - Data">
+<meta name="twitter:description" content="The text.data.seq2seq.translation module contains the bits required to use the fastai DataBlock API and/or mid-level data processing pipelines to organize your data for translation tasks">
+<meta name="twitter:card" content="summary">
+</head>
+
+<body class="nav-sidebar floating nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg navbar-dark ">
+      <div class="navbar-container container-fluid">
+      <a class="navbar-brand" href="./index.html">
+    <span class="navbar-title">blurr</span>
+  </a>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link active" href="./index.html" aria-current="page">Getting Started</a>
+  </li>  
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-resources" role="button" data-bs-toggle="dropdown" aria-expanded="false">Resources</a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-resources">    
+        <li>
+    <a class="dropdown-item" href="https://www.youtube.com/playlist?list=PLD80i8An1OEF8UOb9N9uSoidOGIMKW96t"><i class="bi bi-play-btn-fill" role="img">
+</i> 
+ <span class="dropdown-text">fastai x Hugging Face Study Group</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="https://huggingface.co/course/chapter1/1"><i class="bi bi-journal-bookmark-fill" role="img">
+</i> 
+ <span class="dropdown-text">Hugging Face Course</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="https://docs.fast.ai/"><i class="bi bi-link" role="img">
+</i> 
+ <span class="dropdown-text">fast.ai (docs)</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="https://huggingface.co/docs/transformers/index"><i class="bi bi-link" role="img">
+</i> 
+ <span class="dropdown-text">transformers (docs)</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-help" role="button" data-bs-toggle="dropdown" aria-expanded="false">Help</a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-help">    
+        <li>
+    <a class="dropdown-item" href="https://github.com/ohmeow/blurr/issues"><i class="bi bi-bug" role="img">
+</i> 
+ <span class="dropdown-text">Report an Issue</span></a>
+  </li>  
+    </ul>
+  </li>
+</ul>
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/ohmeow/blurr/"><i class="bi bi-github" role="img">
+</i> 
+ </a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://twitter.com/waydegilliam"><i class="bi bi-twitter" role="img">
+</i> 
+ </a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://www.ohmeow.com/"><i class="bi bi-house" role="img" aria-label="Twitter">
+</i> 
+ </a>
+  </li>  
+</ul>
+              <div class="quarto-toggle-container">
+                  <a href="" class="quarto-color-scheme-toggle nav-link" onclick="window.quartoToggleColorScheme(); return false;" title="Toggle dark mode"><i class="bi"></i></a>
+              </div>
+              <div id="quarto-search" class="" title="Search"></div>
+          </div> <!-- /navcollapse -->
+      </div> <!-- /container-fluid -->
+    </nav>
+  <nav class="quarto-secondary-nav" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+    <div class="container-fluid d-flex justify-content-between">
+      <h1 class="quarto-secondary-nav-title">Data</h1>
+      <button type="button" class="quarto-btn-toggle btn" aria-label="Show secondary navigation">
+        <i class="bi bi-chevron-right"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-full page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse sidebar-navigation floating overflow-auto">
+      <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+      </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true">Overview</a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">Getting Started</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./callbacks.html" class="sidebar-item-text sidebar-link">callbacks</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./utils.html" class="sidebar-item-text sidebar-link">utils</a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="true">Text</a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="true">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-expanded="false">Sequence Classification</a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-expanded="false">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./text.data.core.html" class="sidebar-item-text sidebar-link">Data</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./text.modeling.core.html" class="sidebar-item-text sidebar-link">Modeling</a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" aria-expanded="false">Token Classification</a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" aria-expanded="false">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./text.data.token_classification.html" class="sidebar-item-text sidebar-link">Data</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./text.modeling.token_classification.html" class="sidebar-item-text sidebar-link">Modeling</a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" aria-expanded="false">Question &amp; Answering</a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" aria-expanded="false">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./text.data.question_answering.html" class="sidebar-item-text sidebar-link">Data</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./text.modeling.question_answering.html" class="sidebar-item-text sidebar-link">Modeling</a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" aria-expanded="false">Language Modeling</a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" aria-expanded="false">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-6" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./text.data.language_modeling.html" class="sidebar-item-text sidebar-link">Data</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./text.modeling.language_modeling.html" class="sidebar-item-text sidebar-link">Modeling</a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" aria-expanded="false">Seq2Seq: Core</a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" aria-expanded="false">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-7" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./text.data.seq2seq.core.html" class="sidebar-item-text sidebar-link">Data</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./text.modeling.seq2seq.core.html" class="sidebar-item-text sidebar-link">Modeling</a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" aria-expanded="false">Seq2Seq: Summarization</a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" aria-expanded="false">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-8" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./text.data.seq2seq.summarization.html" class="sidebar-item-text sidebar-link">Data</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./text.modeling.seq2seq.summarization.html" class="sidebar-item-text sidebar-link">Modeling</a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-9" aria-expanded="true">Seq2Seq: Translation</a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-9" aria-expanded="true">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-9" class="collapse list-unstyled sidebar-section depth2 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./text.data.seq2seq.translation.html" class="sidebar-item-text sidebar-link active">Data</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./text.modeling.seq2seq.translation.html" class="sidebar-item-text sidebar-link">Modeling</a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./text.callbacks.html" class="sidebar-item-text sidebar-link">callbacks</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./text.utils.html" class="sidebar-item-text sidebar-link">utils</a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-10" aria-expanded="true">Examples</a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-10" aria-expanded="true">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-10" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./examples.text.high_level_api.html" class="sidebar-item-text sidebar-link">Using the high-level Blurr API</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./examples.text.glue.html" class="sidebar-item-text sidebar-link">GLUE classification tasks</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./examples.text.glue_low_level_api.html" class="sidebar-item-text sidebar-link">Using the Low-level fastai API</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./examples.text.multilabel_classification.html" class="sidebar-item-text sidebar-link">Multi-label classification</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./examples.text.causal_lm_gpt2.html" class="sidebar-item-text sidebar-link">Causal Language Modeling with GPT-2</a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#setup" id="toc-setup" class="nav-link active" data-scroll-target="#setup">Setup</a></li>
+  <li><a href="#preprocessing" id="toc-preprocessing" class="nav-link" data-scroll-target="#preprocessing">Preprocessing</a>
+  <ul>
+  <li><a href="#translationpreprocessor" id="toc-translationpreprocessor" class="nav-link" data-scroll-target="#translationpreprocessor">TranslationPreprocessor</a>
+  <ul class="collapse">
+  <li><a href="#using-a-dataframe" id="toc-using-a-dataframe" class="nav-link" data-scroll-target="#using-a-dataframe">Using a <code>DataFrame</code></a></li>
+  </ul></li>
+  </ul></li>
+  <li><a href="#examples" id="toc-examples" class="nav-link" data-scroll-target="#examples">Examples</a>
+  <ul>
+  <li><a href="#using-the-mid-level-api" id="toc-using-the-mid-level-api" class="nav-link" data-scroll-target="#using-the-mid-level-api">Using the mid-level API</a>
+  <ul class="collapse">
+  <li><a href="#batch-time-tokenization" id="toc-batch-time-tokenization" class="nav-link" data-scroll-target="#batch-time-tokenization">Batch-Time Tokenization</a></li>
+  <li><a href="#using-a-preprocessed-dataset" id="toc-using-a-preprocessed-dataset" class="nav-link" data-scroll-target="#using-a-preprocessed-dataset">Using a preprocessed dataset</a></li>
+  </ul></li>
+  </ul></li>
+  <li><a href="#tests" id="toc-tests" class="nav-link" data-scroll-target="#tests">Tests</a></li>
+  </ul>
+<div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/ohmeow/blurr/issues/new" class="toc-action">Report an issue</a></p></div></div></nav>
+    </div>
+<!-- main -->
+<main class="content column-body" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title d-none d-lg-block">Data</h1>
+</div>
+
+<div>
+  <div class="description">
+    The <code>text.data.seq2seq.translation</code> module contains the bits required to use the fastai DataBlock API and/or mid-level data processing pipelines to organize your data for translation tasks
+  </div>
+</div>
+
+
+<div class="quarto-title-meta">
+
+    
+    
+  </div>
+  
+
+</header>
+
+<!-- WARNING: THIS FILE WAS AUTOGENERATED! DO NOT EDIT! -->
+<section id="setup" class="level2">
+<h2 class="anchored" data-anchor-id="setup">Setup</h2>
+<p>We’ll use a subset of <code>wmt16</code> to demonstrate how to configure your BLURR for translation tasks</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>raw_dataset <span class="op">=</span> load_dataset(<span class="st">"wmt16"</span>, <span class="st">"de-en"</span>, split<span class="op">=</span><span class="st">"train[:1%]"</span>)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>raw_dataset</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Reusing dataset wmt16 (/home/wgilliam/.cache/huggingface/datasets/wmt16/de-en/1.0.0/af3c5d746b307726d0de73ebe7f10545361b9cb6f75c83a1734c000e48b6264f)</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<pre><code>Dataset({
+    features: ['translation'],
+    num_rows: 45489
+})</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(raw_dataset[<span class="dv">0</span>].keys())</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(raw_dataset[<span class="dv">0</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>dict_keys(['translation'])
+{'translation': {'de': 'Wiederaufnahme der Sitzungsperiode', 'en': 'Resumption of the session'}}</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>wmt_df <span class="op">=</span> pd.DataFrame(raw_dataset[<span class="st">"translation"</span>], columns<span class="op">=</span>[<span class="st">"de"</span>, <span class="st">"en"</span>])</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="bu">len</span>(wmt_df))</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>wmt_df.head(<span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>45489</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+
+<div>
+
+<table class="dataframe table table-sm table-striped">
+  <thead>
+    <tr>
+      <th></th>
+      <th>de</th>
+      <th>en</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>Wiederaufnahme der Sitzungsperiode</td>
+      <td>Resumption of the session</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>Ich erkläre die am Freitag, dem 17. Dezember unterbrochene Sitzungsperiode des Europäischen Parlaments für wiederaufgenommen, wünsche Ihnen nochmals alles Gute zum Jahreswechsel und hoffe, daß Sie schöne Ferien hatten.</td>
+      <td>I declare resumed the session of the European Parliament adjourned on Friday 17 December 1999, and I would like once again to wish you a happy new year in the hope that you enjoyed a pleasant festive period.</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>pretrained_model_name <span class="op">=</span> <span class="st">"facebook/bart-large-cnn"</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>model_cls <span class="op">=</span> AutoModelForSeq2SeqLM</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>hf_arch, hf_config, hf_tokenizer, hf_model <span class="op">=</span> get_hf_objects(pretrained_model_name, model_cls<span class="op">=</span>model_cls)</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>hf_arch, <span class="bu">type</span>(hf_tokenizer), <span class="bu">type</span>(hf_config), <span class="bu">type</span>(hf_model)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>('bart',
+ transformers.models.bart.tokenization_bart_fast.BartTokenizerFast,
+ transformers.models.bart.configuration_bart.BartConfig,
+ transformers.models.bart.modeling_bart.BartForConditionalGeneration)</code></pre>
+</div>
+</div>
+</section>
+<section id="preprocessing" class="level2">
+<h2 class="anchored" data-anchor-id="preprocessing">Preprocessing</h2>
+<p>Starting with version 2.0, BLURR provides a preprocessing base class that can be used to build task specific pre-processed datasets from pandas DataFrames or Hugging Face Datasets</p>
+<hr>
+<p><a href="https://github.com/ohmeow/blurr/blob/master/blurr/text/data/seq2seq/translation.py#L28" target="_blank" style="float:right; font-size:smaller">source</a></p>
+<section id="translationpreprocessor" class="level3">
+<h3 class="anchored" data-anchor-id="translationpreprocessor">TranslationPreprocessor</h3>
+<blockquote class="blockquote">
+<pre><code> TranslationPreprocessor (hf_tokenizer:transformers.tokenization_utils_bas
+                          e.PreTrainedTokenizerBase, batch_size:int=1000,
+                          id_attr:Optional[str]=None,
+                          text_attr:str='original_text',
+                          max_input_tok_length:Optional[int]=None,
+                          target_text_attr:str='translated_text',
+                          max_target_tok_length:Optional[int]=None,
+                          is_valid_attr:Optional[str]='is_valid',
+                          tok_kwargs:dict={})</code></pre>
+</blockquote>
+<p>Initialize self. See help(type(self)) for accurate signature.</p>
+<table class="table">
+<colgroup>
+<col style="width: 6%">
+<col style="width: 25%">
+<col style="width: 34%">
+<col style="width: 34%">
+</colgroup>
+<thead>
+<tr class="header">
+<th></th>
+<th><strong>Type</strong></th>
+<th><strong>Default</strong></th>
+<th><strong>Details</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>hf_tokenizer</td>
+<td>PreTrainedTokenizerBase</td>
+<td></td>
+<td>A Hugging Face tokenizer</td>
+</tr>
+<tr class="even">
+<td>batch_size</td>
+<td>int</td>
+<td>1000</td>
+<td>The number of examples to process at a time</td>
+</tr>
+<tr class="odd">
+<td>id_attr</td>
+<td>Optional</td>
+<td>None</td>
+<td>The unique identifier in the dataset</td>
+</tr>
+<tr class="even">
+<td>text_attr</td>
+<td>str</td>
+<td>original_text</td>
+<td>The attribute holding the text to translate</td>
+</tr>
+<tr class="odd">
+<td>max_input_tok_length</td>
+<td>Optional</td>
+<td>None</td>
+<td>The maximum length (# of tokens) allowed for inputs. Will default to the max length allowed</td>
+</tr>
+<tr class="even">
+<td>by the model if not provided</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>target_text_attr</td>
+<td>str</td>
+<td>translated_text</td>
+<td>The attribute holding the summary</td>
+</tr>
+<tr class="even">
+<td>max_target_tok_length</td>
+<td>Optional</td>
+<td>None</td>
+<td>The maximum length (# of tokens) allowed for targets</td>
+</tr>
+<tr class="odd">
+<td>is_valid_attr</td>
+<td>Optional</td>
+<td>is_valid</td>
+<td>The attribute that should be created if your are processing individual training and validation</td>
+</tr>
+<tr class="even">
+<td>datasets into a single dataset, and will indicate to which each example is associated</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>tok_kwargs</td>
+<td>dict</td>
+<td>{}</td>
+<td>Tokenization kwargs that will be applied with calling the tokenizer</td>
+</tr>
+</tbody>
+</table>
+<p>This class can be used for preprocessing translation tasks, and includes a <code>proc_{your_text_attr}</code> and <code>proc_{target_text_attr}</code> attributes containing your modified input and target texts as a result of tokenization (e.g., if you specify a <code>max_length</code> the <code>proc_{your_text_attr}</code> may contain truncated text).</p>
+<section id="using-a-dataframe" class="level4">
+<h4 class="anchored" data-anchor-id="using-a-dataframe">Using a <code>DataFrame</code></h4>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>preprocessor <span class="op">=</span> TranslationPreprocessor(</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>    hf_tokenizer, text_attr<span class="op">=</span><span class="st">"de"</span>, target_text_attr<span class="op">=</span><span class="st">"en"</span>, max_input_tok_length<span class="op">=</span><span class="dv">128</span>, max_target_tok_length<span class="op">=</span><span class="dv">128</span></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>proc_df <span class="op">=</span> preprocessor.process_df(wmt_df)</span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>proc_df.columns, <span class="bu">len</span>(proc_df)</span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>proc_df.head(<span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+
+<div>
+
+<table class="dataframe table table-sm table-striped">
+  <thead>
+    <tr>
+      <th></th>
+      <th>proc_en</th>
+      <th>proc_de</th>
+      <th>de</th>
+      <th>en</th>
+      <th>de_start_char_idx</th>
+      <th>de_end_char_idx</th>
+      <th>en_start_char_idx</th>
+      <th>en_end_char_idx</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>Resumption of the session</td>
+      <td>Wiederaufnahme der Sitzungsperiode</td>
+      <td>Wiederaufnahme der Sitzungsperiode</td>
+      <td>Resumption of the session</td>
+      <td>0</td>
+      <td>34</td>
+      <td>0</td>
+      <td>25</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>I declare resumed the session of the European Parliament adjourned on Friday 17 December 1999, and I would like once again to wish you a happy new year in the hope that you enjoyed a pleasant festive period.</td>
+      <td>Ich erkläre die am Freitag, dem 17. Dezember unterbrochene Sitzungsperiode des Europäischen Parlaments für wiederaufgenommen, wünsche Ihnen nochmals alles Gute zum Jahreswechsel und hoffe, daß Sie schöne Ferien hatten.</td>
+      <td>Ich erkläre die am Freitag, dem 17. Dezember unterbrochene Sitzungsperiode des Europäischen Parlaments für wiederaufgenommen, wünsche Ihnen nochmals alles Gute zum Jahreswechsel und hoffe, daß Sie schöne Ferien hatten.</td>
+      <td>I declare resumed the session of the European Parliament adjourned on Friday 17 December 1999, and I would like once again to wish you a happy new year in the hope that you enjoyed a pleasant festive period.</td>
+      <td>0</td>
+      <td>218</td>
+      <td>0</td>
+      <td>207</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+</div>
+</section>
+</section>
+</section>
+<section id="examples" class="level2">
+<h2 class="anchored" data-anchor-id="examples">Examples</h2>
+<section id="using-the-mid-level-api" class="level3">
+<h3 class="anchored" data-anchor-id="using-the-mid-level-api">Using the mid-level API</h3>
+<section id="batch-time-tokenization" class="level4">
+<h4 class="anchored" data-anchor-id="batch-time-tokenization">Batch-Time Tokenization</h4>
+<section id="step-1-get-your-hugging-face-objects." class="level5">
+<h5 class="anchored" data-anchor-id="step-1-get-your-hugging-face-objects.">Step 1: Get your Hugging Face objects.</h5>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>pretrained_model_name <span class="op">=</span> <span class="st">"facebook/bart-large-cnn"</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>model_cls <span class="op">=</span> AutoModelForSeq2SeqLM</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>hf_arch, hf_config, hf_tokenizer, hf_model <span class="op">=</span> get_hf_objects(pretrained_model_name, model_cls<span class="op">=</span>model_cls)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="step-2-create-your-datablock" class="level5">
+<h5 class="anchored" data-anchor-id="step-2-create-your-datablock">Step 2: Create your <code>DataBlock</code></h5>
+<p>Two lines! Notice we pass in <code>noop</code> for our targets (e.g.&nbsp;our summaries) because the batch transform will take care of both out inputs and targets.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>blocks <span class="op">=</span> (Seq2SeqTextBlock(hf_arch, hf_config, hf_tokenizer, hf_model), noop)</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>dblock <span class="op">=</span> DataBlock(blocks<span class="op">=</span>blocks, get_x<span class="op">=</span>ColReader(<span class="st">"de"</span>), get_y<span class="op">=</span>ColReader(<span class="st">"en"</span>), splitter<span class="op">=</span>RandomSplitter())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="co"># dblock.summary(wmt_df)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="step-3-build-your-dataloaders" class="level5">
+<h5 class="anchored" data-anchor-id="step-3-build-your-dataloaders">Step 3: Build your <code>DataLoaders</code></h5>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>dls <span class="op">=</span> dblock.dataloaders(wmt_df, bs<span class="op">=</span><span class="dv">4</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>b <span class="op">=</span> dls.one_batch()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="bu">len</span>(b), b[<span class="dv">0</span>][<span class="st">"input_ids"</span>].shape, b[<span class="dv">0</span>][<span class="st">"labels"</span>].shape, b[<span class="dv">1</span>].shape</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>(2, torch.Size([4, 483]), torch.Size([4, 86]), torch.Size([4, 86]))</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>b[<span class="dv">0</span>][<span class="st">"labels"</span>][<span class="dv">0</span>], b[<span class="dv">1</span>][<span class="dv">0</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>(tensor([    0,  2223,    13,  1402,  4723,    89,   189,    28, 16855,   111,
+            38,   524,  2053,  4010,     9,     5,  2788,  4755,  1293,     6,
+           147,     5,  1492,     9,  9813,   696,  4685,   372,  2212,   111,
+             5,  3038,    40,    28, 10142,    13,   258,     5,   796,  1332,
+             8,  1625,     4,   286,     5,   796,  1332,     6,   142,     5,
+          7147,     9,    10,   481,   721,   443,    40,  3155,    24,     7,
+          9648,     5,  2621, 10153,   532,    56,    11,  4938,  1048,   137,
+             5, 13783,  1288,   376,    88,  1370,     6,  3329,    92,  2919,
+          1616,    13,   796,   451,     4,     2], device='cuda:1'),
+ tensor([    0,  2223,    13,  1402,  4723,    89,   189,    28, 16855,   111,
+            38,   524,  2053,  4010,     9,     5,  2788,  4755,  1293,     6,
+           147,     5,  1492,     9,  9813,   696,  4685,   372,  2212,   111,
+             5,  3038,    40,    28, 10142,    13,   258,     5,   796,  1332,
+             8,  1625,     4,   286,     5,   796,  1332,     6,   142,     5,
+          7147,     9,    10,   481,   721,   443,    40,  3155,    24,     7,
+          9648,     5,  2621, 10153,   532,    56,    11,  4938,  1048,   137,
+             5, 13783,  1288,   376,    88,  1370,     6,  3329,    92,  2919,
+          1616,    13,   796,   451,     4,     2], device='cuda:1'))</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>dls.show_batch(dataloaders<span class="op">=</span>dls, max_n<span class="op">=</span><span class="dv">2</span>, input_trunc_at<span class="op">=</span><span class="dv">250</span>, target_trunc_at<span class="op">=</span><span class="dv">250</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+
+<table class="dataframe table table-sm table-striped">
+  <thead>
+    <tr>
+      <th></th>
+      <th>text</th>
+      <th>target</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>&lt;s&gt; Was nun die Ergebnisse der Verhandlungen über die Anwendung der Artikel 3, 4, 5, 6 und 12 des Interimsabkommens bezüglich Warenhandel, öffentlicher Aufträge, Wettbewerb, Konsultationsmechanismen bei Fragen des geistigen Eigentums und Beilegung vo</td>
+      <td>Although for certain sectors there may be flaws - I am thinking specifically of the textiles sector, where the rules of origin issue causes great concern - the effects will be beneficial for both the European Union and Mexico. For the European Union</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>&lt;s&gt; Die allgemeine Ausrichtung der umgesetzten Wirtschaftspolitik, der Stabilitätspakt sowie die strengen Konvergenzprogramme, die der Beschäftigung empfindlich schaden und Beschäftigungsfähigkeit sowie Flexibilität der Arbeitsverhältnisse und Arbeit</td>
+      <td>The general lines of the implemented economic policy, the Stability Pact and the strict convergence programmes, which are a constant menace to employment and which promote employability and the flexibilisation of labour relations, and the organisati</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+</section>
+</section>
+<section id="using-a-preprocessed-dataset" class="level4">
+<h4 class="anchored" data-anchor-id="using-a-preprocessed-dataset">Using a preprocessed dataset</h4>
+<section id="step-1a-get-your-hugging-face-objects." class="level5">
+<h5 class="anchored" data-anchor-id="step-1a-get-your-hugging-face-objects.">Step 1a: Get your Hugging Face objects.</h5>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>pretrained_model_name <span class="op">=</span> <span class="st">"facebook/bart-large-cnn"</span></span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>model_cls <span class="op">=</span> AutoModelForSeq2SeqLM</span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>hf_arch, hf_config, hf_tokenizer, hf_model <span class="op">=</span> get_hf_objects(pretrained_model_name, model_cls<span class="op">=</span>model_cls)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="step-1b.-preprocess-dataset" class="level5">
+<h5 class="anchored" data-anchor-id="step-1b.-preprocess-dataset">Step 1b. Preprocess dataset</h5>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>preprocessor <span class="op">=</span> TranslationPreprocessor(</span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>    hf_tokenizer, text_attr<span class="op">=</span><span class="st">"de"</span>, target_text_attr<span class="op">=</span><span class="st">"en"</span>, max_input_tok_length<span class="op">=</span><span class="dv">128</span>, max_target_tok_length<span class="op">=</span><span class="dv">128</span></span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>proc_df <span class="op">=</span> preprocessor.process_df(wmt_df)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="step-2-create-your-datablock-1" class="level5">
+<h5 class="anchored" data-anchor-id="step-2-create-your-datablock-1">Step 2: Create your <code>DataBlock</code></h5>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>blocks <span class="op">=</span> (Seq2SeqTextBlock(hf_arch, hf_config, hf_tokenizer, hf_model), noop)</span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>dblock <span class="op">=</span> DataBlock(blocks<span class="op">=</span>blocks, get_x<span class="op">=</span>ColReader(<span class="st">"proc_de"</span>), get_y<span class="op">=</span>ColReader(<span class="st">"proc_en"</span>), splitter<span class="op">=</span>RandomSplitter())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="step-3-build-your-dataloaders-1" class="level5">
+<h5 class="anchored" data-anchor-id="step-3-build-your-dataloaders-1">Step 3: Build your <code>DataLoaders</code></h5>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>dls <span class="op">=</span> dblock.dataloaders(proc_df, bs<span class="op">=</span><span class="dv">4</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>b <span class="op">=</span> dls.one_batch()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="bu">len</span>(b), b[<span class="dv">0</span>][<span class="st">"input_ids"</span>].shape, b[<span class="dv">0</span>][<span class="st">"labels"</span>].shape, b[<span class="dv">1</span>].shape</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>(2, torch.Size([4, 129]), torch.Size([4, 83]), torch.Size([4, 83]))</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>dls.show_batch(dataloaders<span class="op">=</span>dls, max_n<span class="op">=</span><span class="dv">2</span>, input_trunc_at<span class="op">=</span><span class="dv">250</span>, target_trunc_at<span class="op">=</span><span class="dv">250</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+
+<table class="dataframe table table-sm table-striped">
+  <thead>
+    <tr>
+      <th></th>
+      <th>text</th>
+      <th>target</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>&lt;s&gt; Hierbei denke ich an systematische Dokumentation und Informationsbeschaffung, professionelle Formen der Beobachtung, die Entwicklung von Aufklärungsaktionen, die Verwendung von Geldern zur Unterstützung der demokratischen Kräfte in dem betreffend</td>
+      <td>The following spring to mind in this respect: the systematic collation of documentation and information, professional forms of observation, the development of information campaigns, the use of cash to support democratic forces in the country concern</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>&lt;s&gt; Eine letzte Bemerkung: Die durch die Struktur des Internet bedingte permanente Verfügbarkeit von Sexuellem im ausschließlich anonymisierten privaten Bereich und die Tatsache, daß der sexuelle Mißbrauch der öffentlichen und damit der sozialen Kont</td>
+      <td>One final comment: the permanent availability of sexual material in the exclusively anonymous private sphere, which is conditioned by the structure of the Internet, and the attendant fact that sexual abuse is removed from public and, hence, social c</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+</section>
+</section>
+</section>
+</section>
+<section id="tests" class="level2">
+<h2 class="anchored" data-anchor-id="tests">Tests</h2>
+<p>The purpose of the following tests is to ensure as much as possible, that the core DataBlock code above works for the pretrained <strong>translation models</strong> below. These tests are excluded from the CI workflow because of how long they would take to run and the amount of data that would be required to download.</p>
+<p><strong>Note</strong>: Feel free to modify the code below to test whatever pretrained translation models you are working with … and if any of your pretrained summarization models fail, please submit a github issue <em>(or a PR if you’d like to fix it yourself)</em></p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a>[model_type <span class="cf">for</span> model_type <span class="kw">in</span> NLP.get_models(task<span class="op">=</span><span class="st">"ConditionalGeneration"</span>) <span class="cf">if</span> (<span class="kw">not</span> model_type.startswith(<span class="st">"TF"</span>))]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>['BartForConditionalGeneration',
+ 'BigBirdPegasusForConditionalGeneration',
+ 'BlenderbotForConditionalGeneration',
+ 'BlenderbotSmallForConditionalGeneration',
+ 'FSMTForConditionalGeneration',
+ 'LEDForConditionalGeneration',
+ 'M2M100ForConditionalGeneration',
+ 'MBartForConditionalGeneration',
+ 'MT5ForConditionalGeneration',
+ 'PegasusForConditionalGeneration',
+ 'ProphetNetForConditionalGeneration',
+ 'Speech2TextForConditionalGeneration',
+ 'T5ForConditionalGeneration',
+ 'XLMProphetNetForConditionalGeneration']</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a>pretrained_model_names <span class="op">=</span> [</span>
+<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a>    <span class="st">"facebook/bart-base"</span>,</span>
+<span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">"facebook/wmt19-de-en"</span>,  <span class="co"># FSMT</span></span>
+<span id="cb32-4"><a href="#cb32-4" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Helsinki-NLP/opus-mt-de-en"</span>,  <span class="co"># MarianMT</span></span>
+<span id="cb32-5"><a href="#cb32-5" aria-hidden="true" tabindex="-1"></a>    <span class="st">"sshleifer/tiny-mbart"</span>,</span>
+<span id="cb32-6"><a href="#cb32-6" aria-hidden="true" tabindex="-1"></a>    <span class="st">"google/mt5-small"</span>,</span>
+<span id="cb32-7"><a href="#cb32-7" aria-hidden="true" tabindex="-1"></a>    <span class="st">"t5-small"</span>,</span>
+<span id="cb32-8"><a href="#cb32-8" aria-hidden="true" tabindex="-1"></a>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a>path <span class="op">=</span> Path(<span class="st">"./"</span>)</span>
+<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a>wmt_df <span class="op">=</span> pd.DataFrame(raw_dataset[<span class="st">"translation"</span>], columns<span class="op">=</span>[<span class="st">"de"</span>, <span class="st">"en"</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a>model_cls <span class="op">=</span> AutoModelForSeq2SeqLM</span>
+<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a>bsz <span class="op">=</span> <span class="dv">2</span></span>
+<span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a>seq_sz <span class="op">=</span> <span class="dv">128</span></span>
+<span id="cb34-4"><a href="#cb34-4" aria-hidden="true" tabindex="-1"></a>trg_seq_sz <span class="op">=</span> <span class="dv">128</span></span>
+<span id="cb34-5"><a href="#cb34-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb34-6"><a href="#cb34-6" aria-hidden="true" tabindex="-1"></a>test_results <span class="op">=</span> []</span>
+<span id="cb34-7"><a href="#cb34-7" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> model_name <span class="kw">in</span> pretrained_model_names:</span>
+<span id="cb34-8"><a href="#cb34-8" aria-hidden="true" tabindex="-1"></a>    error <span class="op">=</span> <span class="va">None</span></span>
+<span id="cb34-9"><a href="#cb34-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb34-10"><a href="#cb34-10" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"=== </span><span class="sc">{</span>model_name<span class="sc">}</span><span class="ss"> ===</span><span class="ch">\n</span><span class="ss">"</span>)</span>
+<span id="cb34-11"><a href="#cb34-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb34-12"><a href="#cb34-12" aria-hidden="true" tabindex="-1"></a>    hf_tok_kwargs <span class="op">=</span> {}</span>
+<span id="cb34-13"><a href="#cb34-13" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> model_name <span class="op">==</span> <span class="st">"sshleifer/tiny-mbart"</span>:</span>
+<span id="cb34-14"><a href="#cb34-14" aria-hidden="true" tabindex="-1"></a>        hf_tok_kwargs[<span class="st">"src_lang"</span>], hf_tok_kwargs[<span class="st">"tgt_lang"</span>] <span class="op">=</span> <span class="st">"de_DE"</span>, <span class="st">"en_XX"</span></span>
+<span id="cb34-15"><a href="#cb34-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb34-16"><a href="#cb34-16" aria-hidden="true" tabindex="-1"></a>    hf_arch, hf_config, hf_tokenizer, hf_model <span class="op">=</span> get_hf_objects(model_name, model_cls<span class="op">=</span>model_cls, tokenizer_kwargs<span class="op">=</span>hf_tok_kwargs)</span>
+<span id="cb34-17"><a href="#cb34-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb34-18"><a href="#cb34-18" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"architecture:</span><span class="ch">\t</span><span class="sc">{</span>hf_arch<span class="sc">}</span><span class="ch">\n</span><span class="ss">tokenizer:</span><span class="ch">\t</span><span class="sc">{</span><span class="bu">type</span>(hf_tokenizer)<span class="sc">.</span><span class="va">__name__</span><span class="sc">}</span><span class="ch">\n</span><span class="ss">"</span>)</span>
+<span id="cb34-19"><a href="#cb34-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb34-20"><a href="#cb34-20" aria-hidden="true" tabindex="-1"></a>    <span class="co"># not all architectures include a native pad_token (e.g., gpt2, ctrl, etc...), so we add one here</span></span>
+<span id="cb34-21"><a href="#cb34-21" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> hf_tokenizer.pad_token <span class="kw">is</span> <span class="va">None</span>:</span>
+<span id="cb34-22"><a href="#cb34-22" aria-hidden="true" tabindex="-1"></a>        hf_tokenizer.add_special_tokens({<span class="st">"pad_token"</span>: <span class="st">"&lt;pad&gt;"</span>})</span>
+<span id="cb34-23"><a href="#cb34-23" aria-hidden="true" tabindex="-1"></a>        hf_config.pad_token_id <span class="op">=</span> hf_tokenizer.get_vocab()[<span class="st">"&lt;pad&gt;"</span>]</span>
+<span id="cb34-24"><a href="#cb34-24" aria-hidden="true" tabindex="-1"></a>        hf_model.resize_token_embeddings(<span class="bu">len</span>(hf_tokenizer))</span>
+<span id="cb34-25"><a href="#cb34-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb34-26"><a href="#cb34-26" aria-hidden="true" tabindex="-1"></a>    batch_tokenize_tfm <span class="op">=</span> Seq2SeqBatchTokenizeTransform(</span>
+<span id="cb34-27"><a href="#cb34-27" aria-hidden="true" tabindex="-1"></a>        hf_arch, hf_config, hf_tokenizer, hf_model, padding<span class="op">=</span><span class="st">"max_length"</span>, max_length<span class="op">=</span>seq_sz, max_target_length<span class="op">=</span>trg_seq_sz</span>
+<span id="cb34-28"><a href="#cb34-28" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb34-29"><a href="#cb34-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb34-30"><a href="#cb34-30" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> add_t5_prefix(inp):</span>
+<span id="cb34-31"><a href="#cb34-31" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="ss">f"translate German to English: </span><span class="sc">{</span>inp<span class="sc">}</span><span class="ss">"</span> <span class="cf">if</span> (hf_arch <span class="op">==</span> <span class="st">"t5"</span>) <span class="cf">else</span> inp</span>
+<span id="cb34-32"><a href="#cb34-32" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb34-33"><a href="#cb34-33" aria-hidden="true" tabindex="-1"></a>    blocks <span class="op">=</span> (Seq2SeqTextBlock(batch_tokenize_tfm<span class="op">=</span>batch_tokenize_tfm), noop)</span>
+<span id="cb34-34"><a href="#cb34-34" aria-hidden="true" tabindex="-1"></a>    dblock <span class="op">=</span> DataBlock(blocks<span class="op">=</span>blocks, get_x<span class="op">=</span>Pipeline([ColReader(<span class="st">"de"</span>), add_t5_prefix]), get_y<span class="op">=</span>ColReader(<span class="st">"en"</span>), splitter<span class="op">=</span>RandomSplitter())</span>
+<span id="cb34-35"><a href="#cb34-35" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb34-36"><a href="#cb34-36" aria-hidden="true" tabindex="-1"></a>    dls <span class="op">=</span> dblock.dataloaders(wmt_df, bs<span class="op">=</span>bsz)</span>
+<span id="cb34-37"><a href="#cb34-37" aria-hidden="true" tabindex="-1"></a>    b <span class="op">=</span> dls.one_batch()</span>
+<span id="cb34-38"><a href="#cb34-38" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb34-39"><a href="#cb34-39" aria-hidden="true" tabindex="-1"></a>    <span class="cf">try</span>:</span>
+<span id="cb34-40"><a href="#cb34-40" aria-hidden="true" tabindex="-1"></a>        <span class="bu">print</span>(<span class="st">"*** TESTING DataLoaders ***</span><span class="ch">\n</span><span class="st">"</span>)</span>
+<span id="cb34-41"><a href="#cb34-41" aria-hidden="true" tabindex="-1"></a>        test_eq(<span class="bu">len</span>(b), <span class="dv">2</span>)</span>
+<span id="cb34-42"><a href="#cb34-42" aria-hidden="true" tabindex="-1"></a>        test_eq(<span class="bu">len</span>(b[<span class="dv">0</span>][<span class="st">"input_ids"</span>]), bsz)</span>
+<span id="cb34-43"><a href="#cb34-43" aria-hidden="true" tabindex="-1"></a>        test_eq(b[<span class="dv">0</span>][<span class="st">"input_ids"</span>].shape, torch.Size([bsz, seq_sz]))</span>
+<span id="cb34-44"><a href="#cb34-44" aria-hidden="true" tabindex="-1"></a>        test_eq(<span class="bu">len</span>(b[<span class="dv">1</span>]), bsz)</span>
+<span id="cb34-45"><a href="#cb34-45" aria-hidden="true" tabindex="-1"></a>        test_eq(b[<span class="dv">1</span>].shape, torch.Size([bsz, trg_seq_sz]))</span>
+<span id="cb34-46"><a href="#cb34-46" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb34-47"><a href="#cb34-47" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> <span class="bu">hasattr</span>(hf_tokenizer, <span class="st">"add_prefix_space"</span>):</span>
+<span id="cb34-48"><a href="#cb34-48" aria-hidden="true" tabindex="-1"></a>            test_eq(hf_tokenizer.add_prefix_space, <span class="va">True</span>)</span>
+<span id="cb34-49"><a href="#cb34-49" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb34-50"><a href="#cb34-50" aria-hidden="true" tabindex="-1"></a>        test_results.append((hf_arch, <span class="bu">type</span>(hf_tokenizer).<span class="va">__name__</span>, model_name, <span class="st">"PASSED"</span>, <span class="st">""</span>))</span>
+<span id="cb34-51"><a href="#cb34-51" aria-hidden="true" tabindex="-1"></a>        dls.show_batch(dataloaders<span class="op">=</span>dls, max_n<span class="op">=</span><span class="dv">2</span>, input_trunc_at<span class="op">=</span><span class="dv">1000</span>)</span>
+<span id="cb34-52"><a href="#cb34-52" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb34-53"><a href="#cb34-53" aria-hidden="true" tabindex="-1"></a>    <span class="cf">except</span> <span class="pp">Exception</span> <span class="im">as</span> err:</span>
+<span id="cb34-54"><a href="#cb34-54" aria-hidden="true" tabindex="-1"></a>        test_results.append((hf_arch, <span class="bu">type</span>(hf_tokenizer).<span class="va">__name__</span>, model_name, <span class="st">"FAILED"</span>, err))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="cell-output cell-output-display">
+
+<table class="dataframe table table-sm table-striped">
+  <thead>
+    <tr>
+      <th></th>
+      <th>arch</th>
+      <th>tokenizer</th>
+      <th>model_name</th>
+      <th>result</th>
+      <th>error</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>bart</td>
+      <td>BartTokenizerFast</td>
+      <td>facebook/bart-base</td>
+      <td>PASSED</td>
+      <td></td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>fsmt</td>
+      <td>FSMTTokenizer</td>
+      <td>facebook/wmt19-de-en</td>
+      <td>PASSED</td>
+      <td></td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>marian</td>
+      <td>MarianTokenizer</td>
+      <td>Helsinki-NLP/opus-mt-de-en</td>
+      <td>PASSED</td>
+      <td></td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>mbart</td>
+      <td>MBartTokenizerFast</td>
+      <td>sshleifer/tiny-mbart</td>
+      <td>PASSED</td>
+      <td></td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>mt5</td>
+      <td>T5TokenizerFast</td>
+      <td>google/mt5-small</td>
+      <td>PASSED</td>
+      <td></td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>t5</td>
+      <td>T5TokenizerFast</td>
+      <td>t5-small</td>
+      <td>PASSED</td>
+      <td></td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const disableStylesheet = (stylesheets) => {
+    for (let i=0; i < stylesheets.length; i++) {
+      const stylesheet = stylesheets[i];
+      stylesheet.rel = 'prefetch';
+    }
+  }
+  const enableStylesheet = (stylesheets) => {
+    for (let i=0; i < stylesheets.length; i++) {
+      const stylesheet = stylesheets[i];
+      stylesheet.rel = 'stylesheet';
+    }
+  }
+  const manageTransitions = (selector, allowTransitions) => {
+    const els = window.document.querySelectorAll(selector);
+    for (let i=0; i < els.length; i++) {
+      const el = els[i];
+      if (allowTransitions) {
+        el.classList.remove('notransition');
+      } else {
+        el.classList.add('notransition');
+      }
+    }
+  }
+  const toggleColorMode = (alternate) => {
+    // Switch the stylesheets
+    const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+    manageTransitions('#quarto-margin-sidebar .nav-link', false);
+    if (alternate) {
+      enableStylesheet(alternateStylesheets);
+      for (const sheetNode of alternateStylesheets) {
+        if (sheetNode.id === "quarto-bootstrap") {
+          toggleBodyColorMode(sheetNode);
+        }
+      }
+    } else {
+      disableStylesheet(alternateStylesheets);
+      toggleBodyColorPrimary();
+    }
+    manageTransitions('#quarto-margin-sidebar .nav-link', true);
+    // Switch the toggles
+    const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+    for (let i=0; i < toggles.length; i++) {
+      const toggle = toggles[i];
+      if (toggle) {
+        if (alternate) {
+          toggle.classList.add("alternate");     
+        } else {
+          toggle.classList.remove("alternate");
+        }
+      }
+    }
+    // Hack to workaround the fact that safari doesn't
+    // properly recolor the scrollbar when toggling (#1455)
+    if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+      manageTransitions("body", false);
+      window.scrollTo(0, 1);
+      setTimeout(() => {
+        window.scrollTo(0, 0);
+        manageTransitions("body", true);
+      }, 40);  
+    }
+  }
+  const isFileUrl = () => { 
+    return window.location.protocol === 'file:';
+  }
+  const hasAlternateSentinel = () => {  
+    let styleSentinel = getColorSchemeSentinel();
+    if (styleSentinel !== null) {
+      return styleSentinel === "alternate";
+    } else {
+      return false;
+    }
+  }
+  const setStyleSentinel = (alternate) => {
+    const value = alternate ? "alternate" : "default";
+    if (!isFileUrl()) {
+      window.localStorage.setItem("quarto-color-scheme", value);
+    } else {
+      localAlternateSentinel = value;
+    }
+  }
+  const getColorSchemeSentinel = () => {
+    if (!isFileUrl()) {
+      const storageValue = window.localStorage.getItem("quarto-color-scheme");
+      return storageValue != null ? storageValue : localAlternateSentinel;
+    } else {
+      return localAlternateSentinel;
+    }
+  }
+  let localAlternateSentinel = 'default';
+  // Dark / light mode switch
+  window.quartoToggleColorScheme = () => {
+    // Read the current dark / light value 
+    let toAlternate = !hasAlternateSentinel();
+    toggleColorMode(toAlternate);
+    setStyleSentinel(toAlternate);
+  };
+  // Ensure there is a toggle, if there isn't float one in the top right
+  if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+    const a = window.document.createElement('a');
+    a.classList.add('top-right');
+    a.classList.add('quarto-color-scheme-toggle');
+    a.href = "";
+    a.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+    const i = window.document.createElement("i");
+    i.classList.add('bi');
+    a.appendChild(i);
+    window.document.body.appendChild(a);
+  }
+  // Switch to dark mode if need be
+  if (hasAlternateSentinel()) {
+    toggleColorMode(true);
+  } 
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    target: function(trigger) {
+      return trigger.previousElementSibling;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    setTimeout(function() {
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const cites = ref.parentNode.getAttribute('data-cites').split(' ');
+    tippyHover(ref, function() {
+      var popup = window.document.createElement('div');
+      cites.forEach(function(cite) {
+        var citeDiv = window.document.createElement('div');
+        citeDiv.classList.add('hanging-indent');
+        citeDiv.classList.add('csl-entry');
+        var biblioDiv = window.document.getElementById('ref-' + cite);
+        if (biblioDiv) {
+          citeDiv.innerHTML = biblioDiv.innerHTML;
+        }
+        popup.appendChild(citeDiv);
+      });
+      return popup.innerHTML;
+    });
+  }
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var filterRegex = new RegExp(/https:\/\/ohmeow\.github\.io\/blurr\//);
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+    var links = window.document.querySelectorAll('a:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+          // target, if specified
+          link.setAttribute("target", "_blank");
+      }
+    }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>

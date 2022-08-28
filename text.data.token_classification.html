@@ -1,0 +1,2064 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.1.75">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="description" content="The text.data.token_classification module contains the bits required to use the fastai DataBlock API and/or mid-level data processing pipelines to organize your data for token classification tasks (e.g., Named entity recognition (NER), Part-of-speech tagging (POS), etc…)">
+
+<title>blurr - Data</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: 1;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1.6em;
+  vertical-align: middle;
+}
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { color: #008000; } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { color: #008000; font-weight: bold; } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<link href="./favicon.ico" rel="icon">
+<script src="site_libs/quarto-html/quarto.js"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-dark.css" rel="prefetch" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-dark.min.css" rel="prefetch" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit"
+  }
+}</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" integrity="sha512-c3Nl8+7g4LMSTdrm621y7kf9v3SDPnhxLNhcjFJbKECVnmZHTdo+IRO05sNLTH/D3vA6u1X32ehoLC7WFVdheg==" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script>
+<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
+<script src="https://unpkg.com/@jupyter-widgets/html-manager@*/dist/embed-amd.js" crossorigin="anonymous"></script>
+
+
+<link rel="stylesheet" href="styles.css">
+<meta property="og:title" content="blurr - Data">
+<meta property="og:description" content="The text.data.token_classification module contains the bits required to use the fastai DataBlock API and/or mid-level data processing pipelines to organize your data for token classification tasks (e.g., Named entity recognition (NER), Part-of-speech tagging (POS), etc…)">
+<meta property="og:site-name" content="blurr">
+<meta name="twitter:title" content="blurr - Data">
+<meta name="twitter:description" content="The text.data.token_classification module contains the bits required to use the fastai DataBlock API and/or mid-level data processing pipelines to organize your data for token classification tasks (e.g., Named entity recognition (NER), Part-of-speech tagging (POS), etc…)">
+<meta name="twitter:card" content="summary">
+</head>
+
+<body class="nav-sidebar floating nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg navbar-dark ">
+      <div class="navbar-container container-fluid">
+      <a class="navbar-brand" href="./index.html">
+    <span class="navbar-title">blurr</span>
+  </a>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link active" href="./index.html" aria-current="page">Getting Started</a>
+  </li>  
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-resources" role="button" data-bs-toggle="dropdown" aria-expanded="false">Resources</a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-resources">    
+        <li>
+    <a class="dropdown-item" href="https://www.youtube.com/playlist?list=PLD80i8An1OEF8UOb9N9uSoidOGIMKW96t"><i class="bi bi-play-btn-fill" role="img">
+</i> 
+ <span class="dropdown-text">fastai x Hugging Face Study Group</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="https://huggingface.co/course/chapter1/1"><i class="bi bi-journal-bookmark-fill" role="img">
+</i> 
+ <span class="dropdown-text">Hugging Face Course</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="https://docs.fast.ai/"><i class="bi bi-link" role="img">
+</i> 
+ <span class="dropdown-text">fast.ai (docs)</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="https://huggingface.co/docs/transformers/index"><i class="bi bi-link" role="img">
+</i> 
+ <span class="dropdown-text">transformers (docs)</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-help" role="button" data-bs-toggle="dropdown" aria-expanded="false">Help</a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-help">    
+        <li>
+    <a class="dropdown-item" href="https://github.com/ohmeow/blurr/issues"><i class="bi bi-bug" role="img">
+</i> 
+ <span class="dropdown-text">Report an Issue</span></a>
+  </li>  
+    </ul>
+  </li>
+</ul>
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/ohmeow/blurr/"><i class="bi bi-github" role="img">
+</i> 
+ </a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://twitter.com/waydegilliam"><i class="bi bi-twitter" role="img">
+</i> 
+ </a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://www.ohmeow.com/"><i class="bi bi-house" role="img" aria-label="Twitter">
+</i> 
+ </a>
+  </li>  
+</ul>
+              <div class="quarto-toggle-container">
+                  <a href="" class="quarto-color-scheme-toggle nav-link" onclick="window.quartoToggleColorScheme(); return false;" title="Toggle dark mode"><i class="bi"></i></a>
+              </div>
+              <div id="quarto-search" class="" title="Search"></div>
+          </div> <!-- /navcollapse -->
+      </div> <!-- /container-fluid -->
+    </nav>
+  <nav class="quarto-secondary-nav" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+    <div class="container-fluid d-flex justify-content-between">
+      <h1 class="quarto-secondary-nav-title">Data</h1>
+      <button type="button" class="quarto-btn-toggle btn" aria-label="Show secondary navigation">
+        <i class="bi bi-chevron-right"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-full page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse sidebar-navigation floating overflow-auto">
+      <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+      </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true">Overview</a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">Getting Started</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./callbacks.html" class="sidebar-item-text sidebar-link">callbacks</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./utils.html" class="sidebar-item-text sidebar-link">utils</a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="true">Text</a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="true">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-expanded="false">Sequence Classification</a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-expanded="false">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./text.data.core.html" class="sidebar-item-text sidebar-link">Data</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./text.modeling.core.html" class="sidebar-item-text sidebar-link">Modeling</a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" aria-expanded="true">Token Classification</a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" aria-expanded="true">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth2 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./text.data.token_classification.html" class="sidebar-item-text sidebar-link active">Data</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./text.modeling.token_classification.html" class="sidebar-item-text sidebar-link">Modeling</a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" aria-expanded="false">Question &amp; Answering</a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" aria-expanded="false">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./text.data.question_answering.html" class="sidebar-item-text sidebar-link">Data</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./text.modeling.question_answering.html" class="sidebar-item-text sidebar-link">Modeling</a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" aria-expanded="false">Language Modeling</a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" aria-expanded="false">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-6" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./text.data.language_modeling.html" class="sidebar-item-text sidebar-link">Data</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./text.modeling.language_modeling.html" class="sidebar-item-text sidebar-link">Modeling</a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" aria-expanded="false">Seq2Seq: Core</a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" aria-expanded="false">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-7" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./text.data.seq2seq.core.html" class="sidebar-item-text sidebar-link">Data</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./text.modeling.seq2seq.core.html" class="sidebar-item-text sidebar-link">Modeling</a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" aria-expanded="false">Seq2Seq: Summarization</a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" aria-expanded="false">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-8" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./text.data.seq2seq.summarization.html" class="sidebar-item-text sidebar-link">Data</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./text.modeling.seq2seq.summarization.html" class="sidebar-item-text sidebar-link">Modeling</a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-9" aria-expanded="false">Seq2Seq: Translation</a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-9" aria-expanded="false">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-9" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./text.data.seq2seq.translation.html" class="sidebar-item-text sidebar-link">Data</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./text.modeling.seq2seq.translation.html" class="sidebar-item-text sidebar-link">Modeling</a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./text.callbacks.html" class="sidebar-item-text sidebar-link">callbacks</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./text.utils.html" class="sidebar-item-text sidebar-link">utils</a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-10" aria-expanded="true">Examples</a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-10" aria-expanded="true">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-10" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./examples.text.high_level_api.html" class="sidebar-item-text sidebar-link">Using the high-level Blurr API</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./examples.text.glue.html" class="sidebar-item-text sidebar-link">GLUE classification tasks</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./examples.text.glue_low_level_api.html" class="sidebar-item-text sidebar-link">Using the Low-level fastai API</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./examples.text.multilabel_classification.html" class="sidebar-item-text sidebar-link">Multi-label classification</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./examples.text.causal_lm_gpt2.html" class="sidebar-item-text sidebar-link">Causal Language Modeling with GPT-2</a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#setup" id="toc-setup" class="nav-link active" data-scroll-target="#setup">Setup</a></li>
+  <li><a href="#preprocessing" id="toc-preprocessing" class="nav-link" data-scroll-target="#preprocessing">Preprocessing</a>
+  <ul>
+  <li><a href="#tokenclasspreprocessor" id="toc-tokenclasspreprocessor" class="nav-link" data-scroll-target="#tokenclasspreprocessor">TokenClassPreprocessor</a>
+  <ul class="collapse">
+  <li><a href="#labels-are-ids" id="toc-labels-are-ids" class="nav-link" data-scroll-target="#labels-are-ids">labels are Ids</a></li>
+  <li><a href="#labels-are-entity-names" id="toc-labels-are-entity-names" class="nav-link" data-scroll-target="#labels-are-entity-names">labels are entity names</a></li>
+  </ul></li>
+  </ul></li>
+  <li><a href="#labeling-strategies" id="toc-labeling-strategies" class="nav-link" data-scroll-target="#labeling-strategies">Labeling strategies</a>
+  <ul>
+  <li><a href="#baselabelingstrategy" id="toc-baselabelingstrategy" class="nav-link" data-scroll-target="#baselabelingstrategy">BaseLabelingStrategy</a></li>
+  <li><a href="#bilabelingstrategy" id="toc-bilabelingstrategy" class="nav-link" data-scroll-target="#bilabelingstrategy">BILabelingStrategy</a></li>
+  <li><a href="#samelabellabelingstrategy" id="toc-samelabellabelingstrategy" class="nav-link" data-scroll-target="#samelabellabelingstrategy">SameLabelLabelingStrategy</a></li>
+  <li><a href="#onlyfirsttokenlabelingstrategy" id="toc-onlyfirsttokenlabelingstrategy" class="nav-link" data-scroll-target="#onlyfirsttokenlabelingstrategy">OnlyFirstTokenLabelingStrategy</a></li>
+  <li><a href="#reconstructing-inputslabels" id="toc-reconstructing-inputslabels" class="nav-link" data-scroll-target="#reconstructing-inputslabels">Reconstructing inputs/labels</a></li>
+  <li><a href="#get_token_labels_from_input_ids" id="toc-get_token_labels_from_input_ids" class="nav-link" data-scroll-target="#get_token_labels_from_input_ids">get_token_labels_from_input_ids</a></li>
+  <li><a href="#get_word_labels_from_token_labels" id="toc-get_word_labels_from_token_labels" class="nav-link" data-scroll-target="#get_word_labels_from_token_labels">get_word_labels_from_token_labels</a></li>
+  </ul></li>
+  <li><a href="#mid-level-api" id="toc-mid-level-api" class="nav-link" data-scroll-target="#mid-level-api">Mid-level API</a>
+  <ul>
+  <li><a href="#tokentensorcategory" id="toc-tokentensorcategory" class="nav-link" data-scroll-target="#tokentensorcategory">TokenTensorCategory</a></li>
+  <li><a href="#tokencategorize" id="toc-tokencategorize" class="nav-link" data-scroll-target="#tokencategorize">TokenCategorize</a></li>
+  <li><a href="#tokencategoryblock" id="toc-tokencategoryblock" class="nav-link" data-scroll-target="#tokencategoryblock">TokenCategoryBlock</a></li>
+  <li><a href="#tokenclasstextinput" id="toc-tokenclasstextinput" class="nav-link" data-scroll-target="#tokenclasstextinput">TokenClassTextInput</a></li>
+  <li><a href="#tokenclassbatchtokenizetransform" id="toc-tokenclassbatchtokenizetransform" class="nav-link" data-scroll-target="#tokenclassbatchtokenizetransform">TokenClassBatchTokenizeTransform</a></li>
+  </ul></li>
+  <li><a href="#examples" id="toc-examples" class="nav-link" data-scroll-target="#examples">Examples</a>
+  <ul>
+  <li><a href="#using-the-mid-level-api" id="toc-using-the-mid-level-api" class="nav-link" data-scroll-target="#using-the-mid-level-api">Using the mid-level API</a>
+  <ul class="collapse">
+  <li><a href="#batch-time-tokenization" id="toc-batch-time-tokenization" class="nav-link" data-scroll-target="#batch-time-tokenization">Batch-Time Tokenization</a></li>
+  <li><a href="#passing-extra-infromation" id="toc-passing-extra-infromation" class="nav-link" data-scroll-target="#passing-extra-infromation">Passing extra infromation</a></li>
+  </ul></li>
+  </ul></li>
+  <li><a href="#tests" id="toc-tests" class="nav-link" data-scroll-target="#tests">Tests</a></li>
+  </ul>
+<div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/ohmeow/blurr/issues/new" class="toc-action">Report an issue</a></p></div></div></nav>
+    </div>
+<!-- main -->
+<main class="content column-body" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title d-none d-lg-block">Data</h1>
+</div>
+
+<div>
+  <div class="description">
+    The <code>text.data.token_classification</code> module contains the bits required to use the fastai DataBlock API and/or mid-level data processing pipelines to organize your data for token classification tasks (e.g., Named entity recognition (NER), Part-of-speech tagging (POS), etc…)
+  </div>
+</div>
+
+
+<div class="quarto-title-meta">
+
+    
+    
+  </div>
+  
+
+</header>
+
+<!-- WARNING: THIS FILE WAS AUTOGENERATED! DO NOT EDIT! -->
+<section id="setup" class="level2">
+<h2 class="anchored" data-anchor-id="setup">Setup</h2>
+<p>We’ll use a subset of <code>conll2003</code> to demonstrate how to configure your blurr code for token classification</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>raw_datasets <span class="op">=</span> load_dataset(<span class="st">"conll2003"</span>)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>raw_datasets</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Reusing dataset conll2003 (/home/wgilliam/.cache/huggingface/datasets/conll2003/conll2003/1.0.0/9a4d16a94f8674ba3466315300359b0acd891b68b6c8743ddf60b9c702adce98)</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<script type="application/vnd.jupyter.widget-view+json">
+{"model_id":"055eed9a2dc04a23932e9cfd3e7b6eba","version_major":2,"version_minor":0}
+</script>
+</div>
+<div class="cell-output cell-output-display">
+<pre><code>DatasetDict({
+    train: Dataset({
+        features: ['id', 'tokens', 'pos_tags', 'chunk_tags', 'ner_tags'],
+        num_rows: 14041
+    })
+    validation: Dataset({
+        features: ['id', 'tokens', 'pos_tags', 'chunk_tags', 'ner_tags'],
+        num_rows: 3250
+    })
+    test: Dataset({
+        features: ['id', 'tokens', 'pos_tags', 'chunk_tags', 'ner_tags'],
+        num_rows: 3453
+    })
+})</code></pre>
+</div>
+</div>
+<p>We need to get a list of the distinct entities we want to predict. If they are represented as list in their raw/readable form in another attribute/column in our dataset, we could use something like this to build a sorted list of distinct values as such: <code>labels = sorted(list(set([lbls for sublist in germ_eval_df.labels.tolist() for lbls in sublist])))</code>.</p>
+<p>Fortunately, the <code>conll2003</code> dataset allows us to get at this list directly using the code below.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(raw_datasets[<span class="st">"train"</span>].features[<span class="st">"chunk_tags"</span>].feature.names[:<span class="dv">20</span>])</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(raw_datasets[<span class="st">"train"</span>].features[<span class="st">"ner_tags"</span>].feature.names[:<span class="dv">20</span>])</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(raw_datasets[<span class="st">"train"</span>].features[<span class="st">"pos_tags"</span>].feature.names[:<span class="dv">20</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>['O', 'B-ADJP', 'I-ADJP', 'B-ADVP', 'I-ADVP', 'B-CONJP', 'I-CONJP', 'B-INTJ', 'I-INTJ', 'B-LST', 'I-LST', 'B-NP', 'I-NP', 'B-PP', 'I-PP', 'B-PRT', 'I-PRT', 'B-SBAR', 'I-SBAR', 'B-UCP']
+['O', 'B-PER', 'I-PER', 'B-ORG', 'I-ORG', 'B-LOC', 'I-LOC', 'B-MISC', 'I-MISC']
+['"', "''", '#', '$', '(', ')', ',', '.', ':', '``', 'CC', 'CD', 'DT', 'EX', 'FW', 'IN', 'JJ', 'JJR', 'JJS', 'LS']</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>labels <span class="op">=</span> raw_datasets[<span class="st">"train"</span>].features[<span class="st">"ner_tags"</span>].feature.names</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>labels</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>['O', 'B-PER', 'I-PER', 'B-ORG', 'I-ORG', 'B-LOC', 'I-LOC', 'B-MISC', 'I-MISC']</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>conll2003_df <span class="op">=</span> pd.DataFrame(raw_datasets[<span class="st">"train"</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>model_cls <span class="op">=</span> AutoModelForTokenClassification</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>hf_logging.set_verbosity_error()</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>pretrained_model_name <span class="op">=</span> <span class="st">"roberta-base"</span>  <span class="co"># "bert-base-multilingual-cased"</span></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>n_labels <span class="op">=</span> <span class="bu">len</span>(labels)</span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>hf_arch, hf_config, hf_tokenizer, hf_model <span class="op">=</span> get_hf_objects(</span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>    pretrained_model_name, model_cls<span class="op">=</span>model_cls, config_kwargs<span class="op">=</span>{<span class="st">"num_labels"</span>: n_labels}</span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a>hf_arch, <span class="bu">type</span>(hf_config), <span class="bu">type</span>(hf_tokenizer), <span class="bu">type</span>(hf_model)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>('roberta',
+ transformers.models.roberta.configuration_roberta.RobertaConfig,
+ transformers.models.roberta.tokenization_roberta_fast.RobertaTokenizerFast,
+ transformers.models.roberta.modeling_roberta.RobertaForTokenClassification)</code></pre>
+</div>
+</div>
+</section>
+<section id="preprocessing" class="level2">
+<h2 class="anchored" data-anchor-id="preprocessing">Preprocessing</h2>
+<p>Starting with version 2.0, <code>BLURR</code> provides a token classification preprocessing class that can be used to preprocess DataFrames or Hugging Face Datasets. We also introduce a novel way of handling long documents for this task that ensures tokens associated to a word is not split up in “chunked” documents. See below for an example.</p>
+<hr>
+<p><a href="https://github.com/ohmeow/blurr/blob/master/blurr/text/data/token_classification.py#L33" target="_blank" style="float:right; font-size:smaller">source</a></p>
+<section id="tokenclasspreprocessor" class="level3">
+<h3 class="anchored" data-anchor-id="tokenclasspreprocessor">TokenClassPreprocessor</h3>
+<blockquote class="blockquote">
+<pre><code> TokenClassPreprocessor (hf_tokenizer:transformers.tokenization_utils_base
+                         .PreTrainedTokenizerBase,
+                         chunk_examples:bool=False, word_stride:int=2,
+                         ignore_token_id:int=-100,
+                         label_names:Optional[List[str]]=None,
+                         batch_size:int=1000, id_attr:Optional[str]=None,
+                         word_list_attr:str='tokens',
+                         label_list_attr:str='labels',
+                         is_valid_attr:Optional[str]='is_valid',
+                         slow_word_ids_func:Optional[Callable]=None,
+                         tok_kwargs:dict={})</code></pre>
+</blockquote>
+<p>Initialize self. See help(type(self)) for accurate signature.</p>
+<table class="table">
+<colgroup>
+<col style="width: 6%">
+<col style="width: 25%">
+<col style="width: 34%">
+<col style="width: 34%">
+</colgroup>
+<thead>
+<tr class="header">
+<th></th>
+<th><strong>Type</strong></th>
+<th><strong>Default</strong></th>
+<th><strong>Details</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>hf_tokenizer</td>
+<td>PreTrainedTokenizerBase</td>
+<td></td>
+<td>A Hugging Face tokenizer</td>
+</tr>
+<tr class="even">
+<td>chunk_examples</td>
+<td>bool</td>
+<td>False</td>
+<td>Set to <code>True</code> if the preprocessor should chunk examples that exceed <code>max_length</code></td>
+</tr>
+<tr class="odd">
+<td>word_stride</td>
+<td>int</td>
+<td>2</td>
+<td>Like “stride” except for words (not tokens)</td>
+</tr>
+<tr class="even">
+<td>ignore_token_id</td>
+<td>int</td>
+<td>-100</td>
+<td>The token ID that should be ignored when calculating the loss</td>
+</tr>
+<tr class="odd">
+<td>label_names</td>
+<td>Optional</td>
+<td>None</td>
+<td>The label names (if not specified, will build from DataFrame)</td>
+</tr>
+<tr class="even">
+<td>batch_size</td>
+<td>int</td>
+<td>1000</td>
+<td>The number of examples to process at a time</td>
+</tr>
+<tr class="odd">
+<td>id_attr</td>
+<td>Optional</td>
+<td>None</td>
+<td>The unique identifier in the dataset</td>
+</tr>
+<tr class="even">
+<td>word_list_attr</td>
+<td>str</td>
+<td>tokens</td>
+<td>The attribute holding the list of words</td>
+</tr>
+<tr class="odd">
+<td>label_list_attr</td>
+<td>str</td>
+<td>labels</td>
+<td>The attribute holding the list of labels (one for each word in <code>word_list_attr</code>)</td>
+</tr>
+<tr class="even">
+<td>is_valid_attr</td>
+<td>Optional</td>
+<td>is_valid</td>
+<td>The attribute that should be created if your are processing individual training and validation</td>
+</tr>
+<tr class="odd">
+<td>datasets into a single dataset, and will indicate to which each example is associated</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="even">
+<td>slow_word_ids_func</td>
+<td>Optional</td>
+<td>None</td>
+<td>If using a slow tokenizer, users will need to prove a <code>slow_word_ids_func</code> that accepts a</td>
+</tr>
+</tbody>
+</table>
+<p>tokenizzer, example index, and a batch encoding as arguments and in turn returnes the equavlient of fast tokenizer’s <code>word_ids</code> | | tok_kwargs | dict | {} | Tokenization kwargs that will be applied with calling the tokenizer |</p>
+<section id="labels-are-ids" class="level4">
+<h4 class="anchored" data-anchor-id="labels-are-ids">labels are Ids</h4>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>preprocessor <span class="op">=</span> TokenClassPreprocessor(</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>    hf_tokenizer,</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>    chunk_examples<span class="op">=</span><span class="va">True</span>,</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>    word_stride<span class="op">=</span><span class="dv">2</span>,</span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>    label_names<span class="op">=</span>labels,</span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>    id_attr<span class="op">=</span><span class="st">"id"</span>,</span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>    word_list_attr<span class="op">=</span><span class="st">"tokens"</span>,</span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>    label_list_attr<span class="op">=</span><span class="st">"ner_tags"</span>,</span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>    tok_kwargs<span class="op">=</span>{<span class="st">"max_length"</span>: <span class="dv">8</span>},</span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a>proc_df <span class="op">=</span> preprocessor.process_df(conll2003_df)</span>
+<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-13"><a href="#cb12-13" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="bu">len</span>(proc_df))</span>
+<span id="cb12-14"><a href="#cb12-14" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(preprocessor.label_names)</span>
+<span id="cb12-15"><a href="#cb12-15" aria-hidden="true" tabindex="-1"></a>proc_df.head(<span class="dv">4</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>61298
+['O', 'B-PER', 'I-PER', 'B-ORG', 'I-ORG', 'B-LOC', 'I-LOC', 'B-MISC', 'I-MISC']</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+
+<div>
+
+<table class="dataframe table table-sm table-striped">
+  <thead>
+    <tr>
+      <th></th>
+      <th>proc_tokens</th>
+      <th>proc_ner_tags</th>
+      <th>id</th>
+      <th>tokens</th>
+      <th>pos_tags</th>
+      <th>chunk_tags</th>
+      <th>ner_tags</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>[EU, rejects, German, call, to, boycott]</td>
+      <td>[3, 0, 7, 0, 0, 0]</td>
+      <td>0</td>
+      <td>[EU, rejects, German, call, to, boycott, British, lamb, .]</td>
+      <td>[22, 42, 16, 21, 35, 37, 16, 21, 7]</td>
+      <td>[11, 21, 11, 12, 21, 22, 11, 12, 0]</td>
+      <td>[3, 0, 7, 0, 0, 0, 7, 0, 0]</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>[to, boycott, British, lamb, .]</td>
+      <td>[0, 0, 7, 0, 0]</td>
+      <td>0</td>
+      <td>[EU, rejects, German, call, to, boycott, British, lamb, .]</td>
+      <td>[22, 42, 16, 21, 35, 37, 16, 21, 7]</td>
+      <td>[11, 21, 11, 12, 21, 22, 11, 12, 0]</td>
+      <td>[3, 0, 7, 0, 0, 0, 7, 0, 0]</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>[Peter, Blackburn]</td>
+      <td>[1, 2]</td>
+      <td>1</td>
+      <td>[Peter, Blackburn]</td>
+      <td>[22, 22]</td>
+      <td>[11, 12]</td>
+      <td>[1, 2]</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>[BRUSSELS, 1996-08-22]</td>
+      <td>[5, 0]</td>
+      <td>2</td>
+      <td>[BRUSSELS, 1996-08-22]</td>
+      <td>[22, 11]</td>
+      <td>[11, 12]</td>
+      <td>[5, 0]</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+</div>
+</section>
+<section id="labels-are-entity-names" class="level4">
+<h4 class="anchored" data-anchor-id="labels-are-entity-names">labels are entity names</h4>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>conll2003_labeled_df <span class="op">=</span> conll2003_df.copy()</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>conll2003_labeled_df.ner_tags <span class="op">=</span> conll2003_labeled_df.ner_tags.<span class="bu">apply</span>(<span class="kw">lambda</span> v: [labels[lbl_id] <span class="cf">for</span> lbl_id <span class="kw">in</span> v])</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>conll2003_labeled_df.head(<span class="dv">5</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+
+<div>
+
+<table class="dataframe table table-sm table-striped">
+  <thead>
+    <tr>
+      <th></th>
+      <th>id</th>
+      <th>tokens</th>
+      <th>pos_tags</th>
+      <th>chunk_tags</th>
+      <th>ner_tags</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>0</td>
+      <td>[EU, rejects, German, call, to, boycott, British, lamb, .]</td>
+      <td>[22, 42, 16, 21, 35, 37, 16, 21, 7]</td>
+      <td>[11, 21, 11, 12, 21, 22, 11, 12, 0]</td>
+      <td>[B-ORG, O, B-MISC, O, O, O, B-MISC, O, O]</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>1</td>
+      <td>[Peter, Blackburn]</td>
+      <td>[22, 22]</td>
+      <td>[11, 12]</td>
+      <td>[B-PER, I-PER]</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>2</td>
+      <td>[BRUSSELS, 1996-08-22]</td>
+      <td>[22, 11]</td>
+      <td>[11, 12]</td>
+      <td>[B-LOC, O]</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>3</td>
+      <td>[The, European, Commission, said, on, Thursday, it, disagreed, with, German, advice, to, consumers, to, shun, British, lamb, until, scientists, determine, whether, mad, cow, disease, can, be, transmitted, to, sheep, .]</td>
+      <td>[12, 22, 22, 38, 15, 22, 28, 38, 15, 16, 21, 35, 24, 35, 37, 16, 21, 15, 24, 41, 15, 16, 21, 21, 20, 37, 40, 35, 21, 7]</td>
+      <td>[11, 12, 12, 21, 13, 11, 11, 21, 13, 11, 12, 13, 11, 21, 22, 11, 12, 17, 11, 21, 17, 11, 12, 12, 21, 22, 22, 13, 11, 0]</td>
+      <td>[O, B-ORG, I-ORG, O, O, O, O, O, O, B-MISC, O, O, O, O, O, B-MISC, O, O, O, O, O, O, O, O, O, O, O, O, O, O]</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>4</td>
+      <td>[Germany, 's, representative, to, the, European, Union, 's, veterinary, committee, Werner, Zwingmann, said, on, Wednesday, consumers, should, buy, sheepmeat, from, countries, other, than, Britain, until, the, scientific, advice, was, clearer, .]</td>
+      <td>[22, 27, 21, 35, 12, 22, 22, 27, 16, 21, 22, 22, 38, 15, 22, 24, 20, 37, 21, 15, 24, 16, 15, 22, 15, 12, 16, 21, 38, 17, 7]</td>
+      <td>[11, 11, 12, 13, 11, 12, 12, 11, 12, 12, 12, 12, 21, 13, 11, 12, 21, 22, 11, 13, 11, 1, 13, 11, 17, 11, 12, 12, 21, 1, 0]</td>
+      <td>[B-LOC, O, O, O, O, B-ORG, I-ORG, O, O, O, B-PER, I-PER, O, O, O, O, O, O, O, O, O, O, O, B-LOC, O, O, O, O, O, O, O]</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>preprocessor <span class="op">=</span> TokenClassPreprocessor(</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>    hf_tokenizer, label_names<span class="op">=</span>labels, id_attr<span class="op">=</span><span class="st">"id"</span>, word_list_attr<span class="op">=</span><span class="st">"tokens"</span>, label_list_attr<span class="op">=</span><span class="st">"ner_tags"</span>, tok_kwargs<span class="op">=</span>{<span class="st">"max_length"</span>: <span class="dv">8</span>}</span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>proc_df <span class="op">=</span> preprocessor.process_df(conll2003_labeled_df)</span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="bu">len</span>(proc_df))</span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(preprocessor.label_names)</span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a>proc_df.head(<span class="dv">4</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>14041
+['O', 'B-PER', 'I-PER', 'B-ORG', 'I-ORG', 'B-LOC', 'I-LOC', 'B-MISC', 'I-MISC']</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+
+<div>
+
+<table class="dataframe table table-sm table-striped">
+  <thead>
+    <tr>
+      <th></th>
+      <th>proc_tokens</th>
+      <th>proc_ner_tags</th>
+      <th>id</th>
+      <th>tokens</th>
+      <th>pos_tags</th>
+      <th>chunk_tags</th>
+      <th>ner_tags</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>[EU, rejects, German, call, to, boycott]</td>
+      <td>[B-ORG, O, B-MISC, O, O, O]</td>
+      <td>0</td>
+      <td>[EU, rejects, German, call, to, boycott, British, lamb, .]</td>
+      <td>[22, 42, 16, 21, 35, 37, 16, 21, 7]</td>
+      <td>[11, 21, 11, 12, 21, 22, 11, 12, 0]</td>
+      <td>[B-ORG, O, B-MISC, O, O, O, B-MISC, O, O]</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>[Peter, Blackburn]</td>
+      <td>[B-PER, I-PER]</td>
+      <td>1</td>
+      <td>[Peter, Blackburn]</td>
+      <td>[22, 22]</td>
+      <td>[11, 12]</td>
+      <td>[B-PER, I-PER]</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>[BRUSSELS, 1996-08-22]</td>
+      <td>[B-LOC, O]</td>
+      <td>2</td>
+      <td>[BRUSSELS, 1996-08-22]</td>
+      <td>[22, 11]</td>
+      <td>[11, 12]</td>
+      <td>[B-LOC, O]</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>[The, European, Commission, said, on, Thursday]</td>
+      <td>[O, B-ORG, I-ORG, O, O, O]</td>
+      <td>3</td>
+      <td>[The, European, Commission, said, on, Thursday, it, disagreed, with, German, advice, to, consumers, to, shun, British, lamb, until, scientists, determine, whether, mad, cow, disease, can, be, transmitted, to, sheep, .]</td>
+      <td>[12, 22, 22, 38, 15, 22, 28, 38, 15, 16, 21, 35, 24, 35, 37, 16, 21, 15, 24, 41, 15, 16, 21, 21, 20, 37, 40, 35, 21, 7]</td>
+      <td>[11, 12, 12, 21, 13, 11, 11, 21, 13, 11, 12, 13, 11, 21, 22, 11, 12, 17, 11, 21, 17, 11, 12, 12, 21, 22, 22, 13, 11, 0]</td>
+      <td>[O, B-ORG, I-ORG, O, O, O, O, O, O, B-MISC, O, O, O, O, O, B-MISC, O, O, O, O, O, O, O, O, O, O, O, O, O, O]</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+</div>
+</section>
+</section>
+</section>
+<section id="labeling-strategies" class="level2">
+<h2 class="anchored" data-anchor-id="labeling-strategies">Labeling strategies</h2>
+<hr>
+<p><a href="https://github.com/ohmeow/blurr/blob/master/blurr/text/data/token_classification.py#L191" target="_blank" style="float:right; font-size:smaller">source</a></p>
+<section id="baselabelingstrategy" class="level3">
+<h3 class="anchored" data-anchor-id="baselabelingstrategy">BaseLabelingStrategy</h3>
+<blockquote class="blockquote">
+<pre><code> BaseLabelingStrategy (hf_tokenizer:transformers.tokenization_utils_base.P
+                       reTrainedTokenizerBase,
+                       label_names:Optional[List[str]],
+                       non_entity_label:str='O', ignore_token_id:int=-100)</code></pre>
+</blockquote>
+<p>Initialize self. See help(type(self)) for accurate signature.</p>
+<p>Here we include a <a href="https://ohmeow.github.io/blurr/text-data-token-classification.html#baselabelingstrategy"><code>BaseLabelingStrategy</code></a> abstract class and several different strategies for assigning labels to your tokenized inputs. The “only first token” and “B/I” labeling strategies are discussed in the <a href="https://huggingface.co/course/chapter7/2?fw=pt">“Token Classification”</a> section in part 7 of the Hugging Face’s Transformers course.</p>
+<hr>
+<p><a href="https://github.com/ohmeow/blurr/blob/master/blurr/text/data/token_classification.py#L249" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="bilabelingstrategy" class="level3">
+<h3 class="anchored" data-anchor-id="bilabelingstrategy">BILabelingStrategy</h3>
+<blockquote class="blockquote">
+<pre><code> BILabelingStrategy (hf_tokenizer:transformers.tokenization_utils_base.Pre
+                     TrainedTokenizerBase,
+                     label_names:Optional[List[str]],
+                     non_entity_label:str='O', ignore_token_id:int=-100)</code></pre>
+</blockquote>
+<p>If using B/I labels, the first token assoicated to a given word gets the “B” label while all other tokens related to that same word get “I” labels. If “I” labels don’t exist, this strategy behaves like the <code>OnlyFirstTokenLabelingStrategy</code>. Works where labels are Ids or strings (in the later case we’ll use the <code>label_names</code> to look up it’s Id)</p>
+<hr>
+<p><a href="https://github.com/ohmeow/blurr/blob/master/blurr/text/data/token_classification.py#L231" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="samelabellabelingstrategy" class="level3">
+<h3 class="anchored" data-anchor-id="samelabellabelingstrategy">SameLabelLabelingStrategy</h3>
+<blockquote class="blockquote">
+<pre><code> SameLabelLabelingStrategy (hf_tokenizer:transformers.tokenization_utils_b
+                            ase.PreTrainedTokenizerBase,
+                            label_names:Optional[List[str]],
+                            non_entity_label:str='O',
+                            ignore_token_id:int=-100)</code></pre>
+</blockquote>
+<p>Every token associated with a given word is associated with the word’s label. Works where labels are Ids or strings (in the later case we’ll use the <code>label_names</code> to look up it’s Id)</p>
+<hr>
+<p><a href="https://github.com/ohmeow/blurr/blob/master/blurr/text/data/token_classification.py#L209" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="onlyfirsttokenlabelingstrategy" class="level3">
+<h3 class="anchored" data-anchor-id="onlyfirsttokenlabelingstrategy">OnlyFirstTokenLabelingStrategy</h3>
+<blockquote class="blockquote">
+<pre><code> OnlyFirstTokenLabelingStrategy (hf_tokenizer:transformers.tokenization_ut
+                                 ils_base.PreTrainedTokenizerBase,
+                                 label_names:Optional[List[str]],
+                                 non_entity_label:str='O',
+                                 ignore_token_id:int=-100)</code></pre>
+</blockquote>
+<p>Only the first token of word is associated with the label (all other subtokens with the <code>ignore_index_id</code>). Works where labels are Ids or strings (in the later case we’ll use the <code>label_names</code> to look up it’s Id)</p>
+</section>
+<section id="reconstructing-inputslabels" class="level3">
+<h3 class="anchored" data-anchor-id="reconstructing-inputslabels">Reconstructing inputs/labels</h3>
+<p>The utility methods below allow blurr users to reconstruct the original word/label associations from the input_ids/label associations. For example, these are used in our token classification <a href="https://ohmeow.github.io/blurr/text-data-token-classification.html#show_batch"><code>show_batch</code></a> method below.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="co"># TESTS for align_labels_with_tokens()</span></span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> idx <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">3</span>):</span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>    raw_word_list <span class="op">=</span> conll2003_df.iloc[idx][<span class="st">"tokens"</span>]</span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>    raw_label_list <span class="op">=</span> conll2003_df.iloc[idx][<span class="st">"ner_tags"</span>]</span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a>    be <span class="op">=</span> hf_tokenizer(raw_word_list, is_split_into_words<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a>    input_ids <span class="op">=</span> be[<span class="st">"input_ids"</span>]</span>
+<span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a>    targ_ids <span class="op">=</span> [<span class="op">-</span><span class="dv">100</span> <span class="cf">if</span> (word_id <span class="op">==</span> <span class="va">None</span>) <span class="cf">else</span> raw_label_list[word_id] <span class="cf">for</span> word_id <span class="kw">in</span> be.word_ids()]</span>
+<span id="cb21-9"><a href="#cb21-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-10"><a href="#cb21-10" aria-hidden="true" tabindex="-1"></a>    tok_labels <span class="op">=</span> get_token_labels_from_input_ids(hf_tokenizer, input_ids, targ_ids, labels)</span>
+<span id="cb21-11"><a href="#cb21-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-12"><a href="#cb21-12" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> tok_label, targ_id <span class="kw">in</span> <span class="bu">zip</span>(tok_labels, [label_id <span class="cf">for</span> label_id <span class="kw">in</span> targ_ids <span class="cf">if</span> label_id <span class="op">!=</span> <span class="op">-</span><span class="dv">100</span>]):</span>
+<span id="cb21-13"><a href="#cb21-13" aria-hidden="true" tabindex="-1"></a>        test_eq(tok_label[<span class="dv">1</span>], labels[targ_id])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<hr>
+<p><a href="https://github.com/ohmeow/blurr/blob/master/blurr/text/data/token_classification.py#L283" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="get_token_labels_from_input_ids" class="level3">
+<h3 class="anchored" data-anchor-id="get_token_labels_from_input_ids">get_token_labels_from_input_ids</h3>
+<blockquote class="blockquote">
+<pre><code> get_token_labels_from_input_ids (hf_tokenizer:transformers.tokenization_u
+                                  tils_base.PreTrainedTokenizerBase,
+                                  input_ids:List[int],
+                                  token_label_ids:List[int],
+                                  vocab:List[str],
+                                  ignore_token_id:int=-100,
+                                  ignore_token:str='[xIGNx]')</code></pre>
+</blockquote>
+<p>Given a list of input IDs, the label ID associated to each, and the labels vocab, this method will return a list of tuples whereby each tuple defines the “token” and its label name. For example: [(‘ĠWay’, B-PER), (‘de’, B-PER), (‘ĠGill’, I-PER), (‘iam’, I-PER), (‘Ġloves’), (‘ĠHug’, B-ORG), (‘ging’, B-ORG), (‘ĠFace’, I-ORG)]</p>
+<table class="table">
+<colgroup>
+<col style="width: 6%">
+<col style="width: 25%">
+<col style="width: 34%">
+<col style="width: 34%">
+</colgroup>
+<thead>
+<tr class="header">
+<th></th>
+<th><strong>Type</strong></th>
+<th><strong>Default</strong></th>
+<th><strong>Details</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>hf_tokenizer</td>
+<td>PreTrainedTokenizerBase</td>
+<td></td>
+<td>A Hugging Face tokenizer</td>
+</tr>
+<tr class="even">
+<td>input_ids</td>
+<td>List</td>
+<td></td>
+<td>List of input_ids for the tokens in a single piece of processed text</td>
+</tr>
+<tr class="odd">
+<td>token_label_ids</td>
+<td>List</td>
+<td></td>
+<td>List of label indexs for each token</td>
+</tr>
+<tr class="even">
+<td>vocab</td>
+<td>List</td>
+<td></td>
+<td>List of label names from witch the <code>label</code> indicies can be used to find the name of the label</td>
+</tr>
+<tr class="odd">
+<td>ignore_token_id</td>
+<td>int</td>
+<td>-100</td>
+<td>The token ID that should be ignored when calculating the loss</td>
+</tr>
+<tr class="even">
+<td>ignore_token</td>
+<td>str</td>
+<td>[xIGNx]</td>
+<td>The token used to identifiy ignored tokens (default: [xIGNx])</td>
+</tr>
+<tr class="odd">
+<td><strong>Returns</strong></td>
+<td><strong>List</strong></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="co"># TESTS for align_labels_with_words()</span></span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> idx <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">5</span>):</span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>    raw_word_list <span class="op">=</span> conll2003_df.iloc[idx][<span class="st">"tokens"</span>]</span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>    raw_label_list <span class="op">=</span> conll2003_df.iloc[idx][<span class="st">"ner_tags"</span>]</span>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a>    be <span class="op">=</span> hf_tokenizer(raw_word_list, is_split_into_words<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb23-7"><a href="#cb23-7" aria-hidden="true" tabindex="-1"></a>    input_ids <span class="op">=</span> be[<span class="st">"input_ids"</span>]</span>
+<span id="cb23-8"><a href="#cb23-8" aria-hidden="true" tabindex="-1"></a>    targ_ids <span class="op">=</span> [<span class="op">-</span><span class="dv">100</span> <span class="cf">if</span> (word_id <span class="op">==</span> <span class="va">None</span>) <span class="cf">else</span> raw_label_list[word_id] <span class="cf">for</span> word_id <span class="kw">in</span> be.word_ids()]</span>
+<span id="cb23-9"><a href="#cb23-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-10"><a href="#cb23-10" aria-hidden="true" tabindex="-1"></a>    tok_labels <span class="op">=</span> get_token_labels_from_input_ids(hf_tokenizer, input_ids, targ_ids, labels)</span>
+<span id="cb23-11"><a href="#cb23-11" aria-hidden="true" tabindex="-1"></a>    word_labels <span class="op">=</span> get_word_labels_from_token_labels(hf_arch, hf_tokenizer, tok_labels)</span>
+<span id="cb23-12"><a href="#cb23-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-13"><a href="#cb23-13" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> word_label, raw_word, raw_label_id <span class="kw">in</span> <span class="bu">zip</span>(word_labels, raw_word_list, raw_label_list):</span>
+<span id="cb23-14"><a href="#cb23-14" aria-hidden="true" tabindex="-1"></a>        test_eq(word_label[<span class="dv">0</span>], raw_word)</span>
+<span id="cb23-15"><a href="#cb23-15" aria-hidden="true" tabindex="-1"></a>        test_eq(word_label[<span class="dv">1</span>], labels[raw_label_id])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<hr>
+<p><a href="https://github.com/ohmeow/blurr/blob/master/blurr/text/data/token_classification.py#L314" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="get_word_labels_from_token_labels" class="level3">
+<h3 class="anchored" data-anchor-id="get_word_labels_from_token_labels">get_word_labels_from_token_labels</h3>
+<blockquote class="blockquote">
+<pre><code> get_word_labels_from_token_labels (hf_arch:str, hf_tokenizer:transformers
+                                    .tokenization_utils_base.PreTrainedTok
+                                    enizerBase, tok_labels)</code></pre>
+</blockquote>
+<p>Given a list of tuples where each tuple defines a token and its label, return a list of tuples whereby each tuple defines the “word” and its label. Method assumes that model inputs are a list of words, and in conjunction with the <code>align_labels_with_tokens</code> method, allows the user to reconstruct the orginal raw inputs and labels.</p>
+<table class="table">
+<colgroup>
+<col style="width: 9%">
+<col style="width: 38%">
+<col style="width: 52%">
+</colgroup>
+<thead>
+<tr class="header">
+<th></th>
+<th><strong>Type</strong></th>
+<th><strong>Details</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>hf_arch</td>
+<td>str</td>
+<td></td>
+</tr>
+<tr class="even">
+<td>hf_tokenizer</td>
+<td>PreTrainedTokenizerBase</td>
+<td>A Hugging Face tokenizer</td>
+</tr>
+<tr class="odd">
+<td>tok_labels</td>
+<td></td>
+<td>A list of tuples, where each represents a token and its label (e.g., [(‘ĠHug’, B-ORG), (‘ging’, B-ORG), (‘ĠFace’, I-ORG), …])</td>
+</tr>
+<tr class="even">
+<td><strong>Returns</strong></td>
+<td><strong>List</strong></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+<section id="mid-level-api" class="level2">
+<h2 class="anchored" data-anchor-id="mid-level-api">Mid-level API</h2>
+<hr>
+<p><a href="https://github.com/ohmeow/blurr/blob/master/blurr/text/data/token_classification.py#L344" target="_blank" style="float:right; font-size:smaller">source</a></p>
+<section id="tokentensorcategory" class="level3">
+<h3 class="anchored" data-anchor-id="tokentensorcategory">TokenTensorCategory</h3>
+<blockquote class="blockquote">
+<pre><code> TokenTensorCategory (x, **kwargs)</code></pre>
+</blockquote>
+<p>A <code>Tensor</code> which support subclass pickling, and maintains metadata when casting or after methods</p>
+<hr>
+<p><a href="https://github.com/ohmeow/blurr/blob/master/blurr/text/data/token_classification.py#L349" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="tokencategorize" class="level3">
+<h3 class="anchored" data-anchor-id="tokencategorize">TokenCategorize</h3>
+<blockquote class="blockquote">
+<pre><code> TokenCategorize (vocab:List[str]=None, ignore_token:str='[xIGNx]',
+                  ignore_token_id:int=-100)</code></pre>
+</blockquote>
+<p>Reversible transform of a list of category string to <code>vocab</code> id</p>
+<table class="table">
+<colgroup>
+<col style="width: 6%">
+<col style="width: 25%">
+<col style="width: 34%">
+<col style="width: 34%">
+</colgroup>
+<thead>
+<tr class="header">
+<th></th>
+<th><strong>Type</strong></th>
+<th><strong>Default</strong></th>
+<th><strong>Details</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>vocab</td>
+<td>List</td>
+<td>None</td>
+<td>The unique list of entities (e.g., B-LOC) (default: CategoryMap(vocab))</td>
+</tr>
+<tr class="even">
+<td>ignore_token</td>
+<td>str</td>
+<td>[xIGNx]</td>
+<td>The token used to identifiy ignored tokens (default: xIGNx)</td>
+</tr>
+<tr class="odd">
+<td>ignore_token_id</td>
+<td>int</td>
+<td>-100</td>
+<td>The token ID that should be ignored when calculating the loss (default: CrossEntropyLossFlat().ignore_index)</td>
+</tr>
+</tbody>
+</table>
+<p><a href="https://ohmeow.github.io/blurr/text-data-token-classification.html#tokencategorize"><code>TokenCategorize</code></a> modifies the fastai <code>Categorize</code> transform in a couple of ways.</p>
+<p>First, it allows your targets to consist of a <code>Category</code> <strong><em>per</em></strong> token, and second, it uses the idea of an <code>ignore_token_id</code> to mask subtokens that don’t need a prediction. For example, the target of special tokens (e.g., pad, cls, sep) are set to <code>ignore_token_id</code> as are subsequent sub-tokens of a given token should more than 1 sub-token make it up.</p>
+<hr>
+<p><a href="https://github.com/ohmeow/blurr/blob/master/blurr/text/data/token_classification.py#L382" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="tokencategoryblock" class="level3">
+<h3 class="anchored" data-anchor-id="tokencategoryblock">TokenCategoryBlock</h3>
+<blockquote class="blockquote">
+<pre><code> TokenCategoryBlock (vocab:Optional[List[str]]=None,
+                     ignore_token:str='[xIGNx]', ignore_token_id:int=-100)</code></pre>
+</blockquote>
+<p><code>TransformBlock</code> for per-token categorical targets</p>
+<table class="table">
+<colgroup>
+<col style="width: 6%">
+<col style="width: 25%">
+<col style="width: 34%">
+<col style="width: 34%">
+</colgroup>
+<thead>
+<tr class="header">
+<th></th>
+<th><strong>Type</strong></th>
+<th><strong>Default</strong></th>
+<th><strong>Details</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>vocab</td>
+<td>Optional</td>
+<td>None</td>
+<td>The unique list of entities (e.g., B-LOC) (default: CategoryMap(vocab))</td>
+</tr>
+<tr class="even">
+<td>ignore_token</td>
+<td>str</td>
+<td>[xIGNx]</td>
+<td>The token used to identifiy ignored tokens (default: xIGNx)</td>
+</tr>
+<tr class="odd">
+<td>ignore_token_id</td>
+<td>int</td>
+<td>-100</td>
+<td>The token ID that should be ignored when calculating the loss (default: CrossEntropyLossFlat().ignore_index)</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<p><a href="https://github.com/ohmeow/blurr/blob/master/blurr/text/data/token_classification.py#L395" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="tokenclasstextinput" class="level3">
+<h3 class="anchored" data-anchor-id="tokenclasstextinput">TokenClassTextInput</h3>
+<blockquote class="blockquote">
+<pre><code> TokenClassTextInput (x, **kwargs)</code></pre>
+</blockquote>
+<p>The base represenation of your inputs; used by the various fastai <code>show</code> methods</p>
+<p>Again, we define a custom class, <a href="https://ohmeow.github.io/blurr/text-data-token-classification.html#tokenclasstextinput"><code>TokenClassTextInput</code></a>, for the <code>@typedispatch</code>ed methods to use so that we can override how token classification inputs/targets are assembled, as well as, how the data is shown via methods like <a href="https://ohmeow.github.io/blurr/text-data-token-classification.html#show_batch"><code>show_batch</code></a> and <a href="https://ohmeow.github.io/blurr/text-modeling-token-classification.html#show_results"><code>show_results</code></a>.</p>
+<hr>
+<p><a href="https://github.com/ohmeow/blurr/blob/master/blurr/text/data/token_classification.py#L400" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="tokenclassbatchtokenizetransform" class="level3">
+<h3 class="anchored" data-anchor-id="tokenclassbatchtokenizetransform">TokenClassBatchTokenizeTransform</h3>
+<blockquote class="blockquote">
+<pre><code> TokenClassBatchTokenizeTransform (hf_arch:str,
+                                   hf_config:transformers.configuration_ut
+                                   ils.PretrainedConfig, hf_tokenizer:tran
+                                   sformers.tokenization_utils_base.PreTra
+                                   inedTokenizerBase, hf_model:transformer
+                                   s.modeling_utils.PreTrainedModel,
+                                   include_labels:bool=True,
+                                   ignore_token_id:int=-100, labeling_stra
+                                   tegy_cls:__main__.BaseLabelingStrategy=
+                                   &lt;class '__main__.OnlyFirstTokenLabeling
+                                   Strategy'&gt;, target_label_names:Optional
+                                   [List[str]]=None,
+                                   non_entity_label:str='O',
+                                   max_length:Optional[int]=None,
+                                   padding:Union[bool,str]=True,
+                                   truncation:Union[bool,str]=True,
+                                   is_split_into_words:bool=True, slow_wor
+                                   d_ids_func:Optional[Callable]=None,
+                                   tok_kwargs:dict={}, **kwargs)</code></pre>
+</blockquote>
+<p>Handles everything you need to assemble a mini-batch of inputs and targets, as well as decode the dictionary produced as a byproduct of the tokenization process in the <code>encodes</code> method.</p>
+<table class="table">
+<colgroup>
+<col style="width: 6%">
+<col style="width: 25%">
+<col style="width: 34%">
+<col style="width: 34%">
+</colgroup>
+<thead>
+<tr class="header">
+<th></th>
+<th><strong>Type</strong></th>
+<th><strong>Default</strong></th>
+<th><strong>Details</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>hf_arch</td>
+<td>str</td>
+<td></td>
+<td>The abbreviation/name of your Hugging Face transformer architecture (e.b., bert, bart, etc..)</td>
+</tr>
+<tr class="even">
+<td>hf_config</td>
+<td>PretrainedConfig</td>
+<td></td>
+<td>A specific configuration instance you want to use</td>
+</tr>
+<tr class="odd">
+<td>hf_tokenizer</td>
+<td>PreTrainedTokenizerBase</td>
+<td></td>
+<td>A Hugging Face tokenizer</td>
+</tr>
+<tr class="even">
+<td>hf_model</td>
+<td>PreTrainedModel</td>
+<td></td>
+<td>A Hugging Face model</td>
+</tr>
+<tr class="odd">
+<td>include_labels</td>
+<td>bool</td>
+<td>True</td>
+<td>To control whether the “labels” are included in your inputs. If they are, the loss will be calculated in</td>
+</tr>
+<tr class="even">
+<td>the model’s forward function and you can simply use <code>PreCalculatedLoss</code> as your <code>Learner</code>’s loss function to use it</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>ignore_token_id</td>
+<td>int</td>
+<td>-100</td>
+<td>The token ID that should be ignored when calculating the loss</td>
+</tr>
+<tr class="even">
+<td>labeling_strategy_cls</td>
+<td>BaseLabelingStrategy</td>
+<td>OnlyFirstTokenLabelingStrategy</td>
+<td>The labeling strategy you want to apply when associating labels with word tokens</td>
+</tr>
+<tr class="odd">
+<td>target_label_names</td>
+<td>Optional</td>
+<td>None</td>
+<td>the target label names</td>
+</tr>
+<tr class="even">
+<td>non_entity_label</td>
+<td>str</td>
+<td>O</td>
+<td>the label for non-entity</td>
+</tr>
+<tr class="odd">
+<td>max_length</td>
+<td>Optional</td>
+<td>None</td>
+<td>To control the length of the padding/truncation. It can be an integer or None,</td>
+</tr>
+</tbody>
+</table>
+<p>in which case it will default to the maximum length the model can accept. If the model has no specific maximum input length, truncation/padding to max_length is deactivated. See <a href="https://huggingface.co/transformers/preprocessing.html#everything-you-always-wanted-to-know-about-padding-and-truncation">Everything you always wanted to know about padding and truncation</a> | | padding | Union | True | To control the <code>padding</code> applied to your <code>hf_tokenizer</code> during tokenization. If None, will default to <code>False</code> or <code>'do_not_pad'. See [Everything you always wanted to know about padding and truncation](https://huggingface.co/transformers/preprocessing.html#everything-you-always-wanted-to-know-about-padding-and-truncation) | | truncation | Union | True | To control</code>truncation<code>applied to your</code>hf_tokenizer<code>during tokenization. If None, will default to</code>False<code>or</code>do_not_truncate<code>. See [Everything you always wanted to know about padding and truncation](https://huggingface.co/transformers/preprocessing.html#everything-you-always-wanted-to-know-about-padding-and-truncation) | | is_split_into_words | bool | True | The</code>is_split_into_words<code>argument applied to your</code>hf_tokenizer<code>during tokenization. Set this to</code>True<code>if your inputs are pre-tokenized (not numericalized) | | slow_word_ids_func | Optional | None | If using a slow tokenizer, users will need to prove a</code>slow_word_ids_func<code>that accepts a tokenizzer, example index, and a batch encoding as arguments and in turn returnes the equavlient of fast tokenizer's</code>word_ids`<code>| | tok_kwargs | dict | {} | Any other keyword arguments you want included when using your</code>hf_tokenizer` to tokenize your inputs | | kwargs | | | |</p>
+<p><a href="https://ohmeow.github.io/blurr/text-data-token-classification.html#tokenclassbatchtokenizetransform"><code>TokenClassBatchTokenizeTransform</code></a> is used to exclude any of the target’s tokens we don’t want to include in the loss calcuation (e.g.&nbsp;padding, cls, sep, etc…).</p>
+<p>Note also that we default <code>is_split_into_words = True</code> since token classification tasks expect a list of words and labels for each word.</p>
+</section>
+</section>
+<section id="examples" class="level2">
+<h2 class="anchored" data-anchor-id="examples">Examples</h2>
+<section id="using-the-mid-level-api" class="level3">
+<h3 class="anchored" data-anchor-id="using-the-mid-level-api">Using the mid-level API</h3>
+<section id="batch-time-tokenization" class="level4">
+<h4 class="anchored" data-anchor-id="batch-time-tokenization">Batch-Time Tokenization</h4>
+<section id="step-1-get-your-hugging-face-objects." class="level5">
+<h5 class="anchored" data-anchor-id="step-1-get-your-hugging-face-objects.">Step 1: Get your Hugging Face objects.</h5>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a>hf_logging.set_verbosity_error()</span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a>pretrained_model_name <span class="op">=</span> <span class="st">"distilroberta-base"</span></span>
+<span id="cb30-4"><a href="#cb30-4" aria-hidden="true" tabindex="-1"></a>n_labels <span class="op">=</span> <span class="bu">len</span>(labels)</span>
+<span id="cb30-5"><a href="#cb30-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-6"><a href="#cb30-6" aria-hidden="true" tabindex="-1"></a>hf_arch, hf_config, hf_tokenizer, hf_model <span class="op">=</span> get_hf_objects(</span>
+<span id="cb30-7"><a href="#cb30-7" aria-hidden="true" tabindex="-1"></a>    pretrained_model_name, model_cls<span class="op">=</span>AutoModelForTokenClassification, config_kwargs<span class="op">=</span>{<span class="st">"num_labels"</span>: n_labels}</span>
+<span id="cb30-8"><a href="#cb30-8" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb30-9"><a href="#cb30-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-10"><a href="#cb30-10" aria-hidden="true" tabindex="-1"></a>hf_arch, <span class="bu">type</span>(hf_config), <span class="bu">type</span>(hf_tokenizer), <span class="bu">type</span>(hf_model)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>('roberta',
+ transformers.models.roberta.configuration_roberta.RobertaConfig,
+ transformers.models.roberta.tokenization_roberta_fast.RobertaTokenizerFast,
+ transformers.models.roberta.modeling_roberta.RobertaForTokenClassification)</code></pre>
+</div>
+</div>
+</section>
+<section id="step-2-create-your-datablock" class="level5">
+<h5 class="anchored" data-anchor-id="step-2-create-your-datablock">Step 2: Create your <code>DataBlock</code></h5>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a>batch_tok_tfm <span class="op">=</span> TokenClassBatchTokenizeTransform(</span>
+<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a>    hf_arch, hf_config, hf_tokenizer, hf_model, labeling_strategy_cls<span class="op">=</span>BILabelingStrategy, target_label_names<span class="op">=</span>labels</span>
+<span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb32-4"><a href="#cb32-4" aria-hidden="true" tabindex="-1"></a>blocks <span class="op">=</span> (TextBlock(batch_tokenize_tfm<span class="op">=</span>batch_tok_tfm, input_return_type<span class="op">=</span>TokenClassTextInput), TokenCategoryBlock(vocab<span class="op">=</span>labels))</span>
+<span id="cb32-5"><a href="#cb32-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb32-6"><a href="#cb32-6" aria-hidden="true" tabindex="-1"></a>dblock <span class="op">=</span> DataBlock(blocks<span class="op">=</span>blocks, get_x<span class="op">=</span>ColReader(<span class="st">"tokens"</span>), get_y<span class="op">=</span>ColReader(<span class="st">"ner_tags"</span>), splitter<span class="op">=</span>RandomSplitter())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="step-3-build-your-dataloaders" class="level5">
+<h5 class="anchored" data-anchor-id="step-3-build-your-dataloaders">Step 3: Build your <code>DataLoaders</code></h5>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a>dls <span class="op">=</span> dblock.dataloaders(conll2003_df, bs<span class="op">=</span><span class="dv">4</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a>b <span class="op">=</span> dls.one_batch()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="bu">len</span>(b), b[<span class="dv">0</span>][<span class="st">"input_ids"</span>].shape, b[<span class="dv">1</span>].shape</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>(2, torch.Size([4, 156]), torch.Size([4, 156]))</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a>dls.show_batch(dataloaders<span class="op">=</span>dls, max_n<span class="op">=</span><span class="dv">5</span>, trunc_at<span class="op">=</span><span class="dv">20</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+
+<table class="dataframe table table-sm table-striped">
+  <thead>
+    <tr>
+      <th></th>
+      <th>word / target label</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>[('MARKET', 'O'), ('TALK', 'O'), ('-', 'O'), ('USDA', 'B-ORG'), ('net', 'O'), ('change', 'O'), ('in', 'O'), ('weekly', 'O'), ('export', 'O'), ('commitments', 'O'), ('for', 'O'), ('the', 'O'), ('week', 'O'), ('ended', 'O'), ('August', 'O'), ('22', 'O'), (',', 'O'), ('includes', 'O'), ('old', 'O'), ('crop', 'O')]</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>[('Slough', 'B-ORG'), ("'s", 'O'), ('chairman', 'O'), ('Sir', 'O'), ('Nigel', 'B-PER'), ('Mobbs', 'I-PER'), ('added', 'O'), ('to', 'O'), ('the', 'O'), ('bullish', 'O'), ('mood', 'O'), ('in', 'O'), ('the', 'O'), ('sector', 'O'), (',', 'O'), ('saying', 'O'), ('in', 'O'), ('a', 'O'), ('statement', 'O'), ('that', 'O')]</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>[('The', 'O'), ('government-owned', 'O'), ('al-Ingaz', 'B-ORG'), ('al-Watani', 'I-ORG'), ('said', 'O'), ('the', 'O'), ('smugglers', 'O'), ('were', 'O'), ('caught', 'O'), ('in', 'O'), ('Banat', 'B-LOC'), ('in', 'O'), ('the', 'O'), ('eastern', 'O'), ('state', 'O'), ('of', 'O'), ('Kassala', 'B-LOC'), (',', 'O'), ('on', 'O'), ('the', 'O')]</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>[('"', 'O'), ('The', 'O'), ('ultimatum', 'O'), ('(', 'O'), ('to', 'O'), ('storm', 'O'), ('Grozny', 'B-LOC'), (')', 'O'), ('is', 'O'), ('no', 'O'), ('longer', 'O'), ('an', 'O'), ('issue', 'O'), (',', 'O'), ('"', 'O'), ('he', 'O'), ('said', 'O'), ('quoting', 'O'), ('Ischinger', 'B-PER'), (',', 'O')]</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+</section>
+</section>
+<section id="passing-extra-infromation" class="level4">
+<h4 class="anchored" data-anchor-id="passing-extra-infromation">Passing extra infromation</h4>
+<section id="step-1b-get-your-hugging-face-objects." class="level5">
+<h5 class="anchored" data-anchor-id="step-1b-get-your-hugging-face-objects.">Step 1b: Get your Hugging Face objects.</h5>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb38"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a>hf_logging.set_verbosity_error()</span>
+<span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-3"><a href="#cb38-3" aria-hidden="true" tabindex="-1"></a>pretrained_model_name <span class="op">=</span> <span class="st">"distilroberta-base"</span></span>
+<span id="cb38-4"><a href="#cb38-4" aria-hidden="true" tabindex="-1"></a>n_labels <span class="op">=</span> <span class="bu">len</span>(labels)</span>
+<span id="cb38-5"><a href="#cb38-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-6"><a href="#cb38-6" aria-hidden="true" tabindex="-1"></a>hf_arch, hf_config, hf_tokenizer, hf_model <span class="op">=</span> get_hf_objects(</span>
+<span id="cb38-7"><a href="#cb38-7" aria-hidden="true" tabindex="-1"></a>    pretrained_model_name, model_cls<span class="op">=</span>AutoModelForTokenClassification, config_kwargs<span class="op">=</span>{<span class="st">"num_labels"</span>: n_labels}</span>
+<span id="cb38-8"><a href="#cb38-8" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb38-9"><a href="#cb38-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-10"><a href="#cb38-10" aria-hidden="true" tabindex="-1"></a>hf_arch, <span class="bu">type</span>(hf_config), <span class="bu">type</span>(hf_tokenizer), <span class="bu">type</span>(hf_model)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>('roberta',
+ transformers.models.roberta.configuration_roberta.RobertaConfig,
+ transformers.models.roberta.tokenization_roberta_fast.RobertaTokenizerFast,
+ transformers.models.roberta.modeling_roberta.RobertaForTokenClassification)</code></pre>
+</div>
+</div>
+</section>
+<section id="step-1b.-preprocess-dataset" class="level5">
+<h5 class="anchored" data-anchor-id="step-1b.-preprocess-dataset">Step 1b. Preprocess dataset</h5>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb40"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a>preprocessor <span class="op">=</span> TokenClassPreprocessor(</span>
+<span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a>    hf_tokenizer,</span>
+<span id="cb40-3"><a href="#cb40-3" aria-hidden="true" tabindex="-1"></a>    label_names<span class="op">=</span>labels,</span>
+<span id="cb40-4"><a href="#cb40-4" aria-hidden="true" tabindex="-1"></a>    id_attr<span class="op">=</span><span class="st">"id"</span>,</span>
+<span id="cb40-5"><a href="#cb40-5" aria-hidden="true" tabindex="-1"></a>    word_list_attr<span class="op">=</span><span class="st">"tokens"</span>,</span>
+<span id="cb40-6"><a href="#cb40-6" aria-hidden="true" tabindex="-1"></a>    label_list_attr<span class="op">=</span><span class="st">"ner_tags"</span>,</span>
+<span id="cb40-7"><a href="#cb40-7" aria-hidden="true" tabindex="-1"></a>    tok_kwargs<span class="op">=</span>{<span class="st">"max_length"</span>: <span class="dv">128</span>},</span>
+<span id="cb40-8"><a href="#cb40-8" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb40-9"><a href="#cb40-9" aria-hidden="true" tabindex="-1"></a>proc_df <span class="op">=</span> preprocessor.process_df(conll2003_df)</span>
+<span id="cb40-10"><a href="#cb40-10" aria-hidden="true" tabindex="-1"></a>proc_df.head(<span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+
+<div>
+
+<table class="dataframe table table-sm table-striped">
+  <thead>
+    <tr>
+      <th></th>
+      <th>proc_tokens</th>
+      <th>proc_ner_tags</th>
+      <th>id</th>
+      <th>tokens</th>
+      <th>pos_tags</th>
+      <th>chunk_tags</th>
+      <th>ner_tags</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>[EU, rejects, German, call, to, boycott, British, lamb, .]</td>
+      <td>[3, 0, 7, 0, 0, 0, 7, 0, 0]</td>
+      <td>0</td>
+      <td>[EU, rejects, German, call, to, boycott, British, lamb, .]</td>
+      <td>[22, 42, 16, 21, 35, 37, 16, 21, 7]</td>
+      <td>[11, 21, 11, 12, 21, 22, 11, 12, 0]</td>
+      <td>[3, 0, 7, 0, 0, 0, 7, 0, 0]</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>[Peter, Blackburn]</td>
+      <td>[1, 2]</td>
+      <td>1</td>
+      <td>[Peter, Blackburn]</td>
+      <td>[22, 22]</td>
+      <td>[11, 12]</td>
+      <td>[1, 2]</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+</div>
+</section>
+<section id="step-2-create-your-datablock-1" class="level5">
+<h5 class="anchored" data-anchor-id="step-2-create-your-datablock-1">Step 2: Create your <code>DataBlock</code></h5>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb41"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a>batch_tok_tfm <span class="op">=</span> TokenClassBatchTokenizeTransform(hf_arch, hf_config, hf_tokenizer, hf_model, target_label_names<span class="op">=</span>labels)</span>
+<span id="cb41-2"><a href="#cb41-2" aria-hidden="true" tabindex="-1"></a>blocks <span class="op">=</span> (TextBlock(batch_tokenize_tfm<span class="op">=</span>batch_tok_tfm, input_return_type<span class="op">=</span>TokenClassTextInput), TokenCategoryBlock(vocab<span class="op">=</span>labels))</span>
+<span id="cb41-3"><a href="#cb41-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb41-4"><a href="#cb41-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb41-5"><a href="#cb41-5" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> get_x(item):</span>
+<span id="cb41-6"><a href="#cb41-6" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> {<span class="st">"id"</span>: item.<span class="bu">id</span>, <span class="st">"text"</span>: item.proc_tokens}</span>
+<span id="cb41-7"><a href="#cb41-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb41-8"><a href="#cb41-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb41-9"><a href="#cb41-9" aria-hidden="true" tabindex="-1"></a>dblock <span class="op">=</span> DataBlock(blocks<span class="op">=</span>blocks, get_x<span class="op">=</span>get_x, get_y<span class="op">=</span>ColReader(<span class="st">"proc_ner_tags"</span>), splitter<span class="op">=</span>RandomSplitter())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="step-3-build-your-dataloaders-1" class="level5">
+<h5 class="anchored" data-anchor-id="step-3-build-your-dataloaders-1">Step 3: Build your <code>DataLoaders</code></h5>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb42"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a>dls <span class="op">=</span> dblock.dataloaders(proc_df, bs<span class="op">=</span><span class="dv">4</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb43"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a>b <span class="op">=</span> dls.one_batch()</span>
+<span id="cb43-2"><a href="#cb43-2" aria-hidden="true" tabindex="-1"></a>b[<span class="dv">0</span>].keys()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>dict_keys(['input_ids', 'attention_mask', 'id', 'labels'])</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb45"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a><span class="bu">len</span>(b), b[<span class="dv">0</span>][<span class="st">"input_ids"</span>].shape, b[<span class="dv">1</span>].shape</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>(2, torch.Size([4, 130]), torch.Size([4, 130]))</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb47"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a>dls.show_batch(dataloaders<span class="op">=</span>dls, max_n<span class="op">=</span><span class="dv">5</span>, trunc_at<span class="op">=</span><span class="dv">20</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+
+<table class="dataframe table table-sm table-striped">
+  <thead>
+    <tr>
+      <th></th>
+      <th>word / target label</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>[('MARKET', 'O'), ('TALK', 'O'), ('-', 'O'), ('USDA', 'B-ORG'), ('net', 'O'), ('change', 'O'), ('in', 'O'), ('weekly', 'O'), ('export', 'O'), ('commitments', 'O'), ('for', 'O'), ('the', 'O'), ('week', 'O'), ('ended', 'O'), ('August', 'O'), ('22', 'O'), (',', 'O'), ('includes', 'O'), ('old', 'O'), ('crop', 'O')]</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>[('"', 'O'), ('This', 'O'), ('finding', 'O'), ('is', 'O'), ('important', 'O'), ('because', 'O'), ('one', 'O'), ('of', 'O'), ('the', 'O'), ('jars', 'O'), ('still', 'O'), ('contains', 'O'), ('substances', 'O'), ('and', 'O'), ('materials', 'O'), ('used', 'O'), ('in', 'O'), ('the', 'O'), ('conservation', 'O'), ('of', 'O')]</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>[('"', 'O'), ('We', 'O'), ('have', 'O'), ('always', 'O'), ('been', 'O'), ('concerned', 'O'), ('about', 'O'), ('barter', 'O'), ('deals', 'O'), ('with', 'O'), ('other', 'O'), ('countries', 'O'), (',', 'O'), ('viewing', 'O'), ('them', 'O'), ('as', 'O'), ('a', 'O'), ('disguised', 'O'), ('kind', 'O'), ('of', 'O')]</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>[('The', 'O'), ('officials', 'O'), ('had', 'O'), ('been', 'O'), ('positive', 'O'), ('about', 'O'), ('Kinkel', 'B-PER'), ("'s", 'O'), ('request', 'O'), ('on', 'O'), ('Wednesday', 'O'), ('that', 'O'), ('President', 'O'), ('Boris', 'B-PER'), ('Yeltsin', 'I-PER'), ("'s", 'O'), ('security', 'O'), ('chief', 'O'), ('Alexander', 'B-PER'), ('Lebed', 'I-PER')]</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+</section>
+</section>
+</section>
+</section>
+<section id="tests" class="level2">
+<h2 class="anchored" data-anchor-id="tests">Tests</h2>
+<p>The tests below to ensure the core DataBlock code above works for <strong>all</strong> pretrained token classification models available in Hugging Face. These tests are excluded from the CI workflow because of how long they would take to run and the amount of data that would be required to download.</p>
+<p><strong>Note</strong>: Feel free to modify the code below to test whatever pretrained classification models you are working with … and if any of your pretrained token classification models fail, please submit a github issue <em>(or a PR if you’d like to fix it yourself)</em></p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb48"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a>raw_datasets <span class="op">=</span> load_dataset(<span class="st">"conll2003"</span>)</span>
+<span id="cb48-2"><a href="#cb48-2" aria-hidden="true" tabindex="-1"></a>conll2003_df <span class="op">=</span> pd.DataFrame(raw_datasets[<span class="st">"train"</span>])</span>
+<span id="cb48-3"><a href="#cb48-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb48-4"><a href="#cb48-4" aria-hidden="true" tabindex="-1"></a>labels <span class="op">=</span> raw_datasets[<span class="st">"train"</span>].features[<span class="st">"ner_tags"</span>].feature.names</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Reusing dataset conll2003 (/home/wgilliam/.cache/huggingface/datasets/conll2003/conll2003/1.0.0/9a4d16a94f8674ba3466315300359b0acd891b68b6c8743ddf60b9c702adce98)</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<script type="application/vnd.jupyter.widget-view+json">
+{"model_id":"7606c60f8a574d86bb1a5c1a0a05630b","version_major":2,"version_minor":0}
+</script>
+</div>
+</div>
+<div class="cell">
+<div class="cell-output cell-output-display">
+
+<table class="dataframe table table-sm table-striped">
+  <thead>
+    <tr>
+      <th></th>
+      <th>arch</th>
+      <th>tokenizer</th>
+      <th>model_name</th>
+      <th>result</th>
+      <th>error</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>albert</td>
+      <td>AlbertTokenizerFast</td>
+      <td>hf-internal-testing/tiny-albert</td>
+      <td>PASSED</td>
+      <td></td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>bert</td>
+      <td>BertTokenizerFast</td>
+      <td>hf-internal-testing/tiny-bert</td>
+      <td>PASSED</td>
+      <td></td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>big_bird</td>
+      <td>BigBirdTokenizerFast</td>
+      <td>google/bigbird-roberta-base</td>
+      <td>PASSED</td>
+      <td></td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>camembert</td>
+      <td>CamembertTokenizerFast</td>
+      <td>camembert-base</td>
+      <td>PASSED</td>
+      <td></td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>convbert</td>
+      <td>ConvBertTokenizerFast</td>
+      <td>YituTech/conv-bert-base</td>
+      <td>PASSED</td>
+      <td></td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>deberta</td>
+      <td>DebertaTokenizerFast</td>
+      <td>hf-internal-testing/tiny-deberta</td>
+      <td>PASSED</td>
+      <td></td>
+    </tr>
+    <tr>
+      <th>6</th>
+      <td>bert</td>
+      <td>BertTokenizerFast</td>
+      <td>sshleifer/tiny-distilbert-base-cased</td>
+      <td>PASSED</td>
+      <td></td>
+    </tr>
+    <tr>
+      <th>7</th>
+      <td>electra</td>
+      <td>ElectraTokenizerFast</td>
+      <td>hf-internal-testing/tiny-electra</td>
+      <td>PASSED</td>
+      <td></td>
+    </tr>
+    <tr>
+      <th>8</th>
+      <td>funnel</td>
+      <td>FunnelTokenizerFast</td>
+      <td>huggingface/funnel-small-base</td>
+      <td>PASSED</td>
+      <td></td>
+    </tr>
+    <tr>
+      <th>9</th>
+      <td>gpt2</td>
+      <td>GPT2TokenizerFast</td>
+      <td>sshleifer/tiny-gpt2</td>
+      <td>PASSED</td>
+      <td></td>
+    </tr>
+    <tr>
+      <th>10</th>
+      <td>layoutlm</td>
+      <td>LayoutLMTokenizerFast</td>
+      <td>hf-internal-testing/tiny-layoutlm</td>
+      <td>PASSED</td>
+      <td></td>
+    </tr>
+    <tr>
+      <th>11</th>
+      <td>longformer</td>
+      <td>LongformerTokenizerFast</td>
+      <td>allenai/longformer-base-4096</td>
+      <td>PASSED</td>
+      <td></td>
+    </tr>
+    <tr>
+      <th>12</th>
+      <td>mpnet</td>
+      <td>MPNetTokenizerFast</td>
+      <td>microsoft/mpnet-base</td>
+      <td>PASSED</td>
+      <td></td>
+    </tr>
+    <tr>
+      <th>13</th>
+      <td>ibert</td>
+      <td>RobertaTokenizerFast</td>
+      <td>kssteven/ibert-roberta-base</td>
+      <td>PASSED</td>
+      <td></td>
+    </tr>
+    <tr>
+      <th>14</th>
+      <td>mobilebert</td>
+      <td>MobileBertTokenizerFast</td>
+      <td>google/mobilebert-uncased</td>
+      <td>PASSED</td>
+      <td></td>
+    </tr>
+    <tr>
+      <th>15</th>
+      <td>rembert</td>
+      <td>RemBertTokenizerFast</td>
+      <td>google/rembert</td>
+      <td>PASSED</td>
+      <td></td>
+    </tr>
+    <tr>
+      <th>16</th>
+      <td>roformer</td>
+      <td>RoFormerTokenizerFast</td>
+      <td>junnyu/roformer_chinese_sim_char_ft_small</td>
+      <td>PASSED</td>
+      <td></td>
+    </tr>
+    <tr>
+      <th>17</th>
+      <td>roberta</td>
+      <td>RobertaTokenizerFast</td>
+      <td>roberta-base</td>
+      <td>PASSED</td>
+      <td></td>
+    </tr>
+    <tr>
+      <th>18</th>
+      <td>squeezebert</td>
+      <td>SqueezeBertTokenizerFast</td>
+      <td>squeezebert/squeezebert-uncased</td>
+      <td>PASSED</td>
+      <td></td>
+    </tr>
+    <tr>
+      <th>19</th>
+      <td>xlm_roberta</td>
+      <td>XLMRobertaTokenizerFast</td>
+      <td>xlm-roberta-base</td>
+      <td>PASSED</td>
+      <td></td>
+    </tr>
+    <tr>
+      <th>20</th>
+      <td>xlnet</td>
+      <td>XLNetTokenizerFast</td>
+      <td>xlnet-base-cased</td>
+      <td>PASSED</td>
+      <td></td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const disableStylesheet = (stylesheets) => {
+    for (let i=0; i < stylesheets.length; i++) {
+      const stylesheet = stylesheets[i];
+      stylesheet.rel = 'prefetch';
+    }
+  }
+  const enableStylesheet = (stylesheets) => {
+    for (let i=0; i < stylesheets.length; i++) {
+      const stylesheet = stylesheets[i];
+      stylesheet.rel = 'stylesheet';
+    }
+  }
+  const manageTransitions = (selector, allowTransitions) => {
+    const els = window.document.querySelectorAll(selector);
+    for (let i=0; i < els.length; i++) {
+      const el = els[i];
+      if (allowTransitions) {
+        el.classList.remove('notransition');
+      } else {
+        el.classList.add('notransition');
+      }
+    }
+  }
+  const toggleColorMode = (alternate) => {
+    // Switch the stylesheets
+    const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+    manageTransitions('#quarto-margin-sidebar .nav-link', false);
+    if (alternate) {
+      enableStylesheet(alternateStylesheets);
+      for (const sheetNode of alternateStylesheets) {
+        if (sheetNode.id === "quarto-bootstrap") {
+          toggleBodyColorMode(sheetNode);
+        }
+      }
+    } else {
+      disableStylesheet(alternateStylesheets);
+      toggleBodyColorPrimary();
+    }
+    manageTransitions('#quarto-margin-sidebar .nav-link', true);
+    // Switch the toggles
+    const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+    for (let i=0; i < toggles.length; i++) {
+      const toggle = toggles[i];
+      if (toggle) {
+        if (alternate) {
+          toggle.classList.add("alternate");     
+        } else {
+          toggle.classList.remove("alternate");
+        }
+      }
+    }
+    // Hack to workaround the fact that safari doesn't
+    // properly recolor the scrollbar when toggling (#1455)
+    if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+      manageTransitions("body", false);
+      window.scrollTo(0, 1);
+      setTimeout(() => {
+        window.scrollTo(0, 0);
+        manageTransitions("body", true);
+      }, 40);  
+    }
+  }
+  const isFileUrl = () => { 
+    return window.location.protocol === 'file:';
+  }
+  const hasAlternateSentinel = () => {  
+    let styleSentinel = getColorSchemeSentinel();
+    if (styleSentinel !== null) {
+      return styleSentinel === "alternate";
+    } else {
+      return false;
+    }
+  }
+  const setStyleSentinel = (alternate) => {
+    const value = alternate ? "alternate" : "default";
+    if (!isFileUrl()) {
+      window.localStorage.setItem("quarto-color-scheme", value);
+    } else {
+      localAlternateSentinel = value;
+    }
+  }
+  const getColorSchemeSentinel = () => {
+    if (!isFileUrl()) {
+      const storageValue = window.localStorage.getItem("quarto-color-scheme");
+      return storageValue != null ? storageValue : localAlternateSentinel;
+    } else {
+      return localAlternateSentinel;
+    }
+  }
+  let localAlternateSentinel = 'default';
+  // Dark / light mode switch
+  window.quartoToggleColorScheme = () => {
+    // Read the current dark / light value 
+    let toAlternate = !hasAlternateSentinel();
+    toggleColorMode(toAlternate);
+    setStyleSentinel(toAlternate);
+  };
+  // Ensure there is a toggle, if there isn't float one in the top right
+  if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+    const a = window.document.createElement('a');
+    a.classList.add('top-right');
+    a.classList.add('quarto-color-scheme-toggle');
+    a.href = "";
+    a.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+    const i = window.document.createElement("i");
+    i.classList.add('bi');
+    a.appendChild(i);
+    window.document.body.appendChild(a);
+  }
+  // Switch to dark mode if need be
+  if (hasAlternateSentinel()) {
+    toggleColorMode(true);
+  } 
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    target: function(trigger) {
+      return trigger.previousElementSibling;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    setTimeout(function() {
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const cites = ref.parentNode.getAttribute('data-cites').split(' ');
+    tippyHover(ref, function() {
+      var popup = window.document.createElement('div');
+      cites.forEach(function(cite) {
+        var citeDiv = window.document.createElement('div');
+        citeDiv.classList.add('hanging-indent');
+        citeDiv.classList.add('csl-entry');
+        var biblioDiv = window.document.getElementById('ref-' + cite);
+        if (biblioDiv) {
+          citeDiv.innerHTML = biblioDiv.innerHTML;
+        }
+        popup.appendChild(citeDiv);
+      });
+      return popup.innerHTML;
+    });
+  }
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var filterRegex = new RegExp(/https:\/\/ohmeow\.github\.io\/blurr\//);
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+    var links = window.document.querySelectorAll('a:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+          // target, if specified
+          link.setAttribute("target", "_blank");
+      }
+    }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>

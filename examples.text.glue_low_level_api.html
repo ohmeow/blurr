@@ -1,0 +1,1583 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.1.75">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="description" content="This notebook demonstrates how we can use Blurr to tackle the General Language Understanding Evaluation(GLUE) benchmark tasks using the low-level fastai API. That means we’re going to be creating our Datasets (using the dataset creation methods of the datasets library) and DataLoaders (both plain ol’ PyTorch DataLoader and fastai DataLoader) to train, evalulate, and do inference.">
+
+<title>blurr - Using the Low-level fastai API</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: 1;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1.6em;
+  vertical-align: middle;
+}
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { color: #008000; } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { color: #008000; font-weight: bold; } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<link href="./favicon.ico" rel="icon">
+<script src="site_libs/quarto-html/quarto.js"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-dark.css" rel="prefetch" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-dark.min.css" rel="prefetch" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit"
+  }
+}</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" integrity="sha512-c3Nl8+7g4LMSTdrm621y7kf9v3SDPnhxLNhcjFJbKECVnmZHTdo+IRO05sNLTH/D3vA6u1X32ehoLC7WFVdheg==" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script>
+<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
+<script src="https://unpkg.com/@jupyter-widgets/html-manager@*/dist/embed-amd.js" crossorigin="anonymous"></script>
+
+
+<link rel="stylesheet" href="styles.css">
+<meta property="og:title" content="blurr - Using the Low-level fastai API">
+<meta property="og:description" content="This notebook demonstrates how we can use Blurr to tackle the General Language Understanding Evaluation(GLUE) benchmark tasks using the low-level fastai API. That means we’re going to be creating our Datasets (using the dataset creation methods of the datasets library) and DataLoaders (both plain ol’ PyTorch DataLoader and fastai DataLoader) to train, evalulate, and do inference.">
+<meta property="og:site-name" content="blurr">
+<meta name="twitter:title" content="blurr - Using the Low-level fastai API">
+<meta name="twitter:description" content="This notebook demonstrates how we can use Blurr to tackle the General Language Understanding Evaluation(GLUE) benchmark tasks using the low-level fastai API. That means we’re going to be creating our Datasets (using the dataset creation methods of the datasets library) and DataLoaders (both plain ol’ PyTorch DataLoader and fastai DataLoader) to train, evalulate, and do inference.">
+<meta name="twitter:card" content="summary">
+</head>
+
+<body class="nav-sidebar floating nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg navbar-dark ">
+      <div class="navbar-container container-fluid">
+      <a class="navbar-brand" href="./index.html">
+    <span class="navbar-title">blurr</span>
+  </a>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link active" href="./index.html" aria-current="page">Getting Started</a>
+  </li>  
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-resources" role="button" data-bs-toggle="dropdown" aria-expanded="false">Resources</a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-resources">    
+        <li>
+    <a class="dropdown-item" href="https://www.youtube.com/playlist?list=PLD80i8An1OEF8UOb9N9uSoidOGIMKW96t"><i class="bi bi-play-btn-fill" role="img">
+</i> 
+ <span class="dropdown-text">fastai x Hugging Face Study Group</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="https://huggingface.co/course/chapter1/1"><i class="bi bi-journal-bookmark-fill" role="img">
+</i> 
+ <span class="dropdown-text">Hugging Face Course</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="https://docs.fast.ai/"><i class="bi bi-link" role="img">
+</i> 
+ <span class="dropdown-text">fast.ai (docs)</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="https://huggingface.co/docs/transformers/index"><i class="bi bi-link" role="img">
+</i> 
+ <span class="dropdown-text">transformers (docs)</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-help" role="button" data-bs-toggle="dropdown" aria-expanded="false">Help</a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-help">    
+        <li>
+    <a class="dropdown-item" href="https://github.com/ohmeow/blurr/issues"><i class="bi bi-bug" role="img">
+</i> 
+ <span class="dropdown-text">Report an Issue</span></a>
+  </li>  
+    </ul>
+  </li>
+</ul>
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/ohmeow/blurr/"><i class="bi bi-github" role="img">
+</i> 
+ </a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://twitter.com/waydegilliam"><i class="bi bi-twitter" role="img">
+</i> 
+ </a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://www.ohmeow.com/"><i class="bi bi-house" role="img" aria-label="Twitter">
+</i> 
+ </a>
+  </li>  
+</ul>
+              <div class="quarto-toggle-container">
+                  <a href="" class="quarto-color-scheme-toggle nav-link" onclick="window.quartoToggleColorScheme(); return false;" title="Toggle dark mode"><i class="bi"></i></a>
+              </div>
+              <div id="quarto-search" class="" title="Search"></div>
+          </div> <!-- /navcollapse -->
+      </div> <!-- /container-fluid -->
+    </nav>
+  <nav class="quarto-secondary-nav" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+    <div class="container-fluid d-flex justify-content-between">
+      <h1 class="quarto-secondary-nav-title">Using the Low-level fastai API</h1>
+      <button type="button" class="quarto-btn-toggle btn" aria-label="Show secondary navigation">
+        <i class="bi bi-chevron-right"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-full page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse sidebar-navigation floating overflow-auto">
+      <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+      </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true">Overview</a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">Getting Started</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./callbacks.html" class="sidebar-item-text sidebar-link">callbacks</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./utils.html" class="sidebar-item-text sidebar-link">utils</a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="true">Text</a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="true">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-expanded="false">Sequence Classification</a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-expanded="false">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./text.data.core.html" class="sidebar-item-text sidebar-link">Data</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./text.modeling.core.html" class="sidebar-item-text sidebar-link">Modeling</a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" aria-expanded="false">Token Classification</a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" aria-expanded="false">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./text.data.token_classification.html" class="sidebar-item-text sidebar-link">Data</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./text.modeling.token_classification.html" class="sidebar-item-text sidebar-link">Modeling</a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" aria-expanded="false">Question &amp; Answering</a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" aria-expanded="false">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./text.data.question_answering.html" class="sidebar-item-text sidebar-link">Data</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./text.modeling.question_answering.html" class="sidebar-item-text sidebar-link">Modeling</a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" aria-expanded="false">Language Modeling</a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" aria-expanded="false">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-6" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./text.data.language_modeling.html" class="sidebar-item-text sidebar-link">Data</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./text.modeling.language_modeling.html" class="sidebar-item-text sidebar-link">Modeling</a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" aria-expanded="false">Seq2Seq: Core</a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" aria-expanded="false">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-7" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./text.data.seq2seq.core.html" class="sidebar-item-text sidebar-link">Data</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./text.modeling.seq2seq.core.html" class="sidebar-item-text sidebar-link">Modeling</a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" aria-expanded="false">Seq2Seq: Summarization</a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" aria-expanded="false">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-8" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./text.data.seq2seq.summarization.html" class="sidebar-item-text sidebar-link">Data</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./text.modeling.seq2seq.summarization.html" class="sidebar-item-text sidebar-link">Modeling</a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-9" aria-expanded="false">Seq2Seq: Translation</a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-9" aria-expanded="false">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-9" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./text.data.seq2seq.translation.html" class="sidebar-item-text sidebar-link">Data</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./text.modeling.seq2seq.translation.html" class="sidebar-item-text sidebar-link">Modeling</a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./text.callbacks.html" class="sidebar-item-text sidebar-link">callbacks</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./text.utils.html" class="sidebar-item-text sidebar-link">utils</a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-10" aria-expanded="true">Examples</a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-10" aria-expanded="true">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-10" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./examples.text.high_level_api.html" class="sidebar-item-text sidebar-link">Using the high-level Blurr API</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./examples.text.glue.html" class="sidebar-item-text sidebar-link">GLUE classification tasks</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./examples.text.glue_low_level_api.html" class="sidebar-item-text sidebar-link active">Using the Low-level fastai API</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./examples.text.multilabel_classification.html" class="sidebar-item-text sidebar-link">Multi-label classification</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./examples.text.causal_lm_gpt2.html" class="sidebar-item-text sidebar-link">Causal Language Modeling with GPT-2</a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#glue-tasks" id="toc-glue-tasks" class="nav-link active" data-scroll-target="#glue-tasks">GLUE tasks</a></li>
+  <li><a href="#define-the-task-and-hyperparmeters" id="toc-define-the-task-and-hyperparmeters" class="nav-link" data-scroll-target="#define-the-task-and-hyperparmeters">Define the task and hyperparmeters</a></li>
+  <li><a href="#raw-data" id="toc-raw-data" class="nav-link" data-scroll-target="#raw-data">Raw data</a></li>
+  <li><a href="#prepare-the-hugging-face-objects" id="toc-prepare-the-hugging-face-objects" class="nav-link" data-scroll-target="#prepare-the-hugging-face-objects">Prepare the Hugging Face objects</a></li>
+  <li><a href="#build-the-tokenized-datasets" id="toc-build-the-tokenized-datasets" class="nav-link" data-scroll-target="#build-the-tokenized-datasets">Build the tokenized datasets</a></li>
+  <li><a href="#using-pytorch-dataloaders" id="toc-using-pytorch-dataloaders" class="nav-link" data-scroll-target="#using-pytorch-dataloaders">1. Using PyTorch DataLoaders</a>
+  <ul>
+  <li><a href="#build-the-dataloaders" id="toc-build-the-dataloaders" class="nav-link" data-scroll-target="#build-the-dataloaders">Build the DataLoaders</a></li>
+  <li><a href="#train" id="toc-train" class="nav-link" data-scroll-target="#train">Train</a></li>
+  <li><a href="#evaluate" id="toc-evaluate" class="nav-link" data-scroll-target="#evaluate">Evaluate</a></li>
+  <li><a href="#inference" id="toc-inference" class="nav-link" data-scroll-target="#inference">Inference</a></li>
+  </ul></li>
+  <li><a href="#using-fastai-dataloaders" id="toc-using-fastai-dataloaders" class="nav-link" data-scroll-target="#using-fastai-dataloaders">2. Using fastai DataLoaders</a>
+  <ul>
+  <li><a href="#train-1" id="toc-train-1" class="nav-link" data-scroll-target="#train-1">Train</a></li>
+  <li><a href="#evaluate-1" id="toc-evaluate-1" class="nav-link" data-scroll-target="#evaluate-1">Evaluate</a></li>
+  <li><a href="#inference-1" id="toc-inference-1" class="nav-link" data-scroll-target="#inference-1">Inference</a></li>
+  </ul></li>
+  <li><a href="#summary" id="toc-summary" class="nav-link" data-scroll-target="#summary">Summary</a></li>
+  </ul>
+<div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/ohmeow/blurr/issues/new" class="toc-action">Report an issue</a></p></div></div></nav>
+    </div>
+<!-- main -->
+<main class="content column-body" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title d-none d-lg-block">Using the Low-level fastai API</h1>
+</div>
+
+<div>
+  <div class="description">
+    This notebook demonstrates how we can use Blurr to tackle the <a href="https://gluebenchmark.com/">General Language Understanding Evaluation(GLUE) benchmark</a> tasks using the low-level fastai API. That means we’re going to be creating our Datasets (using the dataset creation methods of the datasets library) and DataLoaders (both plain ol’ PyTorch DataLoader and fastai DataLoader) to train, evalulate, and do inference.
+  </div>
+</div>
+
+
+<div class="quarto-title-meta">
+
+    
+    
+  </div>
+  
+
+</header>
+
+<!-- WARNING: THIS FILE WAS AUTOGENERATED! DO NOT EDIT! -->
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>Using GPU #1: GeForce GTX 1080 Ti</code></pre>
+</div>
+</div>
+<section id="glue-tasks" class="level2">
+<h2 class="anchored" data-anchor-id="glue-tasks">GLUE tasks</h2>
+<div class="cell">
+<div class="cell-output cell-output-display">
+
+<style type="text/css">
+</style>
+<table id="T_f2da8_">
+  <thead>
+    <tr>
+      <th class="col_heading level0 col0">Abbr</th>
+      <th class="col_heading level0 col1">Name</th>
+      <th class="col_heading level0 col2">Task type</th>
+      <th class="col_heading level0 col3">Description</th>
+      <th class="col_heading level0 col4">Size</th>
+      <th class="col_heading level0 col5">Metrics</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td id="T_f2da8_row0_col0" class="data row0 col0">CoLA</td>
+      <td id="T_f2da8_row0_col1" class="data row0 col1">Corpus of Linguistic Acceptability</td>
+      <td id="T_f2da8_row0_col2" class="data row0 col2">Single-Sentence Task</td>
+      <td id="T_f2da8_row0_col3" class="data row0 col3">Predict whether a sequence is a grammatical English sentence</td>
+      <td id="T_f2da8_row0_col4" class="data row0 col4">8.5k</td>
+      <td id="T_f2da8_row0_col5" class="data row0 col5">Matthews corr.</td>
+    </tr>
+    <tr>
+      <td id="T_f2da8_row1_col0" class="data row1 col0">SST-2</td>
+      <td id="T_f2da8_row1_col1" class="data row1 col1">Stanford Sentiment Treebank</td>
+      <td id="T_f2da8_row1_col2" class="data row1 col2">Single-Sentence Task</td>
+      <td id="T_f2da8_row1_col3" class="data row1 col3">Predict the sentiment of a given sentence</td>
+      <td id="T_f2da8_row1_col4" class="data row1 col4">67k</td>
+      <td id="T_f2da8_row1_col5" class="data row1 col5">Accuracy</td>
+    </tr>
+    <tr>
+      <td id="T_f2da8_row2_col0" class="data row2 col0">MRPC</td>
+      <td id="T_f2da8_row2_col1" class="data row2 col1">Microsoft Research Paraphrase Corpus</td>
+      <td id="T_f2da8_row2_col2" class="data row2 col2">Similarity and Paraphrase Tasks</td>
+      <td id="T_f2da8_row2_col3" class="data row2 col3">Predict whether two sentences are semantically equivalent</td>
+      <td id="T_f2da8_row2_col4" class="data row2 col4">3.7k</td>
+      <td id="T_f2da8_row2_col5" class="data row2 col5">F1/Accuracy</td>
+    </tr>
+    <tr>
+      <td id="T_f2da8_row3_col0" class="data row3 col0">SST-B</td>
+      <td id="T_f2da8_row3_col1" class="data row3 col1">Semantic Textual Similarity Benchmark</td>
+      <td id="T_f2da8_row3_col2" class="data row3 col2">Similarity and Paraphrase Tasks</td>
+      <td id="T_f2da8_row3_col3" class="data row3 col3">Predict the similarity score for two sentences on a scale from 1 to 5</td>
+      <td id="T_f2da8_row3_col4" class="data row3 col4">7k</td>
+      <td id="T_f2da8_row3_col5" class="data row3 col5">Pearson/Spearman corr.</td>
+    </tr>
+    <tr>
+      <td id="T_f2da8_row4_col0" class="data row4 col0">QQP</td>
+      <td id="T_f2da8_row4_col1" class="data row4 col1">Quora question pair</td>
+      <td id="T_f2da8_row4_col2" class="data row4 col2">Similarity and Paraphrase Tasks</td>
+      <td id="T_f2da8_row4_col3" class="data row4 col3">Predict if two questions are a paraphrase of one another</td>
+      <td id="T_f2da8_row4_col4" class="data row4 col4">364k</td>
+      <td id="T_f2da8_row4_col5" class="data row4 col5">F1/Accuracy</td>
+    </tr>
+    <tr>
+      <td id="T_f2da8_row5_col0" class="data row5 col0">MNLI</td>
+      <td id="T_f2da8_row5_col1" class="data row5 col1">Mulit-Genre Natural Language Inference</td>
+      <td id="T_f2da8_row5_col2" class="data row5 col2">Inference Tasks</td>
+      <td id="T_f2da8_row5_col3" class="data row5 col3">Predict whether the premise entails, contradicts or is neutral to the hypothesis</td>
+      <td id="T_f2da8_row5_col4" class="data row5 col4">393k</td>
+      <td id="T_f2da8_row5_col5" class="data row5 col5">Accuracy</td>
+    </tr>
+    <tr>
+      <td id="T_f2da8_row6_col0" class="data row6 col0">QNLI</td>
+      <td id="T_f2da8_row6_col1" class="data row6 col1">Stanford Question Answering Dataset</td>
+      <td id="T_f2da8_row6_col2" class="data row6 col2">Inference Tasks</td>
+      <td id="T_f2da8_row6_col3" class="data row6 col3">Predict whether the context sentence contains the answer to the question</td>
+      <td id="T_f2da8_row6_col4" class="data row6 col4">105k</td>
+      <td id="T_f2da8_row6_col5" class="data row6 col5">Accuracy</td>
+    </tr>
+    <tr>
+      <td id="T_f2da8_row7_col0" class="data row7 col0">RTE</td>
+      <td id="T_f2da8_row7_col1" class="data row7 col1">Recognize Textual Entailment</td>
+      <td id="T_f2da8_row7_col2" class="data row7 col2">Inference Tasks</td>
+      <td id="T_f2da8_row7_col3" class="data row7 col3">Predict whether one sentece entails another</td>
+      <td id="T_f2da8_row7_col4" class="data row7 col4">2.5k</td>
+      <td id="T_f2da8_row7_col5" class="data row7 col5">Accuracy</td>
+    </tr>
+    <tr>
+      <td id="T_f2da8_row8_col0" class="data row8 col0">WNLI</td>
+      <td id="T_f2da8_row8_col1" class="data row8 col1">Winograd Schema Challenge</td>
+      <td id="T_f2da8_row8_col2" class="data row8 col2">Inference Tasks</td>
+      <td id="T_f2da8_row8_col3" class="data row8 col3">Predict if the sentence with the pronoun substituted is entailed by the original sentence</td>
+      <td id="T_f2da8_row8_col4" class="data row8 col4">634</td>
+      <td id="T_f2da8_row8_col5" class="data row8 col5">Accuracy</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+</section>
+<section id="define-the-task-and-hyperparmeters" class="level2">
+<h2 class="anchored" data-anchor-id="define-the-task-and-hyperparmeters">Define the task and hyperparmeters</h2>
+<p>We’ll use the “distilroberta-base” checkpoint for this example, but if you want to try an architecture that returns <code>token_type_ids</code> for example, you can use something like bert-cased.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>task <span class="op">=</span> <span class="st">'mrpc'</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>task_meta <span class="op">=</span> glue_tasks[task]</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>train_ds_name <span class="op">=</span> task_meta[<span class="st">'dataset_names'</span>][<span class="st">"train"</span>]</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>valid_ds_name <span class="op">=</span> task_meta[<span class="st">'dataset_names'</span>][<span class="st">"valid"</span>]</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>test_ds_name <span class="op">=</span> task_meta[<span class="st">'dataset_names'</span>][<span class="st">"test"</span>]</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>task_inputs <span class="op">=</span>  task_meta[<span class="st">'inputs'</span>]</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>task_target <span class="op">=</span>  task_meta[<span class="st">'target'</span>]</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>task_metrics <span class="op">=</span> task_meta[<span class="st">'metric_funcs'</span>]</span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>pretrained_model_name <span class="op">=</span> <span class="st">"distilroberta-base"</span> <span class="co"># bert-base-cased | distilroberta-base</span></span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>bsz <span class="op">=</span> <span class="dv">16</span></span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>val_bsz <span class="op">=</span> bsz <span class="op">*</span><span class="dv">2</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="raw-data" class="level2">
+<h2 class="anchored" data-anchor-id="raw-data">Raw data</h2>
+<p>Let’s start by building our <code>DataBlock</code>. We’ll load the MRPC datset from huggingface’s <code>datasets</code> library which will be cached after downloading via the <code>load_dataset</code> method. For more information on the <code>datasets</code> API, see the documentation here.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>raw_datasets <span class="op">=</span> load_dataset(<span class="st">'glue'</span>, task) </span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f'</span><span class="sc">{</span>raw_datasets<span class="sc">}</span><span class="ch">\n</span><span class="ss">'</span>)</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f'</span><span class="sc">{</span>raw_datasets[train_ds_name][<span class="dv">0</span>]<span class="sc">}</span><span class="ch">\n</span><span class="ss">'</span>)</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f'</span><span class="sc">{</span>raw_datasets[train_ds_name]<span class="sc">.</span>features<span class="sc">}</span><span class="ch">\n</span><span class="ss">'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Reusing dataset glue (/home/wgilliam/.cache/huggingface/datasets/glue/mrpc/1.0.0/dacbe3125aa31d7f70367a07a8a9e72a5a0bfeb5fc42e75c9db75b96da6053ad)</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<script type="application/vnd.jupyter.widget-view+json">
+{"model_id":"64c568f5538d45669a9a5949d1ca2271","version_major":2,"version_minor":0}
+</script>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>DatasetDict({
+    train: Dataset({
+        features: ['idx', 'label', 'sentence1', 'sentence2'],
+        num_rows: 3668
+    })
+    validation: Dataset({
+        features: ['idx', 'label', 'sentence1', 'sentence2'],
+        num_rows: 408
+    })
+    test: Dataset({
+        features: ['idx', 'label', 'sentence1', 'sentence2'],
+        num_rows: 1725
+    })
+})
+
+{'idx': 0, 'label': 1, 'sentence1': 'Amrozi accused his brother , whom he called " the witness " , of deliberately distorting his evidence .', 'sentence2': 'Referring to him as only " the witness " , Amrozi accused his brother of deliberately distorting his evidence .'}
+
+{'idx': Value(dtype='int32', id=None), 'label': ClassLabel(num_classes=2, names=['not_equivalent', 'equivalent'], names_file=None, id=None), 'sentence1': Value(dtype='string', id=None), 'sentence2': Value(dtype='string', id=None)}
+</code></pre>
+</div>
+</div>
+</section>
+<section id="prepare-the-hugging-face-objects" class="level2">
+<h2 class="anchored" data-anchor-id="prepare-the-hugging-face-objects">Prepare the Hugging Face objects</h2>
+<p>My #1 answer as to the question, “Why aren’t my transformers training?”, is that you likely don’t have <code>num_labels</code> set correctly. The default for sequence classification tasks is 2, and even though that is what we have here, let’s show how to set this either way.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>n_lbls <span class="op">=</span> raw_datasets[train_ds_name].features[task_target].num_classes</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>n_lbls</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>2</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>model_cls <span class="op">=</span> AutoModelForSequenceClassification</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>hf_arch, hf_config, hf_tokenizer, hf_model <span class="op">=</span> get_hf_objects(pretrained_model_name, </span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>                                                                  model_cls<span class="op">=</span>model_cls, </span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>                                                                  config_kwargs<span class="op">=</span>{<span class="st">'num_labels'</span>: n_lbls})</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(hf_arch)</span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="bu">type</span>(hf_config))</span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="bu">type</span>(hf_tokenizer))</span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="bu">type</span>(hf_model))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>roberta
+&lt;class 'transformers.models.roberta.configuration_roberta.RobertaConfig'&gt;
+&lt;class 'transformers.models.roberta.tokenization_roberta_fast.RobertaTokenizerFast'&gt;
+&lt;class 'transformers.models.roberta.modeling_roberta.RobertaForSequenceClassification'&gt;</code></pre>
+</div>
+</div>
+</section>
+<section id="build-the-tokenized-datasets" class="level2">
+<h2 class="anchored" data-anchor-id="build-the-tokenized-datasets">Build the tokenized datasets</h2>
+<p>Tokenize (and numericalize) the raw text using the <code>datasets.map</code> function, and then remove unnecessary and/or problematic attributes from the resulting tokenized dataset (e.g., things like strings that can’t be converted to a tensor)</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> tokenize_function(example):</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> hf_tokenizer(<span class="op">*</span>[example[inp] <span class="cf">for</span> inp <span class="kw">in</span> task_inputs ], truncation<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>tokenized_datasets <span class="op">=</span> raw_datasets.<span class="bu">map</span>(tokenize_function, batched<span class="op">=</span><span class="va">True</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<script type="application/vnd.jupyter.widget-view+json">
+{"model_id":"59c56daa1ccf47f1b690abf35fa85bbc","version_major":2,"version_minor":0}
+</script>
+</div>
+<div class="cell-output cell-output-display">
+<script type="application/vnd.jupyter.widget-view+json">
+{"model_id":"c4c94439d3e74c3098abc5e95ccc0f89","version_major":2,"version_minor":0}
+</script>
+</div>
+<div class="cell-output cell-output-display">
+<script type="application/vnd.jupyter.widget-view+json">
+{"model_id":"76aa2d7963fa4c12bd2b350ddd2f55b8","version_major":2,"version_minor":0}
+</script>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>tokenized_datasets <span class="op">=</span> tokenized_datasets.remove_columns(task_inputs <span class="op">+</span> [<span class="st">'idx'</span>])</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>tokenized_datasets <span class="op">=</span> tokenized_datasets.rename_column(<span class="st">'label'</span>, <span class="st">'labels'</span>)</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>tokenized_datasets[<span class="st">"train"</span>].column_names</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>['attention_mask', 'input_ids', 'labels']</code></pre>
+</div>
+</div>
+</section>
+<section id="using-pytorch-dataloaders" class="level2">
+<h2 class="anchored" data-anchor-id="using-pytorch-dataloaders">1. Using PyTorch DataLoaders</h2>
+<section id="build-the-dataloaders" class="level3">
+<h3 class="anchored" data-anchor-id="build-the-dataloaders">Build the DataLoaders</h3>
+<p><code>BlurrBatchCreator</code> augments the default <code>DataCollatorWithPadding</code> method to return a tuple of inputs/targets. As huggingface returns a <code>BatchEncoding</code> object after the call to <code>DataCollatorWithPadding</code>, this class will convert it to a <code>dict</code> so that fastai can put the batches on the correct device for training</p>
+<p>Build the plain ol’ PyTorch <code>DataLoaders</code></p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>data_collator <span class="op">=</span> TextBatchCreator(hf_arch, hf_config, hf_tokenizer, hf_model)</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>train_dataloader <span class="op">=</span> torch.utils.data.DataLoader(tokenized_datasets[train_ds_name], shuffle<span class="op">=</span><span class="va">True</span>, batch_size<span class="op">=</span>bsz, </span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>                                               collate_fn<span class="op">=</span>data_collator)</span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>eval_dataloader <span class="op">=</span> torch.utils.data.DataLoader(tokenized_datasets[valid_ds_name], batch_size<span class="op">=</span>val_bsz, </span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>                                              collate_fn<span class="op">=</span>data_collator)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>dls <span class="op">=</span> DataLoaders(train_dataloader, eval_dataloader)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> b <span class="kw">in</span> dls.train: <span class="cf">break</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>b[<span class="dv">0</span>][<span class="st">'input_ids'</span>].shape, b[<span class="dv">1</span>].shape, b[<span class="dv">0</span>][<span class="st">'input_ids'</span>].device, b[<span class="dv">1</span>].device</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>(torch.Size([16, 72]),
+ torch.Size([16]),
+ device(type='cpu'),
+ device(type='cpu'))</code></pre>
+</div>
+</div>
+</section>
+<section id="train" class="level3">
+<h3 class="anchored" data-anchor-id="train">Train</h3>
+<p>With our plain ol’ PyTorch DataLoaders built, we can now build our <code>Learner</code> and train.</p>
+<p><strong>Note</strong>: Certain fastai methods like <code>dls.one_batch</code>, <code>get_preds</code> and <code>dls.test_dl</code> won’t work with standard PyTorch DataLoaders … but we’ll show how to remedy that in a moment :)</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>model <span class="op">=</span> BaseModelWrapper(hf_model)</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>learn <span class="op">=</span> Learner(dls, </span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>                model,</span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>                opt_func<span class="op">=</span>partial(Adam),</span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>                loss_func<span class="op">=</span>PreCalculatedCrossEntropyLoss(),</span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a>                metrics<span class="op">=</span>task_metrics,</span>
+<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a>                cbs<span class="op">=</span>[BaseModelCallback],</span>
+<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a>                splitter<span class="op">=</span>blurr_splitter).to_fp16()</span>
+<span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-11"><a href="#cb17-11" aria-hidden="true" tabindex="-1"></a>learn.freeze()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>learn.summary()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>learn.lr_find(suggest_funcs<span class="op">=</span>[minimum, steep, valley, slide])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+
+</div>
+<div class="cell-output cell-output-display">
+<pre><code>SuggestedLRs(minimum=0.00036307806149125097, steep=0.015848932787775993, valley=0.0006918309954926372, slide=0.001737800776027143)</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<p><img src="99c_text-examples-glue-plain-pytorch_files/figure-html/cell-17-output-3.png" class="img-fluid"></p>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>learn.fit_one_cycle(<span class="dv">1</span>, lr_max<span class="op">=</span><span class="fl">2e-3</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+
+<table class="dataframe table table-sm table-striped">
+  <thead>
+    <tr>
+      <th>epoch</th>
+      <th>train_loss</th>
+      <th>valid_loss</th>
+      <th>f1_score</th>
+      <th>accuracy</th>
+      <th>time</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>0</td>
+      <td>0.532319</td>
+      <td>0.480080</td>
+      <td>0.843450</td>
+      <td>0.759804</td>
+      <td>00:10</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>learn.unfreeze()</span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>learn.lr_find(start_lr<span class="op">=</span><span class="fl">1e-12</span>, end_lr<span class="op">=</span><span class="fl">2e-3</span>, suggest_funcs<span class="op">=</span>[minimum, steep, valley, slide])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+
+</div>
+<div class="cell-output cell-output-display">
+<pre><code>SuggestedLRs(minimum=1.3779609397968073e-11, steep=8.513399187004556e-12, valley=4.234914013068192e-05, slide=2.2274794901022688e-05)</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<p><img src="99c_text-examples-glue-plain-pytorch_files/figure-html/cell-19-output-3.png" class="img-fluid"></p>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>learn.fit_one_cycle(<span class="dv">2</span>, lr_max<span class="op">=</span><span class="bu">slice</span>(<span class="fl">2e-5</span>, <span class="fl">2e-4</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+
+<table class="dataframe table table-sm table-striped">
+  <thead>
+    <tr>
+      <th>epoch</th>
+      <th>train_loss</th>
+      <th>valid_loss</th>
+      <th>f1_score</th>
+      <th>accuracy</th>
+      <th>time</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>0</td>
+      <td>0.467265</td>
+      <td>0.358624</td>
+      <td>0.889643</td>
+      <td>0.840686</td>
+      <td>00:19</td>
+    </tr>
+    <tr>
+      <td>1</td>
+      <td>0.279453</td>
+      <td>0.335163</td>
+      <td>0.910321</td>
+      <td>0.870098</td>
+      <td>00:19</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+</section>
+<section id="evaluate" class="level3">
+<h3 class="anchored" data-anchor-id="evaluate">Evaluate</h3>
+<p>How did we do?</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>val_res <span class="op">=</span> learn.validate()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>val_res_d <span class="op">=</span> { <span class="st">'loss'</span>: val_res[<span class="dv">0</span>]}</span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> idx, m <span class="kw">in</span> <span class="bu">enumerate</span>(learn.metrics): val_res_d[m.name] <span class="op">=</span> val_res[idx<span class="op">+</span><span class="dv">1</span>]</span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a>val_res_d</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>{'loss': 0.33516255021095276,
+ 'f1_score': 0.9103214890016922,
+ 'accuracy': 0.8700980544090271}</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="co"># preds, targs = learn.get_preds()  # ... won't work :(</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="inference" class="level3">
+<h3 class="anchored" data-anchor-id="inference">Inference</h3>
+<p>Let’s do <strong>item inference</strong> on an example from our test dataset</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>raw_test_df <span class="op">=</span> raw_datasets[test_ds_name].to_pandas()</span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>raw_test_df.head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+
+<div>
+
+<table class="dataframe table table-sm table-striped">
+  <thead>
+    <tr>
+      <th></th>
+      <th>idx</th>
+      <th>label</th>
+      <th>sentence1</th>
+      <th>sentence2</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>0</td>
+      <td>1</td>
+      <td>PCCW 's chief operating officer , Mike Butcher , and Alex Arena , the chief financial officer , will report directly to Mr So .</td>
+      <td>Current Chief Operating Officer Mike Butcher and Group Chief Financial Officer Alex Arena will report to So .</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>1</td>
+      <td>1</td>
+      <td>The world 's two largest automakers said their U.S. sales declined more than predicted last month as a late summer sales frenzy caused more of an industry backlash than expected .</td>
+      <td>Domestic sales at both GM and No. 2 Ford Motor Co. declined more than predicted as a late summer sales frenzy prompted a larger-than-expected industry backlash .</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>2</td>
+      <td>1</td>
+      <td>According to the federal Centers for Disease Control and Prevention ( news - web sites ) , there were 19 reported cases of measles in the United States in 2002 .</td>
+      <td>The Centers for Disease Control and Prevention said there were 19 reported cases of measles in the United States in 2002 .</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>3</td>
+      <td>0</td>
+      <td>A tropical storm rapidly developed in the Gulf of Mexico Sunday and was expected to hit somewhere along the Texas or Louisiana coasts by Monday night .</td>
+      <td>A tropical storm rapidly developed in the Gulf of Mexico on Sunday and could have hurricane-force winds when it hits land somewhere along the Louisiana coast Monday night .</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>4</td>
+      <td>0</td>
+      <td>The company didn 't detail the costs of the replacement and repairs .</td>
+      <td>But company officials expect the costs of the replacement work to run into the millions of dollars .</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a>test_ex_idx <span class="op">=</span> <span class="dv">0</span></span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a>test_ex <span class="op">=</span> raw_test_df.iloc[test_ex_idx][task_inputs].values.tolist()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>inputs <span class="op">=</span> hf_tokenizer(<span class="op">*</span>test_ex, return_tensors<span class="op">=</span><span class="st">"pt"</span>).to(<span class="st">'cuda:1'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a>outputs <span class="op">=</span> hf_model(<span class="op">**</span>inputs)</span>
+<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a>outputs.logits</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>tensor([[-1.6640,  1.0325]], device='cuda:1', grad_fn=&lt;AddmmBackward0&gt;)</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a>torch.argmax(torch.softmax(outputs.logits, dim<span class="op">=-</span><span class="dv">1</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>tensor(1, device='cuda:1')</code></pre>
+</div>
+</div>
+<p>Let’s do <strong>batch inference</strong> on the entire test dataset</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="co"># test_dl = dls.test_dl(tokenized_datasets[test_ds_name]) # ... won't work :(</span></span>
+<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a>test_dataloader <span class="op">=</span> torch.utils.data.DataLoader(tokenized_datasets[test_ds_name], </span>
+<span id="cb36-4"><a href="#cb36-4" aria-hidden="true" tabindex="-1"></a>                                              shuffle<span class="op">=</span><span class="va">False</span>, batch_size<span class="op">=</span>val_bsz, </span>
+<span id="cb36-5"><a href="#cb36-5" aria-hidden="true" tabindex="-1"></a>                                              collate_fn<span class="op">=</span>data_collator)</span>
+<span id="cb36-6"><a href="#cb36-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-7"><a href="#cb36-7" aria-hidden="true" tabindex="-1"></a>hf_model.<span class="bu">eval</span>()</span>
+<span id="cb36-8"><a href="#cb36-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-9"><a href="#cb36-9" aria-hidden="true" tabindex="-1"></a>probs, preds <span class="op">=</span> [], []</span>
+<span id="cb36-10"><a href="#cb36-10" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> xb,yb <span class="kw">in</span> test_dataloader: </span>
+<span id="cb36-11"><a href="#cb36-11" aria-hidden="true" tabindex="-1"></a>    xb <span class="op">=</span> to_device(xb,<span class="st">'cuda'</span>)</span>
+<span id="cb36-12"><a href="#cb36-12" aria-hidden="true" tabindex="-1"></a>    <span class="cf">with</span> torch.no_grad(): </span>
+<span id="cb36-13"><a href="#cb36-13" aria-hidden="true" tabindex="-1"></a>        outputs <span class="op">=</span> hf_model(<span class="op">**</span>xb)</span>
+<span id="cb36-14"><a href="#cb36-14" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb36-15"><a href="#cb36-15" aria-hidden="true" tabindex="-1"></a>    logits <span class="op">=</span> outputs.logits</span>
+<span id="cb36-16"><a href="#cb36-16" aria-hidden="true" tabindex="-1"></a>    predictions <span class="op">=</span> torch.argmax(logits, dim<span class="op">=-</span><span class="dv">1</span>)</span>
+<span id="cb36-17"><a href="#cb36-17" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb36-18"><a href="#cb36-18" aria-hidden="true" tabindex="-1"></a>    probs.append(logits)</span>
+<span id="cb36-19"><a href="#cb36-19" aria-hidden="true" tabindex="-1"></a>    preds.append(predictions)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a>all_probs <span class="op">=</span> torch.cat(probs, dim<span class="op">=</span><span class="dv">0</span>)</span>
+<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a>all_preds <span class="op">=</span> torch.cat(preds, dim<span class="op">=</span><span class="dv">0</span>)</span>
+<span id="cb37-3"><a href="#cb37-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb37-4"><a href="#cb37-4" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(all_probs.shape, all_preds.shape)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>torch.Size([1725, 2]) torch.Size([1725])</code></pre>
+</div>
+</div>
+</section>
+</section>
+<section id="using-fastai-dataloaders" class="level2">
+<h2 class="anchored" data-anchor-id="using-fastai-dataloaders">2. Using fastai DataLoaders</h2>
+<p>Let’s start with a fresh set of huggingface objects</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb39"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a>hf_arch, hf_config, hf_tokenizer, hf_model <span class="op">=</span> get_hf_objects(pretrained_model_name, </span>
+<span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a>                                                                  model_cls<span class="op">=</span>model_cls, </span>
+<span id="cb39-3"><a href="#cb39-3" aria-hidden="true" tabindex="-1"></a>                                                                  config_kwargs<span class="op">=</span>{<span class="st">'num_labels'</span>: n_lbls})</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>… <strong><em>and the fix is this simple!</em></strong> Instead of using the PyTorch Dataloaders, let’s use the fastai flavor like this …</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb40"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a>train_dataloader <span class="op">=</span> TextDataLoader(tokenized_datasets[train_ds_name], </span>
+<span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a>                                   hf_arch, hf_config, hf_tokenizer, hf_model,</span>
+<span id="cb40-3"><a href="#cb40-3" aria-hidden="true" tabindex="-1"></a>                                   preproccesing_func<span class="op">=</span>preproc_hf_dataset, shuffle<span class="op">=</span><span class="va">True</span>, batch_size<span class="op">=</span>bsz)</span>
+<span id="cb40-4"><a href="#cb40-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-5"><a href="#cb40-5" aria-hidden="true" tabindex="-1"></a>eval_dataloader <span class="op">=</span> TextDataLoader(tokenized_datasets[valid_ds_name],</span>
+<span id="cb40-6"><a href="#cb40-6" aria-hidden="true" tabindex="-1"></a>                                  hf_arch, hf_config, hf_tokenizer, hf_model,</span>
+<span id="cb40-7"><a href="#cb40-7" aria-hidden="true" tabindex="-1"></a>                                  preproccesing_func<span class="op">=</span>preproc_hf_dataset, batch_size<span class="op">=</span>val_bsz)</span>
+<span id="cb40-8"><a href="#cb40-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-9"><a href="#cb40-9" aria-hidden="true" tabindex="-1"></a>dls <span class="op">=</span> DataLoaders(train_dataloader, eval_dataloader)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Everything else is the same … <strong><em>but</em></strong> now we get both our fast.ai AND Blurr features back!</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb41"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a>dls.show_batch(dataloaders<span class="op">=</span>dls, trunc_at<span class="op">=</span><span class="dv">500</span>, max_n<span class="op">=</span><span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+
+<table class="dataframe table table-sm table-striped">
+  <thead>
+    <tr>
+      <th></th>
+      <th>text</th>
+      <th>target</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>The broader Standard &amp; Poor's 500 Index &lt;.SPX &gt; edged down 9 points, or 0.98 percent, to 921. The Standard &amp; Poor's 500 Index shed 5.20, or 0.6 percent, to 924.42 as of 9 : 33 a.m. in New York.</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>" When I talked to him last time, did I think that was the end-all - one conversation with somebody? When I talked to him last time, did I think it was the end-all?</td>
+      <td>1</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb42"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a>b <span class="op">=</span> dls.one_batch()</span>
+<span id="cb42-2"><a href="#cb42-2" aria-hidden="true" tabindex="-1"></a>b[<span class="dv">0</span>][<span class="st">'input_ids'</span>].shape, b[<span class="dv">1</span>].shape, b[<span class="dv">0</span>][<span class="st">'input_ids'</span>].device, b[<span class="dv">1</span>].device</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>(torch.Size([16, 81]),
+ torch.Size([16]),
+ device(type='cpu'),
+ device(type='cpu'))</code></pre>
+</div>
+</div>
+<section id="train-1" class="level3">
+<h3 class="anchored" data-anchor-id="train-1">Train</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb44"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a>model <span class="op">=</span> BaseModelWrapper(hf_model)</span>
+<span id="cb44-2"><a href="#cb44-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb44-3"><a href="#cb44-3" aria-hidden="true" tabindex="-1"></a>learn <span class="op">=</span> Learner(dls, </span>
+<span id="cb44-4"><a href="#cb44-4" aria-hidden="true" tabindex="-1"></a>                model,</span>
+<span id="cb44-5"><a href="#cb44-5" aria-hidden="true" tabindex="-1"></a>                opt_func<span class="op">=</span>partial(Adam),</span>
+<span id="cb44-6"><a href="#cb44-6" aria-hidden="true" tabindex="-1"></a>                loss_func<span class="op">=</span>PreCalculatedCrossEntropyLoss(),</span>
+<span id="cb44-7"><a href="#cb44-7" aria-hidden="true" tabindex="-1"></a>                metrics<span class="op">=</span>task_metrics,</span>
+<span id="cb44-8"><a href="#cb44-8" aria-hidden="true" tabindex="-1"></a>                cbs<span class="op">=</span>[BaseModelCallback],</span>
+<span id="cb44-9"><a href="#cb44-9" aria-hidden="true" tabindex="-1"></a>                splitter<span class="op">=</span>blurr_splitter).to_fp16()</span>
+<span id="cb44-10"><a href="#cb44-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb44-11"><a href="#cb44-11" aria-hidden="true" tabindex="-1"></a>learn.freeze()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb45"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a>learn.lr_find(suggest_funcs<span class="op">=</span>[minimum, steep, valley, slide])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+
+</div>
+<div class="cell-output cell-output-display">
+<pre><code>SuggestedLRs(minimum=0.0007585775572806596, steep=0.0063095735386013985, valley=0.0004786300996784121, slide=0.0003981071640737355)</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<p><img src="99c_text-examples-glue-plain-pytorch_files/figure-html/cell-36-output-3.png" class="img-fluid"></p>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb47"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a>learn.fit_one_cycle(<span class="dv">1</span>, lr_max<span class="op">=</span><span class="fl">2e-3</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+
+<table class="dataframe table table-sm table-striped">
+  <thead>
+    <tr>
+      <th>epoch</th>
+      <th>train_loss</th>
+      <th>valid_loss</th>
+      <th>f1_score</th>
+      <th>accuracy</th>
+      <th>time</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>0</td>
+      <td>0.531747</td>
+      <td>0.474415</td>
+      <td>0.855738</td>
+      <td>0.784314</td>
+      <td>00:12</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb48"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a>learn.unfreeze()</span>
+<span id="cb48-2"><a href="#cb48-2" aria-hidden="true" tabindex="-1"></a>learn.lr_find(start_lr<span class="op">=</span><span class="fl">1e-12</span>, end_lr<span class="op">=</span><span class="fl">2e-3</span>, suggest_funcs<span class="op">=</span>[minimum, steep, valley, slide])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+
+</div>
+<div class="cell-output cell-output-display">
+<pre><code>SuggestedLRs(minimum=1.6185790555067748e-12, steep=1.3065426344993636e-11, valley=7.238505190798605e-07, slide=1.451419939257903e-05)</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<p><img src="99c_text-examples-glue-plain-pytorch_files/figure-html/cell-38-output-3.png" class="img-fluid"></p>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb50"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true" tabindex="-1"></a>learn.fit_one_cycle(<span class="dv">2</span>, lr_max<span class="op">=</span><span class="bu">slice</span>(<span class="fl">2e-5</span>, <span class="fl">2e-4</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+
+<table class="dataframe table table-sm table-striped">
+  <thead>
+    <tr>
+      <th>epoch</th>
+      <th>train_loss</th>
+      <th>valid_loss</th>
+      <th>f1_score</th>
+      <th>accuracy</th>
+      <th>time</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>0</td>
+      <td>0.461239</td>
+      <td>0.342700</td>
+      <td>0.887299</td>
+      <td>0.845588</td>
+      <td>00:20</td>
+    </tr>
+    <tr>
+      <td>1</td>
+      <td>0.274237</td>
+      <td>0.305770</td>
+      <td>0.897527</td>
+      <td>0.857843</td>
+      <td>00:20</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb51"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb51-1"><a href="#cb51-1" aria-hidden="true" tabindex="-1"></a>learn.show_results(learner<span class="op">=</span>learn, trunc_at<span class="op">=</span><span class="dv">500</span>, max_n<span class="op">=</span><span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+
+</div>
+<div class="cell-output cell-output-display">
+
+<table class="dataframe table table-sm table-striped">
+  <thead>
+    <tr>
+      <th></th>
+      <th>text</th>
+      <th>target</th>
+      <th>prediction</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>The state's House delegation currently consists of 17 Democrats and 15 Republicans. Democrats hold a 17-15 edge in the state's U.S. House delegation.</td>
+      <td>1</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>The announcement was made during the recording of a Christmas concert attended by top Vatican cardinals, bishops, and many elite from Italian society, witnesses said. The broadside came during the recording on Saturday night of a Christmas concert attended by top Vatican cardinals, bishops and many elite of Italian society, witnesses said.</td>
+      <td>1</td>
+      <td>1</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+</section>
+<section id="evaluate-1" class="level3">
+<h3 class="anchored" data-anchor-id="evaluate-1">Evaluate</h3>
+<p>How did we do?</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb52"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb52-1"><a href="#cb52-1" aria-hidden="true" tabindex="-1"></a>val_res <span class="op">=</span> learn.validate()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb53"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb53-1"><a href="#cb53-1" aria-hidden="true" tabindex="-1"></a>val_res_d <span class="op">=</span> { <span class="st">'loss'</span>: val_res[<span class="dv">0</span>]}</span>
+<span id="cb53-2"><a href="#cb53-2" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> idx, m <span class="kw">in</span> <span class="bu">enumerate</span>(learn.metrics): val_res_d[m.name] <span class="op">=</span> val_res[idx<span class="op">+</span><span class="dv">1</span>]</span>
+<span id="cb53-3"><a href="#cb53-3" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb53-4"><a href="#cb53-4" aria-hidden="true" tabindex="-1"></a>val_res_d</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>{'loss': 0.30576950311660767,
+ 'f1_score': 0.8975265017667844,
+ 'accuracy': 0.8578431606292725}</code></pre>
+</div>
+</div>
+<p>Now we can use <code>Learner.get_preds()</code></p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb55"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb55-1"><a href="#cb55-1" aria-hidden="true" tabindex="-1"></a>preds, targs <span class="op">=</span> learn.get_preds()</span>
+<span id="cb55-2"><a href="#cb55-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(preds.shape, targs.shape)</span>
+<span id="cb55-3"><a href="#cb55-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(accuracy(preds, targs))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>torch.Size([408, 2]) torch.Size([408])
+TensorBase(0.8578)</code></pre>
+</div>
+</div>
+</section>
+<section id="inference-1" class="level3">
+<h3 class="anchored" data-anchor-id="inference-1">Inference</h3>
+<p>Let’s do <strong>item inference</strong> on an example from our test dataset</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb57"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb57-1"><a href="#cb57-1" aria-hidden="true" tabindex="-1"></a>raw_test_df <span class="op">=</span> raw_datasets[test_ds_name].to_pandas()</span>
+<span id="cb57-2"><a href="#cb57-2" aria-hidden="true" tabindex="-1"></a>raw_test_df.head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+
+<div>
+
+<table class="dataframe table table-sm table-striped">
+  <thead>
+    <tr>
+      <th></th>
+      <th>idx</th>
+      <th>label</th>
+      <th>sentence1</th>
+      <th>sentence2</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>0</td>
+      <td>1</td>
+      <td>PCCW 's chief operating officer , Mike Butcher , and Alex Arena , the chief financial officer , will report directly to Mr So .</td>
+      <td>Current Chief Operating Officer Mike Butcher and Group Chief Financial Officer Alex Arena will report to So .</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>1</td>
+      <td>1</td>
+      <td>The world 's two largest automakers said their U.S. sales declined more than predicted last month as a late summer sales frenzy caused more of an industry backlash than expected .</td>
+      <td>Domestic sales at both GM and No. 2 Ford Motor Co. declined more than predicted as a late summer sales frenzy prompted a larger-than-expected industry backlash .</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>2</td>
+      <td>1</td>
+      <td>According to the federal Centers for Disease Control and Prevention ( news - web sites ) , there were 19 reported cases of measles in the United States in 2002 .</td>
+      <td>The Centers for Disease Control and Prevention said there were 19 reported cases of measles in the United States in 2002 .</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>3</td>
+      <td>0</td>
+      <td>A tropical storm rapidly developed in the Gulf of Mexico Sunday and was expected to hit somewhere along the Texas or Louisiana coasts by Monday night .</td>
+      <td>A tropical storm rapidly developed in the Gulf of Mexico on Sunday and could have hurricane-force winds when it hits land somewhere along the Louisiana coast Monday night .</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>4</td>
+      <td>0</td>
+      <td>The company didn 't detail the costs of the replacement and repairs .</td>
+      <td>But company officials expect the costs of the replacement work to run into the millions of dollars .</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb58"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb58-1"><a href="#cb58-1" aria-hidden="true" tabindex="-1"></a>test_ex_idx <span class="op">=</span> <span class="dv">0</span></span>
+<span id="cb58-2"><a href="#cb58-2" aria-hidden="true" tabindex="-1"></a>test_ex <span class="op">=</span> raw_test_df.iloc[test_ex_idx][task_inputs].values.tolist()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb59"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb59-1"><a href="#cb59-1" aria-hidden="true" tabindex="-1"></a>inputs <span class="op">=</span> hf_tokenizer(<span class="op">*</span>test_ex, return_tensors<span class="op">=</span><span class="st">"pt"</span>).to(<span class="st">'cuda:1'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb60"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb60-1"><a href="#cb60-1" aria-hidden="true" tabindex="-1"></a>outputs <span class="op">=</span> hf_model(<span class="op">**</span>inputs)</span>
+<span id="cb60-2"><a href="#cb60-2" aria-hidden="true" tabindex="-1"></a>outputs.logits</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>tensor([[-1.8848,  2.3550]], device='cuda:1', grad_fn=&lt;AddmmBackward0&gt;)</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb62"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb62-1"><a href="#cb62-1" aria-hidden="true" tabindex="-1"></a>torch.argmax(torch.softmax(outputs.logits, dim<span class="op">=-</span><span class="dv">1</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>tensor(1, device='cuda:1')</code></pre>
+</div>
+</div>
+<p>Let’s do <strong>batch inference</strong> on the entire test dataset using <code>dls.test_dl</code></p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb64"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb64-1"><a href="#cb64-1" aria-hidden="true" tabindex="-1"></a>test_dl <span class="op">=</span> dls.test_dl(tokenized_datasets[test_ds_name])</span>
+<span id="cb64-2"><a href="#cb64-2" aria-hidden="true" tabindex="-1"></a>preds <span class="op">=</span> learn.get_preds(dl<span class="op">=</span>test_dl)</span>
+<span id="cb64-3"><a href="#cb64-3" aria-hidden="true" tabindex="-1"></a>preds</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+
+</div>
+<div class="cell-output cell-output-display">
+<pre><code>(tensor([[0.0142, 0.9858],
+         [0.0965, 0.9035],
+         [0.0098, 0.9902],
+         ...,
+         [0.0504, 0.9496],
+         [0.0096, 0.9904],
+         [0.0355, 0.9645]]),
+ tensor([1, 1, 1,  ..., 0, 1, 1]))</code></pre>
+</div>
+</div>
+</section>
+</section>
+<section id="summary" class="level2">
+<h2 class="anchored" data-anchor-id="summary">Summary</h2>
+<p>So you can see, with one simple swap of the <code>DataLoader</code> objects, you can get back a lot of that nice fastai functionality folks using the mid/high-level APIs have at their disposal. Nevertheless, if you’re hell bent on using the standard PyTorch <code>DataLoaders</code>, you’re still good to go with using the fastai <code>Learner</code>, it’s callbacks, etc…</p>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const disableStylesheet = (stylesheets) => {
+    for (let i=0; i < stylesheets.length; i++) {
+      const stylesheet = stylesheets[i];
+      stylesheet.rel = 'prefetch';
+    }
+  }
+  const enableStylesheet = (stylesheets) => {
+    for (let i=0; i < stylesheets.length; i++) {
+      const stylesheet = stylesheets[i];
+      stylesheet.rel = 'stylesheet';
+    }
+  }
+  const manageTransitions = (selector, allowTransitions) => {
+    const els = window.document.querySelectorAll(selector);
+    for (let i=0; i < els.length; i++) {
+      const el = els[i];
+      if (allowTransitions) {
+        el.classList.remove('notransition');
+      } else {
+        el.classList.add('notransition');
+      }
+    }
+  }
+  const toggleColorMode = (alternate) => {
+    // Switch the stylesheets
+    const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+    manageTransitions('#quarto-margin-sidebar .nav-link', false);
+    if (alternate) {
+      enableStylesheet(alternateStylesheets);
+      for (const sheetNode of alternateStylesheets) {
+        if (sheetNode.id === "quarto-bootstrap") {
+          toggleBodyColorMode(sheetNode);
+        }
+      }
+    } else {
+      disableStylesheet(alternateStylesheets);
+      toggleBodyColorPrimary();
+    }
+    manageTransitions('#quarto-margin-sidebar .nav-link', true);
+    // Switch the toggles
+    const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+    for (let i=0; i < toggles.length; i++) {
+      const toggle = toggles[i];
+      if (toggle) {
+        if (alternate) {
+          toggle.classList.add("alternate");     
+        } else {
+          toggle.classList.remove("alternate");
+        }
+      }
+    }
+    // Hack to workaround the fact that safari doesn't
+    // properly recolor the scrollbar when toggling (#1455)
+    if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+      manageTransitions("body", false);
+      window.scrollTo(0, 1);
+      setTimeout(() => {
+        window.scrollTo(0, 0);
+        manageTransitions("body", true);
+      }, 40);  
+    }
+  }
+  const isFileUrl = () => { 
+    return window.location.protocol === 'file:';
+  }
+  const hasAlternateSentinel = () => {  
+    let styleSentinel = getColorSchemeSentinel();
+    if (styleSentinel !== null) {
+      return styleSentinel === "alternate";
+    } else {
+      return false;
+    }
+  }
+  const setStyleSentinel = (alternate) => {
+    const value = alternate ? "alternate" : "default";
+    if (!isFileUrl()) {
+      window.localStorage.setItem("quarto-color-scheme", value);
+    } else {
+      localAlternateSentinel = value;
+    }
+  }
+  const getColorSchemeSentinel = () => {
+    if (!isFileUrl()) {
+      const storageValue = window.localStorage.getItem("quarto-color-scheme");
+      return storageValue != null ? storageValue : localAlternateSentinel;
+    } else {
+      return localAlternateSentinel;
+    }
+  }
+  let localAlternateSentinel = 'default';
+  // Dark / light mode switch
+  window.quartoToggleColorScheme = () => {
+    // Read the current dark / light value 
+    let toAlternate = !hasAlternateSentinel();
+    toggleColorMode(toAlternate);
+    setStyleSentinel(toAlternate);
+  };
+  // Ensure there is a toggle, if there isn't float one in the top right
+  if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+    const a = window.document.createElement('a');
+    a.classList.add('top-right');
+    a.classList.add('quarto-color-scheme-toggle');
+    a.href = "";
+    a.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+    const i = window.document.createElement("i");
+    i.classList.add('bi');
+    a.appendChild(i);
+    window.document.body.appendChild(a);
+  }
+  // Switch to dark mode if need be
+  if (hasAlternateSentinel()) {
+    toggleColorMode(true);
+  } 
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    target: function(trigger) {
+      return trigger.previousElementSibling;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    setTimeout(function() {
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const cites = ref.parentNode.getAttribute('data-cites').split(' ');
+    tippyHover(ref, function() {
+      var popup = window.document.createElement('div');
+      cites.forEach(function(cite) {
+        var citeDiv = window.document.createElement('div');
+        citeDiv.classList.add('hanging-indent');
+        citeDiv.classList.add('csl-entry');
+        var biblioDiv = window.document.getElementById('ref-' + cite);
+        if (biblioDiv) {
+          citeDiv.innerHTML = biblioDiv.innerHTML;
+        }
+        popup.appendChild(citeDiv);
+      });
+      return popup.innerHTML;
+    });
+  }
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var filterRegex = new RegExp(/https:\/\/ohmeow\.github\.io\/blurr\//);
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+    var links = window.document.querySelectorAll('a:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+          // target, if specified
+          link.setAttribute("target", "_blank");
+      }
+    }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>

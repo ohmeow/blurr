@@ -1,0 +1,2279 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.1.75">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="description" content="The text.modeling.core module contains core custom models, loss functions, and a default layer group splitter for use in applying discriminiative learning rates to your Hugging Face models trained via fastai">
+
+<title>blurr - Modeling</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: 1;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1.6em;
+  vertical-align: middle;
+}
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { color: #008000; } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { color: #008000; font-weight: bold; } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<link href="./favicon.ico" rel="icon">
+<script src="site_libs/quarto-html/quarto.js"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-dark.css" rel="prefetch" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-dark.min.css" rel="prefetch" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit"
+  }
+}</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" integrity="sha512-c3Nl8+7g4LMSTdrm621y7kf9v3SDPnhxLNhcjFJbKECVnmZHTdo+IRO05sNLTH/D3vA6u1X32ehoLC7WFVdheg==" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script>
+<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
+<script src="https://unpkg.com/@jupyter-widgets/html-manager@*/dist/embed-amd.js" crossorigin="anonymous"></script>
+
+
+<link rel="stylesheet" href="styles.css">
+<meta property="og:title" content="blurr - Modeling">
+<meta property="og:description" content="The text.modeling.core module contains core custom models, loss functions, and a default layer group splitter for use in applying discriminiative learning rates to your Hugging Face models trained via fastai">
+<meta property="og:site-name" content="blurr">
+<meta name="twitter:title" content="blurr - Modeling">
+<meta name="twitter:description" content="The text.modeling.core module contains core custom models, loss functions, and a default layer group splitter for use in applying discriminiative learning rates to your Hugging Face models trained via fastai">
+<meta name="twitter:card" content="summary">
+</head>
+
+<body class="nav-sidebar floating nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg navbar-dark ">
+      <div class="navbar-container container-fluid">
+      <a class="navbar-brand" href="./index.html">
+    <span class="navbar-title">blurr</span>
+  </a>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link active" href="./index.html" aria-current="page">Getting Started</a>
+  </li>  
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-resources" role="button" data-bs-toggle="dropdown" aria-expanded="false">Resources</a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-resources">    
+        <li>
+    <a class="dropdown-item" href="https://www.youtube.com/playlist?list=PLD80i8An1OEF8UOb9N9uSoidOGIMKW96t"><i class="bi bi-play-btn-fill" role="img">
+</i> 
+ <span class="dropdown-text">fastai x Hugging Face Study Group</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="https://huggingface.co/course/chapter1/1"><i class="bi bi-journal-bookmark-fill" role="img">
+</i> 
+ <span class="dropdown-text">Hugging Face Course</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="https://docs.fast.ai/"><i class="bi bi-link" role="img">
+</i> 
+ <span class="dropdown-text">fast.ai (docs)</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="https://huggingface.co/docs/transformers/index"><i class="bi bi-link" role="img">
+</i> 
+ <span class="dropdown-text">transformers (docs)</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-help" role="button" data-bs-toggle="dropdown" aria-expanded="false">Help</a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-help">    
+        <li>
+    <a class="dropdown-item" href="https://github.com/ohmeow/blurr/issues"><i class="bi bi-bug" role="img">
+</i> 
+ <span class="dropdown-text">Report an Issue</span></a>
+  </li>  
+    </ul>
+  </li>
+</ul>
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/ohmeow/blurr/"><i class="bi bi-github" role="img">
+</i> 
+ </a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://twitter.com/waydegilliam"><i class="bi bi-twitter" role="img">
+</i> 
+ </a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://www.ohmeow.com/"><i class="bi bi-house" role="img" aria-label="Twitter">
+</i> 
+ </a>
+  </li>  
+</ul>
+              <div class="quarto-toggle-container">
+                  <a href="" class="quarto-color-scheme-toggle nav-link" onclick="window.quartoToggleColorScheme(); return false;" title="Toggle dark mode"><i class="bi"></i></a>
+              </div>
+              <div id="quarto-search" class="" title="Search"></div>
+          </div> <!-- /navcollapse -->
+      </div> <!-- /container-fluid -->
+    </nav>
+  <nav class="quarto-secondary-nav" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+    <div class="container-fluid d-flex justify-content-between">
+      <h1 class="quarto-secondary-nav-title">Modeling</h1>
+      <button type="button" class="quarto-btn-toggle btn" aria-label="Show secondary navigation">
+        <i class="bi bi-chevron-right"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-full page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse sidebar-navigation floating overflow-auto">
+      <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+      </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true">Overview</a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">Getting Started</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./callbacks.html" class="sidebar-item-text sidebar-link">callbacks</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./utils.html" class="sidebar-item-text sidebar-link">utils</a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="true">Text</a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="true">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-expanded="true">Sequence Classification</a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-expanded="true">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth2 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./text.data.core.html" class="sidebar-item-text sidebar-link">Data</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./text.modeling.core.html" class="sidebar-item-text sidebar-link active">Modeling</a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" aria-expanded="false">Token Classification</a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" aria-expanded="false">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./text.data.token_classification.html" class="sidebar-item-text sidebar-link">Data</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./text.modeling.token_classification.html" class="sidebar-item-text sidebar-link">Modeling</a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" aria-expanded="false">Question &amp; Answering</a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" aria-expanded="false">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./text.data.question_answering.html" class="sidebar-item-text sidebar-link">Data</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./text.modeling.question_answering.html" class="sidebar-item-text sidebar-link">Modeling</a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" aria-expanded="false">Language Modeling</a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" aria-expanded="false">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-6" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./text.data.language_modeling.html" class="sidebar-item-text sidebar-link">Data</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./text.modeling.language_modeling.html" class="sidebar-item-text sidebar-link">Modeling</a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" aria-expanded="false">Seq2Seq: Core</a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" aria-expanded="false">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-7" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./text.data.seq2seq.core.html" class="sidebar-item-text sidebar-link">Data</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./text.modeling.seq2seq.core.html" class="sidebar-item-text sidebar-link">Modeling</a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" aria-expanded="false">Seq2Seq: Summarization</a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" aria-expanded="false">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-8" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./text.data.seq2seq.summarization.html" class="sidebar-item-text sidebar-link">Data</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./text.modeling.seq2seq.summarization.html" class="sidebar-item-text sidebar-link">Modeling</a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-9" aria-expanded="false">Seq2Seq: Translation</a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-9" aria-expanded="false">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-9" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./text.data.seq2seq.translation.html" class="sidebar-item-text sidebar-link">Data</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./text.modeling.seq2seq.translation.html" class="sidebar-item-text sidebar-link">Modeling</a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./text.callbacks.html" class="sidebar-item-text sidebar-link">callbacks</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./text.utils.html" class="sidebar-item-text sidebar-link">utils</a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-10" aria-expanded="true">Examples</a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-10" aria-expanded="true">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-10" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./examples.text.high_level_api.html" class="sidebar-item-text sidebar-link">Using the high-level Blurr API</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./examples.text.glue.html" class="sidebar-item-text sidebar-link">GLUE classification tasks</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./examples.text.glue_low_level_api.html" class="sidebar-item-text sidebar-link">Using the Low-level fastai API</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./examples.text.multilabel_classification.html" class="sidebar-item-text sidebar-link">Multi-label classification</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./examples.text.causal_lm_gpt2.html" class="sidebar-item-text sidebar-link">Causal Language Modeling with GPT-2</a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#mid-level-api" id="toc-mid-level-api" class="nav-link active" data-scroll-target="#mid-level-api">Mid-level API</a>
+  <ul>
+  <li><a href="#blurr_splitter" id="toc-blurr_splitter" class="nav-link" data-scroll-target="#blurr_splitter">blurr_splitter</a></li>
+  <li><a href="#basemodelwrapper" id="toc-basemodelwrapper" class="nav-link" data-scroll-target="#basemodelwrapper">BaseModelWrapper</a></li>
+  <li><a href="#basemodelcallback" id="toc-basemodelcallback" class="nav-link" data-scroll-target="#basemodelcallback">BaseModelCallback</a></li>
+  <li><a href="#example" id="toc-example" class="nav-link" data-scroll-target="#example">Example</a>
+  <ul class="collapse">
+  <li><a href="#training" id="toc-training" class="nav-link" data-scroll-target="#training">Training</a></li>
+  <li><a href="#showing-results" id="toc-showing-results" class="nav-link" data-scroll-target="#showing-results">Showing results</a></li>
+  <li><a href="#prediction" id="toc-prediction" class="nav-link" data-scroll-target="#prediction">Prediction</a></li>
+  </ul></li>
+  <li><a href="#learner.blurr_predict" id="toc-learner.blurr_predict" class="nav-link" data-scroll-target="#learner.blurr_predict">Learner.blurr_predict</a></li>
+  <li><a href="#learner.blurr_predict-1" id="toc-learner.blurr_predict-1" class="nav-link" data-scroll-target="#learner.blurr_predict-1">Learner.blurr_predict</a>
+  <ul class="collapse">
+  <li><a href="#text-generation" id="toc-text-generation" class="nav-link" data-scroll-target="#text-generation">Text generation</a></li>
+  </ul></li>
+  <li><a href="#learner.blurr_generate" id="toc-learner.blurr_generate" class="nav-link" data-scroll-target="#learner.blurr_generate">Learner.blurr_generate</a></li>
+  <li><a href="#learner.blurr_generate-1" id="toc-learner.blurr_generate-1" class="nav-link" data-scroll-target="#learner.blurr_generate-1">Learner.blurr_generate</a>
+  <ul class="collapse">
+  <li><a href="#inference" id="toc-inference" class="nav-link" data-scroll-target="#inference">Inference</a></li>
+  </ul></li>
+  </ul></li>
+  <li><a href="#high-level-api" id="toc-high-level-api" class="nav-link" data-scroll-target="#high-level-api">High-level API</a>
+  <ul>
+  <li><a href="#blearner" id="toc-blearner" class="nav-link" data-scroll-target="#blearner">Blearner</a></li>
+  <li><a href="#blearnerforsequenceclassification" id="toc-blearnerforsequenceclassification" class="nav-link" data-scroll-target="#blearnerforsequenceclassification">BlearnerForSequenceClassification</a></li>
+  <li><a href="#examples" id="toc-examples" class="nav-link" data-scroll-target="#examples">Examples</a>
+  <ul class="collapse">
+  <li><a href="#using-mid-level-api-building-blocks" id="toc-using-mid-level-api-building-blocks" class="nav-link" data-scroll-target="#using-mid-level-api-building-blocks">Using Mid-level API building blocks</a></li>
+  <li><a href="#using-low-level-api-building-blocks" id="toc-using-low-level-api-building-blocks" class="nav-link" data-scroll-target="#using-low-level-api-building-blocks">Using Low-level API building blocks</a></li>
+  </ul></li>
+  </ul></li>
+  <li><a href="#tests" id="toc-tests" class="nav-link" data-scroll-target="#tests">Tests</a></li>
+  </ul>
+<div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/ohmeow/blurr/issues/new" class="toc-action">Report an issue</a></p></div></div></nav>
+    </div>
+<!-- main -->
+<main class="content column-body" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title d-none d-lg-block">Modeling</h1>
+</div>
+
+<div>
+  <div class="description">
+    The <code>text.modeling.core</code> module contains core custom models, loss functions, and a default layer group splitter for use in applying discriminiative learning rates to your Hugging Face models trained via fastai
+  </div>
+</div>
+
+
+<div class="quarto-title-meta">
+
+    
+    
+  </div>
+  
+
+</header>
+
+<!-- WARNING: THIS FILE WAS AUTOGENERATED! DO NOT EDIT! -->
+<section id="mid-level-api" class="level2">
+<h2 class="anchored" data-anchor-id="mid-level-api">Mid-level API</h2>
+<p>Base splitter, model wrapper, and model callback</p>
+<hr>
+<p><a href="https://github.com/ohmeow/blurr/blob/master/blurr/text/modeling/core.py#L39" target="_blank" style="float:right; font-size:smaller">source</a></p>
+<section id="blurr_splitter" class="level3">
+<h3 class="anchored" data-anchor-id="blurr_splitter">blurr_splitter</h3>
+<blockquote class="blockquote">
+<pre><code> blurr_splitter (m:fastai.torch_core.Module)</code></pre>
+</blockquote>
+<p>Splits the Hugging Face model based on various model architecture conventions</p>
+<hr>
+<p><a href="https://github.com/ohmeow/blurr/blob/master/blurr/text/modeling/core.py#L52" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="basemodelwrapper" class="level3">
+<h3 class="anchored" data-anchor-id="basemodelwrapper">BaseModelWrapper</h3>
+<blockquote class="blockquote">
+<pre><code> BaseModelWrapper (hf_model:transformers.modeling_utils.PreTrainedModel,
+                   output_hidden_states:bool=False,
+                   output_attentions:bool=False, hf_model_kwargs={})</code></pre>
+</blockquote>
+<p>Same as <code>nn.Module</code>, but no need for subclasses to call <code>super().__init__</code></p>
+<table class="table">
+<colgroup>
+<col style="width: 6%">
+<col style="width: 25%">
+<col style="width: 34%">
+<col style="width: 34%">
+</colgroup>
+<thead>
+<tr class="header">
+<th></th>
+<th><strong>Type</strong></th>
+<th><strong>Default</strong></th>
+<th><strong>Details</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>hf_model</td>
+<td>PreTrainedModel</td>
+<td></td>
+<td>Your Hugging Face model</td>
+</tr>
+<tr class="even">
+<td>output_hidden_states</td>
+<td>bool</td>
+<td>False</td>
+<td>If True, hidden_states will be returned and accessed from Learner</td>
+</tr>
+<tr class="odd">
+<td>output_attentions</td>
+<td>bool</td>
+<td>False</td>
+<td>If True, attentions will be returned and accessed from Learner</td>
+</tr>
+<tr class="even">
+<td>hf_model_kwargs</td>
+<td>dict</td>
+<td>{}</td>
+<td>Any additional keyword arguments you want passed into your models forward method</td>
+</tr>
+</tbody>
+</table>
+<p>Note that <a href="https://ohmeow.github.io/blurr/text-modeling-core.html#basemodelwrapper"><code>BaseModelWrapper</code></a> includes some nifty code for just passing in the things your model needs, as not all transformer architectures require/use the same information.</p>
+<hr>
+<p><a href="https://github.com/ohmeow/blurr/blob/master/blurr/text/modeling/core.py#L85" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="basemodelcallback" class="level3">
+<h3 class="anchored" data-anchor-id="basemodelcallback">BaseModelCallback</h3>
+<blockquote class="blockquote">
+<pre><code> BaseModelCallback (base_model_wrapper_kwargs:dict={})</code></pre>
+</blockquote>
+<p>Basic class handling tweaks of the training loop by changing a <code>Learner</code> in various events</p>
+<table class="table">
+<colgroup>
+<col style="width: 6%">
+<col style="width: 25%">
+<col style="width: 34%">
+<col style="width: 34%">
+</colgroup>
+<thead>
+<tr class="header">
+<th></th>
+<th><strong>Type</strong></th>
+<th><strong>Default</strong></th>
+<th><strong>Details</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>base_model_wrapper_kwargs</td>
+<td>dict</td>
+<td>{}</td>
+<td>Additional keyword arguments passed to <code>BaseModelWrapper</code></td>
+</tr>
+</tbody>
+</table>
+<p>We use a <code>Callback</code> for handling the <a href="https://huggingface.co/transformers/main_classes/output.html#transformers.file_utils.ModelOutput"><code>ModelOutput</code></a> returned by Hugging Face transformers. It allows us to associate anything we want from that object to our <code>Learner</code>.</p>
+<p><strong>Note</strong> that your <code>Learner</code>’s loss will be set for you only if the Hugging Face model returns one <em>and</em> you are using the <a href="https://ohmeow.github.io/blurr/utils.html#precalculatedloss"><code>PreCalculatedLoss</code></a> loss function.</p>
+<p>Also note that anything else you asked the model to return (for example, last hidden state, etc..) will be available for you via the <code>blurr_model_outputs</code> property attached to your <code>Learner</code>. For example, assuming you are using BERT for a classification task … if you have told your <a href="https://ohmeow.github.io/blurr/text-modeling-core.html#basemodelwrapper"><code>BaseModelWrapper</code></a> instance to return attentions, you’d be able to access them via <code>learn.blurr_model_outputs['attentions']</code>.</p>
+</section>
+<section id="example" class="level3">
+<h3 class="anchored" data-anchor-id="example">Example</h3>
+<p>Below demonstrates how to setup your pipeline for a sequence classification task (e.g., a model that requires a single text input) using the mid, high, and low-level API</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>raw_datasets <span class="op">=</span> load_dataset(<span class="st">"imdb"</span>, split<span class="op">=</span>[<span class="st">"train"</span>, <span class="st">"test"</span>])</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>raw_datasets[<span class="dv">0</span>] <span class="op">=</span> raw_datasets[<span class="dv">0</span>].add_column(<span class="st">"is_valid"</span>, [<span class="va">False</span>] <span class="op">*</span> <span class="bu">len</span>(raw_datasets[<span class="dv">0</span>]))</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>raw_datasets[<span class="dv">1</span>] <span class="op">=</span> raw_datasets[<span class="dv">1</span>].add_column(<span class="st">"is_valid"</span>, [<span class="va">True</span>] <span class="op">*</span> <span class="bu">len</span>(raw_datasets[<span class="dv">1</span>]))</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>final_ds <span class="op">=</span> concatenate_datasets([raw_datasets[<span class="dv">0</span>].shuffle().select(<span class="bu">range</span>(<span class="dv">1000</span>)), raw_datasets[<span class="dv">1</span>].shuffle().select(<span class="bu">range</span>(<span class="dv">200</span>))])</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>imdb_df <span class="op">=</span> pd.DataFrame(final_ds)</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>imdb_df.head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Reusing dataset imdb (/home/wgilliam/.cache/huggingface/datasets/imdb/plain_text/1.0.0/2fdd8b9bcadd6e7055e742a706876ba43f19faee861df134affd7a3f60fc38a1)</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<script type="application/vnd.jupyter.widget-view+json">
+{"model_id":"45905717cda94870975bb65988bd0ef0","version_major":2,"version_minor":0}
+</script>
+</div>
+<div class="cell-output cell-output-display">
+
+<div>
+
+<table class="dataframe table table-sm table-striped">
+  <thead>
+    <tr>
+      <th></th>
+      <th>text</th>
+      <th>label</th>
+      <th>is_valid</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>I wanted to see this movie ever since it was first advertised on TV. I went to Tinsel Town to see it Last Night at 7:40. I regret the day that wasted my ticket on this trash when I could of saw something better. The beginning was all a bunch sex trash and cliches. They exaggerated the way love works in reality. All of the girls were stereo types. The boyfriend was too stupid for his own age. The passing gases that the pregnant girl kept having barely got any laughs. The bank robbery was completely boring with gags that have been used in other movies. Their getaway car was an old beat up Ch...</td>
+      <td>0</td>
+      <td>False</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>As a huge baseball fan, my scrutiny of this film is how realistic it appears. Dennis Quaid had all of the right moves and stances of a major league pitcher. It is a fantastic true story told with just a little too much "Disney" for my taste.</td>
+      <td>1</td>
+      <td>False</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>This ranks as one of the worst movies I've seen in years. Besides Cuba and Angie, the acting is actually embarrassing. Wasn't Archer once a decent actress? What happened to her? The action is decent but completely implausible. The make up is so bad it's worth mentioning. I mean, who ever even thinks about the makeup in a contemporary feature film. Someone should tell the make up artist, and the DOP that you're not supposed to actually see it. The ending is a massive disappointment - along the lines of "and then they realized it was all a dream"&lt;br /&gt;&lt;br /&gt;Don't waste your time or your mone...</td>
+      <td>0</td>
+      <td>False</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>For those of us Baby Boomers who arrived too late on the scene to appreciate James Dean et. al., Martin Sheen showed us The Way in this great feature.&lt;br /&gt;&lt;br /&gt;The premise is easy enough: cool hood meets small town sheriff and All-Hell ensues, but the nuts and bolts of this movie enthrall the car nut in all of us. &lt;br /&gt;&lt;br /&gt;No, this isn't Casablanca, nor is it great Literature, but it IS a serious movie about cars, rebellion, and the genius that is Martin Sheen.&lt;br /&gt;&lt;br /&gt;Enjoy this and appreciate it for what it is, and for what Martin will become. I loved this movie growing up as a t...</td>
+      <td>1</td>
+      <td>False</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>Similar to "On the Town," this musical about sailors on shore leave falls short of the later classic in terms of pacing and the quality of the songs, but it has its own charms. Kelly has three fabulous dance routines: one with Jerry the cartoon mouse of "Tom and Jerry" fame, one with a little girl, and a fantasy sequence where he is a Spanish lover determined to reach his lady on a high balcony. Sinatra, playing Kelly's shy, inexperienced buddy, and Grayson, the woman who serves as the love interest for both men, do most of the singing. Iturbi provides some fine piano playing. At nearly tw...</td>
+      <td>1</td>
+      <td>False</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>labels <span class="op">=</span> raw_datasets[<span class="dv">0</span>].features[<span class="st">"label"</span>].names</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>labels</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>['neg', 'pos']</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>model_cls <span class="op">=</span> AutoModelForSequenceClassification</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>hf_logging.set_verbosity_error()</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>pretrained_model_name <span class="op">=</span> <span class="st">"distilroberta-base"</span>  <span class="co"># "distilbert-base-uncased" "bert-base-uncased"</span></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>hf_arch, hf_config, hf_tokenizer, hf_model <span class="op">=</span> get_hf_objects(pretrained_model_name, model_cls<span class="op">=</span>model_cls)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co"># single input</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>set_seed()</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>blocks <span class="op">=</span> (TextBlock(hf_arch, hf_config, hf_tokenizer, hf_model, batch_tokenize_kwargs<span class="op">=</span>{<span class="st">"labels"</span>: labels}), CategoryBlock)</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>dblock <span class="op">=</span> DataBlock(blocks<span class="op">=</span>blocks, get_x<span class="op">=</span>ColReader(<span class="st">"text"</span>), get_y<span class="op">=</span>ColReader(<span class="st">"label"</span>), splitter<span class="op">=</span>RandomSplitter(seed<span class="op">=</span><span class="dv">42</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>dls <span class="op">=</span> dblock.dataloaders(imdb_df, bs<span class="op">=</span><span class="dv">4</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>dls.show_batch(dataloaders<span class="op">=</span>dls, max_n<span class="op">=</span><span class="dv">2</span>, trunc_at<span class="op">=</span><span class="dv">500</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+
+<table class="dataframe table table-sm table-striped">
+  <thead>
+    <tr>
+      <th></th>
+      <th>text</th>
+      <th>target</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>My Comments for VIVAH :- Its a charming, idealistic love story starring Shahid Kapoor and Amrita Rao. The film takes us back to small pleasures like the bride and bridegroom's families sleeping on the floor, playing games together, their friendly banter and mutual respect. Vivah is about the sanctity of marriage and the importance of commitment between two individuals. Yes, the central romance is naively visualized. But the sneaked-in romantic moments between the to-be-married couple and their</td>
+      <td>pos</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>WWE Armageddon, December 17, 2006 -- Live from Richmond Coliseum, Richmond, VA &lt;br /&gt;&lt;br /&gt;Kane vs. MVP in an Inferno match: So this is the fourth ever inferno match in the WWE and it is Kane vs. MVP (wonder why was it the first match on the card). I only viewed the ending parts where Kane sets MVP's ass on fire as they're on the apron and then MVP is running around the arena while yelling  eventually the refs put out the fire with a fire extinguisher as MVP sprawls around the entrance ramp. F</td>
+      <td>pos</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+<section id="training" class="level4">
+<h4 class="anchored" data-anchor-id="training">Training</h4>
+<p><code>.to_fp16()</code> requires a GPU so had to remove for tests to run on github. Let’s check that we can get predictions.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>set_seed()</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>model <span class="op">=</span> BaseModelWrapper(hf_model)</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>learn <span class="op">=</span> Learner(</span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>    dls,</span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>    model,</span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>    opt_func<span class="op">=</span>partial(OptimWrapper, opt<span class="op">=</span>torch.optim.Adam),</span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>    loss_func<span class="op">=</span>PreCalculatedCrossEntropyLoss(),  <span class="co"># CrossEntropyLossFlat(),</span></span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a>    metrics<span class="op">=</span>[accuracy],</span>
+<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a>    cbs<span class="op">=</span>[BaseModelCallback],</span>
+<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a>    splitter<span class="op">=</span>blurr_splitter,</span>
+<span id="cb12-13"><a href="#cb12-13" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb12-14"><a href="#cb12-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-15"><a href="#cb12-15" aria-hidden="true" tabindex="-1"></a>learn.freeze()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>learn.summary()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="bu">len</span>(learn.opt.param_groups))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>3</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>learn.lr_find(suggest_funcs<span class="op">=</span>[minimum, steep, valley, slide])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+
+<style>
+    /* Turns off some styling */
+    progress {
+        /* gets rid of default border in Firefox and Opera. */
+        border: none;
+        /* Needs to be in here for Safari polyfill so background images work as expected. */
+        background-size: auto;
+    }
+    progress:not([value]), progress:not([value])::-webkit-progress-bar {
+        background: repeating-linear-gradient(45deg, #7e7e7e, #7e7e7e 10px, #5c5c5c 10px, #5c5c5c 20px);
+    }
+    .progress-bar-interrupted, .progress-bar-interrupted::-webkit-progress-bar {
+        background: #F44336;
+    }
+</style>
+</div>
+<div class="cell-output cell-output-display">
+
+</div>
+<div class="cell-output cell-output-display">
+<pre><code>SuggestedLRs(minimum=0.00012022644514217973, steep=0.0063095735386013985, valley=0.0003311311302240938, slide=0.0020892962347716093)</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<p><img src="11_text-modeling-core_files/figure-html/cell-15-output-4.png" class="img-fluid"></p>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>set_seed()</span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>learn.fit_one_cycle(<span class="dv">1</span>, lr_max<span class="op">=</span><span class="fl">1e-3</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+
+<style>
+    /* Turns off some styling */
+    progress {
+        /* gets rid of default border in Firefox and Opera. */
+        border: none;
+        /* Needs to be in here for Safari polyfill so background images work as expected. */
+        background-size: auto;
+    }
+    progress:not([value]), progress:not([value])::-webkit-progress-bar {
+        background: repeating-linear-gradient(45deg, #7e7e7e, #7e7e7e 10px, #5c5c5c 10px, #5c5c5c 20px);
+    }
+    .progress-bar-interrupted, .progress-bar-interrupted::-webkit-progress-bar {
+        background: #F44336;
+    }
+</style>
+</div>
+<div class="cell-output cell-output-display">
+
+<table class="dataframe table table-sm table-striped">
+  <thead>
+    <tr>
+      <th>epoch</th>
+      <th>train_loss</th>
+      <th>valid_loss</th>
+      <th>accuracy</th>
+      <th>time</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>0</td>
+      <td>0.283207</td>
+      <td>0.279155</td>
+      <td>0.883333</td>
+      <td>00:13</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+</section>
+<section id="showing-results" class="level4">
+<h4 class="anchored" data-anchor-id="showing-results">Showing results</h4>
+<p>And here we create a <code>@typedispatch</code>ed implementation of <code>Learner.show_results</code>.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>learn.show_results(learner<span class="op">=</span>learn, max_n<span class="op">=</span><span class="dv">2</span>, trunc_at<span class="op">=</span><span class="dv">500</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+
+<style>
+    /* Turns off some styling */
+    progress {
+        /* gets rid of default border in Firefox and Opera. */
+        border: none;
+        /* Needs to be in here for Safari polyfill so background images work as expected. */
+        background-size: auto;
+    }
+    progress:not([value]), progress:not([value])::-webkit-progress-bar {
+        background: repeating-linear-gradient(45deg, #7e7e7e, #7e7e7e 10px, #5c5c5c 10px, #5c5c5c 20px);
+    }
+    .progress-bar-interrupted, .progress-bar-interrupted::-webkit-progress-bar {
+        background: #F44336;
+    }
+</style>
+</div>
+<div class="cell-output cell-output-display">
+
+</div>
+<div class="cell-output cell-output-display">
+
+<table class="dataframe table table-sm table-striped">
+  <thead>
+    <tr>
+      <th></th>
+      <th>text</th>
+      <th>target</th>
+      <th>prediction</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>Haha, what a great little movie! Wayne Crawford strikes again, or rather this was his first big strike, a deliriously entertaining little ball of manic kitsch energy masquerading as a psycho killer movie. It's actually a **brilliant** satire on post-hippie American culture in flyover country, though the movie was actually filmed independently in Miami. It defies any kind of studio oriented convention or plot device that I can think of: SOMETIMES AUNT MARTHA DOES DREADFUL THINGS may not be a ver</td>
+      <td>pos</td>
+      <td>pos</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>Most would agree that the character of Wolverine is one of the most intriguing characters in comic book history. I'm no Marvel expert, but I did grow up with the adventures of the X-Men and definitely approved of Hugh Jackman's now widely known portrayal of the scruffy Logan. I enjoyed the first X-Men, found the sequel too heavy and messy and liked the third one as comic book entertainment. All through the three movies, I probably enjoyed Jackman more than anything else. I figured the idea of m</td>
+      <td>neg</td>
+      <td>neg</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>learn.unfreeze()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>set_seed()</span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>learn.fit_one_cycle(<span class="dv">2</span>, lr_max<span class="op">=</span><span class="bu">slice</span>(<span class="fl">1e-7</span>, <span class="fl">1e-4</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+
+<style>
+    /* Turns off some styling */
+    progress {
+        /* gets rid of default border in Firefox and Opera. */
+        border: none;
+        /* Needs to be in here for Safari polyfill so background images work as expected. */
+        background-size: auto;
+    }
+    progress:not([value]), progress:not([value])::-webkit-progress-bar {
+        background: repeating-linear-gradient(45deg, #7e7e7e, #7e7e7e 10px, #5c5c5c 10px, #5c5c5c 20px);
+    }
+    .progress-bar-interrupted, .progress-bar-interrupted::-webkit-progress-bar {
+        background: #F44336;
+    }
+</style>
+</div>
+<div class="cell-output cell-output-display">
+
+<table class="dataframe table table-sm table-striped">
+  <thead>
+    <tr>
+      <th>epoch</th>
+      <th>train_loss</th>
+      <th>valid_loss</th>
+      <th>accuracy</th>
+      <th>time</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>0</td>
+      <td>0.226185</td>
+      <td>0.279885</td>
+      <td>0.879167</td>
+      <td>00:21</td>
+    </tr>
+    <tr>
+      <td>1</td>
+      <td>0.201225</td>
+      <td>0.233090</td>
+      <td>0.900000</td>
+      <td>00:21</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>learn.recorder.plot_loss()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<p><img src="11_text-modeling-core_files/figure-html/cell-21-output-1.png" class="img-fluid"></p>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>learn.show_results(learner<span class="op">=</span>learn, max_n<span class="op">=</span><span class="dv">2</span>, trunc_at<span class="op">=</span><span class="dv">500</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+
+<style>
+    /* Turns off some styling */
+    progress {
+        /* gets rid of default border in Firefox and Opera. */
+        border: none;
+        /* Needs to be in here for Safari polyfill so background images work as expected. */
+        background-size: auto;
+    }
+    progress:not([value]), progress:not([value])::-webkit-progress-bar {
+        background: repeating-linear-gradient(45deg, #7e7e7e, #7e7e7e 10px, #5c5c5c 10px, #5c5c5c 20px);
+    }
+    .progress-bar-interrupted, .progress-bar-interrupted::-webkit-progress-bar {
+        background: #F44336;
+    }
+</style>
+</div>
+<div class="cell-output cell-output-display">
+
+</div>
+<div class="cell-output cell-output-display">
+
+<table class="dataframe table table-sm table-striped">
+  <thead>
+    <tr>
+      <th></th>
+      <th>text</th>
+      <th>target</th>
+      <th>prediction</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>Haha, what a great little movie! Wayne Crawford strikes again, or rather this was his first big strike, a deliriously entertaining little ball of manic kitsch energy masquerading as a psycho killer movie. It's actually a **brilliant** satire on post-hippie American culture in flyover country, though the movie was actually filmed independently in Miami. It defies any kind of studio oriented convention or plot device that I can think of: SOMETIMES AUNT MARTHA DOES DREADFUL THINGS may not be a ver</td>
+      <td>pos</td>
+      <td>pos</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>Most would agree that the character of Wolverine is one of the most intriguing characters in comic book history. I'm no Marvel expert, but I did grow up with the adventures of the X-Men and definitely approved of Hugh Jackman's now widely known portrayal of the scruffy Logan. I enjoyed the first X-Men, found the sequel too heavy and messy and liked the third one as comic book entertainment. All through the three movies, I probably enjoyed Jackman more than anything else. I figured the idea of m</td>
+      <td>neg</td>
+      <td>neg</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+</section>
+<section id="prediction" class="level4">
+<h4 class="anchored" data-anchor-id="prediction">Prediction</h4>
+<p>We need to replace fastai’s <code>Learner.predict</code> method with the one above which is able to work with inputs that are represented by multiple tensors included in a dictionary.</p>
+<hr>
+<p><a href="https://github.com/ohmeow/blurr/blob/master/blurr/text/modeling/core.py#LNone" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+</section>
+<section id="learner.blurr_predict" class="level3">
+<h3 class="anchored" data-anchor-id="learner.blurr_predict">Learner.blurr_predict</h3>
+<blockquote class="blockquote">
+<pre><code> Learner.blurr_predict (items, rm_type_tfms=None)</code></pre>
+</blockquote>
+<hr>
+<p><a href="https://github.com/ohmeow/blurr/blob/master/blurr/text/modeling/core.py#LNone" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="learner.blurr_predict-1" class="level3">
+<h3 class="anchored" data-anchor-id="learner.blurr_predict-1">Learner.blurr_predict</h3>
+<blockquote class="blockquote">
+<pre><code> Learner.blurr_predict (items, rm_type_tfms=None)</code></pre>
+</blockquote>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>learn.blurr_predict(<span class="st">"I really liked the movie"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>[{'label': 'pos',
+  'score': 0.9718672633171082,
+  'class_index': 1,
+  'class_labels': ['neg', 'pos'],
+  'probs': [0.028132732957601547, 0.9718672633171082]}]</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>learn.blurr_predict(<span class="st">"Acting was so bad it was almost funny."</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>[{'label': 'neg',
+  'score': 0.665842592716217,
+  'class_index': 0,
+  'class_labels': ['neg', 'pos'],
+  'probs': [0.665842592716217, 0.33415740728378296]}]</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a>learn.blurr_predict([<span class="st">"I really liked the movie"</span>, <span class="st">"I really hated the movie"</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>[{'label': 'pos',
+  'score': 0.9718672633171082,
+  'class_index': 1,
+  'class_labels': ['neg', 'pos'],
+  'probs': [0.028132745996117592, 0.9718672633171082]},
+ {'label': 'pos',
+  'score': 0.5788970589637756,
+  'class_index': 1,
+  'class_labels': ['neg', 'pos'],
+  'probs': [0.42110294103622437, 0.5788970589637756]}]</code></pre>
+</div>
+</div>
+<section id="text-generation" class="level4">
+<h4 class="anchored" data-anchor-id="text-generation">Text generation</h4>
+<p>Though not useful in sequence classification, we will also add a <code>blurr_generate</code> method to <code>Learner</code> that uses Hugging Face’s <code>PreTrainedModel.generate</code> for text generation tasks.</p>
+<p>For the full list of arguments you can pass in see <a href="https://huggingface.co/transformers/main_classes/model.html#transformers.PreTrainedModel.generate">here</a>. You can also check out their <a href="https://github.com/huggingface/blog/blob/master/notebooks/02_how_to_generate.ipynb">“How To Generate”</a> notebook for more information about how it all works.</p>
+<hr>
+<p><a href="https://github.com/ohmeow/blurr/blob/master/blurr/text/modeling/core.py#LNone" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+</section>
+<section id="learner.blurr_generate" class="level3">
+<h3 class="anchored" data-anchor-id="learner.blurr_generate">Learner.blurr_generate</h3>
+<blockquote class="blockquote">
+<pre><code> Learner.blurr_generate (items, key='generated_texts', **kwargs)</code></pre>
+</blockquote>
+<p>Uses the built-in <code>generate</code> method to generate the text (see <a href="https://huggingface.co/transformers/main_classes/model.html#transformers.PreTrainedModel.generate">here</a> for a list of arguments you can pass in)</p>
+<hr>
+<p><a href="https://github.com/ohmeow/blurr/blob/master/blurr/text/modeling/core.py#LNone" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="learner.blurr_generate-1" class="level3">
+<h3 class="anchored" data-anchor-id="learner.blurr_generate-1">Learner.blurr_generate</h3>
+<blockquote class="blockquote">
+<pre><code> Learner.blurr_generate (items, key='generated_texts', **kwargs)</code></pre>
+</blockquote>
+<p>Uses the built-in <code>generate</code> method to generate the text (see <a href="https://huggingface.co/transformers/main_classes/model.html#transformers.PreTrainedModel.generate">here</a> for a list of arguments you can pass in)</p>
+<section id="inference" class="level4">
+<h4 class="anchored" data-anchor-id="inference">Inference</h4>
+<p>Using fast.ai <code>Learner.export</code> and <code>load_learner</code></p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a>export_fname <span class="op">=</span> <span class="st">"seq_class_learn_export"</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a>learn.export(fname<span class="op">=</span><span class="ss">f"</span><span class="sc">{</span>export_fname<span class="sc">}</span><span class="ss">.pkl"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a>inf_learn <span class="op">=</span> load_learner(fname<span class="op">=</span><span class="ss">f"</span><span class="sc">{</span>export_fname<span class="sc">}</span><span class="ss">.pkl"</span>)</span>
+<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a>inf_learn.blurr_predict(<span class="st">"This movie should not be seen by anyone!!!!"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>[{'label': 'neg',
+  'score': 0.8900553584098816,
+  'class_index': 0,
+  'class_labels': ['neg', 'pos'],
+  'probs': [0.8900553584098816, 0.1099446639418602]}]</code></pre>
+</div>
+</div>
+</section>
+</section>
+</section>
+<section id="high-level-api" class="level2">
+<h2 class="anchored" data-anchor-id="high-level-api">High-level API</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb38"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a>model_cls <span class="op">=</span> AutoModelForSequenceClassification</span>
+<span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a>hf_logging.set_verbosity_error()</span>
+<span id="cb38-3"><a href="#cb38-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-4"><a href="#cb38-4" aria-hidden="true" tabindex="-1"></a>pretrained_model_name <span class="op">=</span> <span class="st">"distilroberta-base"</span>  <span class="co"># "distilbert-base-uncased" "bert-base-uncased"</span></span>
+<span id="cb38-5"><a href="#cb38-5" aria-hidden="true" tabindex="-1"></a>hf_arch, hf_config, hf_tokenizer, hf_model <span class="op">=</span> get_hf_objects(pretrained_model_name, model_cls<span class="op">=</span>model_cls)</span>
+<span id="cb38-6"><a href="#cb38-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-7"><a href="#cb38-7" aria-hidden="true" tabindex="-1"></a>dls <span class="op">=</span> dblock.dataloaders(imdb_df, bs<span class="op">=</span><span class="dv">4</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<hr>
+<p><a href="https://github.com/ohmeow/blurr/blob/master/blurr/text/modeling/core.py#L284" target="_blank" style="float:right; font-size:smaller">source</a></p>
+<section id="blearner" class="level3">
+<h3 class="anchored" data-anchor-id="blearner">Blearner</h3>
+<blockquote class="blockquote">
+<pre><code> Blearner (dls:fastai.data.core.DataLoaders,
+           hf_model:transformers.modeling_utils.PreTrainedModel,
+           base_model_cb:__main__.BaseModelCallback=&lt;class
+           '__main__.BaseModelCallback'&gt;, loss_func:callable|None=None,
+           opt_func=&lt;function Adam&gt;, lr=0.001, splitter:callable=&lt;function
+           trainable_params&gt;, cbs=None, metrics=None, path=None,
+           model_dir='models', wd=None, wd_bn_bias=False, train_bn=True,
+           moms=(0.95, 0.85, 0.95), default_cbs:bool=True)</code></pre>
+</blockquote>
+<p>Group together a <code>model</code>, some <code>dls</code> and a <code>loss_func</code> to handle training</p>
+<table class="table">
+<colgroup>
+<col style="width: 6%">
+<col style="width: 25%">
+<col style="width: 34%">
+<col style="width: 34%">
+</colgroup>
+<thead>
+<tr class="header">
+<th></th>
+<th><strong>Type</strong></th>
+<th><strong>Default</strong></th>
+<th><strong>Details</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>dls</td>
+<td></td>
+<td></td>
+<td><code>DataLoaders</code> containing data for each dataset needed for <code>model</code></td>
+</tr>
+<tr class="even">
+<td>hf_model</td>
+<td>PreTrainedModel</td>
+<td></td>
+<td>Your pretrained Hugging Face transformer</td>
+</tr>
+<tr class="odd">
+<td>base_model_cb</td>
+<td>BaseModelCallback</td>
+<td>BaseModelCallback</td>
+<td>Your <code>BaseModelCallback</code></td>
+</tr>
+<tr class="even">
+<td><strong>Returns</strong></td>
+<td><strong>Learner</strong></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p>Instead of constructing our low-level <code>Learner</code>, we can use the <a href="https://ohmeow.github.io/blurr/text-modeling-core.html#blearner"><code>Blearner</code></a> class which provides sensible defaults for training</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb40"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a>learn <span class="op">=</span> Blearner(dls, hf_model, metrics<span class="op">=</span>[accuracy])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb41"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a>learn.fit_one_cycle(<span class="dv">1</span>, lr_max<span class="op">=</span><span class="fl">1e-3</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+
+<style>
+    /* Turns off some styling */
+    progress {
+        /* gets rid of default border in Firefox and Opera. */
+        border: none;
+        /* Needs to be in here for Safari polyfill so background images work as expected. */
+        background-size: auto;
+    }
+    progress:not([value]), progress:not([value])::-webkit-progress-bar {
+        background: repeating-linear-gradient(45deg, #7e7e7e, #7e7e7e 10px, #5c5c5c 10px, #5c5c5c 20px);
+    }
+    .progress-bar-interrupted, .progress-bar-interrupted::-webkit-progress-bar {
+        background: #F44336;
+    }
+</style>
+</div>
+<div class="cell-output cell-output-display">
+
+<table class="dataframe table table-sm table-striped">
+  <thead>
+    <tr>
+      <th>epoch</th>
+      <th>train_loss</th>
+      <th>valid_loss</th>
+      <th>accuracy</th>
+      <th>time</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>0</td>
+      <td>0.253714</td>
+      <td>0.305421</td>
+      <td>0.866667</td>
+      <td>00:13</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb42"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a>learn.show_results(learner<span class="op">=</span>learn, max_n<span class="op">=</span><span class="dv">2</span>, trunc_at<span class="op">=</span><span class="dv">500</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+
+<style>
+    /* Turns off some styling */
+    progress {
+        /* gets rid of default border in Firefox and Opera. */
+        border: none;
+        /* Needs to be in here for Safari polyfill so background images work as expected. */
+        background-size: auto;
+    }
+    progress:not([value]), progress:not([value])::-webkit-progress-bar {
+        background: repeating-linear-gradient(45deg, #7e7e7e, #7e7e7e 10px, #5c5c5c 10px, #5c5c5c 20px);
+    }
+    .progress-bar-interrupted, .progress-bar-interrupted::-webkit-progress-bar {
+        background: #F44336;
+    }
+</style>
+</div>
+<div class="cell-output cell-output-display">
+
+</div>
+<div class="cell-output cell-output-display">
+
+<table class="dataframe table table-sm table-striped">
+  <thead>
+    <tr>
+      <th></th>
+      <th>text</th>
+      <th>target</th>
+      <th>prediction</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>Haha, what a great little movie! Wayne Crawford strikes again, or rather this was his first big strike, a deliriously entertaining little ball of manic kitsch energy masquerading as a psycho killer movie. It's actually a **brilliant** satire on post-hippie American culture in flyover country, though the movie was actually filmed independently in Miami. It defies any kind of studio oriented convention or plot device that I can think of: SOMETIMES AUNT MARTHA DOES DREADFUL THINGS may not be a ver</td>
+      <td>pos</td>
+      <td>pos</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>Most would agree that the character of Wolverine is one of the most intriguing characters in comic book history. I'm no Marvel expert, but I did grow up with the adventures of the X-Men and definitely approved of Hugh Jackman's now widely known portrayal of the scruffy Logan. I enjoyed the first X-Men, found the sequel too heavy and messy and liked the third one as comic book entertainment. All through the three movies, I probably enjoyed Jackman more than anything else. I figured the idea of m</td>
+      <td>neg</td>
+      <td>neg</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb43"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a>learn.blurr_predict(<span class="st">"This was a really good movie"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>[{'label': 'pos',
+  'score': 0.9749817848205566,
+  'class_index': 1,
+  'class_labels': ['neg', 'pos'],
+  'probs': [0.02501819096505642, 0.9749817848205566]}]</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb45"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a>learn.export(fname<span class="op">=</span><span class="ss">f"</span><span class="sc">{</span>export_fname<span class="sc">}</span><span class="ss">.pkl"</span>)</span>
+<span id="cb45-2"><a href="#cb45-2" aria-hidden="true" tabindex="-1"></a>inf_learn <span class="op">=</span> load_learner(fname<span class="op">=</span><span class="ss">f"</span><span class="sc">{</span>export_fname<span class="sc">}</span><span class="ss">.pkl"</span>)</span>
+<span id="cb45-3"><a href="#cb45-3" aria-hidden="true" tabindex="-1"></a>inf_learn.blurr_predict(<span class="st">"This movie should not be seen by anyone!!!!"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>[{'label': 'neg',
+  'score': 0.7373340129852295,
+  'class_index': 0,
+  'class_labels': ['neg', 'pos'],
+  'probs': [0.7373340129852295, 0.2626659572124481]}]</code></pre>
+</div>
+</div>
+<hr>
+<p><a href="https://github.com/ohmeow/blurr/blob/master/blurr/text/modeling/core.py#L328" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="blearnerforsequenceclassification" class="level3">
+<h3 class="anchored" data-anchor-id="blearnerforsequenceclassification">BlearnerForSequenceClassification</h3>
+<blockquote class="blockquote">
+<pre><code> BlearnerForSequenceClassification (dls:fastai.data.core.DataLoaders,
+                                    hf_model:transformers.modeling_utils.P
+                                    reTrainedModel, base_model_cb:__main__
+                                    .BaseModelCallback=&lt;class
+                                    '__main__.BaseModelCallback'&gt;,
+                                    loss_func:callable|None=None,
+                                    opt_func=&lt;function Adam&gt;, lr=0.001,
+                                    splitter:callable=&lt;function
+                                    trainable_params&gt;, cbs=None,
+                                    metrics=None, path=None,
+                                    model_dir='models', wd=None,
+                                    wd_bn_bias=False, train_bn=True,
+                                    moms=(0.95, 0.85, 0.95),
+                                    default_cbs:bool=True)</code></pre>
+</blockquote>
+<p>Group together a <code>model</code>, some <code>dls</code> and a <code>loss_func</code> to handle training</p>
+<table class="table">
+<colgroup>
+<col style="width: 9%">
+<col style="width: 38%">
+<col style="width: 52%">
+</colgroup>
+<thead>
+<tr class="header">
+<th></th>
+<th><strong>Type</strong></th>
+<th><strong>Details</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>dls</td>
+<td></td>
+<td><code>DataLoaders</code> containing data for each dataset needed for <code>model</code></td>
+</tr>
+<tr class="even">
+<td>hf_model</td>
+<td>PreTrainedModel</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p>We also introduce a classification task specific <a href="https://ohmeow.github.io/blurr/text-modeling-core.html#blearner"><code>Blearner</code></a> that get you your DataBlock, DataLoaders, and BLearner in one line of code!</p>
+</section>
+<section id="examples" class="level3">
+<h3 class="anchored" data-anchor-id="examples">Examples</h3>
+<section id="using-mid-level-api-building-blocks" class="level4">
+<h4 class="anchored" data-anchor-id="using-mid-level-api-building-blocks">Using Mid-level API building blocks</h4>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb48"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a>learn <span class="op">=</span> BlearnerForSequenceClassification.from_data(</span>
+<span id="cb48-2"><a href="#cb48-2" aria-hidden="true" tabindex="-1"></a>    imdb_df, <span class="st">"distilroberta-base"</span>, text_attr<span class="op">=</span><span class="st">"text"</span>, label_attr<span class="op">=</span><span class="st">"label"</span>, dl_kwargs<span class="op">=</span>{<span class="st">"bs"</span>: <span class="dv">4</span>}</span>
+<span id="cb48-3"><a href="#cb48-3" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb49"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a>learn.fit_one_cycle(<span class="dv">1</span>, lr_max<span class="op">=</span><span class="fl">1e-3</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+
+<style>
+    /* Turns off some styling */
+    progress {
+        /* gets rid of default border in Firefox and Opera. */
+        border: none;
+        /* Needs to be in here for Safari polyfill so background images work as expected. */
+        background-size: auto;
+    }
+    progress:not([value]), progress:not([value])::-webkit-progress-bar {
+        background: repeating-linear-gradient(45deg, #7e7e7e, #7e7e7e 10px, #5c5c5c 10px, #5c5c5c 20px);
+    }
+    .progress-bar-interrupted, .progress-bar-interrupted::-webkit-progress-bar {
+        background: #F44336;
+    }
+</style>
+</div>
+<div class="cell-output cell-output-display">
+
+<table class="dataframe table table-sm table-striped">
+  <thead>
+    <tr>
+      <th>epoch</th>
+      <th>train_loss</th>
+      <th>valid_loss</th>
+      <th>f1_score</th>
+      <th>accuracy</th>
+      <th>time</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>0</td>
+      <td>0.289666</td>
+      <td>0.233302</td>
+      <td>0.920188</td>
+      <td>0.915000</td>
+      <td>00:13</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb50"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true" tabindex="-1"></a>learn.show_results(learner<span class="op">=</span>learn, max_n<span class="op">=</span><span class="dv">2</span>, trunc_at<span class="op">=</span><span class="dv">500</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+
+<style>
+    /* Turns off some styling */
+    progress {
+        /* gets rid of default border in Firefox and Opera. */
+        border: none;
+        /* Needs to be in here for Safari polyfill so background images work as expected. */
+        background-size: auto;
+    }
+    progress:not([value]), progress:not([value])::-webkit-progress-bar {
+        background: repeating-linear-gradient(45deg, #7e7e7e, #7e7e7e 10px, #5c5c5c 10px, #5c5c5c 20px);
+    }
+    .progress-bar-interrupted, .progress-bar-interrupted::-webkit-progress-bar {
+        background: #F44336;
+    }
+</style>
+</div>
+<div class="cell-output cell-output-display">
+
+</div>
+<div class="cell-output cell-output-display">
+
+<table class="dataframe table table-sm table-striped">
+  <thead>
+    <tr>
+      <th></th>
+      <th>text</th>
+      <th>target</th>
+      <th>prediction</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>Watching Stranger Than Fiction director Marc Forster's The Kite Runner is the cinematic equivalent of eating your vegetables because this art-house epic rated PG-13 is good for your movie-going diet. No, this isn't the kind of movie that I like to slouch on the couch and eyeball at the end of a tough day. The Kite Runner isn't your typical mainstream movie designed to entertain you and make you forget about your troubles. First, no celebrity stars appear in it. Second, nothing is cut and dried,</td>
+      <td>1</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>As an ancient movie fan, I had heard much about the controversial movie CALIGULA assessed ambiguously as one of the most realistic epics by some and as one of the most disgusting porn movies by others. I decided to see it in the entire uncut version to evaluate it myself hoping to find something positive that would make justice to the many accusations towards the film. I sat down in my chair one autumn evening and started to watch. The beginning quotation from the New Testament shocked me a bit</td>
+      <td>0</td>
+      <td>0</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb51"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb51-1"><a href="#cb51-1" aria-hidden="true" tabindex="-1"></a>learn.predict(<span class="st">"This was a really good movie"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>[{'label': '1',
+  'score': 0.9277380108833313,
+  'class_index': 1,
+  'class_labels': [0, 1],
+  'probs': [0.07226195186376572, 0.9277380108833313]}]</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb53"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb53-1"><a href="#cb53-1" aria-hidden="true" tabindex="-1"></a>learn.export(fname<span class="op">=</span><span class="ss">f"</span><span class="sc">{</span>export_fname<span class="sc">}</span><span class="ss">.pkl"</span>)</span>
+<span id="cb53-2"><a href="#cb53-2" aria-hidden="true" tabindex="-1"></a>inf_learn <span class="op">=</span> load_learner(fname<span class="op">=</span><span class="ss">f"</span><span class="sc">{</span>export_fname<span class="sc">}</span><span class="ss">.pkl"</span>)</span>
+<span id="cb53-3"><a href="#cb53-3" aria-hidden="true" tabindex="-1"></a>inf_learn.blurr_predict(<span class="st">"This movie should not be seen by anyone!!!!"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>[{'label': '0',
+  'score': 0.5971986651420593,
+  'class_index': 0,
+  'class_labels': [0, 1],
+  'probs': [0.5971986651420593, 0.4028013050556183]}]</code></pre>
+</div>
+</div>
+</section>
+<section id="using-low-level-api-building-blocks" class="level4">
+<h4 class="anchored" data-anchor-id="using-low-level-api-building-blocks">Using Low-level API building blocks</h4>
+<p>Thanks to the <a href="https://ohmeow.github.io/blurr/text-data-core.html#textdataloader"><code>TextDataLoader</code></a>, there isn’t really anything you have to do to use plain ol’ PyTorch or fast.ai <code>Dataset</code>s and <code>DataLoaders</code> with Blurr. Let’s take a look at fine-tuning a model against Glue’s MRPC dataset …</p>
+<section id="build-your-hugging-face-objects" class="level5">
+<h5 class="anchored" data-anchor-id="build-your-hugging-face-objects">Build your Hugging Face objects</h5>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb55"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb55-1"><a href="#cb55-1" aria-hidden="true" tabindex="-1"></a>model_cls <span class="op">=</span> AutoModelForSequenceClassification</span>
+<span id="cb55-2"><a href="#cb55-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb55-3"><a href="#cb55-3" aria-hidden="true" tabindex="-1"></a>pretrained_model_name <span class="op">=</span> <span class="st">"distilroberta-base"</span>  <span class="co"># "distilbert-base-uncased" "bert-base-uncased"</span></span>
+<span id="cb55-4"><a href="#cb55-4" aria-hidden="true" tabindex="-1"></a>hf_arch, hf_config, hf_tokenizer, hf_model <span class="op">=</span> get_hf_objects(pretrained_model_name, model_cls<span class="op">=</span>model_cls)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="preprocess-your-data" class="level5">
+<h5 class="anchored" data-anchor-id="preprocess-your-data">Preprocess your data</h5>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb56"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb56-1"><a href="#cb56-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> datasets <span class="im">import</span> load_dataset</span>
+<span id="cb56-2"><a href="#cb56-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> blurr.text.data.core <span class="im">import</span> preproc_hf_dataset</span>
+<span id="cb56-3"><a href="#cb56-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb56-4"><a href="#cb56-4" aria-hidden="true" tabindex="-1"></a>raw_datasets <span class="op">=</span> load_dataset(<span class="st">"glue"</span>, <span class="st">"mrpc"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Downloading and preparing dataset glue/mrpc (download: 1.43 MiB, generated: 1.43 MiB, post-processed: Unknown size, total: 2.85 MiB) to /home/runner/.cache/huggingface/datasets/glue/mrpc/1.0.0/dacbe3125aa31d7f70367a07a8a9e72a5a0bfeb5fc42e75c9db75b96da6053ad...
+Dataset glue downloaded and prepared to /home/runner/.cache/huggingface/datasets/glue/mrpc/1.0.0/dacbe3125aa31d7f70367a07a8a9e72a5a0bfeb5fc42e75c9db75b96da6053ad. Subsequent calls will reuse this data.</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Downloading builder script:   0%|          | 0.00/7.78k [00:00&lt;?, ?B/s]Downloading builder script: 28.8kB [00:00, 17.6MB/s]                   
+Downloading metadata:   0%|          | 0.00/4.47k [00:00&lt;?, ?B/s]Downloading metadata: 28.7kB [00:00, 19.6MB/s]                   
+Downloading data files:   0%|          | 0/3 [00:00&lt;?, ?it/s]
+Downloading data: 0.00B [00:00, ?B/s]Downloading data: 6.22kB [00:00, 4.47MB/s]
+Downloading data files:  33%|###3      | 1/3 [00:00&lt;00:01,  1.10it/s]
+Downloading data: 0.00B [00:00, ?B/s]
+Downloading data: 53.5kB [00:00, 338kB/s]
+Downloading data: 280kB [00:00, 975kB/s] Downloading data: 1.05MB [00:00, 2.53MB/s]
+Downloading data files:  67%|######6   | 2/3 [00:02&lt;00:01,  1.12s/it]
+Downloading data: 0.00B [00:00, ?B/s]
+Downloading data: 45.2kB [00:00, 290kB/s]
+Downloading data: 254kB [00:00, 856kB/s] Downloading data: 441kB [00:00, 1.31MB/s]
+Downloading data files: 100%|##########| 3/3 [00:03&lt;00:00,  1.14s/it]Downloading data files: 100%|##########| 3/3 [00:03&lt;00:00,  1.12s/it]
+Generating train split:   0%|          | 0/3668 [00:00&lt;?, ? examples/s]Generating train split:  47%|####7     | 1724/3668 [00:00&lt;00:00, 17236.40 examples/s]Generating train split:  96%|#########5| 3506/3668 [00:00&lt;00:00, 17575.26 examples/s]                                                                                     Generating validation split:   0%|          | 0/408 [00:00&lt;?, ? examples/s]                                                                           Generating test split:   0%|          | 0/1725 [00:00&lt;?, ? examples/s]                                                                        0%|          | 0/3 [00:00&lt;?, ?it/s]100%|##########| 3/3 [00:00&lt;00:00, 929.66it/s]</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb59"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb59-1"><a href="#cb59-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> tokenize_function(example):</span>
+<span id="cb59-2"><a href="#cb59-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> hf_tokenizer(example[<span class="st">"sentence1"</span>], example[<span class="st">"sentence2"</span>], truncation<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb59-3"><a href="#cb59-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb59-4"><a href="#cb59-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb59-5"><a href="#cb59-5" aria-hidden="true" tabindex="-1"></a>tokenized_datasets <span class="op">=</span> raw_datasets.<span class="bu">map</span>(tokenize_function, batched<span class="op">=</span><span class="va">True</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Loading cached processed dataset at /home/wgilliam/.cache/huggingface/datasets/glue/mrpc/1.0.0/dacbe3125aa31d7f70367a07a8a9e72a5a0bfeb5fc42e75c9db75b96da6053ad/cache-2a4493b3e0d7eec3.arrow
+Loading cached processed dataset at /home/wgilliam/.cache/huggingface/datasets/glue/mrpc/1.0.0/dacbe3125aa31d7f70367a07a8a9e72a5a0bfeb5fc42e75c9db75b96da6053ad/cache-429f84b2ba09bf45.arrow
+Loading cached processed dataset at /home/wgilliam/.cache/huggingface/datasets/glue/mrpc/1.0.0/dacbe3125aa31d7f70367a07a8a9e72a5a0bfeb5fc42e75c9db75b96da6053ad/cache-38abcb2a8785e400.arrow</code></pre>
+</div>
+</div>
+</section>
+<section id="build-your-dataloaders" class="level5">
+<h5 class="anchored" data-anchor-id="build-your-dataloaders">Build your <code>DataLoaders</code></h5>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb61"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb61-1"><a href="#cb61-1" aria-hidden="true" tabindex="-1"></a>label_names <span class="op">=</span> raw_datasets[<span class="st">"train"</span>].features[<span class="st">"label"</span>].names</span>
+<span id="cb61-2"><a href="#cb61-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb61-3"><a href="#cb61-3" aria-hidden="true" tabindex="-1"></a>trn_dl <span class="op">=</span> TextDataLoader(</span>
+<span id="cb61-4"><a href="#cb61-4" aria-hidden="true" tabindex="-1"></a>    tokenized_datasets[<span class="st">"train"</span>],</span>
+<span id="cb61-5"><a href="#cb61-5" aria-hidden="true" tabindex="-1"></a>    hf_arch<span class="op">=</span>hf_arch,</span>
+<span id="cb61-6"><a href="#cb61-6" aria-hidden="true" tabindex="-1"></a>    hf_config<span class="op">=</span>hf_config,</span>
+<span id="cb61-7"><a href="#cb61-7" aria-hidden="true" tabindex="-1"></a>    hf_tokenizer<span class="op">=</span>hf_tokenizer,</span>
+<span id="cb61-8"><a href="#cb61-8" aria-hidden="true" tabindex="-1"></a>    hf_model<span class="op">=</span>hf_model,</span>
+<span id="cb61-9"><a href="#cb61-9" aria-hidden="true" tabindex="-1"></a>    preproccesing_func<span class="op">=</span>preproc_hf_dataset,</span>
+<span id="cb61-10"><a href="#cb61-10" aria-hidden="true" tabindex="-1"></a>    batch_decode_kwargs<span class="op">=</span>{<span class="st">"labels"</span>: label_names},</span>
+<span id="cb61-11"><a href="#cb61-11" aria-hidden="true" tabindex="-1"></a>    shuffle<span class="op">=</span><span class="va">True</span>,</span>
+<span id="cb61-12"><a href="#cb61-12" aria-hidden="true" tabindex="-1"></a>    batch_size<span class="op">=</span><span class="dv">8</span>,</span>
+<span id="cb61-13"><a href="#cb61-13" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb61-14"><a href="#cb61-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb61-15"><a href="#cb61-15" aria-hidden="true" tabindex="-1"></a>val_dl <span class="op">=</span> TextDataLoader(</span>
+<span id="cb61-16"><a href="#cb61-16" aria-hidden="true" tabindex="-1"></a>    tokenized_datasets[<span class="st">"validation"</span>],</span>
+<span id="cb61-17"><a href="#cb61-17" aria-hidden="true" tabindex="-1"></a>    hf_arch<span class="op">=</span>hf_arch,</span>
+<span id="cb61-18"><a href="#cb61-18" aria-hidden="true" tabindex="-1"></a>    hf_config<span class="op">=</span>hf_config,</span>
+<span id="cb61-19"><a href="#cb61-19" aria-hidden="true" tabindex="-1"></a>    hf_tokenizer<span class="op">=</span>hf_tokenizer,</span>
+<span id="cb61-20"><a href="#cb61-20" aria-hidden="true" tabindex="-1"></a>    hf_model<span class="op">=</span>hf_model,</span>
+<span id="cb61-21"><a href="#cb61-21" aria-hidden="true" tabindex="-1"></a>    preproccesing_func<span class="op">=</span>preproc_hf_dataset,</span>
+<span id="cb61-22"><a href="#cb61-22" aria-hidden="true" tabindex="-1"></a>    batch_decode_kwargs<span class="op">=</span>{<span class="st">"labels"</span>: label_names},</span>
+<span id="cb61-23"><a href="#cb61-23" aria-hidden="true" tabindex="-1"></a>    batch_size<span class="op">=</span><span class="dv">16</span>,</span>
+<span id="cb61-24"><a href="#cb61-24" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb61-25"><a href="#cb61-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb61-26"><a href="#cb61-26" aria-hidden="true" tabindex="-1"></a>dls <span class="op">=</span> DataLoaders(trn_dl, val_dl)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="define-your-blearner" class="level5">
+<h5 class="anchored" data-anchor-id="define-your-blearner">Define your <a href="https://ohmeow.github.io/blurr/text-modeling-core.html#blearner"><code>Blearner</code></a></h5>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb62"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb62-1"><a href="#cb62-1" aria-hidden="true" tabindex="-1"></a>learn <span class="op">=</span> BlearnerForSequenceClassification(dls, hf_model, loss_func<span class="op">=</span>PreCalculatedCrossEntropyLoss())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="train" class="level5">
+<h5 class="anchored" data-anchor-id="train">Train</h5>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb63"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb63-1"><a href="#cb63-1" aria-hidden="true" tabindex="-1"></a>learn.lr_find()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+
+<style>
+    /* Turns off some styling */
+    progress {
+        /* gets rid of default border in Firefox and Opera. */
+        border: none;
+        /* Needs to be in here for Safari polyfill so background images work as expected. */
+        background-size: auto;
+    }
+    progress:not([value]), progress:not([value])::-webkit-progress-bar {
+        background: repeating-linear-gradient(45deg, #7e7e7e, #7e7e7e 10px, #5c5c5c 10px, #5c5c5c 20px);
+    }
+    .progress-bar-interrupted, .progress-bar-interrupted::-webkit-progress-bar {
+        background: #F44336;
+    }
+</style>
+</div>
+<div class="cell-output cell-output-display">
+
+</div>
+<div class="cell-output cell-output-display">
+<pre><code>SuggestedLRs(valley=7.585775892948732e-05)</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<p><img src="11_text-modeling-core_files/figure-html/cell-51-output-4.png" class="img-fluid"></p>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb65"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb65-1"><a href="#cb65-1" aria-hidden="true" tabindex="-1"></a>learn.fit_one_cycle(<span class="dv">1</span>, lr_max<span class="op">=</span><span class="fl">1e-3</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+
+<style>
+    /* Turns off some styling */
+    progress {
+        /* gets rid of default border in Firefox and Opera. */
+        border: none;
+        /* Needs to be in here for Safari polyfill so background images work as expected. */
+        background-size: auto;
+    }
+    progress:not([value]), progress:not([value])::-webkit-progress-bar {
+        background: repeating-linear-gradient(45deg, #7e7e7e, #7e7e7e 10px, #5c5c5c 10px, #5c5c5c 20px);
+    }
+    .progress-bar-interrupted, .progress-bar-interrupted::-webkit-progress-bar {
+        background: #F44336;
+    }
+</style>
+</div>
+<div class="cell-output cell-output-display">
+
+<table class="dataframe table table-sm table-striped">
+  <thead>
+    <tr>
+      <th>epoch</th>
+      <th>train_loss</th>
+      <th>valid_loss</th>
+      <th>time</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>0</td>
+      <td>0.522506</td>
+      <td>0.483814</td>
+      <td>00:13</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb66"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb66-1"><a href="#cb66-1" aria-hidden="true" tabindex="-1"></a>learn.unfreeze()</span>
+<span id="cb66-2"><a href="#cb66-2" aria-hidden="true" tabindex="-1"></a>learn.fit_one_cycle(<span class="dv">2</span>, lr_max<span class="op">=</span><span class="bu">slice</span>(<span class="fl">1e-8</span>, <span class="fl">1e-6</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+
+<style>
+    /* Turns off some styling */
+    progress {
+        /* gets rid of default border in Firefox and Opera. */
+        border: none;
+        /* Needs to be in here for Safari polyfill so background images work as expected. */
+        background-size: auto;
+    }
+    progress:not([value]), progress:not([value])::-webkit-progress-bar {
+        background: repeating-linear-gradient(45deg, #7e7e7e, #7e7e7e 10px, #5c5c5c 10px, #5c5c5c 20px);
+    }
+    .progress-bar-interrupted, .progress-bar-interrupted::-webkit-progress-bar {
+        background: #F44336;
+    }
+</style>
+</div>
+<div class="cell-output cell-output-display">
+
+<table class="dataframe table table-sm table-striped">
+  <thead>
+    <tr>
+      <th>epoch</th>
+      <th>train_loss</th>
+      <th>valid_loss</th>
+      <th>time</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>0</td>
+      <td>0.522194</td>
+      <td>0.483406</td>
+      <td>00:26</td>
+    </tr>
+    <tr>
+      <td>1</td>
+      <td>0.503598</td>
+      <td>0.482703</td>
+      <td>00:28</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb67"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb67-1"><a href="#cb67-1" aria-hidden="true" tabindex="-1"></a>learn.show_results(learner<span class="op">=</span>learn, max_n<span class="op">=</span><span class="dv">2</span>, trunc_at<span class="op">=</span><span class="dv">500</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+
+<style>
+    /* Turns off some styling */
+    progress {
+        /* gets rid of default border in Firefox and Opera. */
+        border: none;
+        /* Needs to be in here for Safari polyfill so background images work as expected. */
+        background-size: auto;
+    }
+    progress:not([value]), progress:not([value])::-webkit-progress-bar {
+        background: repeating-linear-gradient(45deg, #7e7e7e, #7e7e7e 10px, #5c5c5c 10px, #5c5c5c 20px);
+    }
+    .progress-bar-interrupted, .progress-bar-interrupted::-webkit-progress-bar {
+        background: #F44336;
+    }
+</style>
+</div>
+<div class="cell-output cell-output-display">
+
+</div>
+<div class="cell-output cell-output-display">
+
+<table class="dataframe table table-sm table-striped">
+  <thead>
+    <tr>
+      <th></th>
+      <th>text</th>
+      <th>target</th>
+      <th>prediction</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>Spansion products are to be available from both AMD and Fujitsu, AMD said. Spansion Flash memory solutions are available worldwide from AMD and Fujitsu.</td>
+      <td>equivalent</td>
+      <td>equivalent</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>However, EPA officials would not confirm the 20 percent figure. Only in the past few weeks have officials settled on the 20 percent figure.</td>
+      <td>not_equivalent</td>
+      <td>not_equivalent</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+</section>
+</section>
+</section>
+</section>
+<section id="tests" class="level2">
+<h2 class="anchored" data-anchor-id="tests">Tests</h2>
+<p>The tests below to ensure the core training code above works for <strong>all</strong> pretrained sequence classification models available in Hugging Face. These tests are excluded from the CI workflow because of how long they would take to run and the amount of data that would be required to download.</p>
+<p><strong>Note</strong>: Feel free to modify the code below to test whatever pretrained classification models you are working with … and if any of your pretrained sequence classification models fail, please submit a github issue <em>(or a PR if you’d like to fix it yourself)</em></p>
+<div class="cell">
+<div class="cell-output cell-output-display">
+
+<table class="dataframe table table-sm table-striped">
+  <thead>
+    <tr>
+      <th></th>
+      <th>arch</th>
+      <th>tokenizer</th>
+      <th>model</th>
+      <th>result</th>
+      <th>error</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>albert</td>
+      <td>AlbertTokenizerFast</td>
+      <td>AlbertForSequenceClassification</td>
+      <td>PASSED</td>
+      <td></td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>bart</td>
+      <td>BartTokenizerFast</td>
+      <td>BartForSequenceClassification</td>
+      <td>PASSED</td>
+      <td></td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>bert</td>
+      <td>BertTokenizerFast</td>
+      <td>BertForSequenceClassification</td>
+      <td>PASSED</td>
+      <td></td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>big_bird</td>
+      <td>BigBirdTokenizerFast</td>
+      <td>BigBirdForSequenceClassification</td>
+      <td>PASSED</td>
+      <td></td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>bigbird_pegasus</td>
+      <td>PegasusTokenizerFast</td>
+      <td>BigBirdPegasusForSequenceClassification</td>
+      <td>PASSED</td>
+      <td></td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>ctrl</td>
+      <td>CTRLTokenizer</td>
+      <td>CTRLForSequenceClassification</td>
+      <td>PASSED</td>
+      <td></td>
+    </tr>
+    <tr>
+      <th>6</th>
+      <td>camembert</td>
+      <td>CamembertTokenizerFast</td>
+      <td>CamembertForSequenceClassification</td>
+      <td>PASSED</td>
+      <td></td>
+    </tr>
+    <tr>
+      <th>7</th>
+      <td>canine</td>
+      <td>CanineTokenizer</td>
+      <td>CanineForSequenceClassification</td>
+      <td>PASSED</td>
+      <td></td>
+    </tr>
+    <tr>
+      <th>8</th>
+      <td>convbert</td>
+      <td>ConvBertTokenizerFast</td>
+      <td>ConvBertForSequenceClassification</td>
+      <td>PASSED</td>
+      <td></td>
+    </tr>
+    <tr>
+      <th>9</th>
+      <td>deberta</td>
+      <td>DebertaTokenizerFast</td>
+      <td>DebertaForSequenceClassification</td>
+      <td>PASSED</td>
+      <td></td>
+    </tr>
+    <tr>
+      <th>10</th>
+      <td>deberta_v2</td>
+      <td>DebertaV2TokenizerFast</td>
+      <td>DebertaV2ForSequenceClassification</td>
+      <td>PASSED</td>
+      <td></td>
+    </tr>
+    <tr>
+      <th>11</th>
+      <td>distilbert</td>
+      <td>DistilBertTokenizerFast</td>
+      <td>DistilBertForSequenceClassification</td>
+      <td>PASSED</td>
+      <td></td>
+    </tr>
+    <tr>
+      <th>12</th>
+      <td>electra</td>
+      <td>ElectraTokenizerFast</td>
+      <td>ElectraForSequenceClassification</td>
+      <td>PASSED</td>
+      <td></td>
+    </tr>
+    <tr>
+      <th>13</th>
+      <td>flaubert</td>
+      <td>FlaubertTokenizer</td>
+      <td>FlaubertForSequenceClassification</td>
+      <td>PASSED</td>
+      <td></td>
+    </tr>
+    <tr>
+      <th>14</th>
+      <td>funnel</td>
+      <td>FunnelTokenizerFast</td>
+      <td>FunnelForSequenceClassification</td>
+      <td>PASSED</td>
+      <td></td>
+    </tr>
+    <tr>
+      <th>15</th>
+      <td>gpt2</td>
+      <td>GPT2TokenizerFast</td>
+      <td>GPT2ForSequenceClassification</td>
+      <td>PASSED</td>
+      <td></td>
+    </tr>
+    <tr>
+      <th>16</th>
+      <td>gptj</td>
+      <td>GPT2TokenizerFast</td>
+      <td>GPTJForSequenceClassification</td>
+      <td>PASSED</td>
+      <td></td>
+    </tr>
+    <tr>
+      <th>17</th>
+      <td>gpt_neo</td>
+      <td>GPT2TokenizerFast</td>
+      <td>GPTNeoForSequenceClassification</td>
+      <td>PASSED</td>
+      <td></td>
+    </tr>
+    <tr>
+      <th>18</th>
+      <td>ibert</td>
+      <td>RobertaTokenizer</td>
+      <td>IBertForSequenceClassification</td>
+      <td>PASSED</td>
+      <td></td>
+    </tr>
+    <tr>
+      <th>19</th>
+      <td>led</td>
+      <td>LEDTokenizerFast</td>
+      <td>LEDForSequenceClassification</td>
+      <td>PASSED</td>
+      <td></td>
+    </tr>
+    <tr>
+      <th>20</th>
+      <td>longformer</td>
+      <td>LongformerTokenizerFast</td>
+      <td>LongformerForSequenceClassification</td>
+      <td>PASSED</td>
+      <td></td>
+    </tr>
+    <tr>
+      <th>21</th>
+      <td>mbart</td>
+      <td>MBartTokenizerFast</td>
+      <td>MBartForSequenceClassification</td>
+      <td>PASSED</td>
+      <td></td>
+    </tr>
+    <tr>
+      <th>22</th>
+      <td>mpnet</td>
+      <td>MPNetTokenizerFast</td>
+      <td>MPNetForSequenceClassification</td>
+      <td>PASSED</td>
+      <td></td>
+    </tr>
+    <tr>
+      <th>23</th>
+      <td>mobilebert</td>
+      <td>MobileBertTokenizerFast</td>
+      <td>MobileBertForSequenceClassification</td>
+      <td>PASSED</td>
+      <td></td>
+    </tr>
+    <tr>
+      <th>24</th>
+      <td>openai</td>
+      <td>OpenAIGPTTokenizerFast</td>
+      <td>OpenAIGPTForSequenceClassification</td>
+      <td>PASSED</td>
+      <td></td>
+    </tr>
+    <tr>
+      <th>25</th>
+      <td>rembert</td>
+      <td>RemBertTokenizerFast</td>
+      <td>RemBertForSequenceClassification</td>
+      <td>PASSED</td>
+      <td></td>
+    </tr>
+    <tr>
+      <th>26</th>
+      <td>roformer</td>
+      <td>RoFormerTokenizerFast</td>
+      <td>RoFormerForSequenceClassification</td>
+      <td>PASSED</td>
+      <td></td>
+    </tr>
+    <tr>
+      <th>27</th>
+      <td>roberta</td>
+      <td>RobertaTokenizerFast</td>
+      <td>RobertaForSequenceClassification</td>
+      <td>PASSED</td>
+      <td></td>
+    </tr>
+    <tr>
+      <th>28</th>
+      <td>squeezebert</td>
+      <td>SqueezeBertTokenizerFast</td>
+      <td>SqueezeBertForSequenceClassification</td>
+      <td>PASSED</td>
+      <td></td>
+    </tr>
+    <tr>
+      <th>29</th>
+      <td>transfo_xl</td>
+      <td>TransfoXLTokenizer</td>
+      <td>TransfoXLForSequenceClassification</td>
+      <td>PASSED</td>
+      <td></td>
+    </tr>
+    <tr>
+      <th>30</th>
+      <td>xlm</td>
+      <td>XLMTokenizer</td>
+      <td>XLMForSequenceClassification</td>
+      <td>PASSED</td>
+      <td></td>
+    </tr>
+    <tr>
+      <th>31</th>
+      <td>xlm_roberta</td>
+      <td>XLMRobertaTokenizerFast</td>
+      <td>XLMRobertaForSequenceClassification</td>
+      <td>PASSED</td>
+      <td></td>
+    </tr>
+    <tr>
+      <th>32</th>
+      <td>xlnet</td>
+      <td>XLNetTokenizerFast</td>
+      <td>XLNetForSequenceClassification</td>
+      <td>PASSED</td>
+      <td></td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const disableStylesheet = (stylesheets) => {
+    for (let i=0; i < stylesheets.length; i++) {
+      const stylesheet = stylesheets[i];
+      stylesheet.rel = 'prefetch';
+    }
+  }
+  const enableStylesheet = (stylesheets) => {
+    for (let i=0; i < stylesheets.length; i++) {
+      const stylesheet = stylesheets[i];
+      stylesheet.rel = 'stylesheet';
+    }
+  }
+  const manageTransitions = (selector, allowTransitions) => {
+    const els = window.document.querySelectorAll(selector);
+    for (let i=0; i < els.length; i++) {
+      const el = els[i];
+      if (allowTransitions) {
+        el.classList.remove('notransition');
+      } else {
+        el.classList.add('notransition');
+      }
+    }
+  }
+  const toggleColorMode = (alternate) => {
+    // Switch the stylesheets
+    const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+    manageTransitions('#quarto-margin-sidebar .nav-link', false);
+    if (alternate) {
+      enableStylesheet(alternateStylesheets);
+      for (const sheetNode of alternateStylesheets) {
+        if (sheetNode.id === "quarto-bootstrap") {
+          toggleBodyColorMode(sheetNode);
+        }
+      }
+    } else {
+      disableStylesheet(alternateStylesheets);
+      toggleBodyColorPrimary();
+    }
+    manageTransitions('#quarto-margin-sidebar .nav-link', true);
+    // Switch the toggles
+    const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+    for (let i=0; i < toggles.length; i++) {
+      const toggle = toggles[i];
+      if (toggle) {
+        if (alternate) {
+          toggle.classList.add("alternate");     
+        } else {
+          toggle.classList.remove("alternate");
+        }
+      }
+    }
+    // Hack to workaround the fact that safari doesn't
+    // properly recolor the scrollbar when toggling (#1455)
+    if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+      manageTransitions("body", false);
+      window.scrollTo(0, 1);
+      setTimeout(() => {
+        window.scrollTo(0, 0);
+        manageTransitions("body", true);
+      }, 40);  
+    }
+  }
+  const isFileUrl = () => { 
+    return window.location.protocol === 'file:';
+  }
+  const hasAlternateSentinel = () => {  
+    let styleSentinel = getColorSchemeSentinel();
+    if (styleSentinel !== null) {
+      return styleSentinel === "alternate";
+    } else {
+      return false;
+    }
+  }
+  const setStyleSentinel = (alternate) => {
+    const value = alternate ? "alternate" : "default";
+    if (!isFileUrl()) {
+      window.localStorage.setItem("quarto-color-scheme", value);
+    } else {
+      localAlternateSentinel = value;
+    }
+  }
+  const getColorSchemeSentinel = () => {
+    if (!isFileUrl()) {
+      const storageValue = window.localStorage.getItem("quarto-color-scheme");
+      return storageValue != null ? storageValue : localAlternateSentinel;
+    } else {
+      return localAlternateSentinel;
+    }
+  }
+  let localAlternateSentinel = 'default';
+  // Dark / light mode switch
+  window.quartoToggleColorScheme = () => {
+    // Read the current dark / light value 
+    let toAlternate = !hasAlternateSentinel();
+    toggleColorMode(toAlternate);
+    setStyleSentinel(toAlternate);
+  };
+  // Ensure there is a toggle, if there isn't float one in the top right
+  if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+    const a = window.document.createElement('a');
+    a.classList.add('top-right');
+    a.classList.add('quarto-color-scheme-toggle');
+    a.href = "";
+    a.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+    const i = window.document.createElement("i");
+    i.classList.add('bi');
+    a.appendChild(i);
+    window.document.body.appendChild(a);
+  }
+  // Switch to dark mode if need be
+  if (hasAlternateSentinel()) {
+    toggleColorMode(true);
+  } 
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    target: function(trigger) {
+      return trigger.previousElementSibling;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    setTimeout(function() {
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const cites = ref.parentNode.getAttribute('data-cites').split(' ');
+    tippyHover(ref, function() {
+      var popup = window.document.createElement('div');
+      cites.forEach(function(cite) {
+        var citeDiv = window.document.createElement('div');
+        citeDiv.classList.add('hanging-indent');
+        citeDiv.classList.add('csl-entry');
+        var biblioDiv = window.document.getElementById('ref-' + cite);
+        if (biblioDiv) {
+          citeDiv.innerHTML = biblioDiv.innerHTML;
+        }
+        popup.appendChild(citeDiv);
+      });
+      return popup.innerHTML;
+    });
+  }
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var filterRegex = new RegExp(/https:\/\/ohmeow\.github\.io\/blurr\//);
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+    var links = window.document.querySelectorAll('a:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+          // target, if specified
+          link.setAttribute("target", "_blank");
+      }
+    }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>

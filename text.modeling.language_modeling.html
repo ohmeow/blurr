@@ -1,0 +1,1704 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.1.75">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="description" content="The text.modeling.language_modeling module contains custom models, custom splitters, etc… for both causal and MLM language modeling tasks. This includes things like training BERT from scratch or fine-tuning a particular pre-trained LM on your own corpus.">
+
+<title>blurr - Modeling</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: 1;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1.6em;
+  vertical-align: middle;
+}
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { color: #008000; } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { color: #008000; font-weight: bold; } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<link href="./favicon.ico" rel="icon">
+<script src="site_libs/quarto-html/quarto.js"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-dark.css" rel="prefetch" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-dark.min.css" rel="prefetch" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit"
+  }
+}</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" integrity="sha512-c3Nl8+7g4LMSTdrm621y7kf9v3SDPnhxLNhcjFJbKECVnmZHTdo+IRO05sNLTH/D3vA6u1X32ehoLC7WFVdheg==" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script>
+<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
+<script src="https://unpkg.com/@jupyter-widgets/html-manager@*/dist/embed-amd.js" crossorigin="anonymous"></script>
+
+
+<link rel="stylesheet" href="styles.css">
+<meta property="og:title" content="blurr - Modeling">
+<meta property="og:description" content="The text.modeling.language_modeling module contains custom models, custom splitters, etc… for both causal and MLM language modeling tasks. This includes things like training BERT from scratch or fine-tuning a particular pre-trained LM on your own corpus.">
+<meta property="og:site-name" content="blurr">
+<meta name="twitter:title" content="blurr - Modeling">
+<meta name="twitter:description" content="The text.modeling.language_modeling module contains custom models, custom splitters, etc… for both causal and MLM language modeling tasks. This includes things like training BERT from scratch or fine-tuning a particular pre-trained LM on your own corpus.">
+<meta name="twitter:card" content="summary">
+</head>
+
+<body class="nav-sidebar floating nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg navbar-dark ">
+      <div class="navbar-container container-fluid">
+      <a class="navbar-brand" href="./index.html">
+    <span class="navbar-title">blurr</span>
+  </a>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link active" href="./index.html" aria-current="page">Getting Started</a>
+  </li>  
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-resources" role="button" data-bs-toggle="dropdown" aria-expanded="false">Resources</a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-resources">    
+        <li>
+    <a class="dropdown-item" href="https://www.youtube.com/playlist?list=PLD80i8An1OEF8UOb9N9uSoidOGIMKW96t"><i class="bi bi-play-btn-fill" role="img">
+</i> 
+ <span class="dropdown-text">fastai x Hugging Face Study Group</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="https://huggingface.co/course/chapter1/1"><i class="bi bi-journal-bookmark-fill" role="img">
+</i> 
+ <span class="dropdown-text">Hugging Face Course</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="https://docs.fast.ai/"><i class="bi bi-link" role="img">
+</i> 
+ <span class="dropdown-text">fast.ai (docs)</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="https://huggingface.co/docs/transformers/index"><i class="bi bi-link" role="img">
+</i> 
+ <span class="dropdown-text">transformers (docs)</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-help" role="button" data-bs-toggle="dropdown" aria-expanded="false">Help</a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-help">    
+        <li>
+    <a class="dropdown-item" href="https://github.com/ohmeow/blurr/issues"><i class="bi bi-bug" role="img">
+</i> 
+ <span class="dropdown-text">Report an Issue</span></a>
+  </li>  
+    </ul>
+  </li>
+</ul>
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/ohmeow/blurr/"><i class="bi bi-github" role="img">
+</i> 
+ </a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://twitter.com/waydegilliam"><i class="bi bi-twitter" role="img">
+</i> 
+ </a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://www.ohmeow.com/"><i class="bi bi-house" role="img" aria-label="Twitter">
+</i> 
+ </a>
+  </li>  
+</ul>
+              <div class="quarto-toggle-container">
+                  <a href="" class="quarto-color-scheme-toggle nav-link" onclick="window.quartoToggleColorScheme(); return false;" title="Toggle dark mode"><i class="bi"></i></a>
+              </div>
+              <div id="quarto-search" class="" title="Search"></div>
+          </div> <!-- /navcollapse -->
+      </div> <!-- /container-fluid -->
+    </nav>
+  <nav class="quarto-secondary-nav" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+    <div class="container-fluid d-flex justify-content-between">
+      <h1 class="quarto-secondary-nav-title">Modeling</h1>
+      <button type="button" class="quarto-btn-toggle btn" aria-label="Show secondary navigation">
+        <i class="bi bi-chevron-right"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-full page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse sidebar-navigation floating overflow-auto">
+      <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+      </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true">Overview</a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">Getting Started</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./callbacks.html" class="sidebar-item-text sidebar-link">callbacks</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./utils.html" class="sidebar-item-text sidebar-link">utils</a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="true">Text</a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="true">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-expanded="false">Sequence Classification</a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-expanded="false">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./text.data.core.html" class="sidebar-item-text sidebar-link">Data</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./text.modeling.core.html" class="sidebar-item-text sidebar-link">Modeling</a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" aria-expanded="false">Token Classification</a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" aria-expanded="false">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./text.data.token_classification.html" class="sidebar-item-text sidebar-link">Data</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./text.modeling.token_classification.html" class="sidebar-item-text sidebar-link">Modeling</a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" aria-expanded="false">Question &amp; Answering</a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" aria-expanded="false">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./text.data.question_answering.html" class="sidebar-item-text sidebar-link">Data</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./text.modeling.question_answering.html" class="sidebar-item-text sidebar-link">Modeling</a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" aria-expanded="true">Language Modeling</a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" aria-expanded="true">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-6" class="collapse list-unstyled sidebar-section depth2 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./text.data.language_modeling.html" class="sidebar-item-text sidebar-link">Data</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./text.modeling.language_modeling.html" class="sidebar-item-text sidebar-link active">Modeling</a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" aria-expanded="false">Seq2Seq: Core</a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" aria-expanded="false">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-7" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./text.data.seq2seq.core.html" class="sidebar-item-text sidebar-link">Data</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./text.modeling.seq2seq.core.html" class="sidebar-item-text sidebar-link">Modeling</a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" aria-expanded="false">Seq2Seq: Summarization</a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" aria-expanded="false">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-8" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./text.data.seq2seq.summarization.html" class="sidebar-item-text sidebar-link">Data</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./text.modeling.seq2seq.summarization.html" class="sidebar-item-text sidebar-link">Modeling</a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-9" aria-expanded="false">Seq2Seq: Translation</a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-9" aria-expanded="false">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-9" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./text.data.seq2seq.translation.html" class="sidebar-item-text sidebar-link">Data</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./text.modeling.seq2seq.translation.html" class="sidebar-item-text sidebar-link">Modeling</a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./text.callbacks.html" class="sidebar-item-text sidebar-link">callbacks</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./text.utils.html" class="sidebar-item-text sidebar-link">utils</a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-10" aria-expanded="true">Examples</a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-10" aria-expanded="true">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-10" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./examples.text.high_level_api.html" class="sidebar-item-text sidebar-link">Using the high-level Blurr API</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./examples.text.glue.html" class="sidebar-item-text sidebar-link">GLUE classification tasks</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./examples.text.glue_low_level_api.html" class="sidebar-item-text sidebar-link">Using the Low-level fastai API</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./examples.text.multilabel_classification.html" class="sidebar-item-text sidebar-link">Multi-label classification</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./examples.text.causal_lm_gpt2.html" class="sidebar-item-text sidebar-link">Causal Language Modeling with GPT-2</a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#setup" id="toc-setup" class="nav-link active" data-scroll-target="#setup">Setup</a></li>
+  <li><a href="#mid-level-api" id="toc-mid-level-api" class="nav-link" data-scroll-target="#mid-level-api">Mid-level API</a>
+  <ul>
+  <li><a href="#lmmetricscallback" id="toc-lmmetricscallback" class="nav-link" data-scroll-target="#lmmetricscallback">LMMetricsCallback</a></li>
+  <li><a href="#examples" id="toc-examples" class="nav-link" data-scroll-target="#examples">Examples</a>
+  <ul class="collapse">
+  <li><a href="#causal-language-modeling" id="toc-causal-language-modeling" class="nav-link" data-scroll-target="#causal-language-modeling">Causal Language Modeling</a></li>
+  <li><a href="#masked-language-modeling" id="toc-masked-language-modeling" class="nav-link" data-scroll-target="#masked-language-modeling">Masked Language Modeling</a></li>
+  </ul></li>
+  <li><a href="#learner.blurr_fill_mask" id="toc-learner.blurr_fill_mask" class="nav-link" data-scroll-target="#learner.blurr_fill_mask">Learner.blurr_fill_mask</a></li>
+  </ul></li>
+  <li><a href="#high-level-api" id="toc-high-level-api" class="nav-link" data-scroll-target="#high-level-api">High-level API</a>
+  <ul>
+  <li><a href="#blearnerforlm" id="toc-blearnerforlm" class="nav-link" data-scroll-target="#blearnerforlm">BlearnerForLM</a></li>
+  <li><a href="#example" id="toc-example" class="nav-link" data-scroll-target="#example">Example</a>
+  <ul class="collapse">
+  <li><a href="#causal-language-modeling-1" id="toc-causal-language-modeling-1" class="nav-link" data-scroll-target="#causal-language-modeling-1">Causal language modeling</a></li>
+  <li><a href="#masked-language-modeling-1" id="toc-masked-language-modeling-1" class="nav-link" data-scroll-target="#masked-language-modeling-1">Masked language modeling</a></li>
+  </ul></li>
+  </ul></li>
+  </ul>
+<div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/ohmeow/blurr/issues/new" class="toc-action">Report an issue</a></p></div></div></nav>
+    </div>
+<!-- main -->
+<main class="content column-body" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title d-none d-lg-block">Modeling</h1>
+</div>
+
+<div>
+  <div class="description">
+    The <code>text.modeling.language_modeling</code> module contains custom models, custom splitters, etc… for both causal and MLM language modeling tasks. This includes things like training BERT from scratch or fine-tuning a particular pre-trained LM on your own corpus.
+  </div>
+</div>
+
+
+<div class="quarto-title-meta">
+
+    
+    
+  </div>
+  
+
+</header>
+
+<!-- WARNING: THIS FILE WAS AUTOGENERATED! DO NOT EDIT! -->
+<section id="setup" class="level2">
+<h2 class="anchored" data-anchor-id="setup">Setup</h2>
+<p>For this example, we’ll use the <code>WIKITEXT_TINY</code> dataset available from fastai to demonstrate how to configure BLURR code for language modeling</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>wiki_path <span class="op">=</span> untar_data(URLs.WIKITEXT_TINY)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>train_df <span class="op">=</span> pd.read_csv(wiki_path <span class="op">/</span> <span class="st">"train.csv"</span>, header<span class="op">=</span><span class="va">None</span>)</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>valid_df <span class="op">=</span> pd.read_csv(wiki_path <span class="op">/</span> <span class="st">"test.csv"</span>, header<span class="op">=</span><span class="va">None</span>)</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>train_df[<span class="st">"is_valid"</span>] <span class="op">=</span> <span class="va">False</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>valid_df[<span class="st">"is_valid"</span>] <span class="op">=</span> <span class="va">True</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> pd.concat([train_df, valid_df])</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="bu">len</span>(df))</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>df.head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>662</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+
+<div>
+
+<table class="dataframe table table-sm table-striped">
+  <thead>
+    <tr>
+      <th></th>
+      <th>0</th>
+      <th>is_valid</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>\n = 2013 – 14 York City F.C. season = \n \n The 2013 – 14 season was the &lt;unk&gt; season of competitive association football and 77th season in the Football League played by York City Football Club , a professional football club based in York , North Yorkshire , England . Their 17th @-@ place finish in 2012 – 13 meant it was their second consecutive season in League Two . The season ran from 1 July 2013 to 30 June 2014 . \n Nigel Worthington , starting his first full season as York manager , made eight permanent summer signings . By the turn of the year York were only above the relegation z...</td>
+      <td>False</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>\n = Big Boy ( song ) = \n \n " Big Boy " &lt;unk&gt; " I 'm A Big Boy Now " was the first single ever recorded by the Jackson 5 , which was released by Steeltown Records in January 1968 . The group played instruments on many of their Steeltown compositions , including " Big Boy " . The song was neither a critical nor commercial success , but the Jackson family were delighted with the outcome nonetheless . \n The Jackson 5 would release a second single with Steeltown Records before moving to Motown Records . The group 's recordings at Steeltown Records were thought to be lost , but they were re...</td>
+      <td>False</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>\n = The Remix ( Lady Gaga album ) = \n \n The Remix is a remix album by American recording artist Lady Gaga . Released in Japan on March 3 , 2010 , it contains remixes of the songs from her first studio album , The Fame ( 2008 ) , and her third extended play , The Fame Monster ( 2009 ) . A revised version of the track list was prepared for release in additional markets , beginning with Mexico on May 3 , 2010 . A number of recording artists have produced the songs , including Pet Shop Boys , Passion Pit and The Sound of Arrows . The remixed versions feature both uptempo and &lt;unk&gt; composit...</td>
+      <td>False</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>\n = New Year 's Eve ( Up All Night ) = \n \n " New Year 's Eve " is the twelfth episode of the first season of the American comedy television series Up All Night . The episode originally aired on NBC in the United States on January 12 , 2012 . It was written by Erica &lt;unk&gt; and was directed by Beth McCarthy @-@ Miller . The episode also featured a guest appearance from Jason Lee as Chris and Reagan 's neighbor and Ava 's boyfriend , Kevin . \n During Reagan ( Christina Applegate ) and Chris 's ( Will &lt;unk&gt; ) first New Year 's Eve game night , Reagan 's competitiveness comes out causing Ch...</td>
+      <td>False</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>\n = Geopyxis carbonaria = \n \n Geopyxis carbonaria is a species of fungus in the genus Geopyxis , family &lt;unk&gt; . First described to science in 1805 , and given its current name in 1889 , the species is commonly known as the charcoal loving elf @-@ cup , dwarf &lt;unk&gt; cup , &lt;unk&gt; &lt;unk&gt; cup , or pixie cup . The small , &lt;unk&gt; @-@ shaped fruitbodies of the fungus are reddish @-@ brown with a whitish fringe and measure up to 2 cm ( 0 @.@ 8 in ) across . They have a short , tapered stalk . Fruitbodies are commonly found on soil where brush has recently been burned , sometimes in great numbers ....</td>
+      <td>False</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+</div>
+</section>
+<section id="mid-level-api" class="level2">
+<h2 class="anchored" data-anchor-id="mid-level-api">Mid-level API</h2>
+<hr>
+<p><a href="https://github.com/ohmeow/blurr/blob/master/blurr/text/modeling/language_modeling.py#L50" target="_blank" style="float:right; font-size:smaller">source</a></p>
+<section id="lmmetricscallback" class="level3">
+<h3 class="anchored" data-anchor-id="lmmetricscallback">LMMetricsCallback</h3>
+<blockquote class="blockquote">
+<pre><code> LMMetricsCallback (**kwargs)</code></pre>
+</blockquote>
+<p>A fastai friendly metric implemented as a callback so that we can handle use cases where we don’t want to count tokens marked to be ignored or else not count batches where there are no targs</p>
+<p>In this section, we’ll add helpful metrics for calculating accuracy and perplexity for both causal and masked language modeling tasks.</p>
+</section>
+<section id="examples" class="level3">
+<h3 class="anchored" data-anchor-id="examples">Examples</h3>
+<section id="causal-language-modeling" class="level4">
+<h4 class="anchored" data-anchor-id="causal-language-modeling">Causal Language Modeling</h4>
+<p>In causal language modeling, we are attempting to predict the next token given those before it.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>model_cls <span class="op">=</span> AutoModelForCausalLM</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>hf_logging.set_verbosity_error()</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>pretrained_model_name <span class="op">=</span> <span class="st">"gpt2"</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>hf_arch, hf_config, hf_tokenizer, hf_model <span class="op">=</span> get_hf_objects(pretrained_model_name, model_cls<span class="op">=</span>model_cls)</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> hf_tokenizer.pad_token <span class="kw">is</span> <span class="va">None</span>:</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>    hf_tokenizer.pad_token <span class="op">=</span> <span class="st">"[PAD]"</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Using pad_token, but it is not set yet.</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>preprocessor <span class="op">=</span> LMPreprocessor(hf_tokenizer, chunk_size<span class="op">=</span><span class="dv">128</span>, text_attr<span class="op">=</span><span class="dv">0</span>)</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>proc_df <span class="op">=</span> preprocessor.process_df(train_df, valid_df)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>bbtfm <span class="op">=</span> LMBatchTokenizeTransform(hf_arch, hf_config, hf_tokenizer, hf_model, lm_strategy_cls<span class="op">=</span>CausalLMStrategy)</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>blocks <span class="op">=</span> (TextBlock(batch_tokenize_tfm<span class="op">=</span>bbtfm, input_return_type<span class="op">=</span>CausalLMTextInput), noop)</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>dblock <span class="op">=</span> DataBlock(blocks<span class="op">=</span>blocks, get_x<span class="op">=</span>ColReader(<span class="st">"proc_0"</span>), splitter<span class="op">=</span>ColSplitter(col<span class="op">=</span><span class="st">"is_valid"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>dls <span class="op">=</span> dblock.dataloaders(proc_df, bs<span class="op">=</span><span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>b <span class="op">=</span> dls.one_batch()</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>b[<span class="dv">0</span>][<span class="st">"input_ids"</span>].shape, b[<span class="dv">0</span>][<span class="st">"labels"</span>].shape, b[<span class="dv">1</span>].shape</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>(torch.Size([2, 129]), torch.Size([2, 129]), torch.Size([2, 129]))</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>dls.show_batch(dataloaders<span class="op">=</span>dls, max_n<span class="op">=</span><span class="dv">2</span>, trunc_at<span class="op">=</span><span class="dv">500</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+
+<table class="dataframe table table-sm table-striped">
+  <thead>
+    <tr>
+      <th></th>
+      <th>text</th>
+      <th>target</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>₹ 40 million ( US $ 590 @,@ 000 ) was spent solely on VFX for Magadheera. \n \n = = = &lt;unk&gt; = = = \n \n During the film's shoot at Ramoji Film City in late November 2008, a 500 square feet ( 46 m2 ) film can, containing two or three scenes, was discovered missing from Rainbow lab. The filmmakers filed a case at &lt;unk&gt; police station. Security personnel and film unit members searched, but failed to recover the reels. Rajamouli's unit said it was not important if the scenes from</td>
+      <td>�� 40 million ( US $ 590 @,@ 000 ) was spent solely on VFX for Magadheera. \n \n = = = &lt;unk&gt; = = = \n \n During the film's shoot at Ramoji Film City in late November 2008, a 500 square feet ( 46 m2 ) film can, containing two or three scenes, was discovered missing from Rainbow lab. The filmmakers filed a case at &lt;unk&gt; police station. Security personnel and film unit members searched, but failed to recover the reels. Rajamouli's unit said it was not important if the scenes from</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>ology of Ritual and Magic was reviewed by John Hutchings for the Folklore journal, the published arm of The Folklore Society. He highlighted how the work would be of benefit to folklorists, by putting various charms then in museum exhibits – such as dead cats, buried shoes and witch bottles – into the wider context of ritual activity. He opined that it was " a little disappointing " that the examples were almost all from London and the Home Counties, but described the book as " &lt;unk&gt; written, c</td>
+      <td>logy of Ritual and Magic was reviewed by John Hutchings for the Folklore journal, the published arm of The Folklore Society. He highlighted how the work would be of benefit to folklorists, by putting various charms then in museum exhibits – such as dead cats, buried shoes and witch bottles – into the wider context of ritual activity. He opined that it was " a little disappointing " that the examples were almost all from London and the Home Counties, but described the book as " &lt;unk&gt; written, car</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+<section id="training" class="level5">
+<h5 class="anchored" data-anchor-id="training">Training</h5>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>model <span class="op">=</span> BaseModelWrapper(hf_model)</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>fit_cbs <span class="op">=</span> [LMMetricsCallback()]</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>learn <span class="op">=</span> Learner(</span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>    dls,</span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>    model,</span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>    opt_func<span class="op">=</span>partial(Adam),</span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>    loss_func<span class="op">=</span>PreCalculatedCrossEntropyLoss(),</span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>    cbs<span class="op">=</span>[BaseModelCallback],</span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a>    metrics<span class="op">=</span>[perplexity],</span>
+<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a>    splitter<span class="op">=</span>blurr_splitter,</span>
+<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a>).to_fp16()</span>
+<span id="cb12-13"><a href="#cb12-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-14"><a href="#cb12-14" aria-hidden="true" tabindex="-1"></a>learn.freeze()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>learn.summary()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="co"># b = dls.one_batch()</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="co"># preds = learn.model(b[0])</span></span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a><span class="co"># len(preds),preds[0], preds[1].shape</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="bu">len</span>(learn.opt.param_groups))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>5</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>learn.lr_find(suggest_funcs<span class="op">=</span>[minimum, steep, valley, slide])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+
+<style>
+    /* Turns off some styling */
+    progress {
+        /* gets rid of default border in Firefox and Opera. */
+        border: none;
+        /* Needs to be in here for Safari polyfill so background images work as expected. */
+        background-size: auto;
+    }
+    progress:not([value]), progress:not([value])::-webkit-progress-bar {
+        background: repeating-linear-gradient(45deg, #7e7e7e, #7e7e7e 10px, #5c5c5c 10px, #5c5c5c 20px);
+    }
+    .progress-bar-interrupted, .progress-bar-interrupted::-webkit-progress-bar {
+        background: #F44336;
+    }
+</style>
+</div>
+<div class="cell-output cell-output-display">
+
+</div>
+<div class="cell-output cell-output-display">
+<pre><code>SuggestedLRs(minimum=0.0013182567432522773, steep=3.311311274956097e-06, valley=0.0012022644514217973, slide=0.0030199517495930195)</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<p><img src="12_text-modeling-language-modeling_files/figure-html/cell-16-output-4.png" class="img-fluid"></p>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>learn.fit_one_cycle(<span class="dv">1</span>, lr_max<span class="op">=</span><span class="fl">3e-3</span>, cbs<span class="op">=</span>fit_cbs)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+
+<style>
+    /* Turns off some styling */
+    progress {
+        /* gets rid of default border in Firefox and Opera. */
+        border: none;
+        /* Needs to be in here for Safari polyfill so background images work as expected. */
+        background-size: auto;
+    }
+    progress:not([value]), progress:not([value])::-webkit-progress-bar {
+        background: repeating-linear-gradient(45deg, #7e7e7e, #7e7e7e 10px, #5c5c5c 10px, #5c5c5c 20px);
+    }
+    .progress-bar-interrupted, .progress-bar-interrupted::-webkit-progress-bar {
+        background: #F44336;
+    }
+</style>
+</div>
+<div class="cell-output cell-output-display">
+
+<table class="dataframe table table-sm table-striped">
+  <thead>
+    <tr>
+      <th>epoch</th>
+      <th>train_loss</th>
+      <th>valid_loss</th>
+      <th>perplexity</th>
+      <th>lm_accuracy</th>
+      <th>time</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>0</td>
+      <td>3.461066</td>
+      <td>3.167435</td>
+      <td>23.746506</td>
+      <td>0.417437</td>
+      <td>24:57</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+</section>
+<section id="showing-results" class="level5">
+<h5 class="anchored" data-anchor-id="showing-results">Showing results</h5>
+<p>Below we’ll add in additional functionality to more intuitively show the results of our model.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>learn.show_results(learner<span class="op">=</span>learn, trunc_at<span class="op">=</span><span class="dv">250</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+
+<style>
+    /* Turns off some styling */
+    progress {
+        /* gets rid of default border in Firefox and Opera. */
+        border: none;
+        /* Needs to be in here for Safari polyfill so background images work as expected. */
+        background-size: auto;
+    }
+    progress:not([value]), progress:not([value])::-webkit-progress-bar {
+        background: repeating-linear-gradient(45deg, #7e7e7e, #7e7e7e 10px, #5c5c5c 10px, #5c5c5c 20px);
+    }
+    .progress-bar-interrupted, .progress-bar-interrupted::-webkit-progress-bar {
+        background: #F44336;
+    }
+</style>
+</div>
+<div class="cell-output cell-output-display">
+
+</div>
+<div class="cell-output cell-output-display">
+
+<table class="dataframe table table-sm table-striped">
+  <thead>
+    <tr>
+      <th></th>
+      <th>text</th>
+      <th>target</th>
+      <th>prediction</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>. \n The German government has said that it does not consider Scientology a religion, but a " commercial enterprise with a history of taking advantage of vulnerable individuals and an extreme dislike of any criticism " whose " totalitarian structure a</td>
+      <td>\n The German government has said that it does not consider Scientology a religion, but a " commercial enterprise with a history of taking advantage of vulnerable individuals and an extreme dislike of any criticism " whose " totalitarian structure an</td>
+      <td>&lt;\n  &lt; army was been that the is not want the to threat, but that " cult organization " a commercial of religious advantage of the individuals " the interest religious of the form of. " &lt; ideology " political " be a threat to the "s national system "</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>the Japanese launched a heavy counter @-@ attack, which was turned back with heavy casualties. After this, the situation on &lt;unk&gt; became largely static, as the Japanese focused primarily on subsistence, and the US forces chose to adopt a mainly defe</td>
+      <td>Japanese launched a heavy counter @-@ attack, which was turned back with heavy casualties. After this, the situation on &lt;unk&gt; became largely static, as the Japanese focused primarily on subsistence, and the US forces chose to adopt a mainly defensiv</td>
+      <td>&lt; &lt; a series attackattack-@ attack on but was launched back by a fire.  the, the Japanese was theunk&gt; was more peaceful. with the Japanese were on on the farming and the Japanese and were to concentrate a more defensive strategy. on the the defensiv</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+</section>
+<section id="prediction" class="level5">
+<h5 class="anchored" data-anchor-id="prediction">Prediction</h5>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>learn.blurr_generate(<span class="st">"Blurr is fun to work with because"</span>, max_length<span class="op">=</span><span class="dv">50</span>, do_sample<span class="op">=</span><span class="va">True</span>, top_k<span class="op">=</span><span class="dv">25</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>[{'generated_texts': ' Blurr is fun to work with because the way he moves and talks to the audience is reminiscent of the way he talks to an audience and the way he behaves . He has a tendency to laugh at himself and others , especially when his humor seems'}]</code></pre>
+</div>
+</div>
+</section>
+</section>
+<section id="masked-language-modeling" class="level4">
+<h4 class="anchored" data-anchor-id="masked-language-modeling">Masked Language Modeling</h4>
+<p>In masked language modeling (MLM), we are attempting to predict the <strong><em>masked</em></strong> tokens. In Blurr, these are encapsulated by classes implementing the <a href="https://ohmeow.github.io/blurr/text-data-language-modeling.html#baselmstrategy"><code>BaseLMStrategy</code></a> base class.</p>
+<p>For a list of some of the more common strategies, see table 3 of the <a href="https://arxiv.org/abs/1910.10683">Exploring the Limits of Transfer Learning with a Unified Text-to-Text Transformer</a> paper. When fine-tuning a MLM model. you’ll want to make sure you use the same approach as the model authors should you be looking to reproduce their results … but our approach here makes it easy to play with different strategies regardless.</p>
+<p>In the example below, we’ll tell Blurr we want to use the BERT-style masking strategy.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>model_cls <span class="op">=</span> AutoModelForMaskedLM</span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>hf_logging.set_verbosity_error()</span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>pretrained_model_name <span class="op">=</span> <span class="st">"distilroberta-base"</span></span>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a>hf_arch, hf_config, hf_tokenizer, hf_model <span class="op">=</span> get_hf_objects(pretrained_model_name, model_cls<span class="op">=</span>model_cls)</span>
+<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-7"><a href="#cb23-7" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> hf_tokenizer.pad_token <span class="kw">is</span> <span class="va">None</span>:</span>
+<span id="cb23-8"><a href="#cb23-8" aria-hidden="true" tabindex="-1"></a>    hf_tokenizer.pad_token <span class="op">=</span> <span class="st">"[PAD]"</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>preprocessor <span class="op">=</span> LMPreprocessor(hf_tokenizer, chunk_size<span class="op">=</span><span class="dv">128</span>, text_attr<span class="op">=</span><span class="dv">0</span>)</span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>proc_df <span class="op">=</span> preprocessor.process_df(train_df, valid_df)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>bbtfm <span class="op">=</span> LMBatchTokenizeTransform(hf_arch, hf_config, hf_tokenizer, hf_model, lm_strategy_cls<span class="op">=</span>BertMLMStrategy)</span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>blocks <span class="op">=</span> (TextBlock(batch_tokenize_tfm<span class="op">=</span>bbtfm, input_return_type<span class="op">=</span>MLMTextInput), noop)</span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a>dblock <span class="op">=</span> DataBlock(blocks<span class="op">=</span>blocks, get_x<span class="op">=</span>ColReader(<span class="st">"proc_0"</span>), splitter<span class="op">=</span>ColSplitter(col<span class="op">=</span><span class="st">"is_valid"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>dls <span class="op">=</span> dblock.dataloaders(proc_df, bs<span class="op">=</span><span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>b <span class="op">=</span> dls.one_batch()</span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>b[<span class="dv">0</span>][<span class="st">"input_ids"</span>].shape, b[<span class="dv">0</span>][<span class="st">"labels"</span>].shape, b[<span class="dv">1</span>].shape</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>(torch.Size([2, 130]), torch.Size([2, 130]), torch.Size([2, 130]))</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>dls.show_batch(dataloaders<span class="op">=</span>dls, max_n<span class="op">=</span><span class="dv">2</span>, trunc_at<span class="op">=</span><span class="dv">250</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+
+<table class="dataframe table table-sm table-striped">
+  <thead>
+    <tr>
+      <th></th>
+      <th>text</th>
+      <th>target</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>� � � [u]  —  wanted  to  forcibly  retire  officers  with  more  than  25  years  of  service ,  as  they  thought &lt;mask&gt;  to  be    and &lt;mask&gt; , &lt;mask&gt;  most  importantly ,  rivals  for  power .  Most  of  the  older  officers  had [ more]  experience [ under]  the  Vietnamese  National &lt;mask&gt;  during  the  French  colonial  era ,  and  some  of [host]  younger  men  saw  them  as &lt;mask&gt;  detached &lt;mask&gt; &lt;mask&gt;  modern  situation .  The  Young  Turks  had  quite  a  lot &lt;mask&gt;  influence  over  Kh án h ,  as  Th i  and  K � � � &lt;mask&gt;  intervened  milit &lt;mask&gt;  to &lt;mask&gt;  him  from  a  coup  attempt  in  September &lt;mask&gt; &lt;mask&gt; als &lt;mask&gt;  V � � &lt;mask&gt;    and  D � � � � ng  V � �</td>
+      <td>� � � [u]  —  wanted  to  forcibly  retire  officers  with  more  than  25  years  of  service ,  as  they  thought [ them]  to  be    and [ ineffective] , [ but]  most  importantly ,  rivals  for  power .  Most  of  the  older  officers  had [ more]  experience [ under]  the  Vietnamese  National [ Army]  during  the  French  colonial  era ,  and  some  of [ the]  younger  men  saw  them  as [ too]  detached [ from] [ the]  modern  situation .  The  Young  Turks  had  quite  a  lot [ of]  influence  over  Kh án h ,  as  Th i  and  K � � � [ had]  intervened  milit [arily]  to [ save]  him  from  a  coup  attempt  in  September [ by] [ Gener] als [ ]  V � � [n]    and  D � � � � ng  V � �</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>� �  t  wait &lt;mask&gt;  a  fresh  start .  "  Later  in  the &lt;mask&gt; , &lt;mask&gt;  the  Phillies  won  game  five [,]  a    Brett  Myers    asked  Ham els  :  "  What  are [ you]  doing &lt;mask&gt; ?  I  thought  you  quit .  "  The  Phillies &lt;mask&gt;  the  World  Series &lt;mask&gt;  the  New  York &lt;mask&gt;  in  six  games .   \n  Rob   &lt;mask&gt; &lt;mask&gt;  and  columnist  for  ESPN . com , [ contradicted]  anyone  who &lt;mask&gt; [ burgers] els  ' &lt;mask&gt;  had  deteriorated , &lt;mask&gt;  commenting &lt;mask&gt;   \n  "  Last  October ,  everybody  was  ready  to    Ham els  some  sort  of  superhero .  This  was  largely &lt;mask&gt;  he  went &lt;mask&gt;  –  0  during  the  Phillies  '  championship  run ,  but</td>
+      <td>� �  t  wait [ for]  a  fresh  start .  "  Later  in  the [ series] , [ after]  the  Phillies  won  game  five [,]  a    Brett  Myers    asked  Ham els  :  "  What  are [ you]  doing [ here] ?  I  thought  you  quit .  "  The  Phillies [ lost]  the  World  Series [ to]  the  New  York [ Yankees]  in  six  games .   \n  Rob   [ a] [ ]  and  columnist  for  ESPN . com , [ contradicted]  anyone  who [ asserted] [ Ham] els  ' [ skills]  had  deteriorated , [ instead]  commenting [,]   \n  "  Last  October ,  everybody  was  ready  to    Ham els  some  sort  of  superhero .  This  was  largely [ because]  he  went [ 4]  –  0  during  the  Phillies  '  championship  run ,  but</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+<section id="training-1" class="level5">
+<h5 class="anchored" data-anchor-id="training-1">Training</h5>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a>model <span class="op">=</span> BaseModelWrapper(hf_model)</span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a>fit_cbs <span class="op">=</span> [LMMetricsCallback()]</span>
+<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-4"><a href="#cb30-4" aria-hidden="true" tabindex="-1"></a>learn <span class="op">=</span> Learner(</span>
+<span id="cb30-5"><a href="#cb30-5" aria-hidden="true" tabindex="-1"></a>    dls,</span>
+<span id="cb30-6"><a href="#cb30-6" aria-hidden="true" tabindex="-1"></a>    model,</span>
+<span id="cb30-7"><a href="#cb30-7" aria-hidden="true" tabindex="-1"></a>    opt_func<span class="op">=</span>partial(Adam, decouple_wd<span class="op">=</span><span class="va">True</span>),</span>
+<span id="cb30-8"><a href="#cb30-8" aria-hidden="true" tabindex="-1"></a>    loss_func<span class="op">=</span>PreCalculatedCrossEntropyLoss(),</span>
+<span id="cb30-9"><a href="#cb30-9" aria-hidden="true" tabindex="-1"></a>    cbs<span class="op">=</span>[BaseModelCallback],</span>
+<span id="cb30-10"><a href="#cb30-10" aria-hidden="true" tabindex="-1"></a>    metrics<span class="op">=</span>[perplexity],</span>
+<span id="cb30-11"><a href="#cb30-11" aria-hidden="true" tabindex="-1"></a>    splitter<span class="op">=</span>blurr_splitter,</span>
+<span id="cb30-12"><a href="#cb30-12" aria-hidden="true" tabindex="-1"></a>).to_fp16()</span>
+<span id="cb30-13"><a href="#cb30-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-14"><a href="#cb30-14" aria-hidden="true" tabindex="-1"></a>learn.freeze()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>learn.summary()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="bu">len</span>(learn.opt.param_groups))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>3</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a>learn.lr_find(suggest_funcs<span class="op">=</span>[minimum, steep, valley, slide])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+
+<style>
+    /* Turns off some styling */
+    progress {
+        /* gets rid of default border in Firefox and Opera. */
+        border: none;
+        /* Needs to be in here for Safari polyfill so background images work as expected. */
+        background-size: auto;
+    }
+    progress:not([value]), progress:not([value])::-webkit-progress-bar {
+        background: repeating-linear-gradient(45deg, #7e7e7e, #7e7e7e 10px, #5c5c5c 10px, #5c5c5c 20px);
+    }
+    .progress-bar-interrupted, .progress-bar-interrupted::-webkit-progress-bar {
+        background: #F44336;
+    }
+</style>
+</div>
+<div class="cell-output cell-output-display">
+
+</div>
+<div class="cell-output cell-output-display">
+<pre><code>SuggestedLRs(minimum=7.585775847473997e-08, steep=0.0003311311302240938, valley=0.0014454397605732083, slide=0.04786301031708717)</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<p><img src="12_text-modeling-language-modeling_files/figure-html/cell-30-output-4.png" class="img-fluid"></p>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a>learn.fit_one_cycle(<span class="dv">1</span>, lr_max<span class="op">=</span><span class="fl">1e-4</span>, cbs<span class="op">=</span>fit_cbs)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+
+<style>
+    /* Turns off some styling */
+    progress {
+        /* gets rid of default border in Firefox and Opera. */
+        border: none;
+        /* Needs to be in here for Safari polyfill so background images work as expected. */
+        background-size: auto;
+    }
+    progress:not([value]), progress:not([value])::-webkit-progress-bar {
+        background: repeating-linear-gradient(45deg, #7e7e7e, #7e7e7e 10px, #5c5c5c 10px, #5c5c5c 20px);
+    }
+    .progress-bar-interrupted, .progress-bar-interrupted::-webkit-progress-bar {
+        background: #F44336;
+    }
+</style>
+</div>
+<div class="cell-output cell-output-display">
+
+<table class="dataframe table table-sm table-striped">
+  <thead>
+    <tr>
+      <th>epoch</th>
+      <th>train_loss</th>
+      <th>valid_loss</th>
+      <th>perplexity</th>
+      <th>lm_accuracy</th>
+      <th>time</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>0</td>
+      <td>1.901993</td>
+      <td>1.800679</td>
+      <td>6.053758</td>
+      <td>0.638759</td>
+      <td>34:37</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+</section>
+<section id="showing-results-1" class="level5">
+<h5 class="anchored" data-anchor-id="showing-results-1">Showing results</h5>
+<p>Below we’ll add in additional functionality to more intuitively show the results of our model.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a>learn.show_results(learner<span class="op">=</span>learn, trunc_at<span class="op">=</span><span class="dv">250</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+
+<style>
+    /* Turns off some styling */
+    progress {
+        /* gets rid of default border in Firefox and Opera. */
+        border: none;
+        /* Needs to be in here for Safari polyfill so background images work as expected. */
+        background-size: auto;
+    }
+    progress:not([value]), progress:not([value])::-webkit-progress-bar {
+        background: repeating-linear-gradient(45deg, #7e7e7e, #7e7e7e 10px, #5c5c5c 10px, #5c5c5c 20px);
+    }
+    .progress-bar-interrupted, .progress-bar-interrupted::-webkit-progress-bar {
+        background: #F44336;
+    }
+</style>
+</div>
+<div class="cell-output cell-output-display">
+
+</div>
+<div class="cell-output cell-output-display">
+
+<table class="dataframe table table-sm table-striped">
+  <thead>
+    <tr>
+      <th></th>
+      <th>text</th>
+      <th>target</th>
+      <th>prediction</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>hostile  when  the &lt;mask&gt; ler  ' &lt;mask&gt;  presence &lt;mask&gt;  to  competition  over  resources ,  and  to &lt;mask&gt;  occupation [ of]  the  indigenous  inhabitants  '  lands .  European  diseases  dec imated  Aboriginal  populations &lt;mask&gt;  and  the &lt;mask&gt;  or  destruction  of [eper]  and  food &lt;mask&gt; [ sometimes]  led  to  starvation .  By &lt;mask&gt;  large  neither  the &lt;mask&gt;  nor  the    approached  the  conflict  in  an  organised  sense  and  conflict  occurred  between  groups  of  settlers  and  individual  tribes  rather  than  systematic  warfare .  At  times , &lt;mask&gt; ,  the &lt;mask&gt;  wars  did  see  the  involvement  of  British  soldiers &lt;mask&gt;  later  mounted [ police]  units .  Not  all  Aboriginal  groups &lt;mask&gt;  white  encro achment &lt;mask&gt;  their  lands &lt;mask&gt;  while  many    served  in  mounted  police  units  and  were  involved  in</td>
+      <td>hostile  when  the [ sett] ler  ' [s]  presence [ led]  to  competition  over  resources ,  and  to [ the]  occupation [ of]  the  indigenous  inhabitants  '  lands .  European  diseases  dec imated  Aboriginal  populations [,]  and  the [ occupation]  or  destruction  of [ lands]  and  food [ resources] [ sometimes]  led  to  starvation .  By [ and]  large  neither  the [ British]  nor  the    approached  the  conflict  in  an  organised  sense  and  conflict  occurred  between  groups  of  settlers  and  individual  tribes  rather  than  systematic  warfare .  At  times , [ however] ,  the [ frontier]  wars  did  see  the  involvement  of  British  soldiers [ and]  later  mounted [ police]  units .  Not  all  Aboriginal  groups [ resisted]  white  encro achment [ on]  their  lands [,]  while  many    served  in  mounted  police  units  and  were  involved  in</td>
+      <td>hostile  when  the [ sett] ler  ' [s]  presence [ led]  to  competition  over  resources ,  and  to [ the]  occupation [ of]  the  indigenous  inhabitants  '  lands .  European  diseases  dec imated  Aboriginal  populations [,]  and  the [ theft]  or  destruction  of [ crops]  and  food [ supplies] [ sometimes]  led  to  starvation .  By [ the]  large  neither  the [ British]  nor  the    approached  the  conflict  in  an  organised  sense  and  conflict  occurred  between  groups  of  settlers  and  individual  tribes  rather  than  systematic  warfare .  At  times , [ however] ,  the [ Indian]  wars  did  see  the  involvement  of  British  soldiers [ and]  later  mounted [ police]  units .  Not  all  Aboriginal  groups [ saw]  white  encro achment [ on]  their  lands [,]  while  many    served  in  mounted  police  units  and  were  involved  in</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>,  the  two &lt;mask&gt; , [ along]  with  the  Meridian  Downtown  Association ,  spearheaded  the  downtown    effort .  The  Alliance  serves  as  an  umbrella  organization ,  allowing  the  other  two  organizations  to &lt;mask&gt;  the  its  support [ staff] &lt;mask&gt;  housing ,  and  in  turn &lt;mask&gt;  Alliance  serves &lt;mask&gt;  a  liaison  between  the  organizations .  Plans  were &lt;mask&gt;  to  renov ate  the    Building , &lt;mask&gt; &lt;mask&gt; &lt;mask&gt;  Mayor    Barry  killed  the  plans  in  early  2010 &lt;mask&gt;  Today &lt;mask&gt;  the  Alliance  helps  to  promote [ qual]  development  and  restoration  downtown &lt;mask&gt;  its  goal  is  to  assist  businesses  such  as  specialty  shops ,  restaurants ,  and  bars [ because]  these  help  downtown &lt;mask&gt; &lt;mask&gt;  active &lt;mask&gt;  the  day  and  at  night .  The  Meridian  Downtown  Association</td>
+      <td>,  the  two [ organizations] , [ along]  with  the  Meridian  Downtown  Association ,  spearheaded  the  downtown    effort .  The  Alliance  serves  as  an  umbrella  organization ,  allowing  the  other  two  organizations  to [ use]  the  its  support [ staff] [ and]  housing ,  and  in  turn [ the]  Alliance  serves [ as]  a  liaison  between  the  organizations .  Plans  were [ underway]  to  renov ate  the    Building , [ but] [ newly] [ elected]  Mayor    Barry  killed  the  plans  in  early  2010 [.]  Today [,]  the  Alliance  helps  to  promote [ further]  development  and  restoration  downtown [ ;]  its  goal  is  to  assist  businesses  such  as  specialty  shops ,  restaurants ,  and  bars [ because]  these  help  downtown [ become] [ more]  active [ during]  the  day  and  at  night .  The  Meridian  Downtown  Association</td>
+      <td>,  the  two [ organizations] , [ along]  with  the  Meridian  Downtown  Association ,  spearheaded  the  downtown    effort .  The  Alliance  serves  as  an  umbrella  organization ,  allowing  the  other  two  organizations  to [ provide]  the  its  support [ staff] [ and]  housing ,  and  in  turn [ the]  Alliance  serves [ as]  a  liaison  between  the  organizations .  Plans  were [ made]  to  renov ate  the    Building , [ but] [ ] [,]  Mayor    Barry  killed  the  plans  in  early  2010 [.]  Today [,]  the  Alliance  helps  to  promote [ economic]  development  and  restoration  downtown [ ;]  its  goal  is  to  assist  businesses  such  as  specialty  shops ,  restaurants ,  and  bars [ because]  these  help  downtown [ businesses] [ stay]  active [ during]  the  day  and  at  night .  The  Meridian  Downtown  Association</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+</section>
+<section id="prediction-1" class="level5">
+<h5 class="anchored" data-anchor-id="prediction-1">Prediction</h5>
+<p>While <a href="https://ohmeow.github.io/blurr/text-modeling-core.html#learner.blurr_generate"><code>Learner.blurr_generate</code></a> will work well for causal LMs designed for text generation, it won’t for MLM models designed to predict masked tokens. To accomodate the later, we add <a href="https://ohmeow.github.io/blurr/text-modeling-language-modeling.html#learner.blurr_fill_mask"><code>Learner.blurr_fill_mask</code></a> …</p>
+<hr>
+<p><a href="https://github.com/ohmeow/blurr/blob/master/blurr/text/modeling/language_modeling.py#LNone" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+</section>
+</section>
+<section id="learner.blurr_fill_mask" class="level3">
+<h3 class="anchored" data-anchor-id="learner.blurr_fill_mask">Learner.blurr_fill_mask</h3>
+<blockquote class="blockquote">
+<pre><code> Learner.blurr_fill_mask (inp:Union[List[int],str], n_preds:int=1,
+                          **kwargs)</code></pre>
+</blockquote>
+<p>For MLM models</p>
+<table class="table">
+<colgroup>
+<col style="width: 6%">
+<col style="width: 25%">
+<col style="width: 34%">
+<col style="width: 34%">
+</colgroup>
+<thead>
+<tr class="header">
+<th></th>
+<th><strong>Type</strong></th>
+<th><strong>Default</strong></th>
+<th><strong>Details</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>inp</td>
+<td>Union</td>
+<td></td>
+<td>Your input_ids or raw text string with a <code>hf_tokenizer.mask_token</code></td>
+</tr>
+<tr class="even">
+<td>n_preds</td>
+<td>int</td>
+<td>1</td>
+<td>The number of predictions you want to return for the [MASK]ed token</td>
+</tr>
+<tr class="odd">
+<td>kwargs</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb39"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a>learn.blurr_fill_mask(<span class="ss">f"The best place on earth is </span><span class="sc">{</span>hf_tokenizer<span class="sc">.</span>mask_token<span class="sc">}</span><span class="ss">."</span>, n_preds<span class="op">=</span><span class="dv">5</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>['The best place on earth is here.',
+ 'The best place on earth is there.',
+ 'The best place on earth is America.',
+ 'The best place on earth is hell.',
+ 'The best place on earth is ours.']</code></pre>
+</div>
+</div>
+</section>
+</section>
+<section id="high-level-api" class="level2">
+<h2 class="anchored" data-anchor-id="high-level-api">High-level API</h2>
+<hr>
+<p><a href="https://github.com/ohmeow/blurr/blob/master/blurr/text/modeling/language_modeling.py#L262" target="_blank" style="float:right; font-size:smaller">source</a></p>
+<section id="blearnerforlm" class="level3">
+<h3 class="anchored" data-anchor-id="blearnerforlm">BlearnerForLM</h3>
+<blockquote class="blockquote">
+<pre><code> BlearnerForLM (dls:fastai.data.core.DataLoaders,
+                hf_model:transformers.modeling_utils.PreTrainedModel, base
+                _model_cb:blurr.text.modeling.core.BaseModelCallback=&lt;clas
+                s 'blurr.text.modeling.core.BaseModelCallback'&gt;,
+                loss_func:callable|None=None, opt_func=&lt;function Adam&gt;,
+                lr=0.001, splitter:callable=&lt;function trainable_params&gt;,
+                cbs=None, metrics=None, path=None, model_dir='models',
+                wd=None, wd_bn_bias=False, train_bn=True, moms=(0.95,
+                0.85, 0.95), default_cbs:bool=True)</code></pre>
+</blockquote>
+<p>Group together a <code>model</code>, some <code>dls</code> and a <code>loss_func</code> to handle training</p>
+<table class="table">
+<colgroup>
+<col style="width: 9%">
+<col style="width: 38%">
+<col style="width: 52%">
+</colgroup>
+<thead>
+<tr class="header">
+<th></th>
+<th><strong>Type</strong></th>
+<th><strong>Details</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>dls</td>
+<td></td>
+<td><code>DataLoaders</code> containing data for each dataset needed for <code>model</code></td>
+</tr>
+<tr class="even">
+<td>hf_model</td>
+<td>PreTrainedModel</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p>We can use the <a href="https://ohmeow.github.io/blurr/text-modeling-language-modeling.html#blearnerforlm"><code>BlearnerForLM</code></a> for either Causal or Masked language models. With one line of code, we get our DataBlock, DataLoaders, and Blearner with sensible defaults and ready for training</p>
+</section>
+<section id="example" class="level3">
+<h3 class="anchored" data-anchor-id="example">Example</h3>
+<section id="causal-language-modeling-1" class="level4">
+<h4 class="anchored" data-anchor-id="causal-language-modeling-1">Causal language modeling</h4>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb42"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a>learn <span class="op">=</span> BlearnerForLM.from_data(df, <span class="st">"gpt2"</span>, text_attr<span class="op">=</span><span class="dv">0</span>, dl_kwargs<span class="op">=</span>{<span class="st">"bs"</span>: <span class="dv">2</span>}).to_fp16()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Using pad_token, but it is not set yet.</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb44"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a>learn.dls.show_batch(dataloaders<span class="op">=</span>learn.dls, max_n<span class="op">=</span><span class="dv">2</span>, trunc_at<span class="op">=</span><span class="dv">500</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+
+<table class="dataframe table table-sm table-striped">
+  <thead>
+    <tr>
+      <th></th>
+      <th>text</th>
+      <th>target</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>\n = Bob Dylan = \n \n Bob Dylan ( / &lt;unk&gt; / ; born Robert Allen Zimmerman, May 24, 1941 ) is an American singer @-@ songwriter, artist and writer. He has been influential in popular music and culture for more than five decades. Much of his most celebrated work dates from the 1960s when his songs chronicled social unrest, although Dylan repudiated suggestions from journalists that he was a spokesman for his generation. Nevertheless, early songs such as " Blowin'in the Wind " and " The Times They A</td>
+      <td>\n = Bob Dylan = \n \n Bob Dylan ( / &lt;unk&gt; / ; born Robert Allen Zimmerman, May 24, 1941 ) is an American singer @-@ songwriter, artist and writer. He has been influential in popular music and culture for more than five decades. Much of his most celebrated work dates from the 1960s when his songs chronicled social unrest, although Dylan repudiated suggestions from journalists that he was a spokesman for his generation. Nevertheless, early songs such as " Blowin'in the Wind " and " The Times They Ar</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>\n = George Calvert, 1st Baron Baltimore = \n \n George Calvert, 1st Baron Baltimore ( &lt;unk&gt; – 15 April 1632 ) was an English politician and &lt;unk&gt;. He achieved domestic political success as a Member of Parliament and later Secretary of State under King James I. He lost much of his political power after his support for a failed marriage alliance between Prince Charles and the Spanish House of Habsburg royal family. Rather than continue in politics, he resigned all of his political offices in 1625 e</td>
+      <td>\n = George Calvert, 1st Baron Baltimore = \n \n George Calvert, 1st Baron Baltimore ( &lt;unk&gt; – 15 April 1632 ) was an English politician and &lt;unk&gt;. He achieved domestic political success as a Member of Parliament and later Secretary of State under King James I. He lost much of his political power after his support for a failed marriage alliance between Prince Charles and the Spanish House of Habsburg royal family. Rather than continue in politics, he resigned all of his political offices in 1625 ex</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb45"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a>learn.fit_one_cycle(<span class="dv">1</span>, lr_max<span class="op">=</span><span class="fl">3e-3</span>, cbs<span class="op">=</span>[BlearnerForLM.get_metrics_cb()])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+
+<style>
+    /* Turns off some styling */
+    progress {
+        /* gets rid of default border in Firefox and Opera. */
+        border: none;
+        /* Needs to be in here for Safari polyfill so background images work as expected. */
+        background-size: auto;
+    }
+    progress:not([value]), progress:not([value])::-webkit-progress-bar {
+        background: repeating-linear-gradient(45deg, #7e7e7e, #7e7e7e 10px, #5c5c5c 10px, #5c5c5c 20px);
+    }
+    .progress-bar-interrupted, .progress-bar-interrupted::-webkit-progress-bar {
+        background: #F44336;
+    }
+</style>
+</div>
+<div class="cell-output cell-output-display">
+
+<table class="dataframe table table-sm table-striped">
+  <thead>
+    <tr>
+      <th>epoch</th>
+      <th>train_loss</th>
+      <th>valid_loss</th>
+      <th>perplexity</th>
+      <th>lm_accuracy</th>
+      <th>time</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>0</td>
+      <td>3.530678</td>
+      <td>3.135360</td>
+      <td>22.996923</td>
+      <td>0.427218</td>
+      <td>02:35</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb46"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a>learn.show_results(learner<span class="op">=</span>learn, trunc_at<span class="op">=</span><span class="dv">250</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+
+<style>
+    /* Turns off some styling */
+    progress {
+        /* gets rid of default border in Firefox and Opera. */
+        border: none;
+        /* Needs to be in here for Safari polyfill so background images work as expected. */
+        background-size: auto;
+    }
+    progress:not([value]), progress:not([value])::-webkit-progress-bar {
+        background: repeating-linear-gradient(45deg, #7e7e7e, #7e7e7e 10px, #5c5c5c 10px, #5c5c5c 20px);
+    }
+    .progress-bar-interrupted, .progress-bar-interrupted::-webkit-progress-bar {
+        background: #F44336;
+    }
+</style>
+</div>
+<div class="cell-output cell-output-display">
+
+</div>
+<div class="cell-output cell-output-display">
+
+<table class="dataframe table table-sm table-striped">
+  <thead>
+    <tr>
+      <th></th>
+      <th>text</th>
+      <th>target</th>
+      <th>prediction</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>\n = Military history of Australia = \n \n The military history of Australia spans the nation's 220 @-@ year modern history, from the early Australian frontier wars between &lt;unk&gt; and Europeans to the ongoing conflicts in Iraq and Afghanistan in the ear</td>
+      <td>\n = Military history of Australia = \n \n The military history of Australia spans the nation's 220 @-@ year modern history, from the early Australian frontier wars between &lt;unk&gt; and Europeans to the ongoing conflicts in Iraq and Afghanistan in the earl</td>
+      <td>\n\n =\n = the\n\n\n =\n = Australian history of Australia is the period froms history- 1@ years period era. including the early days colonial to to the 18&gt; Australia &lt; &lt; the early conflict between the and Afghanistan. the late 1980st century. The the histo</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>\n = Air Rhodesia Flight &lt;unk&gt; = \n \n Air Rhodesia Flight &lt;unk&gt; was a scheduled passenger flight that was shot down by the Zimbabwe People's Revolutionary Army ( &lt;unk&gt; ) on 3 September 1978, during the Rhodesian Bush War. The aircraft involved, a Vick</td>
+      <td>\n = Air Rhodesia Flight &lt;unk&gt; = \n \n Air Rhodesia Flight &lt;unk&gt; was a scheduled passenger flight that was shot down by the Zimbabwe People's Revolutionary Army ( &lt;unk&gt; ) on 3 September 1978, during the Rhodesian Bush War. The aircraft involved, a Vicke</td>
+      <td>\n\n = Force\n\n\n\n&gt; = Air\n =\n = Rhodesia Flight &lt;unk&gt; = a flight flight flight from was scheduled down by a Sovietan'ss Liberation Army (Zunk&gt; ) in September August 1944. killing a liberationian civil War. The plane was in was civilian- aircraftickersoun</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb47"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a>learn.blurr_generate(<span class="st">"Blurr is fun to work with because"</span>, max_length<span class="op">=</span><span class="dv">50</span>, do_sample<span class="op">=</span><span class="va">True</span>, top_k<span class="op">=</span><span class="dv">25</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>[{'generated_texts': " Blurr is fun to work with because it it is it is the '\n\n- A bit of work in addition to playing is done at http:// @ www. @ https:// https:// @"}]</code></pre>
+</div>
+</div>
+</section>
+<section id="masked-language-modeling-1" class="level4">
+<h4 class="anchored" data-anchor-id="masked-language-modeling-1">Masked language modeling</h4>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb49"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a>learn <span class="op">=</span> BlearnerForLM.from_data(df, <span class="st">"bert-base-cased"</span>, lm_strategy_cls<span class="op">=</span>BertMLMStrategy, text_attr<span class="op">=</span><span class="dv">0</span>, dl_kwargs<span class="op">=</span>{<span class="st">"bs"</span>: <span class="dv">2</span>}).to_fp16()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<script type="application/vnd.jupyter.widget-view+json">
+{"model_id":"b4931bdaadd54b9b91f9caba546b8825","version_major":2,"version_minor":0}
+</script>
+</div>
+<div class="cell-output cell-output-display">
+<script type="application/vnd.jupyter.widget-view+json">
+{"model_id":"196d3bc330584ee2b44340aba750081d","version_major":2,"version_minor":0}
+</script>
+</div>
+<div class="cell-output cell-output-display">
+<script type="application/vnd.jupyter.widget-view+json">
+{"model_id":"755996f6f1aa4417a850c9a9a7bf0762","version_major":2,"version_minor":0}
+</script>
+</div>
+<div class="cell-output cell-output-display">
+<script type="application/vnd.jupyter.widget-view+json">
+{"model_id":"867847ffc80b4db7818c352e5e483f9f","version_major":2,"version_minor":0}
+</script>
+</div>
+<div class="cell-output cell-output-display">
+<script type="application/vnd.jupyter.widget-view+json">
+{"model_id":"0a3aca1c39ff4947a875898b6e0842e5","version_major":2,"version_minor":0}
+</script>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb50"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true" tabindex="-1"></a>learn.dls.show_batch(dataloaders<span class="op">=</span>learn.dls, max_n<span class="op">=</span><span class="dv">2</span>, trunc_at<span class="op">=</span><span class="dv">250</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+
+<table class="dataframe table table-sm table-striped">
+  <thead>
+    <tr>
+      <th></th>
+      <th>text</th>
+      <th>target</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>= Bob [MASK] = Bob Dylan ( / [&lt;] un ##k &gt; / ; born Robert Allen [MASK] ##immer [MASK] , May 24 , 1941 [MASK] is an American singer @ [MASK] @ songwriter , artist [MASK] writer . He [MASK] been influential in popular music [MASK] culture for more than five decades . [MASK] of his most celebrated work dates from the 1960s when his [MASK] [MASK] ##d social unrest , although Dylan re ##pu ##dia ##ted suggestions from journalists that he was a spokesman for his generation . Nevertheless , early songs such as " B ##low ##in ' in [the] Wind " [MASK] " The Times They Are a @ - @ &lt; un ##k &gt; ' " became anthem ##s [MASK] the American civil rights and anti @ [-] @ war movements . After he left his initial base in the American folk music revival , his [missions] @ - @ minute single " Like a [Rolling] Stone [MASK] altered the range of popular music [MASK] 1965 . His [MASK] @ - @ [MASK] recordings , backed by rock musicians , reached the top end of the United States music charts while also [perpendicular] &lt; un ##k &gt; and [MASK] from others in [MASK] folk movement . Dylan ' s lyrics have incorporated various political [glued] social [MASK] philosophical , and [MASK] influences . They def ##ied existing pop music conventions and [MASK] to the b ##urge ##oning counter ##culture . Initially inspired by the performances</td>
+      <td>= Bob [Dylan] = Bob Dylan ( / [&lt;] un ##k &gt; / ; born Robert Allen [Z] ##immer [##man] , May 24 , 1941 [)] is an American singer @ [-] @ songwriter , artist [and] writer . He [has] been influential in popular music [and] culture for more than five decades . [Much] of his most celebrated work dates from the 1960s when his [songs] [chronicle] ##d social unrest , although Dylan re ##pu ##dia ##ted suggestions from journalists that he was a spokesman for his generation . Nevertheless , early songs such as " B ##low ##in ' in [the] Wind " [and] " The Times They Are a @ - @ &lt; un ##k &gt; ' " became anthem ##s [for] the American civil rights and anti @ [-] @ war movements . After he left his initial base in the American folk music revival , his [six] @ - @ minute single " Like a [Rolling] Stone ["] altered the range of popular music [in] 1965 . His [mid] @ - @ [1960s] recordings , backed by rock musicians , reached the top end of the United States music charts while also [attracting] &lt; un ##k &gt; and [criticism] from others in [the] folk movement . Dylan ' s lyrics have incorporated various political [,] social [,] philosophical , and [literary] influences . They def ##ied existing pop music conventions and [appealed] to the b ##urge ##oning counter ##culture . Initially inspired by the performances</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>= George [MASK] , 1st Baron Baltimore = George Calvert , 1st Baron Baltimore [MASK] &lt; un ##k &gt; – 15 April 163 ##2 ) was an [English] politician and &lt; [##ortex] [MASK] &gt; . He achieved domestic political success [MASK] [MASK] [MASK] of Parliament and later Secretary [##年] State under King James I [MASK] He lost much of his [political] power [MASK] his support for a [MASK] marriage alliance between Prince Charles and the Spanish House of Habsburg royal family . Rather than continue in [MASK] , he resigned all [MASK] his [MASK] offices [MASK] 162 ##5 except for his position on the Privy Council and declared his Catholicism publicly . He was created Baron Baltimore in [MASK] Irish peer ##age upon his resignation . Baltimore [MASK] was located in County Long ##ford , Ireland . Calvert took an interest in [MASK] British colonization of the Americas , [MASK] first for commercial reasons [MASK] later to create a refuge for English [MASK] [MASK] He became [MASK] proprietor of Avalon , the first sustained English settlement on the southeastern [MASK] on [MASK] island of [MASK] ( off the eastern coast of modern Canada ) . &lt; un ##k &gt; by its cold [MASK] sometimes in ##hos [MASK] ##able climate and the &lt; un ##k [MASK] of [MASK] settlers , Sir George [MASK] for a more suitable spot further south [MASK] sought [MASK] new royal charter [MASK] settle the region , [MASK] would become the [MASK] of Maryland . Calvert died</td>
+      <td>= George [Calvert] , 1st Baron Baltimore = George Calvert , 1st Baron Baltimore [(] &lt; un ##k &gt; – 15 April 163 ##2 ) was an [English] politician and &lt; [un] [##k] &gt; . He achieved domestic political success [as] [a] [Member] of Parliament and later Secretary [of] State under King James I [.] He lost much of his [political] power [after] his support for a [failed] marriage alliance between Prince Charles and the Spanish House of Habsburg royal family . Rather than continue in [politics] , he resigned all [of] his [political] offices [in] 162 ##5 except for his position on the Privy Council and declared his Catholicism publicly . He was created Baron Baltimore in [the] Irish peer ##age upon his resignation . Baltimore [Manor] was located in County Long ##ford , Ireland . Calvert took an interest in [the] British colonization of the Americas , [at] first for commercial reasons [and] later to create a refuge for English [Catholics] [.] He became [the] proprietor of Avalon , the first sustained English settlement on the southeastern [peninsula] on [the] island of [Newfoundland] ( off the eastern coast of modern Canada ) . &lt; un ##k &gt; by its cold [and] sometimes in ##hos [##pit] ##able climate and the &lt; un ##k [&gt;] of [the] settlers , Sir George [looked] for a more suitable spot further south [and] sought [a] new royal charter [to] settle the region , [which] would become the [state] of Maryland . Calvert died</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb51"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb51-1"><a href="#cb51-1" aria-hidden="true" tabindex="-1"></a>learn.fit_one_cycle(<span class="dv">1</span>, lr_max<span class="op">=</span><span class="fl">6e-4</span>, cbs<span class="op">=</span>[BlearnerForLM.get_metrics_cb()])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+
+<style>
+    /* Turns off some styling */
+    progress {
+        /* gets rid of default border in Firefox and Opera. */
+        border: none;
+        /* Needs to be in here for Safari polyfill so background images work as expected. */
+        background-size: auto;
+    }
+    progress:not([value]), progress:not([value])::-webkit-progress-bar {
+        background: repeating-linear-gradient(45deg, #7e7e7e, #7e7e7e 10px, #5c5c5c 10px, #5c5c5c 20px);
+    }
+    .progress-bar-interrupted, .progress-bar-interrupted::-webkit-progress-bar {
+        background: #F44336;
+    }
+</style>
+</div>
+<div class="cell-output cell-output-display">
+
+<table class="dataframe table table-sm table-striped">
+  <thead>
+    <tr>
+      <th>epoch</th>
+      <th>train_loss</th>
+      <th>valid_loss</th>
+      <th>perplexity</th>
+      <th>lm_accuracy</th>
+      <th>time</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>0</td>
+      <td>2.676882</td>
+      <td>2.456665</td>
+      <td>11.665836</td>
+      <td>0.581747</td>
+      <td>01:03</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb52"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb52-1"><a href="#cb52-1" aria-hidden="true" tabindex="-1"></a>learn.show_results(learner<span class="op">=</span>learn, trunc_at<span class="op">=</span><span class="dv">250</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+
+<style>
+    /* Turns off some styling */
+    progress {
+        /* gets rid of default border in Firefox and Opera. */
+        border: none;
+        /* Needs to be in here for Safari polyfill so background images work as expected. */
+        background-size: auto;
+    }
+    progress:not([value]), progress:not([value])::-webkit-progress-bar {
+        background: repeating-linear-gradient(45deg, #7e7e7e, #7e7e7e 10px, #5c5c5c 10px, #5c5c5c 20px);
+    }
+    .progress-bar-interrupted, .progress-bar-interrupted::-webkit-progress-bar {
+        background: #F44336;
+    }
+</style>
+</div>
+<div class="cell-output cell-output-display">
+
+</div>
+<div class="cell-output cell-output-display">
+
+<table class="dataframe table table-sm table-striped">
+  <thead>
+    <tr>
+      <th></th>
+      <th>text</th>
+      <th>target</th>
+      <th>prediction</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>= Military [MASK] of Australia = [MASK] military history of Australia [MASK] the nation ' [Shawn] 220 [MASK] - @ year modern history , from the early Australian frontier [MASK] between &lt; un ##k [MASK] and Europeans to the [MASK] conflicts in Iraq and Afghanistan in [MASK] early 21st century . Although this history is short when compared [MASK] that of many other nations , Australia has been involved [‑] numerous conflicts and wars [MASK] and war and military service [MASK] been [MASK] influences on Australian [MASK] and national identity , [tablets] the An ##zac spirit [.] The relationship between war and Australian society has also been [MASK] by the enduring themes of Australian strategic culture [MASK] its unique security [MASK] ##lemma . As [##aman] [MASK] un [##k] &gt; , the Australian colonies participated in [MASK] ' s small wars of the 19th century [MASK] while later as a &lt; un [MASK] &gt; do ##mini ##on , and then an independent nation , [MASK] fought [MASK] the First World War and Second World [MASK] , as well as in the wars in Korea , Malaya , Borneo and Vietnam during the Cold War . In the [MASK] [MASK] - @ [MASK] [era] Australian forces [MASK] been involved in [##↑] international peace ##keeping missions , through the United Nations and [MASK] agencies , including in the Sinai , [MASK] Gulf , &lt; [MASK] ##k &gt; , Somalia , East Timor and the Solomon Islands , while more recently they have also</td>
+      <td>= Military [history] of Australia = [The] military history of Australia [spans] the nation ' [s] 220 [@] - @ year modern history , from the early Australian frontier [wars] between &lt; un ##k [&gt;] and Europeans to the [ongoing] conflicts in Iraq and Afghanistan in [the] early 21st century . Although this history is short when compared [to] that of many other nations , Australia has been involved [in] numerous conflicts and wars [,] and war and military service [have] been [significant] influences on Australian [society] and national identity , [including] the An ##zac spirit [.] The relationship between war and Australian society has also been [shaped] by the enduring themes of Australian strategic culture [and] its unique security [di] ##lemma . As [British] [&lt;] un [##k] &gt; , the Australian colonies participated in [Britain] ' s small wars of the 19th century [,] while later as a &lt; un [##k] &gt; do ##mini ##on , and then an independent nation , [Australia] fought [in] the First World War and Second World [War] , as well as in the wars in Korea , Malaya , Borneo and Vietnam during the Cold War . In the [Post] [@] - @ [Vietnam] [era] Australian forces [have] been involved in [numerous] international peace ##keeping missions , through the United Nations and [other] agencies , including in the Sinai , [Persian] Gulf , &lt; [un] ##k &gt; , Somalia , East Timor and the Solomon Islands , while more recently they have also</td>
+      <td>= Military [history] of Australia = [The] military history of Australia [and] the nation ' [s] 220 [@] - @ year modern history , from the early Australian frontier [wars] between &lt; un ##k [&gt;] and Europeans to the [military] conflicts in Iraq and Afghanistan in [the] early 21st century . Although this history is short when compared [to] that of many other nations , Australia has been involved [in] numerous conflicts and wars [,] and war and military service [have] been [important] influences on Australian [culture] and national identity , [particularly] the An ##zac spirit [.] The relationship between war and Australian society has also been [shaped] by the enduring themes of Australian strategic culture [and] its unique security [di] ##lemma . As [&lt;] [&lt;] un [##k] &gt; , the Australian colonies participated in [Australia] ' s small wars of the 19th century [,] while later as a &lt; un [##k] &gt; do ##mini ##on , and then an independent nation , [Australia] fought [in] the First World War and Second World [War] , as well as in the wars in Korea , Malaya , Borneo and Vietnam during the Cold War . In the [post] [@] - @ [-] [era] Australian forces [have] been involved in [numerous] international peace ##keeping missions , through the United Nations and [other] agencies , including in the Sinai , [Persian] Gulf , &lt; [un] ##k &gt; , Somalia , East Timor and the Solomon Islands , while more recently they have also</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>= Air Rhodesia Flight &lt; un ##k &gt; = [MASK] Rhodesia Flight &lt; un ##k &gt; was a scheduled passenger flight that was shot down [MASK] [MASK] Zimbabwe [MASK] ' s Revolutionary Army ( &lt; un [MASK] &gt; ) on 3 September 1978 , during the Rhodesia [MASK] Bush [MASK] . The aircraft involved , a Vickers Viscount named the &lt; un ##k &gt; , was [MASK] the last leg [of] Air Rhodesia ' [MASK] regular scheduled service from Victoria [MASK] to the capital Salisbury , via the [Friends] town of &lt; un ##k &gt; . Soon after Flight &lt; un ##k &gt; took off , a [MASK] of &lt; un ##k &gt; guerrilla [MASK] scored a direct [Université] on its star ##board wing with a [MASK] @ - @ made &lt; un [MASK] &gt; 2 surface @ - [MASK] to @ - @ air infrared &lt; un ##k [&gt;] missile , [MASK] damaging the aircraft and forcing an emergency [landing] . An attempted belly [MASK] in a cotton field just west of &lt; un ##k &gt; [MASK] &lt; [MASK] ##k &gt; by an unseen ditch , which caused the plane to [MASK] ##wheel and break up . Of [MASK] 52 passengers and [MASK] crew , 38 died in this crash ; [MASK] [MASK] then approached [merchant] wreckage , rounded [MASK] the 10 survivors they could see and massacre ##d them with automatic gunfire [.] [MASK] passengers survived [MASK] hiding in the [MASK] [MASK] , while a further five lived</td>
+      <td>= Air Rhodesia Flight &lt; un ##k &gt; = [Air] Rhodesia Flight &lt; un ##k &gt; was a scheduled passenger flight that was shot down [by] [the] Zimbabwe [People] ' s Revolutionary Army ( &lt; un [##k] &gt; ) on 3 September 1978 , during the Rhodesia [##n] Bush [War] . The aircraft involved , a Vickers Viscount named the &lt; un ##k &gt; , was [flying] the last leg [of] Air Rhodesia ' [s] regular scheduled service from Victoria [Falls] to the capital Salisbury , via the [resort] town of &lt; un ##k &gt; . Soon after Flight &lt; un ##k &gt; took off , a [group] of &lt; un ##k &gt; guerrilla [##s] scored a direct [hit] on its star ##board wing with a [Soviet] @ - @ made &lt; un [##k] &gt; 2 surface @ - [@] to @ - @ air infrared &lt; un ##k [&gt;] missile , [critically] damaging the aircraft and forcing an emergency [landing] . An attempted belly [landing] in a cotton field just west of &lt; un ##k &gt; [was] &lt; [un] ##k &gt; by an unseen ditch , which caused the plane to [cart] ##wheel and break up . Of [the] 52 passengers and [four] crew , 38 died in this crash ; [the] [insurgents] then approached [the] wreckage , rounded [up] the 10 survivors they could see and massacre ##d them with automatic gunfire [.] [Three] passengers survived [by] hiding in the [surrounding] [bush] , while a further five lived</td>
+      <td>= Air Rhodesia Flight &lt; un ##k &gt; = [Air] Rhodesia Flight &lt; un ##k &gt; was a scheduled passenger flight that was shot down [by] [the] Zimbabwe [People] ' s Revolutionary Army ( &lt; un [##k] &gt; ) on 3 September 1978 , during the Rhodesia [##n] Bush [War] . The aircraft involved , a Vickers Viscount named the &lt; un ##k &gt; , was [on] the last leg [of] Air Rhodesia ' [s] regular scheduled service from Victoria [Falls] to the capital Salisbury , via the [small] town of &lt; un ##k &gt; . Soon after Flight &lt; un ##k &gt; took off , a [group] of &lt; un ##k &gt; guerrilla [##s] scored a direct [hit] on its star ##board wing with a [surface] @ - @ made &lt; un [##k] &gt; 2 surface @ - [@] to @ - @ air infrared &lt; un ##k [&gt;] missile , [severely] damaging the aircraft and forcing an emergency [landing] . An attempted belly [landing] in a cotton field just west of &lt; un ##k &gt; [caused] &lt; [un] ##k &gt; by an unseen ditch , which caused the plane to [pin] ##wheel and break up . Of [the] 52 passengers and [2] crew , 38 died in this crash ; [the] [survivors] then approached [the] wreckage , rounded [up] the 10 survivors they could see and massacre ##d them with automatic gunfire [.] [Two] passengers survived [by] hiding in the [open] [area] , while a further five lived</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb53"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb53-1"><a href="#cb53-1" aria-hidden="true" tabindex="-1"></a>batch_tfm <span class="op">=</span> first_blurr_tfm(learn.dls)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb54"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb54-1"><a href="#cb54-1" aria-hidden="true" tabindex="-1"></a>learn.blurr_fill_mask(<span class="ss">f"The best place on earth is </span><span class="sc">{</span>batch_tfm<span class="sc">.</span>hf_tokenizer<span class="sc">.</span>mask_token<span class="sc">}</span><span class="ss">."</span>, n_preds<span class="op">=</span><span class="dv">5</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>['The best place on earth is heaven.',
+ 'The best place on earth is here.',
+ 'The best place on earth is Egypt.',
+ 'The best place on earth is there.',
+ 'The best place on earth is Heaven.']</code></pre>
+</div>
+</div>
+
+
+</section>
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const disableStylesheet = (stylesheets) => {
+    for (let i=0; i < stylesheets.length; i++) {
+      const stylesheet = stylesheets[i];
+      stylesheet.rel = 'prefetch';
+    }
+  }
+  const enableStylesheet = (stylesheets) => {
+    for (let i=0; i < stylesheets.length; i++) {
+      const stylesheet = stylesheets[i];
+      stylesheet.rel = 'stylesheet';
+    }
+  }
+  const manageTransitions = (selector, allowTransitions) => {
+    const els = window.document.querySelectorAll(selector);
+    for (let i=0; i < els.length; i++) {
+      const el = els[i];
+      if (allowTransitions) {
+        el.classList.remove('notransition');
+      } else {
+        el.classList.add('notransition');
+      }
+    }
+  }
+  const toggleColorMode = (alternate) => {
+    // Switch the stylesheets
+    const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+    manageTransitions('#quarto-margin-sidebar .nav-link', false);
+    if (alternate) {
+      enableStylesheet(alternateStylesheets);
+      for (const sheetNode of alternateStylesheets) {
+        if (sheetNode.id === "quarto-bootstrap") {
+          toggleBodyColorMode(sheetNode);
+        }
+      }
+    } else {
+      disableStylesheet(alternateStylesheets);
+      toggleBodyColorPrimary();
+    }
+    manageTransitions('#quarto-margin-sidebar .nav-link', true);
+    // Switch the toggles
+    const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+    for (let i=0; i < toggles.length; i++) {
+      const toggle = toggles[i];
+      if (toggle) {
+        if (alternate) {
+          toggle.classList.add("alternate");     
+        } else {
+          toggle.classList.remove("alternate");
+        }
+      }
+    }
+    // Hack to workaround the fact that safari doesn't
+    // properly recolor the scrollbar when toggling (#1455)
+    if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+      manageTransitions("body", false);
+      window.scrollTo(0, 1);
+      setTimeout(() => {
+        window.scrollTo(0, 0);
+        manageTransitions("body", true);
+      }, 40);  
+    }
+  }
+  const isFileUrl = () => { 
+    return window.location.protocol === 'file:';
+  }
+  const hasAlternateSentinel = () => {  
+    let styleSentinel = getColorSchemeSentinel();
+    if (styleSentinel !== null) {
+      return styleSentinel === "alternate";
+    } else {
+      return false;
+    }
+  }
+  const setStyleSentinel = (alternate) => {
+    const value = alternate ? "alternate" : "default";
+    if (!isFileUrl()) {
+      window.localStorage.setItem("quarto-color-scheme", value);
+    } else {
+      localAlternateSentinel = value;
+    }
+  }
+  const getColorSchemeSentinel = () => {
+    if (!isFileUrl()) {
+      const storageValue = window.localStorage.getItem("quarto-color-scheme");
+      return storageValue != null ? storageValue : localAlternateSentinel;
+    } else {
+      return localAlternateSentinel;
+    }
+  }
+  let localAlternateSentinel = 'default';
+  // Dark / light mode switch
+  window.quartoToggleColorScheme = () => {
+    // Read the current dark / light value 
+    let toAlternate = !hasAlternateSentinel();
+    toggleColorMode(toAlternate);
+    setStyleSentinel(toAlternate);
+  };
+  // Ensure there is a toggle, if there isn't float one in the top right
+  if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+    const a = window.document.createElement('a');
+    a.classList.add('top-right');
+    a.classList.add('quarto-color-scheme-toggle');
+    a.href = "";
+    a.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+    const i = window.document.createElement("i");
+    i.classList.add('bi');
+    a.appendChild(i);
+    window.document.body.appendChild(a);
+  }
+  // Switch to dark mode if need be
+  if (hasAlternateSentinel()) {
+    toggleColorMode(true);
+  } 
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    target: function(trigger) {
+      return trigger.previousElementSibling;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    setTimeout(function() {
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const cites = ref.parentNode.getAttribute('data-cites').split(' ');
+    tippyHover(ref, function() {
+      var popup = window.document.createElement('div');
+      cites.forEach(function(cite) {
+        var citeDiv = window.document.createElement('div');
+        citeDiv.classList.add('hanging-indent');
+        citeDiv.classList.add('csl-entry');
+        var biblioDiv = window.document.getElementById('ref-' + cite);
+        if (biblioDiv) {
+          citeDiv.innerHTML = biblioDiv.innerHTML;
+        }
+        popup.appendChild(citeDiv);
+      });
+      return popup.innerHTML;
+    });
+  }
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var filterRegex = new RegExp(/https:\/\/ohmeow\.github\.io\/blurr\//);
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+    var links = window.document.querySelectorAll('a:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+          // target, if specified
+          link.setAttribute("target", "_blank");
+      }
+    }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>

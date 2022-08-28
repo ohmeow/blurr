@@ -1,0 +1,1991 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.1.75">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="description" content="The text.modeling.seq2seq.translation module contains custom models, custom splitters, etc… translation tasks.">
+
+<title>blurr - Modeling</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: 1;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1.6em;
+  vertical-align: middle;
+}
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { color: #008000; } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { color: #008000; font-weight: bold; } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<link href="./favicon.ico" rel="icon">
+<script src="site_libs/quarto-html/quarto.js"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-dark.css" rel="prefetch" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-dark.min.css" rel="prefetch" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit"
+  }
+}</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" integrity="sha512-c3Nl8+7g4LMSTdrm621y7kf9v3SDPnhxLNhcjFJbKECVnmZHTdo+IRO05sNLTH/D3vA6u1X32ehoLC7WFVdheg==" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script>
+<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
+<script src="https://unpkg.com/@jupyter-widgets/html-manager@*/dist/embed-amd.js" crossorigin="anonymous"></script>
+
+
+<link rel="stylesheet" href="styles.css">
+<meta property="og:title" content="blurr - Modeling">
+<meta property="og:description" content="The text.modeling.seq2seq.translation module contains custom models, custom splitters, etc… translation tasks.">
+<meta property="og:site-name" content="blurr">
+<meta name="twitter:title" content="blurr - Modeling">
+<meta name="twitter:description" content="The text.modeling.seq2seq.translation module contains custom models, custom splitters, etc… translation tasks.">
+<meta name="twitter:card" content="summary">
+</head>
+
+<body class="nav-sidebar floating nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg navbar-dark ">
+      <div class="navbar-container container-fluid">
+      <a class="navbar-brand" href="./index.html">
+    <span class="navbar-title">blurr</span>
+  </a>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link active" href="./index.html" aria-current="page">Getting Started</a>
+  </li>  
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-resources" role="button" data-bs-toggle="dropdown" aria-expanded="false">Resources</a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-resources">    
+        <li>
+    <a class="dropdown-item" href="https://www.youtube.com/playlist?list=PLD80i8An1OEF8UOb9N9uSoidOGIMKW96t"><i class="bi bi-play-btn-fill" role="img">
+</i> 
+ <span class="dropdown-text">fastai x Hugging Face Study Group</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="https://huggingface.co/course/chapter1/1"><i class="bi bi-journal-bookmark-fill" role="img">
+</i> 
+ <span class="dropdown-text">Hugging Face Course</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="https://docs.fast.ai/"><i class="bi bi-link" role="img">
+</i> 
+ <span class="dropdown-text">fast.ai (docs)</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="https://huggingface.co/docs/transformers/index"><i class="bi bi-link" role="img">
+</i> 
+ <span class="dropdown-text">transformers (docs)</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-help" role="button" data-bs-toggle="dropdown" aria-expanded="false">Help</a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-help">    
+        <li>
+    <a class="dropdown-item" href="https://github.com/ohmeow/blurr/issues"><i class="bi bi-bug" role="img">
+</i> 
+ <span class="dropdown-text">Report an Issue</span></a>
+  </li>  
+    </ul>
+  </li>
+</ul>
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/ohmeow/blurr/"><i class="bi bi-github" role="img">
+</i> 
+ </a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://twitter.com/waydegilliam"><i class="bi bi-twitter" role="img">
+</i> 
+ </a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://www.ohmeow.com/"><i class="bi bi-house" role="img" aria-label="Twitter">
+</i> 
+ </a>
+  </li>  
+</ul>
+              <div class="quarto-toggle-container">
+                  <a href="" class="quarto-color-scheme-toggle nav-link" onclick="window.quartoToggleColorScheme(); return false;" title="Toggle dark mode"><i class="bi"></i></a>
+              </div>
+              <div id="quarto-search" class="" title="Search"></div>
+          </div> <!-- /navcollapse -->
+      </div> <!-- /container-fluid -->
+    </nav>
+  <nav class="quarto-secondary-nav" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+    <div class="container-fluid d-flex justify-content-between">
+      <h1 class="quarto-secondary-nav-title">Modeling</h1>
+      <button type="button" class="quarto-btn-toggle btn" aria-label="Show secondary navigation">
+        <i class="bi bi-chevron-right"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-full page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse sidebar-navigation floating overflow-auto">
+      <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+      </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true">Overview</a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">Getting Started</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./callbacks.html" class="sidebar-item-text sidebar-link">callbacks</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./utils.html" class="sidebar-item-text sidebar-link">utils</a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="true">Text</a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="true">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-expanded="false">Sequence Classification</a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-expanded="false">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./text.data.core.html" class="sidebar-item-text sidebar-link">Data</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./text.modeling.core.html" class="sidebar-item-text sidebar-link">Modeling</a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" aria-expanded="false">Token Classification</a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" aria-expanded="false">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./text.data.token_classification.html" class="sidebar-item-text sidebar-link">Data</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./text.modeling.token_classification.html" class="sidebar-item-text sidebar-link">Modeling</a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" aria-expanded="false">Question &amp; Answering</a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" aria-expanded="false">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./text.data.question_answering.html" class="sidebar-item-text sidebar-link">Data</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./text.modeling.question_answering.html" class="sidebar-item-text sidebar-link">Modeling</a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" aria-expanded="false">Language Modeling</a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" aria-expanded="false">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-6" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./text.data.language_modeling.html" class="sidebar-item-text sidebar-link">Data</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./text.modeling.language_modeling.html" class="sidebar-item-text sidebar-link">Modeling</a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" aria-expanded="false">Seq2Seq: Core</a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" aria-expanded="false">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-7" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./text.data.seq2seq.core.html" class="sidebar-item-text sidebar-link">Data</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./text.modeling.seq2seq.core.html" class="sidebar-item-text sidebar-link">Modeling</a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" aria-expanded="false">Seq2Seq: Summarization</a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" aria-expanded="false">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-8" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./text.data.seq2seq.summarization.html" class="sidebar-item-text sidebar-link">Data</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./text.modeling.seq2seq.summarization.html" class="sidebar-item-text sidebar-link">Modeling</a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-9" aria-expanded="true">Seq2Seq: Translation</a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-9" aria-expanded="true">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-9" class="collapse list-unstyled sidebar-section depth2 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./text.data.seq2seq.translation.html" class="sidebar-item-text sidebar-link">Data</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./text.modeling.seq2seq.translation.html" class="sidebar-item-text sidebar-link active">Modeling</a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./text.callbacks.html" class="sidebar-item-text sidebar-link">callbacks</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./text.utils.html" class="sidebar-item-text sidebar-link">utils</a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-10" aria-expanded="true">Examples</a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-10" aria-expanded="true">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-10" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./examples.text.high_level_api.html" class="sidebar-item-text sidebar-link">Using the high-level Blurr API</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./examples.text.glue.html" class="sidebar-item-text sidebar-link">GLUE classification tasks</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./examples.text.glue_low_level_api.html" class="sidebar-item-text sidebar-link">Using the Low-level fastai API</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./examples.text.multilabel_classification.html" class="sidebar-item-text sidebar-link">Multi-label classification</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./examples.text.causal_lm_gpt2.html" class="sidebar-item-text sidebar-link">Causal Language Modeling with GPT-2</a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#mid-level-api" id="toc-mid-level-api" class="nav-link active" data-scroll-target="#mid-level-api">Mid-level API</a>
+  <ul>
+  <li><a href="#prepare-the-data" id="toc-prepare-the-data" class="nav-link" data-scroll-target="#prepare-the-data">Prepare the data</a></li>
+  <li><a href="#example" id="toc-example" class="nav-link" data-scroll-target="#example">Example</a>
+  <ul class="collapse">
+  <li><a href="#training" id="toc-training" class="nav-link" data-scroll-target="#training">Training</a></li>
+  <li><a href="#showing-results" id="toc-showing-results" class="nav-link" data-scroll-target="#showing-results">Showing results</a></li>
+  <li><a href="#prediction" id="toc-prediction" class="nav-link" data-scroll-target="#prediction">Prediction</a></li>
+  </ul></li>
+  <li><a href="#learner.blurr_translate" id="toc-learner.blurr_translate" class="nav-link" data-scroll-target="#learner.blurr_translate">Learner.blurr_translate</a>
+  <ul class="collapse">
+  <li><a href="#inference" id="toc-inference" class="nav-link" data-scroll-target="#inference">Inference</a></li>
+  </ul></li>
+  </ul></li>
+  <li><a href="#high-level-api" id="toc-high-level-api" class="nav-link" data-scroll-target="#high-level-api">High-level API</a>
+  <ul>
+  <li><a href="#blearnerfortranslation" id="toc-blearnerfortranslation" class="nav-link" data-scroll-target="#blearnerfortranslation">BlearnerForTranslation</a></li>
+  </ul></li>
+  <li><a href="#tests" id="toc-tests" class="nav-link" data-scroll-target="#tests">Tests</a></li>
+  </ul>
+<div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/ohmeow/blurr/issues/new" class="toc-action">Report an issue</a></p></div></div></nav>
+    </div>
+<!-- main -->
+<main class="content column-body" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title d-none d-lg-block">Modeling</h1>
+</div>
+
+<div>
+  <div class="description">
+    The <code>text.modeling.seq2seq.translation</code> module contains custom models, custom splitters, etc… translation tasks.
+  </div>
+</div>
+
+
+<div class="quarto-title-meta">
+
+    
+    
+  </div>
+  
+
+</header>
+
+<!-- WARNING: THIS FILE WAS AUTOGENERATED! DO NOT EDIT! -->
+<section id="mid-level-api" class="level2">
+<h2 class="anchored" data-anchor-id="mid-level-api">Mid-level API</h2>
+<section id="prepare-the-data" class="level3">
+<h3 class="anchored" data-anchor-id="prepare-the-data">Prepare the data</h3>
+</section>
+<section id="example" class="level3">
+<h3 class="anchored" data-anchor-id="example">Example</h3>
+<p>The objective in translation is to generate a representation of a given text in another style. For example, we may want to translate German into English or modern English into old English.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>dataset <span class="op">=</span> load_dataset(<span class="st">"wmt16"</span>, <span class="st">"de-en"</span>, split<span class="op">=</span><span class="st">"train"</span>)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>dataset <span class="op">=</span> dataset.shuffle(seed<span class="op">=</span><span class="dv">32</span>).select(<span class="bu">range</span>(<span class="dv">1200</span>))</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>wmt_df <span class="op">=</span> pd.DataFrame(dataset[<span class="st">"translation"</span>], columns<span class="op">=</span>[<span class="st">"de"</span>, <span class="st">"en"</span>])</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="bu">len</span>(wmt_df)</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>wmt_df.head(<span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<script type="application/vnd.jupyter.widget-view+json">
+{"model_id":"da97a12933574e3ca2ecc5251b5c570a","version_major":2,"version_minor":0}
+</script>
+</div>
+<div class="cell-output cell-output-display">
+<script type="application/vnd.jupyter.widget-view+json">
+{"model_id":"8097850b753e4b448eb959ecba38e69c","version_major":2,"version_minor":0}
+</script>
+</div>
+<div class="cell-output cell-output-display">
+<script type="application/vnd.jupyter.widget-view+json">
+{"model_id":"97796f82047b4b6e95a3f0291992db75","version_major":2,"version_minor":0}
+</script>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Downloading and preparing dataset wmt16/de-en (download: 1.57 GiB, generated: 1.28 GiB, post-processed: Unknown size, total: 2.85 GiB) to /home/wgilliam/.cache/huggingface/datasets/wmt16/de-en/1.0.0/af3c5d746b307726d0de73ebe7f10545361b9cb6f75c83a1734c000e48b6264f...</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<script type="application/vnd.jupyter.widget-view+json">
+{"model_id":"6f8cd4cddfe040368bcf002b56223ff6","version_major":2,"version_minor":0}
+</script>
+</div>
+<div class="cell-output cell-output-display">
+<script type="application/vnd.jupyter.widget-view+json">
+{"model_id":"8f1d4b8f371c47b2b40834a6da537298","version_major":2,"version_minor":0}
+</script>
+</div>
+<div class="cell-output cell-output-display">
+<script type="application/vnd.jupyter.widget-view+json">
+{"model_id":"a7270c31ee0646fa803010a2aafd9ef7","version_major":2,"version_minor":0}
+</script>
+</div>
+<div class="cell-output cell-output-display">
+<script type="application/vnd.jupyter.widget-view+json">
+{"model_id":"b15924a412d34836b900efcdea05db46","version_major":2,"version_minor":0}
+</script>
+</div>
+<div class="cell-output cell-output-display">
+<script type="application/vnd.jupyter.widget-view+json">
+{"model_id":"a51740a419ef4b74aa4a6e764a81b033","version_major":2,"version_minor":0}
+</script>
+</div>
+<div class="cell-output cell-output-display">
+<script type="application/vnd.jupyter.widget-view+json">
+{"model_id":"db9ada72e9404f8ab09aec06191a8a0d","version_major":2,"version_minor":0}
+</script>
+</div>
+<div class="cell-output cell-output-display">
+<script type="application/vnd.jupyter.widget-view+json">
+{"model_id":"184b9f3bc69a4fa1b67262d638b919b7","version_major":2,"version_minor":0}
+</script>
+</div>
+<div class="cell-output cell-output-display">
+<script type="application/vnd.jupyter.widget-view+json">
+{"model_id":"bcb2d3b116b94da488b1bfac24859e58","version_major":2,"version_minor":0}
+</script>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Generating examples from: %s europarl_v7
+Generating examples from: %s commoncrawl
+Generating examples from: %s newscommentary_v11</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<script type="application/vnd.jupyter.widget-view+json">
+{"model_id":"e968e66a7f13466eaf0255d622233e68","version_major":2,"version_minor":0}
+</script>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Generating examples from: %s newstest2015</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<script type="application/vnd.jupyter.widget-view+json">
+{"model_id":"6797494dce0b425cba30bffc8e1fa396","version_major":2,"version_minor":0}
+</script>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Generating examples from: %s newstest2016
+Dataset wmt16 downloaded and prepared to /home/wgilliam/.cache/huggingface/datasets/wmt16/de-en/1.0.0/af3c5d746b307726d0de73ebe7f10545361b9cb6f75c83a1734c000e48b6264f. Subsequent calls will reuse this data.</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+
+<div>
+
+<table class="dataframe table table-sm table-striped">
+  <thead>
+    <tr>
+      <th></th>
+      <th>de</th>
+      <th>en</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>Tada se dio stanovništva preselio uz samu obalu - Pristan, gdje je i nastao Novi grad početkom XX vijeka.</td>
+      <td>In that period the majority of the population moved close to the seaside, where the first sea port was founded at the beginning of the 20th century, and later a new city was built.</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>"Dieses Video ist nicht verfügbar loger" bitch, daß das Böse, der sein Video auf YouTube hochgeladen hatte nearsyx?</td>
+      <td>"This video is no loger available" that evil bitch, who had uploaded his video on youtube nearsyx?</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>pretrained_model_name <span class="op">=</span> <span class="st">"Helsinki-NLP/opus-mt-de-en"</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>model_cls <span class="op">=</span> AutoModelForSeq2SeqLM</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>hf_arch, hf_config, hf_tokenizer, hf_model <span class="op">=</span> get_hf_objects(pretrained_model_name, model_cls<span class="op">=</span>model_cls)</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>hf_arch, <span class="bu">type</span>(hf_tokenizer), <span class="bu">type</span>(hf_config), <span class="bu">type</span>(hf_model)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>https://huggingface.co/Helsinki-NLP/opus-mt-de-en/resolve/main/config.json not found in cache or force_download set to True, downloading to /home/wgilliam/.cache/huggingface/transformers/tmppp9i08el</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<script type="application/vnd.jupyter.widget-view+json">
+{"model_id":"573157b76dbe48fc9055ed18d3b90922","version_major":2,"version_minor":0}
+</script>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>storing https://huggingface.co/Helsinki-NLP/opus-mt-de-en/resolve/main/config.json in cache at /home/wgilliam/.cache/huggingface/transformers/1854c5c3f3aeab11cfc4ef9f74e960e7bf2300332cd7cdbd83077f02499cdfab.b1412cdfcd82522fbf1b1559d2bb133e7c34f871e99859d46b74f1533daa4757
+creating metadata file for /home/wgilliam/.cache/huggingface/transformers/1854c5c3f3aeab11cfc4ef9f74e960e7bf2300332cd7cdbd83077f02499cdfab.b1412cdfcd82522fbf1b1559d2bb133e7c34f871e99859d46b74f1533daa4757
+loading configuration file https://huggingface.co/Helsinki-NLP/opus-mt-de-en/resolve/main/config.json from cache at /home/wgilliam/.cache/huggingface/transformers/1854c5c3f3aeab11cfc4ef9f74e960e7bf2300332cd7cdbd83077f02499cdfab.b1412cdfcd82522fbf1b1559d2bb133e7c34f871e99859d46b74f1533daa4757
+Model config MarianConfig {
+  "_name_or_path": "Helsinki-NLP/opus-mt-de-en",
+  "_num_labels": 3,
+  "activation_dropout": 0.0,
+  "activation_function": "swish",
+  "add_bias_logits": false,
+  "add_final_layer_norm": false,
+  "architectures": [
+    "MarianMTModel"
+  ],
+  "attention_dropout": 0.0,
+  "bad_words_ids": [
+    [
+      58100
+    ]
+  ],
+  "bos_token_id": 0,
+  "classif_dropout": 0.0,
+  "classifier_dropout": 0.0,
+  "d_model": 512,
+  "decoder_attention_heads": 8,
+  "decoder_ffn_dim": 2048,
+  "decoder_layerdrop": 0.0,
+  "decoder_layers": 6,
+  "decoder_start_token_id": 58100,
+  "decoder_vocab_size": 58101,
+  "dropout": 0.1,
+  "encoder_attention_heads": 8,
+  "encoder_ffn_dim": 2048,
+  "encoder_layerdrop": 0.0,
+  "encoder_layers": 6,
+  "eos_token_id": 0,
+  "forced_eos_token_id": 0,
+  "id2label": {
+    "0": "LABEL_0",
+    "1": "LABEL_1",
+    "2": "LABEL_2"
+  },
+  "init_std": 0.02,
+  "is_encoder_decoder": true,
+  "label2id": {
+    "LABEL_0": 0,
+    "LABEL_1": 1,
+    "LABEL_2": 2
+  },
+  "max_length": 512,
+  "max_position_embeddings": 512,
+  "model_type": "marian",
+  "normalize_before": false,
+  "normalize_embedding": false,
+  "num_beams": 4,
+  "num_hidden_layers": 6,
+  "pad_token_id": 58100,
+  "scale_embedding": true,
+  "share_encoder_decoder_embeddings": true,
+  "static_position_embeddings": true,
+  "transformers_version": "4.18.0",
+  "use_cache": true,
+  "vocab_size": 58101
+}
+
+https://huggingface.co/Helsinki-NLP/opus-mt-de-en/resolve/main/tokenizer_config.json not found in cache or force_download set to True, downloading to /home/wgilliam/.cache/huggingface/transformers/tmpes7wybva</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<script type="application/vnd.jupyter.widget-view+json">
+{"model_id":"b95d190385fd48218118eb4b793df134","version_major":2,"version_minor":0}
+</script>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>storing https://huggingface.co/Helsinki-NLP/opus-mt-de-en/resolve/main/tokenizer_config.json in cache at /home/wgilliam/.cache/huggingface/transformers/3bb44a3386cfbb9cb18134066610daf2447a07f2f56a14bed4ef1ffee714851c.ab636688faaa6513d9a830ea57bdb7081f0dda90f9de5e3c857a239f0cc406e7
+creating metadata file for /home/wgilliam/.cache/huggingface/transformers/3bb44a3386cfbb9cb18134066610daf2447a07f2f56a14bed4ef1ffee714851c.ab636688faaa6513d9a830ea57bdb7081f0dda90f9de5e3c857a239f0cc406e7
+loading configuration file https://huggingface.co/Helsinki-NLP/opus-mt-de-en/resolve/main/config.json from cache at /home/wgilliam/.cache/huggingface/transformers/1854c5c3f3aeab11cfc4ef9f74e960e7bf2300332cd7cdbd83077f02499cdfab.b1412cdfcd82522fbf1b1559d2bb133e7c34f871e99859d46b74f1533daa4757
+Model config MarianConfig {
+  "_name_or_path": "Helsinki-NLP/opus-mt-de-en",
+  "_num_labels": 3,
+  "activation_dropout": 0.0,
+  "activation_function": "swish",
+  "add_bias_logits": false,
+  "add_final_layer_norm": false,
+  "architectures": [
+    "MarianMTModel"
+  ],
+  "attention_dropout": 0.0,
+  "bad_words_ids": [
+    [
+      58100
+    ]
+  ],
+  "bos_token_id": 0,
+  "classif_dropout": 0.0,
+  "classifier_dropout": 0.0,
+  "d_model": 512,
+  "decoder_attention_heads": 8,
+  "decoder_ffn_dim": 2048,
+  "decoder_layerdrop": 0.0,
+  "decoder_layers": 6,
+  "decoder_start_token_id": 58100,
+  "decoder_vocab_size": 58101,
+  "dropout": 0.1,
+  "encoder_attention_heads": 8,
+  "encoder_ffn_dim": 2048,
+  "encoder_layerdrop": 0.0,
+  "encoder_layers": 6,
+  "eos_token_id": 0,
+  "forced_eos_token_id": 0,
+  "id2label": {
+    "0": "LABEL_0",
+    "1": "LABEL_1",
+    "2": "LABEL_2"
+  },
+  "init_std": 0.02,
+  "is_encoder_decoder": true,
+  "label2id": {
+    "LABEL_0": 0,
+    "LABEL_1": 1,
+    "LABEL_2": 2
+  },
+  "max_length": 512,
+  "max_position_embeddings": 512,
+  "model_type": "marian",
+  "normalize_before": false,
+  "normalize_embedding": false,
+  "num_beams": 4,
+  "num_hidden_layers": 6,
+  "pad_token_id": 58100,
+  "scale_embedding": true,
+  "share_encoder_decoder_embeddings": true,
+  "static_position_embeddings": true,
+  "transformers_version": "4.18.0",
+  "use_cache": true,
+  "vocab_size": 58101
+}
+
+https://huggingface.co/Helsinki-NLP/opus-mt-de-en/resolve/main/source.spm not found in cache or force_download set to True, downloading to /home/wgilliam/.cache/huggingface/transformers/tmpmmic75d1</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<script type="application/vnd.jupyter.widget-view+json">
+{"model_id":"9b7397c4ac9b45648937d7a50eaca8dd","version_major":2,"version_minor":0}
+</script>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>storing https://huggingface.co/Helsinki-NLP/opus-mt-de-en/resolve/main/source.spm in cache at /home/wgilliam/.cache/huggingface/transformers/97f9ac1f9bf6b0e421cdf322cd4243cf20650839545200bf6b513ad03c168c8c.7bc2908774e59068751778d82930d24fe5b81375f4e06aa8f2a62298103c9587
+creating metadata file for /home/wgilliam/.cache/huggingface/transformers/97f9ac1f9bf6b0e421cdf322cd4243cf20650839545200bf6b513ad03c168c8c.7bc2908774e59068751778d82930d24fe5b81375f4e06aa8f2a62298103c9587
+https://huggingface.co/Helsinki-NLP/opus-mt-de-en/resolve/main/target.spm not found in cache or force_download set to True, downloading to /home/wgilliam/.cache/huggingface/transformers/tmp_780e_84</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<script type="application/vnd.jupyter.widget-view+json">
+{"model_id":"1a0a65ebfe2748e0b6d43665b94dafbc","version_major":2,"version_minor":0}
+</script>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>storing https://huggingface.co/Helsinki-NLP/opus-mt-de-en/resolve/main/target.spm in cache at /home/wgilliam/.cache/huggingface/transformers/1c5dd1c09c6117b6da35a0bfc70dee4e4852bd9f1e019474ccd80f98014806b5.5ff349d0044d463eca29fbb3a3d21a2dd0511ced746d6c6941daa893faf53d79
+creating metadata file for /home/wgilliam/.cache/huggingface/transformers/1c5dd1c09c6117b6da35a0bfc70dee4e4852bd9f1e019474ccd80f98014806b5.5ff349d0044d463eca29fbb3a3d21a2dd0511ced746d6c6941daa893faf53d79
+https://huggingface.co/Helsinki-NLP/opus-mt-de-en/resolve/main/vocab.json not found in cache or force_download set to True, downloading to /home/wgilliam/.cache/huggingface/transformers/tmp9veehttl</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<script type="application/vnd.jupyter.widget-view+json">
+{"model_id":"4fcd2fa7e2d34755b40db7caacd49e5d","version_major":2,"version_minor":0}
+</script>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>storing https://huggingface.co/Helsinki-NLP/opus-mt-de-en/resolve/main/vocab.json in cache at /home/wgilliam/.cache/huggingface/transformers/135ba2ed81322da617731039edec94c1b10b121b5499ea1bcdd7e60040cf4913.fe9bdbcb654d47ed6918ebaad81166b879fd0bc12ea76a2cc54359202fa854d7
+creating metadata file for /home/wgilliam/.cache/huggingface/transformers/135ba2ed81322da617731039edec94c1b10b121b5499ea1bcdd7e60040cf4913.fe9bdbcb654d47ed6918ebaad81166b879fd0bc12ea76a2cc54359202fa854d7
+loading file https://huggingface.co/Helsinki-NLP/opus-mt-de-en/resolve/main/source.spm from cache at /home/wgilliam/.cache/huggingface/transformers/97f9ac1f9bf6b0e421cdf322cd4243cf20650839545200bf6b513ad03c168c8c.7bc2908774e59068751778d82930d24fe5b81375f4e06aa8f2a62298103c9587
+loading file https://huggingface.co/Helsinki-NLP/opus-mt-de-en/resolve/main/target.spm from cache at /home/wgilliam/.cache/huggingface/transformers/1c5dd1c09c6117b6da35a0bfc70dee4e4852bd9f1e019474ccd80f98014806b5.5ff349d0044d463eca29fbb3a3d21a2dd0511ced746d6c6941daa893faf53d79
+loading file https://huggingface.co/Helsinki-NLP/opus-mt-de-en/resolve/main/vocab.json from cache at /home/wgilliam/.cache/huggingface/transformers/135ba2ed81322da617731039edec94c1b10b121b5499ea1bcdd7e60040cf4913.fe9bdbcb654d47ed6918ebaad81166b879fd0bc12ea76a2cc54359202fa854d7
+loading file https://huggingface.co/Helsinki-NLP/opus-mt-de-en/resolve/main/target_vocab.json from cache at None
+loading file https://huggingface.co/Helsinki-NLP/opus-mt-de-en/resolve/main/tokenizer_config.json from cache at /home/wgilliam/.cache/huggingface/transformers/3bb44a3386cfbb9cb18134066610daf2447a07f2f56a14bed4ef1ffee714851c.ab636688faaa6513d9a830ea57bdb7081f0dda90f9de5e3c857a239f0cc406e7
+loading file https://huggingface.co/Helsinki-NLP/opus-mt-de-en/resolve/main/added_tokens.json from cache at None
+loading file https://huggingface.co/Helsinki-NLP/opus-mt-de-en/resolve/main/special_tokens_map.json from cache at None
+loading configuration file https://huggingface.co/Helsinki-NLP/opus-mt-de-en/resolve/main/config.json from cache at /home/wgilliam/.cache/huggingface/transformers/1854c5c3f3aeab11cfc4ef9f74e960e7bf2300332cd7cdbd83077f02499cdfab.b1412cdfcd82522fbf1b1559d2bb133e7c34f871e99859d46b74f1533daa4757
+Model config MarianConfig {
+  "_name_or_path": "Helsinki-NLP/opus-mt-de-en",
+  "_num_labels": 3,
+  "activation_dropout": 0.0,
+  "activation_function": "swish",
+  "add_bias_logits": false,
+  "add_final_layer_norm": false,
+  "architectures": [
+    "MarianMTModel"
+  ],
+  "attention_dropout": 0.0,
+  "bad_words_ids": [
+    [
+      58100
+    ]
+  ],
+  "bos_token_id": 0,
+  "classif_dropout": 0.0,
+  "classifier_dropout": 0.0,
+  "d_model": 512,
+  "decoder_attention_heads": 8,
+  "decoder_ffn_dim": 2048,
+  "decoder_layerdrop": 0.0,
+  "decoder_layers": 6,
+  "decoder_start_token_id": 58100,
+  "decoder_vocab_size": 58101,
+  "dropout": 0.1,
+  "encoder_attention_heads": 8,
+  "encoder_ffn_dim": 2048,
+  "encoder_layerdrop": 0.0,
+  "encoder_layers": 6,
+  "eos_token_id": 0,
+  "forced_eos_token_id": 0,
+  "id2label": {
+    "0": "LABEL_0",
+    "1": "LABEL_1",
+    "2": "LABEL_2"
+  },
+  "init_std": 0.02,
+  "is_encoder_decoder": true,
+  "label2id": {
+    "LABEL_0": 0,
+    "LABEL_1": 1,
+    "LABEL_2": 2
+  },
+  "max_length": 512,
+  "max_position_embeddings": 512,
+  "model_type": "marian",
+  "normalize_before": false,
+  "normalize_embedding": false,
+  "num_beams": 4,
+  "num_hidden_layers": 6,
+  "pad_token_id": 58100,
+  "scale_embedding": true,
+  "share_encoder_decoder_embeddings": true,
+  "static_position_embeddings": true,
+  "transformers_version": "4.18.0",
+  "use_cache": true,
+  "vocab_size": 58101
+}
+
+https://huggingface.co/Helsinki-NLP/opus-mt-de-en/resolve/main/pytorch_model.bin not found in cache or force_download set to True, downloading to /home/wgilliam/.cache/huggingface/transformers/tmp4evxfupq</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<script type="application/vnd.jupyter.widget-view+json">
+{"model_id":"c542b2df269749568e1e7be26fa2e075","version_major":2,"version_minor":0}
+</script>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>storing https://huggingface.co/Helsinki-NLP/opus-mt-de-en/resolve/main/pytorch_model.bin in cache at /home/wgilliam/.cache/huggingface/transformers/939fa8e38fdeb206b841054406fe90638dbe4a602679798fc35126e90fe54e12.9f2385d4ebdde4e5e8ef144654a4666f40c8423a85f51590fecb88452aec1514
+creating metadata file for /home/wgilliam/.cache/huggingface/transformers/939fa8e38fdeb206b841054406fe90638dbe4a602679798fc35126e90fe54e12.9f2385d4ebdde4e5e8ef144654a4666f40c8423a85f51590fecb88452aec1514
+loading weights file https://huggingface.co/Helsinki-NLP/opus-mt-de-en/resolve/main/pytorch_model.bin from cache at /home/wgilliam/.cache/huggingface/transformers/939fa8e38fdeb206b841054406fe90638dbe4a602679798fc35126e90fe54e12.9f2385d4ebdde4e5e8ef144654a4666f40c8423a85f51590fecb88452aec1514
+All model checkpoint weights were used when initializing MarianMTModel.
+
+All the weights of MarianMTModel were initialized from the model checkpoint at Helsinki-NLP/opus-mt-de-en.
+If your task is similar to the task the model of the checkpoint was trained on, you can already use MarianMTModel for predictions without further training.</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<pre><code>('marian',
+ transformers.models.marian.tokenization_marian.MarianTokenizer,
+ transformers.models.marian.configuration_marian.MarianConfig,
+ transformers.models.marian.modeling_marian.MarianMTModel)</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>blocks <span class="op">=</span> (Seq2SeqTextBlock(hf_arch, hf_config, hf_tokenizer, hf_model), noop)</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>dblock <span class="op">=</span> DataBlock(blocks<span class="op">=</span>blocks, get_x<span class="op">=</span>ColReader(<span class="st">"de"</span>), get_y<span class="op">=</span>ColReader(<span class="st">"en"</span>), splitter<span class="op">=</span>RandomSplitter())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>dls <span class="op">=</span> dblock.dataloaders(wmt_df, bs<span class="op">=</span><span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>b <span class="op">=</span> dls.one_batch()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="bu">len</span>(b), b[<span class="dv">0</span>][<span class="st">"input_ids"</span>].shape, b[<span class="dv">1</span>].shape</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>(2, torch.Size([2, 168]), torch.Size([2, 140]))</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>dls.show_batch(dataloaders<span class="op">=</span>dls, max_n<span class="op">=</span><span class="dv">2</span>, input_trunc_at<span class="op">=</span><span class="dv">250</span>, target_trunc_at<span class="op">=</span><span class="dv">250</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+
+<table class="dataframe table table-sm table-striped">
+  <thead>
+    <tr>
+      <th></th>
+      <th>text</th>
+      <th>target</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>"In▁Erwägung▁nachstehender▁Gründe▁sollte das▁Europäische▁Parlament▁keinerlei▁Doppelmoral tolerieren. Indessen und um▁politischen Druck auf▁Journalisten▁auszuüben, die▁Korruptionsfälle aufdecken, die in▁Verbindung mit▁hochrangigen▁Beamten und▁regieren</td>
+      <td>'whereas the European Parliament shall not accept double standards; whereas, in order to put political pressure on journalists disclosing corruption cases linked to high-ranking officials and ruling party politicians, the Government administration in</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>Es▁ist▁jetzt▁wirklich an der Zeit,▁daß nicht▁nur in▁bezug auf den▁Jahreswirtschaftsbericht und die▁wirtschaftspolitischen▁Leitlinien,▁nein,▁auch in▁bezug auf die▁gesamten▁Fragen zum▁Verfahren zur▁Feststellung des▁übermäßigen▁Defizits und▁auch in▁bezu</td>
+      <td>It really is time for the European Parliament to be given a codecision right that is consistent with the further democratic development of this European Union; that right must apply not just to the annual economic report and the economic policy guide</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+<section id="training" class="level4">
+<h4 class="anchored" data-anchor-id="training">Training</h4>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>seq2seq_metrics <span class="op">=</span> {<span class="st">"bleu"</span>: {<span class="st">"returns"</span>: <span class="st">"bleu"</span>}, <span class="st">"meteor"</span>: {<span class="st">"returns"</span>: <span class="st">"meteor"</span>}, <span class="st">"sacrebleu"</span>: {<span class="st">"returns"</span>: <span class="st">"score"</span>}}</span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>model <span class="op">=</span> BaseModelWrapper(hf_model)</span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>learn_cbs <span class="op">=</span> [BaseModelCallback]</span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>fit_cbs <span class="op">=</span> [Seq2SeqMetricsCallback(custom_metrics<span class="op">=</span>seq2seq_metrics)]</span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a>learn <span class="op">=</span> Learner(</span>
+<span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a>    dls,</span>
+<span id="cb21-9"><a href="#cb21-9" aria-hidden="true" tabindex="-1"></a>    model,</span>
+<span id="cb21-10"><a href="#cb21-10" aria-hidden="true" tabindex="-1"></a>    opt_func<span class="op">=</span>partial(Adam),</span>
+<span id="cb21-11"><a href="#cb21-11" aria-hidden="true" tabindex="-1"></a>    loss_func<span class="op">=</span>PreCalculatedCrossEntropyLoss(),  <span class="co"># CrossEntropyLossFlat()</span></span>
+<span id="cb21-12"><a href="#cb21-12" aria-hidden="true" tabindex="-1"></a>    cbs<span class="op">=</span>learn_cbs,</span>
+<span id="cb21-13"><a href="#cb21-13" aria-hidden="true" tabindex="-1"></a>    splitter<span class="op">=</span>partial(blurr_seq2seq_splitter, arch<span class="op">=</span>hf_arch),</span>
+<span id="cb21-14"><a href="#cb21-14" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb21-15"><a href="#cb21-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-16"><a href="#cb21-16" aria-hidden="true" tabindex="-1"></a><span class="co"># learn = learn.to_native_fp16() #.to_fp16()</span></span>
+<span id="cb21-17"><a href="#cb21-17" aria-hidden="true" tabindex="-1"></a>learn.freeze()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<script type="application/vnd.jupyter.widget-view+json">
+{"model_id":"f7beb5d148b34d4496f891d212ec9b60","version_major":2,"version_minor":0}
+</script>
+</div>
+<div class="cell-output cell-output-display">
+<script type="application/vnd.jupyter.widget-view+json">
+{"model_id":"2b7bc8ec150b434480d25087e9134558","version_major":2,"version_minor":0}
+</script>
+</div>
+<div class="cell-output cell-output-display">
+<script type="application/vnd.jupyter.widget-view+json">
+{"model_id":"169965edb296470483b72c004d109cc6","version_major":2,"version_minor":0}
+</script>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>[nltk_data] Downloading package wordnet to /home/wgilliam/nltk_data...
+[nltk_data]   Package wordnet is already up-to-date!
+[nltk_data] Downloading package punkt to /home/wgilliam/nltk_data...
+[nltk_data]   Package punkt is already up-to-date!
+[nltk_data] Downloading package omw-1.4 to /home/wgilliam/nltk_data...
+[nltk_data]   Package omw-1.4 is already up-to-date!</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<script type="application/vnd.jupyter.widget-view+json">
+{"model_id":"3f463405d2274fe8820e98b404ec1b8b","version_major":2,"version_minor":0}
+</script>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>learn.summary()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>b <span class="op">=</span> dls.one_batch()</span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>preds <span class="op">=</span> learn.model(b[<span class="dv">0</span>])</span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a><span class="bu">len</span>(preds), preds[<span class="st">"loss"</span>].shape, preds[<span class="st">"logits"</span>].shape</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>(3, torch.Size([]), torch.Size([2, 140, 58101]))</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="bu">len</span>(b), <span class="bu">len</span>(b[<span class="dv">0</span>]), b[<span class="dv">0</span>][<span class="st">"input_ids"</span>].shape, <span class="bu">len</span>(b[<span class="dv">1</span>]), b[<span class="dv">1</span>].shape</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>(2, 3, torch.Size([2, 168]), 2, torch.Size([2, 140]))</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="bu">len</span>(learn.opt.param_groups))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>3</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a>learn.lr_find(suggest_funcs<span class="op">=</span>[minimum, steep, valley, slide])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+
+</div>
+<div class="cell-output cell-output-display">
+<pre><code>SuggestedLRs(minimum=3.981071640737355e-05, steep=6.309573450380412e-07, valley=5.248074739938602e-05, slide=7.585775892948732e-05)</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<p><img src="22_text-modeling-seq2seq-translation_files/figure-html/cell-16-output-3.png" class="img-fluid"></p>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a>learn.fit_one_cycle(<span class="dv">1</span>, lr_max<span class="op">=</span><span class="fl">4e-5</span>, cbs<span class="op">=</span>fit_cbs)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+
+<table class="dataframe table table-sm table-striped">
+  <thead>
+    <tr>
+      <th>epoch</th>
+      <th>train_loss</th>
+      <th>valid_loss</th>
+      <th>bleu</th>
+      <th>meteor</th>
+      <th>sacrebleu</th>
+      <th>time</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>0</td>
+      <td>2.088453</td>
+      <td>2.097524</td>
+      <td>0.295524</td>
+      <td>0.543777</td>
+      <td>28.882930</td>
+      <td>00:58</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+</section>
+<section id="showing-results" class="level4">
+<h4 class="anchored" data-anchor-id="showing-results">Showing results</h4>
+<p>And here we create a <code>@typedispatch</code>ed implementation of <code>Learner.show_results</code>.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a>learn.show_results(learner<span class="op">=</span>learn, input_trunc_at<span class="op">=</span><span class="dv">500</span>, target_trunc_at<span class="op">=</span><span class="dv">500</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+
+</div>
+<div class="cell-output cell-output-display">
+
+<table class="dataframe table table-sm table-striped">
+  <thead>
+    <tr>
+      <th></th>
+      <th>text</th>
+      <th>target</th>
+      <th>prediction</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>▁Schließen die▁vorgeschlagenen▁Anwendungszwecke▁Empfehlungen über die▁Bekämpfung von oder den▁Schutz▁gegen▁Organismen ein, die▁unter den in der▁vorgesehenen▁Anwendungsregion▁herrschenden▁Bedingungen in▁bezug auf▁Landwirtschaft,▁Pflanzenschutz und Umwelt -▁einschließlich der▁Witterungsverhältnisse - nach den▁Erfahrungen und dem▁wissenschaftlichen▁Erkenntnisstand nicht▁als▁schädlich▁gelten, oder▁ist▁davon▁auszugehen,▁daß die▁anderen▁Wirkungen▁unter▁diesen▁Bedingungen den▁beabsichtigten▁Zweck nicht</td>
+      <td>Where relevant, yield response when the product is used and reduction of loss in storage must be quantitatively and/or qualitatively similar to those resulting from the use of suitable reference products. If no suitable reference product exists, the plant protection product must be shown to give a consistent and defined quantitative and/or qualitative benefit in terms of yield response and reduction of loss in storage under the agricultural, plant health and environmental (including climatic) co</td>
+      <td>[Where the proposed uses include recommendations on the control of or protection against organisms which are not considered to be harmful under the conditions prevailing in the intended application region in respect of agriculture, plant health and the environment, including climatic conditions, in the light of experience and scientific knowledge, or where it is assumed that the other effects do not meet the intended purpose under such conditions, no authorisation shall be granted for such uses., That is why we have listened to you and asked you to introduce a further transparent consultation procedure on the Anti-Counterfeiting Agreement (ACTA) to ensure that the European Parliament and the citizens represented by this Parliament are regularly and comprehensively informed about the progress of the negotiations, while respecting the confidentiality clauses that you have just explained to us about the agreement.]</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+</section>
+<section id="prediction" class="level4">
+<h4 class="anchored" data-anchor-id="prediction">Prediction</h4>
+<p>We add here <a href="https://ohmeow.github.io/blurr/text-modeling-seq2seq-translation.html#learner.blurr_translate"><code>Learner.blurr_translate</code></a> method to bring the results inline with the format returned via Hugging Face’s pipeline method</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a>test_de <span class="op">=</span> <span class="st">"Ich trinke gerne Bier"</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a>outputs <span class="op">=</span> learn.blurr_generate(test_de, key<span class="op">=</span><span class="st">"translation_texts"</span>, num_return_sequences<span class="op">=</span><span class="dv">3</span>)</span>
+<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a>outputs</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>[{'translation_texts': ['I like to drink beer',
+   'I like to drink beer.',
+   'I like drinking beer']}]</code></pre>
+</div>
+</div>
+<hr>
+<p><a href="https://github.com/ohmeow/blurr/blob/master/blurr/text/modeling/seq2seq/translation.py#LNone" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+</section>
+<section id="learner.blurr_translate" class="level3">
+<h3 class="anchored" data-anchor-id="learner.blurr_translate">Learner.blurr_translate</h3>
+<blockquote class="blockquote">
+<pre><code> Learner.blurr_translate (inp, **kwargs)</code></pre>
+</blockquote>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb38"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a>learn.blurr_translate(test_de, num_return_sequences<span class="op">=</span><span class="dv">3</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>[{'translation_texts': ['I like to drink beer',
+   'I like to drink beer.',
+   'I like drinking beer']}]</code></pre>
+</div>
+</div>
+<section id="inference" class="level4">
+<h4 class="anchored" data-anchor-id="inference">Inference</h4>
+<p>Using fast.ai <code>Learner.export</code> and <code>load_learner</code></p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb40"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a>export_fname <span class="op">=</span> <span class="st">"translation_export"</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb41"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a>learn.metrics <span class="op">=</span> <span class="va">None</span></span>
+<span id="cb41-2"><a href="#cb41-2" aria-hidden="true" tabindex="-1"></a>learn.export(fname<span class="op">=</span><span class="ss">f"</span><span class="sc">{</span>export_fname<span class="sc">}</span><span class="ss">.pkl"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb42"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a>inf_learn <span class="op">=</span> load_learner(fname<span class="op">=</span><span class="ss">f"</span><span class="sc">{</span>export_fname<span class="sc">}</span><span class="ss">.pkl"</span>)</span>
+<span id="cb42-2"><a href="#cb42-2" aria-hidden="true" tabindex="-1"></a>inf_learn.blurr_translate(test_de)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>[{'translation_texts': 'I like to drink beer'}]</code></pre>
+</div>
+</div>
+</section>
+</section>
+</section>
+<section id="high-level-api" class="level2">
+<h2 class="anchored" data-anchor-id="high-level-api">High-level API</h2>
+<hr>
+<p><a href="https://github.com/ohmeow/blurr/blob/master/blurr/text/modeling/seq2seq/translation.py#L42" target="_blank" style="float:right; font-size:smaller">source</a></p>
+<section id="blearnerfortranslation" class="level3">
+<h3 class="anchored" data-anchor-id="blearnerfortranslation">BlearnerForTranslation</h3>
+<blockquote class="blockquote">
+<pre><code> BlearnerForTranslation (dls:fastai.data.core.DataLoaders,
+                         hf_model:transformers.modeling_utils.PreTrainedMo
+                         del, base_model_cb:blurr.text.modeling.core.BaseM
+                         odelCallback=&lt;class
+                         'blurr.text.modeling.core.BaseModelCallback'&gt;,
+                         loss_func:callable|None=None, opt_func=&lt;function
+                         Adam&gt;, lr=0.001, splitter:callable=&lt;function
+                         trainable_params&gt;, cbs=None, metrics=None,
+                         path=None, model_dir='models', wd=None,
+                         wd_bn_bias=False, train_bn=True, moms=(0.95,
+                         0.85, 0.95), default_cbs:bool=True)</code></pre>
+</blockquote>
+<p>Group together a <code>model</code>, some <code>dls</code> and a <code>loss_func</code> to handle training</p>
+<table class="table">
+<colgroup>
+<col style="width: 9%">
+<col style="width: 38%">
+<col style="width: 52%">
+</colgroup>
+<thead>
+<tr class="header">
+<th></th>
+<th><strong>Type</strong></th>
+<th><strong>Details</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>dls</td>
+<td></td>
+<td><code>DataLoaders</code> containing data for each dataset needed for <code>model</code></td>
+</tr>
+<tr class="even">
+<td>hf_model</td>
+<td>PreTrainedModel</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb45"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a>learn <span class="op">=</span> BlearnerForTranslation.from_data(</span>
+<span id="cb45-2"><a href="#cb45-2" aria-hidden="true" tabindex="-1"></a>    wmt_df,</span>
+<span id="cb45-3"><a href="#cb45-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Helsinki-NLP/opus-mt-de-en"</span>,</span>
+<span id="cb45-4"><a href="#cb45-4" aria-hidden="true" tabindex="-1"></a>    src_lang_name<span class="op">=</span><span class="st">"German"</span>,</span>
+<span id="cb45-5"><a href="#cb45-5" aria-hidden="true" tabindex="-1"></a>    src_lang_attr<span class="op">=</span><span class="st">"de"</span>,</span>
+<span id="cb45-6"><a href="#cb45-6" aria-hidden="true" tabindex="-1"></a>    trg_lang_name<span class="op">=</span><span class="st">"English"</span>,</span>
+<span id="cb45-7"><a href="#cb45-7" aria-hidden="true" tabindex="-1"></a>    trg_lang_attr<span class="op">=</span><span class="st">"en"</span>,</span>
+<span id="cb45-8"><a href="#cb45-8" aria-hidden="true" tabindex="-1"></a>    dl_kwargs<span class="op">=</span>{<span class="st">"bs"</span>: <span class="dv">2</span>},</span>
+<span id="cb45-9"><a href="#cb45-9" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>loading configuration file https://huggingface.co/Helsinki-NLP/opus-mt-de-en/resolve/main/config.json from cache at /home/wgilliam/.cache/huggingface/transformers/1854c5c3f3aeab11cfc4ef9f74e960e7bf2300332cd7cdbd83077f02499cdfab.b1412cdfcd82522fbf1b1559d2bb133e7c34f871e99859d46b74f1533daa4757
+Model config MarianConfig {
+  "_name_or_path": "Helsinki-NLP/opus-mt-de-en",
+  "_num_labels": 3,
+  "activation_dropout": 0.0,
+  "activation_function": "swish",
+  "add_bias_logits": false,
+  "add_final_layer_norm": false,
+  "architectures": [
+    "MarianMTModel"
+  ],
+  "attention_dropout": 0.0,
+  "bad_words_ids": [
+    [
+      58100
+    ]
+  ],
+  "bos_token_id": 0,
+  "classif_dropout": 0.0,
+  "classifier_dropout": 0.0,
+  "d_model": 512,
+  "decoder_attention_heads": 8,
+  "decoder_ffn_dim": 2048,
+  "decoder_layerdrop": 0.0,
+  "decoder_layers": 6,
+  "decoder_start_token_id": 58100,
+  "decoder_vocab_size": 58101,
+  "dropout": 0.1,
+  "encoder_attention_heads": 8,
+  "encoder_ffn_dim": 2048,
+  "encoder_layerdrop": 0.0,
+  "encoder_layers": 6,
+  "eos_token_id": 0,
+  "forced_eos_token_id": 0,
+  "id2label": {
+    "0": "LABEL_0",
+    "1": "LABEL_1",
+    "2": "LABEL_2"
+  },
+  "init_std": 0.02,
+  "is_encoder_decoder": true,
+  "label2id": {
+    "LABEL_0": 0,
+    "LABEL_1": 1,
+    "LABEL_2": 2
+  },
+  "max_length": 512,
+  "max_position_embeddings": 512,
+  "model_type": "marian",
+  "normalize_before": false,
+  "normalize_embedding": false,
+  "num_beams": 4,
+  "num_hidden_layers": 6,
+  "pad_token_id": 58100,
+  "scale_embedding": true,
+  "share_encoder_decoder_embeddings": true,
+  "static_position_embeddings": true,
+  "transformers_version": "4.18.0",
+  "use_cache": true,
+  "vocab_size": 58101
+}
+
+loading weights file https://huggingface.co/Helsinki-NLP/opus-mt-de-en/resolve/main/pytorch_model.bin from cache at /home/wgilliam/.cache/huggingface/transformers/939fa8e38fdeb206b841054406fe90638dbe4a602679798fc35126e90fe54e12.9f2385d4ebdde4e5e8ef144654a4666f40c8423a85f51590fecb88452aec1514
+All model checkpoint weights were used when initializing MarianMTModel.
+
+All the weights of MarianMTModel were initialized from the model checkpoint at Helsinki-NLP/opus-mt-de-en.
+If your task is similar to the task the model of the checkpoint was trained on, you can already use MarianMTModel for predictions without further training.
+loading configuration file https://huggingface.co/Helsinki-NLP/opus-mt-de-en/resolve/main/config.json from cache at /home/wgilliam/.cache/huggingface/transformers/1854c5c3f3aeab11cfc4ef9f74e960e7bf2300332cd7cdbd83077f02499cdfab.b1412cdfcd82522fbf1b1559d2bb133e7c34f871e99859d46b74f1533daa4757
+Model config MarianConfig {
+  "_name_or_path": "Helsinki-NLP/opus-mt-de-en",
+  "_num_labels": 3,
+  "activation_dropout": 0.0,
+  "activation_function": "swish",
+  "add_bias_logits": false,
+  "add_final_layer_norm": false,
+  "architectures": [
+    "MarianMTModel"
+  ],
+  "attention_dropout": 0.0,
+  "bad_words_ids": [
+    [
+      58100
+    ]
+  ],
+  "bos_token_id": 0,
+  "classif_dropout": 0.0,
+  "classifier_dropout": 0.0,
+  "d_model": 512,
+  "decoder_attention_heads": 8,
+  "decoder_ffn_dim": 2048,
+  "decoder_layerdrop": 0.0,
+  "decoder_layers": 6,
+  "decoder_start_token_id": 58100,
+  "decoder_vocab_size": 58101,
+  "dropout": 0.1,
+  "encoder_attention_heads": 8,
+  "encoder_ffn_dim": 2048,
+  "encoder_layerdrop": 0.0,
+  "encoder_layers": 6,
+  "eos_token_id": 0,
+  "forced_eos_token_id": 0,
+  "id2label": {
+    "0": "LABEL_0",
+    "1": "LABEL_1",
+    "2": "LABEL_2"
+  },
+  "init_std": 0.02,
+  "is_encoder_decoder": true,
+  "label2id": {
+    "LABEL_0": 0,
+    "LABEL_1": 1,
+    "LABEL_2": 2
+  },
+  "max_length": 512,
+  "max_position_embeddings": 512,
+  "model_type": "marian",
+  "normalize_before": false,
+  "normalize_embedding": false,
+  "num_beams": 4,
+  "num_hidden_layers": 6,
+  "pad_token_id": 58100,
+  "scale_embedding": true,
+  "share_encoder_decoder_embeddings": true,
+  "static_position_embeddings": true,
+  "transformers_version": "4.18.0",
+  "use_cache": true,
+  "vocab_size": 58101
+}
+
+loading configuration file https://huggingface.co/Helsinki-NLP/opus-mt-de-en/resolve/main/config.json from cache at /home/wgilliam/.cache/huggingface/transformers/1854c5c3f3aeab11cfc4ef9f74e960e7bf2300332cd7cdbd83077f02499cdfab.b1412cdfcd82522fbf1b1559d2bb133e7c34f871e99859d46b74f1533daa4757
+Model config MarianConfig {
+  "_name_or_path": "Helsinki-NLP/opus-mt-de-en",
+  "_num_labels": 3,
+  "activation_dropout": 0.0,
+  "activation_function": "swish",
+  "add_bias_logits": false,
+  "add_final_layer_norm": false,
+  "architectures": [
+    "MarianMTModel"
+  ],
+  "attention_dropout": 0.0,
+  "bad_words_ids": [
+    [
+      58100
+    ]
+  ],
+  "bos_token_id": 0,
+  "classif_dropout": 0.0,
+  "classifier_dropout": 0.0,
+  "d_model": 512,
+  "decoder_attention_heads": 8,
+  "decoder_ffn_dim": 2048,
+  "decoder_layerdrop": 0.0,
+  "decoder_layers": 6,
+  "decoder_start_token_id": 58100,
+  "decoder_vocab_size": 58101,
+  "dropout": 0.1,
+  "encoder_attention_heads": 8,
+  "encoder_ffn_dim": 2048,
+  "encoder_layerdrop": 0.0,
+  "encoder_layers": 6,
+  "eos_token_id": 0,
+  "forced_eos_token_id": 0,
+  "id2label": {
+    "0": "LABEL_0",
+    "1": "LABEL_1",
+    "2": "LABEL_2"
+  },
+  "init_std": 0.02,
+  "is_encoder_decoder": true,
+  "label2id": {
+    "LABEL_0": 0,
+    "LABEL_1": 1,
+    "LABEL_2": 2
+  },
+  "max_length": 512,
+  "max_position_embeddings": 512,
+  "model_type": "marian",
+  "normalize_before": false,
+  "normalize_embedding": false,
+  "num_beams": 4,
+  "num_hidden_layers": 6,
+  "pad_token_id": 58100,
+  "scale_embedding": true,
+  "share_encoder_decoder_embeddings": true,
+  "static_position_embeddings": true,
+  "transformers_version": "4.18.0",
+  "use_cache": true,
+  "vocab_size": 58101
+}
+
+loading file https://huggingface.co/Helsinki-NLP/opus-mt-de-en/resolve/main/source.spm from cache at /home/wgilliam/.cache/huggingface/transformers/97f9ac1f9bf6b0e421cdf322cd4243cf20650839545200bf6b513ad03c168c8c.7bc2908774e59068751778d82930d24fe5b81375f4e06aa8f2a62298103c9587
+loading file https://huggingface.co/Helsinki-NLP/opus-mt-de-en/resolve/main/target.spm from cache at /home/wgilliam/.cache/huggingface/transformers/1c5dd1c09c6117b6da35a0bfc70dee4e4852bd9f1e019474ccd80f98014806b5.5ff349d0044d463eca29fbb3a3d21a2dd0511ced746d6c6941daa893faf53d79
+loading file https://huggingface.co/Helsinki-NLP/opus-mt-de-en/resolve/main/vocab.json from cache at /home/wgilliam/.cache/huggingface/transformers/135ba2ed81322da617731039edec94c1b10b121b5499ea1bcdd7e60040cf4913.fe9bdbcb654d47ed6918ebaad81166b879fd0bc12ea76a2cc54359202fa854d7
+loading file https://huggingface.co/Helsinki-NLP/opus-mt-de-en/resolve/main/target_vocab.json from cache at None
+loading file https://huggingface.co/Helsinki-NLP/opus-mt-de-en/resolve/main/tokenizer_config.json from cache at /home/wgilliam/.cache/huggingface/transformers/3bb44a3386cfbb9cb18134066610daf2447a07f2f56a14bed4ef1ffee714851c.ab636688faaa6513d9a830ea57bdb7081f0dda90f9de5e3c857a239f0cc406e7
+loading file https://huggingface.co/Helsinki-NLP/opus-mt-de-en/resolve/main/added_tokens.json from cache at None
+loading file https://huggingface.co/Helsinki-NLP/opus-mt-de-en/resolve/main/special_tokens_map.json from cache at None
+loading configuration file https://huggingface.co/Helsinki-NLP/opus-mt-de-en/resolve/main/config.json from cache at /home/wgilliam/.cache/huggingface/transformers/1854c5c3f3aeab11cfc4ef9f74e960e7bf2300332cd7cdbd83077f02499cdfab.b1412cdfcd82522fbf1b1559d2bb133e7c34f871e99859d46b74f1533daa4757
+Model config MarianConfig {
+  "_name_or_path": "Helsinki-NLP/opus-mt-de-en",
+  "_num_labels": 3,
+  "activation_dropout": 0.0,
+  "activation_function": "swish",
+  "add_bias_logits": false,
+  "add_final_layer_norm": false,
+  "architectures": [
+    "MarianMTModel"
+  ],
+  "attention_dropout": 0.0,
+  "bad_words_ids": [
+    [
+      58100
+    ]
+  ],
+  "bos_token_id": 0,
+  "classif_dropout": 0.0,
+  "classifier_dropout": 0.0,
+  "d_model": 512,
+  "decoder_attention_heads": 8,
+  "decoder_ffn_dim": 2048,
+  "decoder_layerdrop": 0.0,
+  "decoder_layers": 6,
+  "decoder_start_token_id": 58100,
+  "decoder_vocab_size": 58101,
+  "dropout": 0.1,
+  "encoder_attention_heads": 8,
+  "encoder_ffn_dim": 2048,
+  "encoder_layerdrop": 0.0,
+  "encoder_layers": 6,
+  "eos_token_id": 0,
+  "forced_eos_token_id": 0,
+  "id2label": {
+    "0": "LABEL_0",
+    "1": "LABEL_1",
+    "2": "LABEL_2"
+  },
+  "init_std": 0.02,
+  "is_encoder_decoder": true,
+  "label2id": {
+    "LABEL_0": 0,
+    "LABEL_1": 1,
+    "LABEL_2": 2
+  },
+  "max_length": 512,
+  "max_position_embeddings": 512,
+  "model_type": "marian",
+  "normalize_before": false,
+  "normalize_embedding": false,
+  "num_beams": 4,
+  "num_hidden_layers": 6,
+  "pad_token_id": 58100,
+  "scale_embedding": true,
+  "share_encoder_decoder_embeddings": true,
+  "static_position_embeddings": true,
+  "transformers_version": "4.18.0",
+  "use_cache": true,
+  "vocab_size": 58101
+}
+
+loading weights file https://huggingface.co/Helsinki-NLP/opus-mt-de-en/resolve/main/pytorch_model.bin from cache at /home/wgilliam/.cache/huggingface/transformers/939fa8e38fdeb206b841054406fe90638dbe4a602679798fc35126e90fe54e12.9f2385d4ebdde4e5e8ef144654a4666f40c8423a85f51590fecb88452aec1514
+All model checkpoint weights were used when initializing MarianMTModel.
+
+All the weights of MarianMTModel were initialized from the model checkpoint at Helsinki-NLP/opus-mt-de-en.
+If your task is similar to the task the model of the checkpoint was trained on, you can already use MarianMTModel for predictions without further training.</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb47"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a>metrics_cb <span class="op">=</span> BlearnerForTranslation.get_metrics_cb()</span>
+<span id="cb47-2"><a href="#cb47-2" aria-hidden="true" tabindex="-1"></a>learn.fit_one_cycle(<span class="dv">1</span>, lr_max<span class="op">=</span><span class="fl">4e-5</span>, cbs<span class="op">=</span>[metrics_cb])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>[nltk_data] Downloading package wordnet to /home/wgilliam/nltk_data...
+[nltk_data]   Package wordnet is already up-to-date!
+[nltk_data] Downloading package punkt to /home/wgilliam/nltk_data...
+[nltk_data]   Package punkt is already up-to-date!
+[nltk_data] Downloading package omw-1.4 to /home/wgilliam/nltk_data...
+[nltk_data]   Package omw-1.4 is already up-to-date!</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+
+<table class="dataframe table table-sm table-striped">
+  <thead>
+    <tr>
+      <th>epoch</th>
+      <th>train_loss</th>
+      <th>valid_loss</th>
+      <th>bleu</th>
+      <th>meteor</th>
+      <th>sacrebleu</th>
+      <th>time</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>0</td>
+      <td>2.014099</td>
+      <td>2.172663</td>
+      <td>0.307334</td>
+      <td>0.537191</td>
+      <td>29.823626</td>
+      <td>00:52</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb49"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a>learn.show_results(learner<span class="op">=</span>learn, input_trunc_at<span class="op">=</span><span class="dv">500</span>, target_trunc_at<span class="op">=</span><span class="dv">250</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+
+</div>
+<div class="cell-output cell-output-display">
+
+<table class="dataframe table table-sm table-striped">
+  <thead>
+    <tr>
+      <th></th>
+      <th>text</th>
+      <th>target</th>
+      <th>prediction</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>(IT) Herr▁Präsident, Herr▁Kommissar,▁meine▁Damen und Herren, so▁genau▁wie die▁Entschließung mit dem▁Titel "Naturkatastrophen", die von der▁Fraktion der▁Europäischen▁Volkspartei (Christdemokraten)▁vorgelegt wurde,▁ist,▁würde▁ich▁gerne▁trotzdem die▁Aufmerksamkeit auf▁einige▁Punkte▁lenken, die▁heute▁Abend▁angesprochen▁wurden, die▁aber nicht in der▁Entschließung zum▁Thema▁gemacht▁werden, und die▁Gegenstand▁meiner▁Änderungsvorschläge▁sind.</td>
+      <td>(IT) Mr President, Commissioner, ladies and gentlemen, as accurate as the resolution entitled 'Natural disasters', tabled by the Group of the European People's Party (Christian Democrats), is, I would nonetheless like to draw attention to some points</td>
+      <td>[(IT) Mr President, Commissioner, ladies and gentlemen, just as the resolution on natural disasters presented by the Group of the European People's Party (Christian Democrats), I would like to draw attention to some of the points raised this evening, which are not dealt with in the resolution, and which are the subject of my amendments., This Parliament has always been an example and a champion in the defence of human rights, and at this critical time it must prove that it is not doing a common cause with a corrupt dictator in full decline and that it will allow itself to be carried away by the collaboration of some Members who have always been manipulated by this dictatorship.]</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb50"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true" tabindex="-1"></a>test_de <span class="op">=</span> <span class="st">"Ich trinke gerne Bier"</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb51"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb51-1"><a href="#cb51-1" aria-hidden="true" tabindex="-1"></a>learn.blurr_translate(test_de)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>[{'translation_texts': 'I like to drink beer'}]</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb53"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb53-1"><a href="#cb53-1" aria-hidden="true" tabindex="-1"></a>export_fname <span class="op">=</span> <span class="st">"translation_export"</span></span>
+<span id="cb53-2"><a href="#cb53-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb53-3"><a href="#cb53-3" aria-hidden="true" tabindex="-1"></a>learn.metrics <span class="op">=</span> <span class="va">None</span></span>
+<span id="cb53-4"><a href="#cb53-4" aria-hidden="true" tabindex="-1"></a>learn <span class="op">=</span> learn.to_fp32()</span>
+<span id="cb53-5"><a href="#cb53-5" aria-hidden="true" tabindex="-1"></a>learn.export(fname<span class="op">=</span><span class="ss">f"</span><span class="sc">{</span>export_fname<span class="sc">}</span><span class="ss">.pkl"</span>)</span>
+<span id="cb53-6"><a href="#cb53-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb53-7"><a href="#cb53-7" aria-hidden="true" tabindex="-1"></a>inf_learn <span class="op">=</span> load_learner(fname<span class="op">=</span><span class="ss">f"</span><span class="sc">{</span>export_fname<span class="sc">}</span><span class="ss">.pkl"</span>)</span>
+<span id="cb53-8"><a href="#cb53-8" aria-hidden="true" tabindex="-1"></a>inf_learn.blurr_generate(test_de)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>[{'generated_texts': 'I like to drink beer'}]</code></pre>
+</div>
+</div>
+</section>
+</section>
+<section id="tests" class="level2">
+<h2 class="anchored" data-anchor-id="tests">Tests</h2>
+<p>The purpose of the following tests is to ensure as much as possible, that the core training code works for the pretrained <strong>translation models</strong> below. These tests are excluded from the CI workflow because of how long they would take to run and the amount of data that would be required to download.</p>
+<p><strong>Note</strong>: Feel free to modify the code below to test whatever pretrained summarization models you are working with … and if any of your pretrained translation models fail, please submit a github issue <em>(or a PR if you’d like to fix it yourself)</em></p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb55"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb55-1"><a href="#cb55-1" aria-hidden="true" tabindex="-1"></a><span class="cf">try</span>:</span>
+<span id="cb55-2"><a href="#cb55-2" aria-hidden="true" tabindex="-1"></a>    <span class="kw">del</span> learn</span>
+<span id="cb55-3"><a href="#cb55-3" aria-hidden="true" tabindex="-1"></a>    torch.cuda.empty_cache()</span>
+<span id="cb55-4"><a href="#cb55-4" aria-hidden="true" tabindex="-1"></a><span class="cf">except</span>:</span>
+<span id="cb55-5"><a href="#cb55-5" aria-hidden="true" tabindex="-1"></a>    <span class="cf">pass</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb56"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb56-1"><a href="#cb56-1" aria-hidden="true" tabindex="-1"></a>[model_type <span class="cf">for</span> model_type <span class="kw">in</span> NLP.get_models(task<span class="op">=</span><span class="st">"ConditionalGeneration"</span>) <span class="cf">if</span> (<span class="kw">not</span> model_type.startswith(<span class="st">"TF"</span>))]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>['BartForConditionalGeneration',
+ 'BigBirdPegasusForConditionalGeneration',
+ 'BlenderbotForConditionalGeneration',
+ 'BlenderbotSmallForConditionalGeneration',
+ 'FSMTForConditionalGeneration',
+ 'LEDForConditionalGeneration',
+ 'M2M100ForConditionalGeneration',
+ 'MBartForConditionalGeneration',
+ 'MT5ForConditionalGeneration',
+ 'PLBartForConditionalGeneration',
+ 'PegasusForConditionalGeneration',
+ 'ProphetNetForConditionalGeneration',
+ 'Speech2TextForConditionalGeneration',
+ 'T5ForConditionalGeneration',
+ 'XLMProphetNetForConditionalGeneration']</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb58"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb58-1"><a href="#cb58-1" aria-hidden="true" tabindex="-1"></a>pretrained_model_names <span class="op">=</span> [</span>
+<span id="cb58-2"><a href="#cb58-2" aria-hidden="true" tabindex="-1"></a>    <span class="st">"facebook/bart-base"</span>,</span>
+<span id="cb58-3"><a href="#cb58-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">"facebook/wmt19-de-en"</span>,  <span class="co"># FSMT</span></span>
+<span id="cb58-4"><a href="#cb58-4" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Helsinki-NLP/opus-mt-de-en"</span>,  <span class="co"># MarianMT</span></span>
+<span id="cb58-5"><a href="#cb58-5" aria-hidden="true" tabindex="-1"></a>    <span class="co">#'sshleifer/tiny-mbart',</span></span>
+<span id="cb58-6"><a href="#cb58-6" aria-hidden="true" tabindex="-1"></a>    <span class="co">#'google/mt5-small',</span></span>
+<span id="cb58-7"><a href="#cb58-7" aria-hidden="true" tabindex="-1"></a>    <span class="st">"t5-small"</span>,</span>
+<span id="cb58-8"><a href="#cb58-8" aria-hidden="true" tabindex="-1"></a>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb59"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb59-1"><a href="#cb59-1" aria-hidden="true" tabindex="-1"></a>dataset <span class="op">=</span> load_dataset(<span class="st">"wmt16"</span>, <span class="st">"de-en"</span>, split<span class="op">=</span><span class="st">"train"</span>)</span>
+<span id="cb59-2"><a href="#cb59-2" aria-hidden="true" tabindex="-1"></a>dataset <span class="op">=</span> dataset.shuffle(seed<span class="op">=</span><span class="dv">32</span>).select(<span class="bu">range</span>(<span class="dv">1200</span>))</span>
+<span id="cb59-3"><a href="#cb59-3" aria-hidden="true" tabindex="-1"></a>wmt_df <span class="op">=</span> pd.DataFrame(dataset[<span class="st">"translation"</span>], columns<span class="op">=</span>[<span class="st">"de"</span>, <span class="st">"en"</span>])</span>
+<span id="cb59-4"><a href="#cb59-4" aria-hidden="true" tabindex="-1"></a><span class="bu">len</span>(wmt_df)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Reusing dataset wmt16 (/home/wgilliam/.cache/huggingface/datasets/wmt16/de-en/1.0.0/af3c5d746b307726d0de73ebe7f10545361b9cb6f75c83a1734c000e48b6264f)
+Loading cached shuffled indices for dataset at /home/wgilliam/.cache/huggingface/datasets/wmt16/de-en/1.0.0/af3c5d746b307726d0de73ebe7f10545361b9cb6f75c83a1734c000e48b6264f/cache-8fc54b133c8c43b7.arrow</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<pre><code>1200</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb62"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb62-1"><a href="#cb62-1" aria-hidden="true" tabindex="-1"></a>model_cls <span class="op">=</span> AutoModelForSeq2SeqLM</span>
+<span id="cb62-2"><a href="#cb62-2" aria-hidden="true" tabindex="-1"></a>bsz <span class="op">=</span> <span class="dv">2</span></span>
+<span id="cb62-3"><a href="#cb62-3" aria-hidden="true" tabindex="-1"></a>inp_seq_sz <span class="op">=</span> <span class="dv">128</span></span>
+<span id="cb62-4"><a href="#cb62-4" aria-hidden="true" tabindex="-1"></a>trg_seq_sz <span class="op">=</span> <span class="dv">128</span></span>
+<span id="cb62-5"><a href="#cb62-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb62-6"><a href="#cb62-6" aria-hidden="true" tabindex="-1"></a>test_results <span class="op">=</span> []</span>
+<span id="cb62-7"><a href="#cb62-7" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> model_name <span class="kw">in</span> pretrained_model_names:</span>
+<span id="cb62-8"><a href="#cb62-8" aria-hidden="true" tabindex="-1"></a>    error <span class="op">=</span> <span class="va">None</span></span>
+<span id="cb62-9"><a href="#cb62-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb62-10"><a href="#cb62-10" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"=== </span><span class="sc">{</span>model_name<span class="sc">}</span><span class="ss"> ===</span><span class="ch">\n</span><span class="ss">"</span>)</span>
+<span id="cb62-11"><a href="#cb62-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb62-12"><a href="#cb62-12" aria-hidden="true" tabindex="-1"></a>    hf_tok_kwargs <span class="op">=</span> {}</span>
+<span id="cb62-13"><a href="#cb62-13" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> model_name <span class="op">==</span> <span class="st">"sshleifer/tiny-mbart"</span>:</span>
+<span id="cb62-14"><a href="#cb62-14" aria-hidden="true" tabindex="-1"></a>        hf_tok_kwargs[<span class="st">"src_lang"</span>], hf_tok_kwargs[<span class="st">"tgt_lang"</span>] <span class="op">=</span> <span class="st">"de_DE"</span>, <span class="st">"en_XX"</span></span>
+<span id="cb62-15"><a href="#cb62-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb62-16"><a href="#cb62-16" aria-hidden="true" tabindex="-1"></a>    hf_arch, hf_config, hf_tokenizer, hf_model <span class="op">=</span> get_hf_objects(model_name, model_cls<span class="op">=</span>model_cls, tokenizer_kwargs<span class="op">=</span>hf_tok_kwargs)</span>
+<span id="cb62-17"><a href="#cb62-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb62-18"><a href="#cb62-18" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"architecture:</span><span class="ch">\t</span><span class="sc">{</span>hf_arch<span class="sc">}</span><span class="ch">\n</span><span class="ss">tokenizer:</span><span class="ch">\t</span><span class="sc">{</span><span class="bu">type</span>(hf_tokenizer)<span class="sc">.</span><span class="va">__name__</span><span class="sc">}</span><span class="ch">\n</span><span class="ss">model:</span><span class="ch">\t\t</span><span class="sc">{</span><span class="bu">type</span>(hf_model)<span class="sc">.</span><span class="va">__name__</span><span class="sc">}</span><span class="ch">\n</span><span class="ss">"</span>)</span>
+<span id="cb62-19"><a href="#cb62-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb62-20"><a href="#cb62-20" aria-hidden="true" tabindex="-1"></a>    <span class="co"># 1. build your DataBlock</span></span>
+<span id="cb62-21"><a href="#cb62-21" aria-hidden="true" tabindex="-1"></a>    text_gen_kwargs <span class="op">=</span> default_text_gen_kwargs(hf_config, hf_model, task<span class="op">=</span><span class="st">"translation"</span>)</span>
+<span id="cb62-22"><a href="#cb62-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb62-23"><a href="#cb62-23" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> add_t5_prefix(inp):</span>
+<span id="cb62-24"><a href="#cb62-24" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="ss">f"translate German to English: </span><span class="sc">{</span>inp<span class="sc">}</span><span class="ss">"</span> <span class="cf">if</span> (hf_arch <span class="op">==</span> <span class="st">"t5"</span>) <span class="cf">else</span> inp</span>
+<span id="cb62-25"><a href="#cb62-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb62-26"><a href="#cb62-26" aria-hidden="true" tabindex="-1"></a>    batch_tokenize_tfm <span class="op">=</span> Seq2SeqBatchTokenizeTransform(</span>
+<span id="cb62-27"><a href="#cb62-27" aria-hidden="true" tabindex="-1"></a>        hf_arch,</span>
+<span id="cb62-28"><a href="#cb62-28" aria-hidden="true" tabindex="-1"></a>        hf_config,</span>
+<span id="cb62-29"><a href="#cb62-29" aria-hidden="true" tabindex="-1"></a>        hf_tokenizer,</span>
+<span id="cb62-30"><a href="#cb62-30" aria-hidden="true" tabindex="-1"></a>        hf_model,</span>
+<span id="cb62-31"><a href="#cb62-31" aria-hidden="true" tabindex="-1"></a>        padding<span class="op">=</span><span class="st">"max_length"</span>,</span>
+<span id="cb62-32"><a href="#cb62-32" aria-hidden="true" tabindex="-1"></a>        max_length<span class="op">=</span>inp_seq_sz,</span>
+<span id="cb62-33"><a href="#cb62-33" aria-hidden="true" tabindex="-1"></a>        max_target_length<span class="op">=</span>trg_seq_sz,</span>
+<span id="cb62-34"><a href="#cb62-34" aria-hidden="true" tabindex="-1"></a>        text_gen_kwargs<span class="op">=</span>text_gen_kwargs,</span>
+<span id="cb62-35"><a href="#cb62-35" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb62-36"><a href="#cb62-36" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb62-37"><a href="#cb62-37" aria-hidden="true" tabindex="-1"></a>    blocks <span class="op">=</span> (Seq2SeqTextBlock(batch_tokenize_tfm<span class="op">=</span>batch_tokenize_tfm), noop)</span>
+<span id="cb62-38"><a href="#cb62-38" aria-hidden="true" tabindex="-1"></a>    dblock <span class="op">=</span> DataBlock(blocks<span class="op">=</span>blocks, get_x<span class="op">=</span>Pipeline([ColReader(<span class="st">"de"</span>), add_t5_prefix]), get_y<span class="op">=</span>ColReader(<span class="st">"en"</span>), splitter<span class="op">=</span>RandomSplitter())</span>
+<span id="cb62-39"><a href="#cb62-39" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb62-40"><a href="#cb62-40" aria-hidden="true" tabindex="-1"></a>    dls <span class="op">=</span> dblock.dataloaders(wmt_df, bs<span class="op">=</span>bsz)</span>
+<span id="cb62-41"><a href="#cb62-41" aria-hidden="true" tabindex="-1"></a>    b <span class="op">=</span> dls.one_batch()</span>
+<span id="cb62-42"><a href="#cb62-42" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb62-43"><a href="#cb62-43" aria-hidden="true" tabindex="-1"></a>    <span class="co"># 2. build your Learner</span></span>
+<span id="cb62-44"><a href="#cb62-44" aria-hidden="true" tabindex="-1"></a>    seq2seq_metrics <span class="op">=</span> {}</span>
+<span id="cb62-45"><a href="#cb62-45" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb62-46"><a href="#cb62-46" aria-hidden="true" tabindex="-1"></a>    model <span class="op">=</span> BaseModelWrapper(hf_model)</span>
+<span id="cb62-47"><a href="#cb62-47" aria-hidden="true" tabindex="-1"></a>    fit_cbs <span class="op">=</span> [ShortEpochCallback(<span class="fl">0.05</span>, short_valid<span class="op">=</span><span class="va">True</span>), Seq2SeqMetricsCallback(custom_metrics<span class="op">=</span>seq2seq_metrics)]</span>
+<span id="cb62-48"><a href="#cb62-48" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb62-49"><a href="#cb62-49" aria-hidden="true" tabindex="-1"></a>    learn <span class="op">=</span> Learner(</span>
+<span id="cb62-50"><a href="#cb62-50" aria-hidden="true" tabindex="-1"></a>        dls,</span>
+<span id="cb62-51"><a href="#cb62-51" aria-hidden="true" tabindex="-1"></a>        model,</span>
+<span id="cb62-52"><a href="#cb62-52" aria-hidden="true" tabindex="-1"></a>        opt_func<span class="op">=</span>ranger,</span>
+<span id="cb62-53"><a href="#cb62-53" aria-hidden="true" tabindex="-1"></a>        loss_func<span class="op">=</span>PreCalculatedCrossEntropyLoss(),</span>
+<span id="cb62-54"><a href="#cb62-54" aria-hidden="true" tabindex="-1"></a>        cbs<span class="op">=</span>[BaseModelCallback],</span>
+<span id="cb62-55"><a href="#cb62-55" aria-hidden="true" tabindex="-1"></a>        splitter<span class="op">=</span>partial(blurr_seq2seq_splitter, arch<span class="op">=</span>hf_arch),</span>
+<span id="cb62-56"><a href="#cb62-56" aria-hidden="true" tabindex="-1"></a>    ).to_fp16()</span>
+<span id="cb62-57"><a href="#cb62-57" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb62-58"><a href="#cb62-58" aria-hidden="true" tabindex="-1"></a>    learn.create_opt()</span>
+<span id="cb62-59"><a href="#cb62-59" aria-hidden="true" tabindex="-1"></a>    learn.freeze()</span>
+<span id="cb62-60"><a href="#cb62-60" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb62-61"><a href="#cb62-61" aria-hidden="true" tabindex="-1"></a>    <span class="co"># 3. Run your tests</span></span>
+<span id="cb62-62"><a href="#cb62-62" aria-hidden="true" tabindex="-1"></a>    <span class="cf">try</span>:</span>
+<span id="cb62-63"><a href="#cb62-63" aria-hidden="true" tabindex="-1"></a>        <span class="bu">print</span>(<span class="st">"*** TESTING DataLoaders ***</span><span class="ch">\n</span><span class="st">"</span>)</span>
+<span id="cb62-64"><a href="#cb62-64" aria-hidden="true" tabindex="-1"></a>        test_eq(<span class="bu">len</span>(b), <span class="dv">2</span>)</span>
+<span id="cb62-65"><a href="#cb62-65" aria-hidden="true" tabindex="-1"></a>        test_eq(<span class="bu">len</span>(b[<span class="dv">0</span>][<span class="st">"input_ids"</span>]), bsz)</span>
+<span id="cb62-66"><a href="#cb62-66" aria-hidden="true" tabindex="-1"></a>        test_eq(b[<span class="dv">0</span>][<span class="st">"input_ids"</span>].shape, torch.Size([bsz, inp_seq_sz]))</span>
+<span id="cb62-67"><a href="#cb62-67" aria-hidden="true" tabindex="-1"></a>        test_eq(<span class="bu">len</span>(b[<span class="dv">1</span>]), bsz)</span>
+<span id="cb62-68"><a href="#cb62-68" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb62-69"><a href="#cb62-69" aria-hidden="true" tabindex="-1"></a>        <span class="co">#         print('*** </span><span class="al">TESTING</span><span class="co"> One pass through the model ***')</span></span>
+<span id="cb62-70"><a href="#cb62-70" aria-hidden="true" tabindex="-1"></a>        <span class="co">#         preds = learn.model(b[0])</span></span>
+<span id="cb62-71"><a href="#cb62-71" aria-hidden="true" tabindex="-1"></a>        <span class="co">#         test_eq(preds[1].shape[0], bsz)</span></span>
+<span id="cb62-72"><a href="#cb62-72" aria-hidden="true" tabindex="-1"></a>        <span class="co">#         test_eq(preds[1].shape[2], hf_config.vocab_size)</span></span>
+<span id="cb62-73"><a href="#cb62-73" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb62-74"><a href="#cb62-74" aria-hidden="true" tabindex="-1"></a>        <span class="bu">print</span>(<span class="st">"*** TESTING Training/Results ***"</span>)</span>
+<span id="cb62-75"><a href="#cb62-75" aria-hidden="true" tabindex="-1"></a>        learn.fit_one_cycle(<span class="dv">1</span>, lr_max<span class="op">=</span><span class="fl">1e-3</span>, cbs<span class="op">=</span>fit_cbs)</span>
+<span id="cb62-76"><a href="#cb62-76" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb62-77"><a href="#cb62-77" aria-hidden="true" tabindex="-1"></a>        test_results.append((hf_arch, <span class="bu">type</span>(hf_tokenizer).<span class="va">__name__</span>, <span class="bu">type</span>(hf_model).<span class="va">__name__</span>, <span class="st">"PASSED"</span>, <span class="st">""</span>))</span>
+<span id="cb62-78"><a href="#cb62-78" aria-hidden="true" tabindex="-1"></a>        learn.show_results(learner<span class="op">=</span>learn, max_n<span class="op">=</span><span class="dv">2</span>, input_trunc_at<span class="op">=</span><span class="dv">500</span>, target_trunc_at<span class="op">=</span><span class="dv">250</span>)</span>
+<span id="cb62-79"><a href="#cb62-79" aria-hidden="true" tabindex="-1"></a>    <span class="cf">except</span> <span class="pp">Exception</span> <span class="im">as</span> err:</span>
+<span id="cb62-80"><a href="#cb62-80" aria-hidden="true" tabindex="-1"></a>        test_results.append((hf_arch, <span class="bu">type</span>(hf_tokenizer).<span class="va">__name__</span>, <span class="bu">type</span>(hf_model).<span class="va">__name__</span>, <span class="st">"FAILED"</span>, err))</span>
+<span id="cb62-81"><a href="#cb62-81" aria-hidden="true" tabindex="-1"></a>    <span class="cf">finally</span>:</span>
+<span id="cb62-82"><a href="#cb62-82" aria-hidden="true" tabindex="-1"></a>        <span class="co"># cleanup</span></span>
+<span id="cb62-83"><a href="#cb62-83" aria-hidden="true" tabindex="-1"></a>        <span class="kw">del</span> learn</span>
+<span id="cb62-84"><a href="#cb62-84" aria-hidden="true" tabindex="-1"></a>        torch.cuda.empty_cache()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="cell-output cell-output-display">
+
+<table class="dataframe table table-sm table-striped">
+  <thead>
+    <tr>
+      <th></th>
+      <th>arch</th>
+      <th>tokenizer</th>
+      <th>model_name</th>
+      <th>result</th>
+      <th>error</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>bart</td>
+      <td>BartTokenizerFast</td>
+      <td>BartForConditionalGeneration</td>
+      <td>PASSED</td>
+      <td></td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>fsmt</td>
+      <td>FSMTTokenizer</td>
+      <td>FSMTForConditionalGeneration</td>
+      <td>PASSED</td>
+      <td></td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>marian</td>
+      <td>MarianTokenizer</td>
+      <td>MarianMTModel</td>
+      <td>PASSED</td>
+      <td></td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>t5</td>
+      <td>T5TokenizerFast</td>
+      <td>T5ForConditionalGeneration</td>
+      <td>PASSED</td>
+      <td></td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const disableStylesheet = (stylesheets) => {
+    for (let i=0; i < stylesheets.length; i++) {
+      const stylesheet = stylesheets[i];
+      stylesheet.rel = 'prefetch';
+    }
+  }
+  const enableStylesheet = (stylesheets) => {
+    for (let i=0; i < stylesheets.length; i++) {
+      const stylesheet = stylesheets[i];
+      stylesheet.rel = 'stylesheet';
+    }
+  }
+  const manageTransitions = (selector, allowTransitions) => {
+    const els = window.document.querySelectorAll(selector);
+    for (let i=0; i < els.length; i++) {
+      const el = els[i];
+      if (allowTransitions) {
+        el.classList.remove('notransition');
+      } else {
+        el.classList.add('notransition');
+      }
+    }
+  }
+  const toggleColorMode = (alternate) => {
+    // Switch the stylesheets
+    const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+    manageTransitions('#quarto-margin-sidebar .nav-link', false);
+    if (alternate) {
+      enableStylesheet(alternateStylesheets);
+      for (const sheetNode of alternateStylesheets) {
+        if (sheetNode.id === "quarto-bootstrap") {
+          toggleBodyColorMode(sheetNode);
+        }
+      }
+    } else {
+      disableStylesheet(alternateStylesheets);
+      toggleBodyColorPrimary();
+    }
+    manageTransitions('#quarto-margin-sidebar .nav-link', true);
+    // Switch the toggles
+    const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+    for (let i=0; i < toggles.length; i++) {
+      const toggle = toggles[i];
+      if (toggle) {
+        if (alternate) {
+          toggle.classList.add("alternate");     
+        } else {
+          toggle.classList.remove("alternate");
+        }
+      }
+    }
+    // Hack to workaround the fact that safari doesn't
+    // properly recolor the scrollbar when toggling (#1455)
+    if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+      manageTransitions("body", false);
+      window.scrollTo(0, 1);
+      setTimeout(() => {
+        window.scrollTo(0, 0);
+        manageTransitions("body", true);
+      }, 40);  
+    }
+  }
+  const isFileUrl = () => { 
+    return window.location.protocol === 'file:';
+  }
+  const hasAlternateSentinel = () => {  
+    let styleSentinel = getColorSchemeSentinel();
+    if (styleSentinel !== null) {
+      return styleSentinel === "alternate";
+    } else {
+      return false;
+    }
+  }
+  const setStyleSentinel = (alternate) => {
+    const value = alternate ? "alternate" : "default";
+    if (!isFileUrl()) {
+      window.localStorage.setItem("quarto-color-scheme", value);
+    } else {
+      localAlternateSentinel = value;
+    }
+  }
+  const getColorSchemeSentinel = () => {
+    if (!isFileUrl()) {
+      const storageValue = window.localStorage.getItem("quarto-color-scheme");
+      return storageValue != null ? storageValue : localAlternateSentinel;
+    } else {
+      return localAlternateSentinel;
+    }
+  }
+  let localAlternateSentinel = 'default';
+  // Dark / light mode switch
+  window.quartoToggleColorScheme = () => {
+    // Read the current dark / light value 
+    let toAlternate = !hasAlternateSentinel();
+    toggleColorMode(toAlternate);
+    setStyleSentinel(toAlternate);
+  };
+  // Ensure there is a toggle, if there isn't float one in the top right
+  if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+    const a = window.document.createElement('a');
+    a.classList.add('top-right');
+    a.classList.add('quarto-color-scheme-toggle');
+    a.href = "";
+    a.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+    const i = window.document.createElement("i");
+    i.classList.add('bi');
+    a.appendChild(i);
+    window.document.body.appendChild(a);
+  }
+  // Switch to dark mode if need be
+  if (hasAlternateSentinel()) {
+    toggleColorMode(true);
+  } 
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    target: function(trigger) {
+      return trigger.previousElementSibling;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    setTimeout(function() {
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const cites = ref.parentNode.getAttribute('data-cites').split(' ');
+    tippyHover(ref, function() {
+      var popup = window.document.createElement('div');
+      cites.forEach(function(cite) {
+        var citeDiv = window.document.createElement('div');
+        citeDiv.classList.add('hanging-indent');
+        citeDiv.classList.add('csl-entry');
+        var biblioDiv = window.document.getElementById('ref-' + cite);
+        if (biblioDiv) {
+          citeDiv.innerHTML = biblioDiv.innerHTML;
+        }
+        popup.appendChild(citeDiv);
+      });
+      return popup.innerHTML;
+    });
+  }
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var filterRegex = new RegExp(/https:\/\/ohmeow\.github\.io\/blurr\//);
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+    var links = window.document.querySelectorAll('a:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+          // target, if specified
+          link.setAttribute("target", "_blank");
+      }
+    }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>

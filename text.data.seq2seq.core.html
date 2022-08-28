@@ -1,0 +1,1190 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.1.75">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="description" content="The text.data.seq2seq.core module contains the core seq2seq (e.g., language modeling, summarization, translation) bits required to use the fastai DataBlock API and/or mid-level data processing pipelines to organize your data in a way modelable by Hugging Face transformer implementations.">
+
+<title>blurr - Data</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: 1;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1.6em;
+  vertical-align: middle;
+}
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { color: #008000; } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { color: #008000; font-weight: bold; } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<link href="./favicon.ico" rel="icon">
+<script src="site_libs/quarto-html/quarto.js"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-dark.css" rel="prefetch" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-dark.min.css" rel="prefetch" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit"
+  }
+}</script>
+
+
+<link rel="stylesheet" href="styles.css">
+<meta property="og:title" content="blurr - Data">
+<meta property="og:description" content="The text.data.seq2seq.core module contains the core seq2seq (e.g., language modeling, summarization, translation) bits required to use the fastai DataBlock API and/or mid-level data processing pipelines to organize your data in a way modelable by Hugging Face transformer implementations.">
+<meta property="og:site-name" content="blurr">
+<meta name="twitter:title" content="blurr - Data">
+<meta name="twitter:description" content="The text.data.seq2seq.core module contains the core seq2seq (e.g., language modeling, summarization, translation) bits required to use the fastai DataBlock API and/or mid-level data processing pipelines to organize your data in a way modelable by Hugging Face transformer implementations.">
+<meta name="twitter:card" content="summary">
+</head>
+
+<body class="nav-sidebar floating nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg navbar-dark ">
+      <div class="navbar-container container-fluid">
+      <a class="navbar-brand" href="./index.html">
+    <span class="navbar-title">blurr</span>
+  </a>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link active" href="./index.html" aria-current="page">Getting Started</a>
+  </li>  
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-resources" role="button" data-bs-toggle="dropdown" aria-expanded="false">Resources</a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-resources">    
+        <li>
+    <a class="dropdown-item" href="https://www.youtube.com/playlist?list=PLD80i8An1OEF8UOb9N9uSoidOGIMKW96t"><i class="bi bi-play-btn-fill" role="img">
+</i> 
+ <span class="dropdown-text">fastai x Hugging Face Study Group</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="https://huggingface.co/course/chapter1/1"><i class="bi bi-journal-bookmark-fill" role="img">
+</i> 
+ <span class="dropdown-text">Hugging Face Course</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="https://docs.fast.ai/"><i class="bi bi-link" role="img">
+</i> 
+ <span class="dropdown-text">fast.ai (docs)</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="https://huggingface.co/docs/transformers/index"><i class="bi bi-link" role="img">
+</i> 
+ <span class="dropdown-text">transformers (docs)</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-help" role="button" data-bs-toggle="dropdown" aria-expanded="false">Help</a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-help">    
+        <li>
+    <a class="dropdown-item" href="https://github.com/ohmeow/blurr/issues"><i class="bi bi-bug" role="img">
+</i> 
+ <span class="dropdown-text">Report an Issue</span></a>
+  </li>  
+    </ul>
+  </li>
+</ul>
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/ohmeow/blurr/"><i class="bi bi-github" role="img">
+</i> 
+ </a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://twitter.com/waydegilliam"><i class="bi bi-twitter" role="img">
+</i> 
+ </a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://www.ohmeow.com/"><i class="bi bi-house" role="img" aria-label="Twitter">
+</i> 
+ </a>
+  </li>  
+</ul>
+              <div class="quarto-toggle-container">
+                  <a href="" class="quarto-color-scheme-toggle nav-link" onclick="window.quartoToggleColorScheme(); return false;" title="Toggle dark mode"><i class="bi"></i></a>
+              </div>
+              <div id="quarto-search" class="" title="Search"></div>
+          </div> <!-- /navcollapse -->
+      </div> <!-- /container-fluid -->
+    </nav>
+  <nav class="quarto-secondary-nav" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+    <div class="container-fluid d-flex justify-content-between">
+      <h1 class="quarto-secondary-nav-title">Data</h1>
+      <button type="button" class="quarto-btn-toggle btn" aria-label="Show secondary navigation">
+        <i class="bi bi-chevron-right"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-full page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse sidebar-navigation floating overflow-auto">
+      <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+      </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true">Overview</a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">Getting Started</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./callbacks.html" class="sidebar-item-text sidebar-link">callbacks</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./utils.html" class="sidebar-item-text sidebar-link">utils</a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="true">Text</a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="true">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-expanded="false">Sequence Classification</a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-expanded="false">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./text.data.core.html" class="sidebar-item-text sidebar-link">Data</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./text.modeling.core.html" class="sidebar-item-text sidebar-link">Modeling</a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" aria-expanded="false">Token Classification</a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" aria-expanded="false">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./text.data.token_classification.html" class="sidebar-item-text sidebar-link">Data</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./text.modeling.token_classification.html" class="sidebar-item-text sidebar-link">Modeling</a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" aria-expanded="false">Question &amp; Answering</a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" aria-expanded="false">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./text.data.question_answering.html" class="sidebar-item-text sidebar-link">Data</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./text.modeling.question_answering.html" class="sidebar-item-text sidebar-link">Modeling</a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" aria-expanded="false">Language Modeling</a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" aria-expanded="false">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-6" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./text.data.language_modeling.html" class="sidebar-item-text sidebar-link">Data</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./text.modeling.language_modeling.html" class="sidebar-item-text sidebar-link">Modeling</a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" aria-expanded="true">Seq2Seq: Core</a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" aria-expanded="true">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-7" class="collapse list-unstyled sidebar-section depth2 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./text.data.seq2seq.core.html" class="sidebar-item-text sidebar-link active">Data</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./text.modeling.seq2seq.core.html" class="sidebar-item-text sidebar-link">Modeling</a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" aria-expanded="false">Seq2Seq: Summarization</a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" aria-expanded="false">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-8" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./text.data.seq2seq.summarization.html" class="sidebar-item-text sidebar-link">Data</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./text.modeling.seq2seq.summarization.html" class="sidebar-item-text sidebar-link">Modeling</a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-9" aria-expanded="false">Seq2Seq: Translation</a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-9" aria-expanded="false">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-9" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./text.data.seq2seq.translation.html" class="sidebar-item-text sidebar-link">Data</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./text.modeling.seq2seq.translation.html" class="sidebar-item-text sidebar-link">Modeling</a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./text.callbacks.html" class="sidebar-item-text sidebar-link">callbacks</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./text.utils.html" class="sidebar-item-text sidebar-link">utils</a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-10" aria-expanded="true">Examples</a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-10" aria-expanded="true">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-10" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./examples.text.high_level_api.html" class="sidebar-item-text sidebar-link">Using the high-level Blurr API</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./examples.text.glue.html" class="sidebar-item-text sidebar-link">GLUE classification tasks</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./examples.text.glue_low_level_api.html" class="sidebar-item-text sidebar-link">Using the Low-level fastai API</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./examples.text.multilabel_classification.html" class="sidebar-item-text sidebar-link">Multi-label classification</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./examples.text.causal_lm_gpt2.html" class="sidebar-item-text sidebar-link">Causal Language Modeling with GPT-2</a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#setup" id="toc-setup" class="nav-link active" data-scroll-target="#setup">Setup</a></li>
+  <li><a href="#preprocessing" id="toc-preprocessing" class="nav-link" data-scroll-target="#preprocessing">Preprocessing</a>
+  <ul>
+  <li><a href="#seq2seqpreprocessor" id="toc-seq2seqpreprocessor" class="nav-link" data-scroll-target="#seq2seqpreprocessor">Seq2SeqPreprocessor</a></li>
+  </ul></li>
+  <li><a href="#mid-level-api" id="toc-mid-level-api" class="nav-link" data-scroll-target="#mid-level-api">Mid-level API</a>
+  <ul>
+  <li><a href="#seq2seqtextinput" id="toc-seq2seqtextinput" class="nav-link" data-scroll-target="#seq2seqtextinput">Seq2SeqTextInput</a></li>
+  <li><a href="#seq2seqbatchtokenizetransform" id="toc-seq2seqbatchtokenizetransform" class="nav-link" data-scroll-target="#seq2seqbatchtokenizetransform">Seq2SeqBatchTokenizeTransform</a></li>
+  <li><a href="#seq2seqbatchdecodetransform" id="toc-seq2seqbatchdecodetransform" class="nav-link" data-scroll-target="#seq2seqbatchdecodetransform">Seq2SeqBatchDecodeTransform</a></li>
+  <li><a href="#default_text_gen_kwargs" id="toc-default_text_gen_kwargs" class="nav-link" data-scroll-target="#default_text_gen_kwargs">default_text_gen_kwargs</a></li>
+  <li><a href="#seq2seqtextblock" id="toc-seq2seqtextblock" class="nav-link" data-scroll-target="#seq2seqtextblock">Seq2SeqTextBlock</a></li>
+  <li><a href="#show_batch" id="toc-show_batch" class="nav-link" data-scroll-target="#show_batch"><code>show_batch</code></a></li>
+  </ul></li>
+  </ul>
+<div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/ohmeow/blurr/issues/new" class="toc-action">Report an issue</a></p></div></div></nav>
+    </div>
+<!-- main -->
+<main class="content column-body" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title d-none d-lg-block">Data</h1>
+</div>
+
+<div>
+  <div class="description">
+    The <code>text.data.seq2seq.core</code> module contains the core seq2seq (e.g., language modeling, summarization, translation) bits required to use the fastai DataBlock API and/or mid-level data processing pipelines to organize your data in a way modelable by Hugging Face transformer implementations.
+  </div>
+</div>
+
+
+<div class="quarto-title-meta">
+
+    
+    
+  </div>
+  
+
+</header>
+
+<!-- WARNING: THIS FILE WAS AUTOGENERATED! DO NOT EDIT! -->
+<section id="setup" class="level2">
+<h2 class="anchored" data-anchor-id="setup">Setup</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>pretrained_model_name <span class="op">=</span> <span class="st">"facebook/bart-large-cnn"</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>hf_arch, hf_config, hf_tokenizer, hf_model <span class="op">=</span> get_hf_objects(pretrained_model_name, model_cls<span class="op">=</span>BartForConditionalGeneration)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>hf_arch, <span class="bu">type</span>(hf_config), <span class="bu">type</span>(hf_tokenizer), <span class="bu">type</span>(hf_model)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>('bart',
+ transformers.models.bart.configuration_bart.BartConfig,
+ transformers.models.bart.tokenization_bart_fast.BartTokenizerFast,
+ transformers.models.bart.modeling_bart.BartForConditionalGeneration)</code></pre>
+</div>
+</div>
+</section>
+<section id="preprocessing" class="level2">
+<h2 class="anchored" data-anchor-id="preprocessing">Preprocessing</h2>
+<p>Starting with version 2.0, BLURR provides a preprocessing base class that can be used to build seq2seq preprocessed datasets from pandas DataFrames or Hugging Face Datasets</p>
+<hr>
+<p><a href="https://github.com/ohmeow/blurr/blob/master/blurr/text/data/seq2seq/core.py#L30" target="_blank" style="float:right; font-size:smaller">source</a></p>
+<section id="seq2seqpreprocessor" class="level3">
+<h3 class="anchored" data-anchor-id="seq2seqpreprocessor">Seq2SeqPreprocessor</h3>
+<blockquote class="blockquote">
+<pre><code> Seq2SeqPreprocessor (hf_tokenizer:transformers.tokenization_utils_base.Pr
+                      eTrainedTokenizerBase, batch_size:int=1000,
+                      text_attr:str='text',
+                      max_input_tok_length:Optional[int]=None,
+                      target_text_attr:str='summary',
+                      max_target_tok_length:Optional[int]=None,
+                      is_valid_attr:Optional[str]='is_valid',
+                      tok_kwargs:dict={})</code></pre>
+</blockquote>
+<p>Initialize self. See help(type(self)) for accurate signature.</p>
+<table class="table">
+<colgroup>
+<col style="width: 6%">
+<col style="width: 25%">
+<col style="width: 34%">
+<col style="width: 34%">
+</colgroup>
+<thead>
+<tr class="header">
+<th></th>
+<th><strong>Type</strong></th>
+<th><strong>Default</strong></th>
+<th><strong>Details</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>hf_tokenizer</td>
+<td>PreTrainedTokenizerBase</td>
+<td></td>
+<td>A Hugging Face tokenizer</td>
+</tr>
+<tr class="even">
+<td>batch_size</td>
+<td>int</td>
+<td>1000</td>
+<td>The number of examples to process at a time</td>
+</tr>
+<tr class="odd">
+<td>text_attr</td>
+<td>str</td>
+<td>text</td>
+<td>The attribute holding the text</td>
+</tr>
+<tr class="even">
+<td>max_input_tok_length</td>
+<td>Optional</td>
+<td>None</td>
+<td>The maximum length (# of tokens) allowed for inputs. Will default to the max length allowed</td>
+</tr>
+<tr class="odd">
+<td>by the model if not provided</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="even">
+<td>target_text_attr</td>
+<td>str</td>
+<td>summary</td>
+<td>The attribute holding the summary</td>
+</tr>
+<tr class="odd">
+<td>max_target_tok_length</td>
+<td>Optional</td>
+<td>None</td>
+<td>The maximum length (# of tokens) allowed for targets</td>
+</tr>
+<tr class="even">
+<td>is_valid_attr</td>
+<td>Optional</td>
+<td>is_valid</td>
+<td>The attribute that should be created if your are processing individual training and validation</td>
+</tr>
+<tr class="odd">
+<td>datasets into a single dataset, and will indicate to which each example is associated</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="even">
+<td>tok_kwargs</td>
+<td>dict</td>
+<td>{}</td>
+<td>Tokenization kwargs that will be applied with calling the tokenizer</td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+<section id="mid-level-api" class="level2">
+<h2 class="anchored" data-anchor-id="mid-level-api">Mid-level API</h2>
+<p>Base tokenization, batch transform, and DataBlock methods</p>
+<hr>
+<p><a href="https://github.com/ohmeow/blurr/blob/master/blurr/text/data/seq2seq/core.py#L75" target="_blank" style="float:right; font-size:smaller">source</a></p>
+<section id="seq2seqtextinput" class="level3">
+<h3 class="anchored" data-anchor-id="seq2seqtextinput">Seq2SeqTextInput</h3>
+<blockquote class="blockquote">
+<pre><code> Seq2SeqTextInput (x, **kwargs)</code></pre>
+</blockquote>
+<p>The base represenation of your inputs; used by the various fastai <code>show</code> methods</p>
+<p>A <a href="https://ohmeow.github.io/blurr/text-data-seq2seq-core.html#seq2seqtextinput"><code>Seq2SeqTextInput</code></a> object is returned from the decodes method of <a href="https://ohmeow.github.io/blurr/text-data-seq2seq-core.html#seq2seqbatchtokenizetransform"><code>Seq2SeqBatchTokenizeTransform</code></a> as a means to customize <code>@typedispatch</code>ed functions like <code>DataLoaders.show_batch</code> and <code>Learner.show_results</code>. The value will the your “input_ids”.</p>
+<hr>
+<p><a href="https://github.com/ohmeow/blurr/blob/master/blurr/text/data/seq2seq/core.py#L80" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="seq2seqbatchtokenizetransform" class="level3">
+<h3 class="anchored" data-anchor-id="seq2seqbatchtokenizetransform">Seq2SeqBatchTokenizeTransform</h3>
+<blockquote class="blockquote">
+<pre><code> Seq2SeqBatchTokenizeTransform (hf_arch:str,
+                                hf_config:transformers.configuration_utils
+                                .PretrainedConfig, hf_tokenizer:transforme
+                                rs.tokenization_utils_base.PreTrainedToken
+                                izerBase, hf_model:transformers.modeling_u
+                                tils.PreTrainedModel,
+                                include_labels:bool=True,
+                                ignore_token_id:int=-100,
+                                max_length:int=None,
+                                max_target_length:int=None,
+                                padding:Union[bool,str]=True,
+                                truncation:Union[bool,str]=True,
+                                is_split_into_words:bool=False,
+                                tok_kwargs={}, text_gen_kwargs={},
+                                **kwargs)</code></pre>
+</blockquote>
+<p>Handles everything you need to assemble a mini-batch of inputs and targets, as well as decode the dictionary produced as a byproduct of the tokenization process in the <code>encodes</code> method.</p>
+<table class="table">
+<colgroup>
+<col style="width: 6%">
+<col style="width: 25%">
+<col style="width: 34%">
+<col style="width: 34%">
+</colgroup>
+<thead>
+<tr class="header">
+<th></th>
+<th><strong>Type</strong></th>
+<th><strong>Default</strong></th>
+<th><strong>Details</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>hf_arch</td>
+<td>str</td>
+<td></td>
+<td>The abbreviation/name of your Hugging Face transformer architecture (e.b., bert, bart, etc..)</td>
+</tr>
+<tr class="even">
+<td>hf_config</td>
+<td>PretrainedConfig</td>
+<td></td>
+<td>A specific configuration instance you want to use</td>
+</tr>
+<tr class="odd">
+<td>hf_tokenizer</td>
+<td>PreTrainedTokenizerBase</td>
+<td></td>
+<td>A Hugging Face tokenizer</td>
+</tr>
+<tr class="even">
+<td>hf_model</td>
+<td>PreTrainedModel</td>
+<td></td>
+<td>A Hugging Face model</td>
+</tr>
+<tr class="odd">
+<td>include_labels</td>
+<td>bool</td>
+<td>True</td>
+<td>To control whether the “labels” are included in your inputs. If they are, the loss will be calculated in</td>
+</tr>
+<tr class="even">
+<td>the model’s forward function and you can simply use <code>PreCalculatedLoss</code> as your <code>Learner</code>’s loss function to use it</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>ignore_token_id</td>
+<td>int</td>
+<td>-100</td>
+<td>The token ID that should be ignored when calculating the loss</td>
+</tr>
+<tr class="even">
+<td>max_length</td>
+<td>int</td>
+<td>None</td>
+<td>To control the length of the padding/truncation of the input sequence. It can be an integer or None,</td>
+</tr>
+</tbody>
+</table>
+<p>in which case it will default to the maximum length the model can accept. If the model has no specific maximum input length, truncation/padding to max_length is deactivated. See <a href="https://huggingface.co/transformers/preprocessing.html#everything-you-always-wanted-to-know-about-padding-and-truncation">Everything you always wanted to know about padding and truncation</a> | | max_target_length | int | None | To control the length of the padding/truncation of the target sequence. It can be an integer or None, in which case it will default to the maximum length the model can accept. If the model has no specific maximum input length, truncation/padding to max_length is deactivated. See <a href="https://huggingface.co/transformers/preprocessing.html#everything-you-always-wanted-to-know-about-padding-and-truncation">Everything you always wanted to know about padding and truncation</a> | | padding | Union | True | To control the <code>padding</code> applied to your <code>hf_tokenizer</code> during tokenization. If None, will default to <code>False</code> or <code>'do_not_pad'. See [Everything you always wanted to know about padding and truncation](https://huggingface.co/transformers/preprocessing.html#everything-you-always-wanted-to-know-about-padding-and-truncation) | | truncation | Union | True | To control</code>truncation<code>applied to your</code>hf_tokenizer<code>during tokenization. If None, will default to</code>False<code>or</code>do_not_truncate<code>. See [Everything you always wanted to know about padding and truncation](https://huggingface.co/transformers/preprocessing.html#everything-you-always-wanted-to-know-about-padding-and-truncation) | | is_split_into_words | bool | False | The</code>is_split_into_words<code>argument applied to your</code>hf_tokenizer<code>during tokenization. Set this to</code>True<code>if your inputs are pre-tokenized (not numericalized) | | tok_kwargs | dict | {} | Any other keyword arguments you want included when using your</code>hf_tokenizer<code>to tokenize your inputs | | text_gen_kwargs | dict | {} | Any keyword arguments to pass to the</code>hf_model.generate` method | | kwargs | | | |</p>
+<p>We create a subclass of <a href="https://ohmeow.github.io/blurr/text-data-core.html#batchtokenizetransform"><code>BatchTokenizeTransform</code></a> for summarization tasks to add <code>decoder_input_ids</code> and <code>labels</code> (if we want Hugging Face to calculate the loss for us) to our inputs during training. See <a href="https://huggingface.co/transformers/glossary.html#labels">here</a> and <a href="https://huggingface.co/transformers/glossary.html#decoder-input-ids">here</a> for more information on these additional inputs used in summarization, translation, and conversational training tasks. How they should look for particular architectures can be found by looking at those model’s <code>forward</code> function’s docs (See <a href="https://huggingface.co/transformers/model_doc/bart.html#transformers.BartModel.forward">here</a> for BART for example)</p>
+<p>Note also that <code>labels</code> is simply target_ids shifted to the right by one since the task to is to predict the next token based on the current (and all previous) <code>decoder_input_ids</code>.</p>
+<p>And lastly, we also update our targets to just be the <code>input_ids</code> of our target sequence so that fastai’s <code>Learner.show_results</code> works (again, almost all the fastai bits require returning a single tensor to work).</p>
+<hr>
+<p><a href="https://github.com/ohmeow/blurr/blob/master/blurr/text/data/seq2seq/core.py#L193" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="seq2seqbatchdecodetransform" class="level3">
+<h3 class="anchored" data-anchor-id="seq2seqbatchdecodetransform">Seq2SeqBatchDecodeTransform</h3>
+<blockquote class="blockquote">
+<pre><code> Seq2SeqBatchDecodeTransform (input_return_type:type=&lt;class
+                              'blurr.text.data.core.TextInput'&gt;,
+                              hf_arch:str=None,
+                              hf_config:PretrainedConfig=None,
+                              hf_tokenizer:PreTrainedTokenizerBase=None,
+                              hf_model:PreTrainedModel=None, **kwargs)</code></pre>
+</blockquote>
+<p>A class used to cast your inputs as <code>input_return_type</code> for fastai <code>show</code> methods</p>
+<table class="table">
+<colgroup>
+<col style="width: 6%">
+<col style="width: 25%">
+<col style="width: 34%">
+<col style="width: 34%">
+</colgroup>
+<thead>
+<tr class="header">
+<th></th>
+<th><strong>Type</strong></th>
+<th><strong>Default</strong></th>
+<th><strong>Details</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>input_return_type</td>
+<td>type</td>
+<td>TextInput</td>
+<td>Used by typedispatched show methods</td>
+</tr>
+<tr class="even">
+<td>hf_arch</td>
+<td>str</td>
+<td>None</td>
+<td>The abbreviation/name of your Hugging Face transformer architecture (not required if passing in an instance of <code>BatchTokenizeTransform</code> to <code>before_batch_tfm</code>)</td>
+</tr>
+<tr class="odd">
+<td>hf_config</td>
+<td>PretrainedConfig</td>
+<td>None</td>
+<td>A Hugging Face configuration object (not required if passing in an instance of <code>BatchTokenizeTransform</code> to <code>before_batch_tfm</code>)</td>
+</tr>
+<tr class="even">
+<td>hf_tokenizer</td>
+<td>PreTrainedTokenizerBase</td>
+<td>None</td>
+<td>A Hugging Face tokenizer (not required if passing in an instance of <code>BatchTokenizeTransform</code> to <code>before_batch_tfm</code>)</td>
+</tr>
+<tr class="odd">
+<td>hf_model</td>
+<td>PreTrainedModel</td>
+<td>None</td>
+<td>A Hugging Face model (not required if passing in an instance of <code>BatchTokenizeTransform</code> to <code>before_batch_tfm</code>)</td>
+</tr>
+<tr class="even">
+<td>kwargs</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<hr>
+<p><a href="https://github.com/ohmeow/blurr/blob/master/blurr/text/data/seq2seq/core.py#L200" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="default_text_gen_kwargs" class="level3">
+<h3 class="anchored" data-anchor-id="default_text_gen_kwargs">default_text_gen_kwargs</h3>
+<blockquote class="blockquote">
+<pre><code> default_text_gen_kwargs (hf_config, hf_model, task=None)</code></pre>
+</blockquote>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>default_text_gen_kwargs(hf_config, hf_model)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>{'max_length': 142,
+ 'min_length': 56,
+ 'do_sample': False,
+ 'early_stopping': True,
+ 'num_beams': 4,
+ 'temperature': 1.0,
+ 'top_k': 50,
+ 'top_p': 1.0,
+ 'repetition_penalty': 1.0,
+ 'bad_words_ids': None,
+ 'bos_token_id': 0,
+ 'pad_token_id': 1,
+ 'eos_token_id': 2,
+ 'length_penalty': 2.0,
+ 'no_repeat_ngram_size': 3,
+ 'encoder_no_repeat_ngram_size': 0,
+ 'num_return_sequences': 1,
+ 'decoder_start_token_id': 2,
+ 'use_cache': True,
+ 'num_beam_groups': 1,
+ 'diversity_penalty': 0.0,
+ 'output_attentions': False,
+ 'output_hidden_states': False,
+ 'output_scores': False,
+ 'return_dict_in_generate': False,
+ 'forced_bos_token_id': 0,
+ 'forced_eos_token_id': 2,
+ 'remove_invalid_values': False}</code></pre>
+</div>
+</div>
+<hr>
+<p><a href="https://github.com/ohmeow/blurr/blob/master/blurr/text/data/seq2seq/core.py#L220" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="seq2seqtextblock" class="level3">
+<h3 class="anchored" data-anchor-id="seq2seqtextblock">Seq2SeqTextBlock</h3>
+<blockquote class="blockquote">
+<pre><code> Seq2SeqTextBlock (hf_arch:str=None,
+                   hf_config:transformers.configuration_utils.PretrainedCo
+                   nfig=None, hf_tokenizer:transformers.tokenization_utils
+                   _base.PreTrainedTokenizerBase=None, hf_model:transforme
+                   rs.modeling_utils.PreTrainedModel=None, batch_tokenize_
+                   tfm:Optional[blurr.text.data.core.BatchTokenizeTransfor
+                   m]=None, batch_decode_tfm:Optional[blurr.text.data.core
+                   .BatchDecodeTransform]=None, max_length:int=None,
+                   max_target_length=None, padding:Union[bool,str]=True,
+                   truncation:Union[bool,str]=True,
+                   input_return_type=&lt;class '__main__.Seq2SeqTextInput'&gt;,
+                   dl_type=&lt;class 'fastai.text.data.SortedDL'&gt;,
+                   batch_tokenize_kwargs:dict={},
+                   batch_decode_kwargs:dict={}, tok_kwargs={},
+                   text_gen_kwargs={}, **kwargs)</code></pre>
+</blockquote>
+<p>The core <code>TransformBlock</code> to prepare your inputs for training in Blurr with fastai’s <code>DataBlock</code> API</p>
+<table class="table">
+<colgroup>
+<col style="width: 6%">
+<col style="width: 25%">
+<col style="width: 34%">
+<col style="width: 34%">
+</colgroup>
+<thead>
+<tr class="header">
+<th></th>
+<th><strong>Type</strong></th>
+<th><strong>Default</strong></th>
+<th><strong>Details</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>hf_arch</td>
+<td>str</td>
+<td>None</td>
+<td>The abbreviation/name of your Hugging Face transformer architecture (not required if passing in an</td>
+</tr>
+<tr class="even">
+<td>instance of <code>BatchTokenizeTransform</code> to <code>before_batch_tfm</code>)</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>hf_config</td>
+<td>PretrainedConfig</td>
+<td>None</td>
+<td>A Hugging Face configuration object (not required if passing in an</td>
+</tr>
+<tr class="even">
+<td>instance of <code>BatchTokenizeTransform</code> to <code>before_batch_tfm</code>)</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>hf_tokenizer</td>
+<td>PreTrainedTokenizerBase</td>
+<td>None</td>
+<td>A Hugging Face tokenizer (not required if passing in an</td>
+</tr>
+<tr class="even">
+<td>instance of <code>BatchTokenizeTransform</code> to <code>before_batch_tfm</code>)</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>hf_model</td>
+<td>PreTrainedModel</td>
+<td>None</td>
+<td>A Hugging Face model (not required if passing in an</td>
+</tr>
+<tr class="even">
+<td>instance of <code>BatchTokenizeTransform</code> to <code>before_batch_tfm</code>)</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>batch_tokenize_tfm</td>
+<td>Optional</td>
+<td>None</td>
+<td>The before_batch_tfm you want to use to tokenize your raw data on the fly</td>
+</tr>
+<tr class="even">
+<td>(defaults to an instance of <code>BatchTokenizeTransform</code>)</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>batch_decode_tfm</td>
+<td>Optional</td>
+<td>None</td>
+<td>The batch_tfm you want to decode your inputs into a type that can be used in the fastai show methods,</td>
+</tr>
+<tr class="even">
+<td>(defaults to BatchDecodeTransform)</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>max_length</td>
+<td>int</td>
+<td>None</td>
+<td>To control the length of the padding/truncation for the input sequence. It can be an integer or None,</td>
+</tr>
+</tbody>
+</table>
+<p>in which case it will default to the maximum length the model can accept. If the model has no specific maximum input length, truncation/padding to max_length is deactivated. See <a href="https://huggingface.co/transformers/preprocessing.html#everything-you-always-wanted-to-know-about-padding-and-truncation">Everything you always wanted to know about padding and truncation</a> | | max_target_length | NoneType | None | To control the length of the padding/truncation for the target sequence. It can be an integer or None, in which case it will default to the maximum length the model can accept. If the model has no specific maximum input length, truncation/padding to max_length is deactivated. See [Everything you always wanted to know about padding and truncation](https://huggingface.co/transformers/preprocessing.html#everything-y | | padding | Union | True | To control the <code>padding</code> applied to your <code>hf_tokenizer</code> during tokenization. If None, will default to <code>False</code> or <code>'do_not_pad'. See [Everything you always wanted to know about padding and truncation](https://huggingface.co/transformers/preprocessing.html#everything-you-always-wanted-to-know-about-padding-and-truncation) | | truncation | Union | True | To control</code>truncation<code>applied to your</code>hf_tokenizer<code>during tokenization. If None, will default to</code>False<code>or</code>do_not_truncate<code>. See [Everything you always wanted to know about padding and truncation](https://huggingface.co/transformers/preprocessing.html#everything-you-always-wanted-to-know-about-padding-and-truncation) | | input_return_type | _TensorMeta | Seq2SeqTextInput | The return type your decoded inputs should be cast too (used by methods such as</code>show_batch<code>) | | dl_type | type | SortedDL | The type of</code>DataLoader<code>you want created (defaults to</code>SortedDL<code>) | | batch_tokenize_kwargs | dict | {} | Any keyword arguments you want applied to your</code>batch_tokenize_tfm<code>| | batch_decode_kwargs | dict | {} | Any keyword arguments you want applied to your</code>batch_decode_tfm<code>(will be set as a fastai</code>batch_tfms`) | | tok_kwargs | dict | {} | Any keyword arguments you want your Hugging Face tokenizer to use during tokenization | | text_gen_kwargs | dict | {} | Any keyword arguments you want to have applied with generating text (default: default_text_gen_kwargs) | | kwargs | | | |</p>
+</section>
+<section id="show_batch" class="level3">
+<h3 class="anchored" data-anchor-id="show_batch"><a href="https://ohmeow.github.io/blurr/text-data-token-classification.html#show_batch"><code>show_batch</code></a></h3>
+
+
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const disableStylesheet = (stylesheets) => {
+    for (let i=0; i < stylesheets.length; i++) {
+      const stylesheet = stylesheets[i];
+      stylesheet.rel = 'prefetch';
+    }
+  }
+  const enableStylesheet = (stylesheets) => {
+    for (let i=0; i < stylesheets.length; i++) {
+      const stylesheet = stylesheets[i];
+      stylesheet.rel = 'stylesheet';
+    }
+  }
+  const manageTransitions = (selector, allowTransitions) => {
+    const els = window.document.querySelectorAll(selector);
+    for (let i=0; i < els.length; i++) {
+      const el = els[i];
+      if (allowTransitions) {
+        el.classList.remove('notransition');
+      } else {
+        el.classList.add('notransition');
+      }
+    }
+  }
+  const toggleColorMode = (alternate) => {
+    // Switch the stylesheets
+    const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+    manageTransitions('#quarto-margin-sidebar .nav-link', false);
+    if (alternate) {
+      enableStylesheet(alternateStylesheets);
+      for (const sheetNode of alternateStylesheets) {
+        if (sheetNode.id === "quarto-bootstrap") {
+          toggleBodyColorMode(sheetNode);
+        }
+      }
+    } else {
+      disableStylesheet(alternateStylesheets);
+      toggleBodyColorPrimary();
+    }
+    manageTransitions('#quarto-margin-sidebar .nav-link', true);
+    // Switch the toggles
+    const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+    for (let i=0; i < toggles.length; i++) {
+      const toggle = toggles[i];
+      if (toggle) {
+        if (alternate) {
+          toggle.classList.add("alternate");     
+        } else {
+          toggle.classList.remove("alternate");
+        }
+      }
+    }
+    // Hack to workaround the fact that safari doesn't
+    // properly recolor the scrollbar when toggling (#1455)
+    if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+      manageTransitions("body", false);
+      window.scrollTo(0, 1);
+      setTimeout(() => {
+        window.scrollTo(0, 0);
+        manageTransitions("body", true);
+      }, 40);  
+    }
+  }
+  const isFileUrl = () => { 
+    return window.location.protocol === 'file:';
+  }
+  const hasAlternateSentinel = () => {  
+    let styleSentinel = getColorSchemeSentinel();
+    if (styleSentinel !== null) {
+      return styleSentinel === "alternate";
+    } else {
+      return false;
+    }
+  }
+  const setStyleSentinel = (alternate) => {
+    const value = alternate ? "alternate" : "default";
+    if (!isFileUrl()) {
+      window.localStorage.setItem("quarto-color-scheme", value);
+    } else {
+      localAlternateSentinel = value;
+    }
+  }
+  const getColorSchemeSentinel = () => {
+    if (!isFileUrl()) {
+      const storageValue = window.localStorage.getItem("quarto-color-scheme");
+      return storageValue != null ? storageValue : localAlternateSentinel;
+    } else {
+      return localAlternateSentinel;
+    }
+  }
+  let localAlternateSentinel = 'default';
+  // Dark / light mode switch
+  window.quartoToggleColorScheme = () => {
+    // Read the current dark / light value 
+    let toAlternate = !hasAlternateSentinel();
+    toggleColorMode(toAlternate);
+    setStyleSentinel(toAlternate);
+  };
+  // Ensure there is a toggle, if there isn't float one in the top right
+  if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+    const a = window.document.createElement('a');
+    a.classList.add('top-right');
+    a.classList.add('quarto-color-scheme-toggle');
+    a.href = "";
+    a.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+    const i = window.document.createElement("i");
+    i.classList.add('bi');
+    a.appendChild(i);
+    window.document.body.appendChild(a);
+  }
+  // Switch to dark mode if need be
+  if (hasAlternateSentinel()) {
+    toggleColorMode(true);
+  } 
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    target: function(trigger) {
+      return trigger.previousElementSibling;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    setTimeout(function() {
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const cites = ref.parentNode.getAttribute('data-cites').split(' ');
+    tippyHover(ref, function() {
+      var popup = window.document.createElement('div');
+      cites.forEach(function(cite) {
+        var citeDiv = window.document.createElement('div');
+        citeDiv.classList.add('hanging-indent');
+        citeDiv.classList.add('csl-entry');
+        var biblioDiv = window.document.getElementById('ref-' + cite);
+        if (biblioDiv) {
+          citeDiv.innerHTML = biblioDiv.innerHTML;
+        }
+        popup.appendChild(citeDiv);
+      });
+      return popup.innerHTML;
+    });
+  }
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var filterRegex = new RegExp(/https:\/\/ohmeow\.github\.io\/blurr\//);
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+    var links = window.document.querySelectorAll('a:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+          // target, if specified
+          link.setAttribute("target", "_blank");
+      }
+    }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>

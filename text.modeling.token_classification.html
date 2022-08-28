@@ -1,0 +1,1732 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.1.75">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="description" content="The text.modeling.token_classification module contains custom models, loss functions, custom splitters, etc… for token classification tasks (e.g., Named entity recognition (NER), Part-of-speech tagging (POS), etc…). The objective of token classification is to predict the correct label for each token provided in the input. In the computer vision world, this is akin to what we do in segmentation tasks whereby we attempt to predict the class/label for each pixel in an image.">
+
+<title>blurr - Modeling</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: 1;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1.6em;
+  vertical-align: middle;
+}
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { color: #008000; } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { color: #008000; font-weight: bold; } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<link href="./favicon.ico" rel="icon">
+<script src="site_libs/quarto-html/quarto.js"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-dark.css" rel="prefetch" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-dark.min.css" rel="prefetch" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit"
+  }
+}</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" integrity="sha512-c3Nl8+7g4LMSTdrm621y7kf9v3SDPnhxLNhcjFJbKECVnmZHTdo+IRO05sNLTH/D3vA6u1X32ehoLC7WFVdheg==" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script>
+<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
+<script src="https://unpkg.com/@jupyter-widgets/html-manager@*/dist/embed-amd.js" crossorigin="anonymous"></script>
+
+
+<link rel="stylesheet" href="styles.css">
+<meta property="og:title" content="blurr - Modeling">
+<meta property="og:description" content="The text.modeling.token_classification module contains custom models, loss functions, custom splitters, etc… for token classification tasks (e.g., Named entity recognition (NER), Part-of-speech tagging (POS), etc…). The objective of token classification is to predict the correct label for each token provided in the input. In the computer vision world, this is akin to what we do in segmentation tasks whereby we attempt to predict the class/label for each pixel in an image.">
+<meta property="og:site-name" content="blurr">
+<meta name="twitter:title" content="blurr - Modeling">
+<meta name="twitter:description" content="The text.modeling.token_classification module contains custom models, loss functions, custom splitters, etc… for token classification tasks (e.g., Named entity recognition (NER), Part-of-speech tagging (POS), etc…). The objective of token classification is to predict the correct label for each token provided in the input. In the computer vision world, this is akin to what we do in segmentation tasks whereby we attempt to predict the class/label for each pixel in an image.">
+<meta name="twitter:card" content="summary">
+</head>
+
+<body class="nav-sidebar floating nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg navbar-dark ">
+      <div class="navbar-container container-fluid">
+      <a class="navbar-brand" href="./index.html">
+    <span class="navbar-title">blurr</span>
+  </a>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link active" href="./index.html" aria-current="page">Getting Started</a>
+  </li>  
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-resources" role="button" data-bs-toggle="dropdown" aria-expanded="false">Resources</a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-resources">    
+        <li>
+    <a class="dropdown-item" href="https://www.youtube.com/playlist?list=PLD80i8An1OEF8UOb9N9uSoidOGIMKW96t"><i class="bi bi-play-btn-fill" role="img">
+</i> 
+ <span class="dropdown-text">fastai x Hugging Face Study Group</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="https://huggingface.co/course/chapter1/1"><i class="bi bi-journal-bookmark-fill" role="img">
+</i> 
+ <span class="dropdown-text">Hugging Face Course</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="https://docs.fast.ai/"><i class="bi bi-link" role="img">
+</i> 
+ <span class="dropdown-text">fast.ai (docs)</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="https://huggingface.co/docs/transformers/index"><i class="bi bi-link" role="img">
+</i> 
+ <span class="dropdown-text">transformers (docs)</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-help" role="button" data-bs-toggle="dropdown" aria-expanded="false">Help</a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-help">    
+        <li>
+    <a class="dropdown-item" href="https://github.com/ohmeow/blurr/issues"><i class="bi bi-bug" role="img">
+</i> 
+ <span class="dropdown-text">Report an Issue</span></a>
+  </li>  
+    </ul>
+  </li>
+</ul>
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/ohmeow/blurr/"><i class="bi bi-github" role="img">
+</i> 
+ </a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://twitter.com/waydegilliam"><i class="bi bi-twitter" role="img">
+</i> 
+ </a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://www.ohmeow.com/"><i class="bi bi-house" role="img" aria-label="Twitter">
+</i> 
+ </a>
+  </li>  
+</ul>
+              <div class="quarto-toggle-container">
+                  <a href="" class="quarto-color-scheme-toggle nav-link" onclick="window.quartoToggleColorScheme(); return false;" title="Toggle dark mode"><i class="bi"></i></a>
+              </div>
+              <div id="quarto-search" class="" title="Search"></div>
+          </div> <!-- /navcollapse -->
+      </div> <!-- /container-fluid -->
+    </nav>
+  <nav class="quarto-secondary-nav" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+    <div class="container-fluid d-flex justify-content-between">
+      <h1 class="quarto-secondary-nav-title">Modeling</h1>
+      <button type="button" class="quarto-btn-toggle btn" aria-label="Show secondary navigation">
+        <i class="bi bi-chevron-right"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-full page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse sidebar-navigation floating overflow-auto">
+      <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+      </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true">Overview</a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">Getting Started</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./callbacks.html" class="sidebar-item-text sidebar-link">callbacks</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./utils.html" class="sidebar-item-text sidebar-link">utils</a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="true">Text</a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="true">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-expanded="false">Sequence Classification</a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-expanded="false">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./text.data.core.html" class="sidebar-item-text sidebar-link">Data</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./text.modeling.core.html" class="sidebar-item-text sidebar-link">Modeling</a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" aria-expanded="true">Token Classification</a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" aria-expanded="true">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth2 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./text.data.token_classification.html" class="sidebar-item-text sidebar-link">Data</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./text.modeling.token_classification.html" class="sidebar-item-text sidebar-link active">Modeling</a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" aria-expanded="false">Question &amp; Answering</a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" aria-expanded="false">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./text.data.question_answering.html" class="sidebar-item-text sidebar-link">Data</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./text.modeling.question_answering.html" class="sidebar-item-text sidebar-link">Modeling</a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" aria-expanded="false">Language Modeling</a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" aria-expanded="false">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-6" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./text.data.language_modeling.html" class="sidebar-item-text sidebar-link">Data</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./text.modeling.language_modeling.html" class="sidebar-item-text sidebar-link">Modeling</a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" aria-expanded="false">Seq2Seq: Core</a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" aria-expanded="false">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-7" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./text.data.seq2seq.core.html" class="sidebar-item-text sidebar-link">Data</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./text.modeling.seq2seq.core.html" class="sidebar-item-text sidebar-link">Modeling</a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" aria-expanded="false">Seq2Seq: Summarization</a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" aria-expanded="false">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-8" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./text.data.seq2seq.summarization.html" class="sidebar-item-text sidebar-link">Data</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./text.modeling.seq2seq.summarization.html" class="sidebar-item-text sidebar-link">Modeling</a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-9" aria-expanded="false">Seq2Seq: Translation</a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-9" aria-expanded="false">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-9" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./text.data.seq2seq.translation.html" class="sidebar-item-text sidebar-link">Data</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./text.modeling.seq2seq.translation.html" class="sidebar-item-text sidebar-link">Modeling</a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./text.callbacks.html" class="sidebar-item-text sidebar-link">callbacks</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./text.utils.html" class="sidebar-item-text sidebar-link">utils</a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-10" aria-expanded="true">Examples</a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-10" aria-expanded="true">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-10" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./examples.text.high_level_api.html" class="sidebar-item-text sidebar-link">Using the high-level Blurr API</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./examples.text.glue.html" class="sidebar-item-text sidebar-link">GLUE classification tasks</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./examples.text.glue_low_level_api.html" class="sidebar-item-text sidebar-link">Using the Low-level fastai API</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./examples.text.multilabel_classification.html" class="sidebar-item-text sidebar-link">Multi-label classification</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./examples.text.causal_lm_gpt2.html" class="sidebar-item-text sidebar-link">Causal Language Modeling with GPT-2</a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#setup" id="toc-setup" class="nav-link active" data-scroll-target="#setup">Setup</a></li>
+  <li><a href="#mid-level-api" id="toc-mid-level-api" class="nav-link" data-scroll-target="#mid-level-api">Mid-level API</a>
+  <ul>
+  <li><a href="#calculate_token_class_metrics" id="toc-calculate_token_class_metrics" class="nav-link" data-scroll-target="#calculate_token_class_metrics">calculate_token_class_metrics</a></li>
+  <li><a href="#tokenclassmetricscallback" id="toc-tokenclassmetricscallback" class="nav-link" data-scroll-target="#tokenclassmetricscallback">TokenClassMetricsCallback</a></li>
+  <li><a href="#example" id="toc-example" class="nav-link" data-scroll-target="#example">Example</a>
+  <ul class="collapse">
+  <li><a href="#training" id="toc-training" class="nav-link" data-scroll-target="#training">Training</a></li>
+  <li><a href="#showing-results" id="toc-showing-results" class="nav-link" data-scroll-target="#showing-results">Showing results</a></li>
+  <li><a href="#prediction" id="toc-prediction" class="nav-link" data-scroll-target="#prediction">Prediction</a></li>
+  </ul></li>
+  <li><a href="#tokenaggregationstrategies" id="toc-tokenaggregationstrategies" class="nav-link" data-scroll-target="#tokenaggregationstrategies">TokenAggregationStrategies</a></li>
+  <li><a href="#learner.blurr_predict_tokens" id="toc-learner.blurr_predict_tokens" class="nav-link" data-scroll-target="#learner.blurr_predict_tokens">Learner.blurr_predict_tokens</a></li>
+  <li><a href="#learner.blurr_predict_tokens-1" id="toc-learner.blurr_predict_tokens-1" class="nav-link" data-scroll-target="#learner.blurr_predict_tokens-1">Learner.blurr_predict_tokens</a>
+  <ul class="collapse">
+  <li><a href="#inference" id="toc-inference" class="nav-link" data-scroll-target="#inference">Inference</a></li>
+  </ul></li>
+  </ul></li>
+  <li><a href="#high-level-api" id="toc-high-level-api" class="nav-link" data-scroll-target="#high-level-api">High-level API</a>
+  <ul>
+  <li><a href="#blearnerfortokenclassification" id="toc-blearnerfortokenclassification" class="nav-link" data-scroll-target="#blearnerfortokenclassification">BlearnerForTokenClassification</a></li>
+  <li><a href="#example-1" id="toc-example-1" class="nav-link" data-scroll-target="#example-1">Example</a>
+  <ul class="collapse">
+  <li><a href="#define-your-blearner" id="toc-define-your-blearner" class="nav-link" data-scroll-target="#define-your-blearner">Define your <code>Blearner</code></a></li>
+  <li><a href="#train" id="toc-train" class="nav-link" data-scroll-target="#train">Train</a></li>
+  <li><a href="#prediction-1" id="toc-prediction-1" class="nav-link" data-scroll-target="#prediction-1">Prediction</a></li>
+  </ul></li>
+  </ul></li>
+  <li><a href="#tests" id="toc-tests" class="nav-link" data-scroll-target="#tests">Tests</a></li>
+  </ul>
+<div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/ohmeow/blurr/issues/new" class="toc-action">Report an issue</a></p></div></div></nav>
+    </div>
+<!-- main -->
+<main class="content column-body" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title d-none d-lg-block">Modeling</h1>
+</div>
+
+<div>
+  <div class="description">
+    The <code>text.modeling.token_classification</code> module contains custom models, loss functions, custom splitters, etc… for token classification tasks (e.g., Named entity recognition (NER), Part-of-speech tagging (POS), etc…). The objective of token classification is to predict the correct label for each token provided in the input. In the computer vision world, this is akin to what we do in segmentation tasks whereby we attempt to predict the class/label for each pixel in an image.
+  </div>
+</div>
+
+
+<div class="quarto-title-meta">
+
+    
+    
+  </div>
+  
+
+</header>
+
+<!-- WARNING: THIS FILE WAS AUTOGENERATED! DO NOT EDIT! -->
+<section id="setup" class="level2">
+<h2 class="anchored" data-anchor-id="setup">Setup</h2>
+<p>We’ll use a subset of <code>conll2003</code> to demonstrate how to configure your BLURR code for token classification</p>
+<p><strong>Note</strong>: Make sure you set the <code>config.num_labels</code> attribute to the number of labels your model is predicting. The model will update its last layer accordingly as la transfer learning.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>raw_datasets <span class="op">=</span> load_dataset(<span class="st">"conll2003"</span>)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>labels <span class="op">=</span> raw_datasets[<span class="st">"train"</span>].features[<span class="st">"ner_tags"</span>].feature.names</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Labels: </span><span class="sc">{</span>labels<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>conll2003_df <span class="op">=</span> pd.DataFrame(raw_datasets[<span class="st">"train"</span>])</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>conll2003_df.head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Reusing dataset conll2003 (/home/wgilliam/.cache/huggingface/datasets/conll2003/conll2003/1.0.0/9a4d16a94f8674ba3466315300359b0acd891b68b6c8743ddf60b9c702adce98)</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<script type="application/vnd.jupyter.widget-view+json">
+{"model_id":"a4f3d146208d4666a0dc85f646bd44bd","version_major":2,"version_minor":0}
+</script>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Labels: ['O', 'B-PER', 'I-PER', 'B-ORG', 'I-ORG', 'B-LOC', 'I-LOC', 'B-MISC', 'I-MISC']</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+
+<div>
+
+<table class="dataframe table table-sm table-striped">
+  <thead>
+    <tr>
+      <th></th>
+      <th>id</th>
+      <th>tokens</th>
+      <th>pos_tags</th>
+      <th>chunk_tags</th>
+      <th>ner_tags</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>0</td>
+      <td>[EU, rejects, German, call, to, boycott, British, lamb, .]</td>
+      <td>[22, 42, 16, 21, 35, 37, 16, 21, 7]</td>
+      <td>[11, 21, 11, 12, 21, 22, 11, 12, 0]</td>
+      <td>[3, 0, 7, 0, 0, 0, 7, 0, 0]</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>1</td>
+      <td>[Peter, Blackburn]</td>
+      <td>[22, 22]</td>
+      <td>[11, 12]</td>
+      <td>[1, 2]</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>2</td>
+      <td>[BRUSSELS, 1996-08-22]</td>
+      <td>[22, 11]</td>
+      <td>[11, 12]</td>
+      <td>[5, 0]</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>3</td>
+      <td>[The, European, Commission, said, on, Thursday, it, disagreed, with, German, advice, to, consumers, to, shun, British, lamb, until, scientists, determine, whether, mad, cow, disease, can, be, transmitted, to, sheep, .]</td>
+      <td>[12, 22, 22, 38, 15, 22, 28, 38, 15, 16, 21, 35, 24, 35, 37, 16, 21, 15, 24, 41, 15, 16, 21, 21, 20, 37, 40, 35, 21, 7]</td>
+      <td>[11, 12, 12, 21, 13, 11, 11, 21, 13, 11, 12, 13, 11, 21, 22, 11, 12, 17, 11, 21, 17, 11, 12, 12, 21, 22, 22, 13, 11, 0]</td>
+      <td>[0, 3, 4, 0, 0, 0, 0, 0, 0, 7, 0, 0, 0, 0, 0, 7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>4</td>
+      <td>[Germany, 's, representative, to, the, European, Union, 's, veterinary, committee, Werner, Zwingmann, said, on, Wednesday, consumers, should, buy, sheepmeat, from, countries, other, than, Britain, until, the, scientific, advice, was, clearer, .]</td>
+      <td>[22, 27, 21, 35, 12, 22, 22, 27, 16, 21, 22, 22, 38, 15, 22, 24, 20, 37, 21, 15, 24, 16, 15, 22, 15, 12, 16, 21, 38, 17, 7]</td>
+      <td>[11, 11, 12, 13, 11, 12, 12, 11, 12, 12, 12, 12, 21, 13, 11, 12, 21, 22, 11, 13, 11, 1, 13, 11, 17, 11, 12, 12, 21, 1, 0]</td>
+      <td>[5, 0, 0, 0, 0, 3, 4, 0, 0, 0, 1, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 0]</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>model_cls <span class="op">=</span> AutoModelForTokenClassification</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>hf_logging.set_verbosity_error()</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>pretrained_model_name <span class="op">=</span> <span class="st">"roberta-base"</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>config <span class="op">=</span> AutoConfig.from_pretrained(pretrained_model_name)</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>config.num_labels <span class="op">=</span> <span class="bu">len</span>(labels)</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>hf_arch, hf_config, hf_tokenizer, hf_model <span class="op">=</span> get_hf_objects(pretrained_model_name, model_cls<span class="op">=</span>model_cls, config<span class="op">=</span>config)</span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>hf_arch, <span class="bu">type</span>(hf_config), <span class="bu">type</span>(hf_tokenizer), <span class="bu">type</span>(hf_model)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>('roberta',
+ transformers.models.roberta.configuration_roberta.RobertaConfig,
+ transformers.models.roberta.tokenization_roberta_fast.RobertaTokenizerFast,
+ transformers.models.roberta.modeling_roberta.RobertaForTokenClassification)</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>test_eq(hf_config.num_labels, <span class="bu">len</span>(labels))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>batch_tok_tfm <span class="op">=</span> TokenClassBatchTokenizeTransform(hf_arch, hf_config, hf_tokenizer, hf_model)</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>blocks <span class="op">=</span> (TextBlock(batch_tokenize_tfm<span class="op">=</span>batch_tok_tfm, input_return_type<span class="op">=</span>TokenClassTextInput), TokenCategoryBlock(vocab<span class="op">=</span>labels))</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>dblock <span class="op">=</span> DataBlock(blocks<span class="op">=</span>blocks, get_x<span class="op">=</span>ColReader(<span class="st">"tokens"</span>), get_y<span class="op">=</span>ColReader(<span class="st">"ner_tags"</span>), splitter<span class="op">=</span>RandomSplitter())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>dls <span class="op">=</span> dblock.dataloaders(conll2003_df, bs<span class="op">=</span><span class="dv">4</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>b <span class="op">=</span> dls.one_batch()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>dls.show_batch(dataloaders<span class="op">=</span>dls, max_n<span class="op">=</span><span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+
+<table class="dataframe table table-sm table-striped">
+  <thead>
+    <tr>
+      <th></th>
+      <th>word / target label</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>[('15', 'O'), ('-', 'O'), ('Christian', 'B-PER'), ('Cullen', 'I-PER'), (',', 'O'), ('14', 'O'), ('-', 'O'), ('Jeff', 'B-PER'), ('Wilson', 'I-PER'), (',', 'O'), ('13', 'O'), ('-', 'O'), ('Walter', 'B-PER'), ('Little', 'I-PER'), (',', 'O'), ('12', 'O'), ('-', 'O'), ('Frank', 'B-PER'), ('Bunce', 'I-PER'), (',', 'O'), ('11', 'O'), ('-', 'O'), ('Glen', 'B-PER'), ('Osborne', 'I-PER'), (';', 'O'), ('10', 'O'), ('-', 'O'), ('Andrew', 'B-PER'), ('Mehrtens', 'I-PER'), (',', 'O'), ('9', 'O'), ('-', 'O'), ('Justin', 'B-PER'), ('Marshall', 'I-PER'), (';', 'O'), ('8', 'O'), ('-', 'O'), ('Zinzan', 'B-PER'), ('Brooke', 'I-PER'), (',', 'O'), ('7', 'O'), ('-', 'O'), ('Josh', 'B-PER'), ('Kronfeld', 'I-PER'), (',', 'O'), ('6', 'O'), ('-', 'O'), ('Michael', 'B-PER'), ('Jones', 'I-PER'), (',', 'O'), ('5', 'O'), ('-', 'O'), ('Ian', 'B-PER'), ('Jones', 'I-PER'), (',', 'O'), ('4', 'O'), ('-', 'O'), ('Robin', 'B-PER'), ('Brooke', 'I-PER'), (',', 'O'), ('3', 'O'), ('-', 'O'), ('Olo', 'B-PER'), ('Brown', 'I-PER'), (',', 'O'), ('2', 'O'), ('-', 'O'), ('Sean', 'B-PER'), ('Fitzpatrick', 'I-PER'), ('(', 'O'), ('captain', 'O'), (')', 'O'), (',', 'O'), ('1', 'O'), ('-', 'O'), ('Craig', 'B-PER'), ('Dowd', 'I-PER'), ('.', 'O')]</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>[('A', 'O'), ('super', 'O'), ('piece', 'O'), ('of', 'O'), ('fielding', 'O'), ('by', 'O'), ('Lewis', 'B-PER'), (',', 'O'), ('dropped', 'O'), ('as', 'O'), ('a', 'O'), ('disciplinary', 'O'), ('measure', 'O'), ('after', 'O'), ('arriving', 'O'), ('only', 'O'), ('35', 'O'), ('minutes', 'O'), ('before', 'O'), ('the', 'O'), ('start', 'O'), ('on', 'O'), ('the', 'O'), ('fourth', 'O'), ('morning', 'O'), (',', 'O'), ('provided', 'O'), ('the', 'O'), ('only', 'O'), ('bright', 'O'), ('spot', 'O'), ('for', 'O'), ('England', 'B-LOC'), ('as', 'O'), ('the', 'O'), ('touring', 'O'), ('team', 'O'), ('batted', 'O'), ('on', 'O'), ('to', 'O'), ('reach', 'O'), ('413', 'O'), ('for', 'O'), ('five', 'O'), ('at', 'O'), ('the', 'O'), ('interval', 'O'), (',', 'O'), ('a', 'O'), ('lead', 'O'), ('of', 'O'), ('87', 'O'), ('.', 'O')]</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+</section>
+<section id="mid-level-api" class="level2">
+<h2 class="anchored" data-anchor-id="mid-level-api">Mid-level API</h2>
+<p>In this section, we’ll add helpful metrics for token classification tasks</p>
+<hr>
+<p><a href="https://github.com/ohmeow/blurr/blob/master/blurr/text/modeling/token_classification.py#L47" target="_blank" style="float:right; font-size:smaller">source</a></p>
+<section id="calculate_token_class_metrics" class="level3">
+<h3 class="anchored" data-anchor-id="calculate_token_class_metrics">calculate_token_class_metrics</h3>
+<blockquote class="blockquote">
+<pre><code> calculate_token_class_metrics (pred_toks, targ_toks, metric_key)</code></pre>
+</blockquote>
+<hr>
+<p><a href="https://github.com/ohmeow/blurr/blob/master/blurr/text/modeling/token_classification.py#L65" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="tokenclassmetricscallback" class="level3">
+<h3 class="anchored" data-anchor-id="tokenclassmetricscallback">TokenClassMetricsCallback</h3>
+<blockquote class="blockquote">
+<pre><code> TokenClassMetricsCallback (tok_metrics=['accuracy', 'precision',
+                            'recall', 'f1'], **kwargs)</code></pre>
+</blockquote>
+<p>A fastai friendly callback that includes accuracy, precision, recall, and f1 metrics using the <code>seqeval</code> library. Additionally, this metric knows how to <em>not</em> include your ‘ignore_token’ in it’s calculations.</p>
+<p>See <a href="https://github.com/chakki-works/seqeval">here</a> for more information on <code>seqeval</code>.</p>
+</section>
+<section id="example" class="level3">
+<h3 class="anchored" data-anchor-id="example">Example</h3>
+<section id="training" class="level4">
+<h4 class="anchored" data-anchor-id="training">Training</h4>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>model <span class="op">=</span> BaseModelWrapper(hf_model)</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>learn_cbs <span class="op">=</span> [BaseModelCallback]</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>fit_cbs <span class="op">=</span> [TokenClassMetricsCallback()]</span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>learn <span class="op">=</span> Learner(dls, model, opt_func<span class="op">=</span>partial(Adam), loss_func<span class="op">=</span>PreCalculatedCrossEntropyLoss(), cbs<span class="op">=</span>learn_cbs, splitter<span class="op">=</span>blurr_splitter)</span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>learn.freeze()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>learn.summary()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>b <span class="op">=</span> dls.one_batch()</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>preds <span class="op">=</span> learn.model(b[<span class="dv">0</span>])</span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a><span class="bu">len</span>(preds), <span class="bu">type</span>(preds), preds.keys()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>(2,
+ transformers.modeling_outputs.TokenClassifierOutput,
+ odict_keys(['loss', 'logits']))</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="bu">len</span>(b), <span class="bu">len</span>(b[<span class="dv">0</span>]), b[<span class="dv">0</span>][<span class="st">"input_ids"</span>].shape, <span class="bu">len</span>(b[<span class="dv">1</span>]), b[<span class="dv">1</span>].shape</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>(2, 3, torch.Size([4, 88]), 4, torch.Size([4, 88]))</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="co"># b[0]["labels"].shape</span></span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>preds.logits.shape</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>torch.Size([4, 88, 9])</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(preds.logits.view(<span class="op">-</span><span class="dv">1</span>, preds.logits.shape[<span class="op">-</span><span class="dv">1</span>]).shape, b[<span class="dv">1</span>].view(<span class="op">-</span><span class="dv">1</span>).shape)</span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>test_eq(preds.logits.view(<span class="op">-</span><span class="dv">1</span>, preds.logits.shape[<span class="op">-</span><span class="dv">1</span>]).shape[<span class="dv">0</span>], b[<span class="dv">1</span>].view(<span class="op">-</span><span class="dv">1</span>).shape[<span class="dv">0</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>torch.Size([352, 9]) torch.Size([352])</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="bu">len</span>(learn.opt.param_groups))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>3</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>learn.unfreeze()</span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>learn.lr_find(suggest_funcs<span class="op">=</span>[minimum, steep, valley, slide])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+
+<style>
+    /* Turns off some styling */
+    progress {
+        /* gets rid of default border in Firefox and Opera. */
+        border: none;
+        /* Needs to be in here for Safari polyfill so background images work as expected. */
+        background-size: auto;
+    }
+    progress:not([value]), progress:not([value])::-webkit-progress-bar {
+        background: repeating-linear-gradient(45deg, #7e7e7e, #7e7e7e 10px, #5c5c5c 10px, #5c5c5c 20px);
+    }
+    .progress-bar-interrupted, .progress-bar-interrupted::-webkit-progress-bar {
+        background: #F44336;
+    }
+</style>
+</div>
+<div class="cell-output cell-output-display">
+
+</div>
+<div class="cell-output cell-output-display">
+<pre><code>SuggestedLRs(minimum=0.0009120108559727668, steep=6.30957365501672e-05, valley=0.00013182566908653826, slide=4.365158383734524e-05)</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<p><img src="13_text-modeling-token-classification_files/figure-html/cell-20-output-4.png" class="img-fluid"></p>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>learn.fit_one_cycle(<span class="dv">1</span>, lr_max<span class="op">=</span><span class="fl">3e-5</span>, moms<span class="op">=</span>(<span class="fl">0.8</span>, <span class="fl">0.7</span>, <span class="fl">0.8</span>), cbs<span class="op">=</span>fit_cbs)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+
+<style>
+    /* Turns off some styling */
+    progress {
+        /* gets rid of default border in Firefox and Opera. */
+        border: none;
+        /* Needs to be in here for Safari polyfill so background images work as expected. */
+        background-size: auto;
+    }
+    progress:not([value]), progress:not([value])::-webkit-progress-bar {
+        background: repeating-linear-gradient(45deg, #7e7e7e, #7e7e7e 10px, #5c5c5c 10px, #5c5c5c 20px);
+    }
+    .progress-bar-interrupted, .progress-bar-interrupted::-webkit-progress-bar {
+        background: #F44336;
+    }
+</style>
+</div>
+<div class="cell-output cell-output-display">
+
+<table class="dataframe table table-sm table-striped">
+  <thead>
+    <tr>
+      <th>epoch</th>
+      <th>train_loss</th>
+      <th>valid_loss</th>
+      <th>accuracy</th>
+      <th>precision</th>
+      <th>recall</th>
+      <th>f1</th>
+      <th>time</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>0</td>
+      <td>0.065990</td>
+      <td>0.049054</td>
+      <td>0.989001</td>
+      <td>0.941656</td>
+      <td>0.930676</td>
+      <td>0.936134</td>
+      <td>03:12</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(learn.token_classification_report)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>              precision    recall  f1-score   support
+
+         LOC       0.97      0.95      0.96      1439
+        MISC       0.89      0.87      0.88       737
+         ORG       0.91      0.89      0.90      1241
+         PER       0.97      0.98      0.97      1300
+
+   micro avg       0.94      0.93      0.94      4717
+   macro avg       0.93      0.92      0.93      4717
+weighted avg       0.94      0.93      0.94      4717
+</code></pre>
+</div>
+</div>
+</section>
+<section id="showing-results" class="level4">
+<h4 class="anchored" data-anchor-id="showing-results">Showing results</h4>
+<p>Below we’ll add in additional functionality to more intuitively show the results of our model.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a>learn.show_results(learner<span class="op">=</span>learn, max_n<span class="op">=</span><span class="dv">2</span>, trunc_at<span class="op">=</span><span class="dv">10</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+
+<style>
+    /* Turns off some styling */
+    progress {
+        /* gets rid of default border in Firefox and Opera. */
+        border: none;
+        /* Needs to be in here for Safari polyfill so background images work as expected. */
+        background-size: auto;
+    }
+    progress:not([value]), progress:not([value])::-webkit-progress-bar {
+        background: repeating-linear-gradient(45deg, #7e7e7e, #7e7e7e 10px, #5c5c5c 10px, #5c5c5c 20px);
+    }
+    .progress-bar-interrupted, .progress-bar-interrupted::-webkit-progress-bar {
+        background: #F44336;
+    }
+</style>
+</div>
+<div class="cell-output cell-output-display">
+
+</div>
+<div class="cell-output cell-output-display">
+
+<table class="dataframe table table-sm table-striped">
+  <thead>
+    <tr>
+      <th></th>
+      <th>token / target label / predicted label</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>[('MARKET', 'O', 'O'), ('TALK', 'O', 'O'), ('-', 'O', 'O'), ('USDA', 'B-ORG', 'B-ORG'), ('net', 'O', 'O'), ('change', 'O', 'O'), ('in', 'O', 'O'), ('weekly', 'O', 'O'), ('export', 'O', 'O'), ('commitments', 'O', 'O')]</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>[('Innocent', 'B-PER', 'B-PER'), ('Butare', 'I-PER', 'I-PER'), (',', 'O', 'O'), ('executive', 'O', 'O'), ('secretary', 'O', 'O'), ('of', 'O', 'O'), ('the', 'O', 'O'), ('Rally', 'B-ORG', 'B-ORG'), ('for', 'I-ORG', 'I-ORG'), ('the', 'I-ORG', 'I-ORG')]</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+</section>
+<section id="prediction" class="level4">
+<h4 class="anchored" data-anchor-id="prediction">Prediction</h4>
+<p>The default <code>Learner.predict</code> method returns a prediction per subtoken, including the special tokens for each architecture’s tokenizer. Starting with version 2.0 of BLURR, we bring token prediction in-line with Hugging Face’s token classification pipeline, both in terms of supporting the same aggregation strategies via Blurr’s <a href="https://ohmeow.github.io/blurr/text-modeling-token-classification.html#tokenaggregationstrategies"><code>TokenAggregationStrategies</code></a> class, and also the output via BLURR’s <code>@patch</code>ed <code>Learner</code> method, <code>blurr_predict_tokens</code>.</p>
+<hr>
+<p><a href="https://github.com/ohmeow/blurr/blob/master/blurr/text/modeling/token_classification.py#L203" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+</section>
+<section id="tokenaggregationstrategies" class="level3">
+<h3 class="anchored" data-anchor-id="tokenaggregationstrategies">TokenAggregationStrategies</h3>
+<blockquote class="blockquote">
+<pre><code> TokenAggregationStrategies (hf_tokenizer:transformers.tokenization_utils_
+                             base.PreTrainedTokenizerBase,
+                             labels:List[str], non_entity_label:str='O')</code></pre>
+</blockquote>
+<p>Provides the equivalanet of Hugging Face’s token classification pipeline’s <code>aggregation_strategy</code> support across various token classication tasks (e.g, NER, POS, chunking, etc…)</p>
+<hr>
+<p><a href="https://github.com/ohmeow/blurr/blob/master/blurr/text/modeling/token_classification.py#LNone" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="learner.blurr_predict_tokens" class="level3">
+<h3 class="anchored" data-anchor-id="learner.blurr_predict_tokens">Learner.blurr_predict_tokens</h3>
+<blockquote class="blockquote">
+<pre><code> Learner.blurr_predict_tokens (items:Union[str,List[str]],
+                               aggregation_strategy:str='simple',
+                               non_entity_label:str='O',
+                               slow_word_ids_func:Optional[Callable]=None)</code></pre>
+</blockquote>
+<table class="table">
+<colgroup>
+<col style="width: 6%">
+<col style="width: 25%">
+<col style="width: 34%">
+<col style="width: 34%">
+</colgroup>
+<thead>
+<tr class="header">
+<th></th>
+<th><strong>Type</strong></th>
+<th><strong>Default</strong></th>
+<th><strong>Details</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>items</td>
+<td>Union</td>
+<td></td>
+<td>The str (or list of strings) you want to get token classification predictions for</td>
+</tr>
+<tr class="even">
+<td>aggregation_strategy</td>
+<td>str</td>
+<td>simple</td>
+<td>How entities are grouped and scored</td>
+</tr>
+<tr class="odd">
+<td>non_entity_label</td>
+<td>str</td>
+<td>O</td>
+<td>The label used to idendity non-entity related words/tokens</td>
+</tr>
+<tr class="even">
+<td>slow_word_ids_func</td>
+<td>Optional</td>
+<td>None</td>
+<td>If using a slow tokenizer, users will need to prove a <code>slow_word_ids_func</code> that accepts a</td>
+</tr>
+</tbody>
+</table>
+<p>tokenizzer, example index, and a batch encoding as arguments and in turn returnes the equavlient of fast tokenizer’s `word_ids`` |</p>
+<hr>
+<p><a href="https://github.com/ohmeow/blurr/blob/master/blurr/text/modeling/token_classification.py#LNone" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="learner.blurr_predict_tokens-1" class="level3">
+<h3 class="anchored" data-anchor-id="learner.blurr_predict_tokens-1">Learner.blurr_predict_tokens</h3>
+<blockquote class="blockquote">
+<pre><code> Learner.blurr_predict_tokens (items:Union[str,List[str]],
+                               aggregation_strategy:str='simple',
+                               non_entity_label:str='O',
+                               slow_word_ids_func:Optional[Callable]=None)</code></pre>
+</blockquote>
+<table class="table">
+<colgroup>
+<col style="width: 6%">
+<col style="width: 25%">
+<col style="width: 34%">
+<col style="width: 34%">
+</colgroup>
+<thead>
+<tr class="header">
+<th></th>
+<th><strong>Type</strong></th>
+<th><strong>Default</strong></th>
+<th><strong>Details</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>items</td>
+<td>Union</td>
+<td></td>
+<td>The str (or list of strings) you want to get token classification predictions for</td>
+</tr>
+<tr class="even">
+<td>aggregation_strategy</td>
+<td>str</td>
+<td>simple</td>
+<td>How entities are grouped and scored</td>
+</tr>
+<tr class="odd">
+<td>non_entity_label</td>
+<td>str</td>
+<td>O</td>
+<td>The label used to idendity non-entity related words/tokens</td>
+</tr>
+<tr class="even">
+<td>slow_word_ids_func</td>
+<td>Optional</td>
+<td>None</td>
+<td>If using a slow tokenizer, users will need to prove a <code>slow_word_ids_func</code> that accepts a</td>
+</tr>
+</tbody>
+</table>
+<p>tokenizzer, example index, and a batch encoding as arguments and in turn returnes the equavlient of fast tokenizer’s `word_ids`` |</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a>res <span class="op">=</span> learn.blurr_predict_tokens(</span>
+<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a>    items<span class="op">=</span>[<span class="st">"My name is Wayde and I live in San Diego and using Hugging Face"</span>, <span class="st">"Bayern Munich is a soccer team in Germany"</span>],</span>
+<span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a>    aggregation_strategy<span class="op">=</span><span class="st">"max"</span>,</span>
+<span id="cb34-4"><a href="#cb34-4" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb34-5"><a href="#cb34-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb34-6"><a href="#cb34-6" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="bu">len</span>(res))</span>
+<span id="cb34-7"><a href="#cb34-7" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(res[<span class="dv">1</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>2
+[{'entity_group': 'ORG', 'score': 0.9952805638313293, 'word': 'Bayern Munich', 'start': 0, 'end': 13}, {'entity_group': 'LOC', 'score': 0.9980798959732056, 'word': 'Germany', 'start': 34, 'end': 41}]</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a>txt <span class="op">=</span> <span class="st">"Hi! My name is Wayde Gilliam from ohmeow.com. I live in California."</span></span>
+<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a>txt2 <span class="op">=</span> <span class="st">"I wish covid was over so I could go to Germany and watch Bayern Munich play in the Bundesliga."</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a>res <span class="op">=</span> learn.blurr_predict_tokens(txt)</span>
+<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(res)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[[{'entity_group': 'PER', 'score': 0.8786835372447968, 'word': 'Wayde Gilliam', 'start': 15, 'end': 28}, {'entity_group': 'PER', 'score': 0.30589407682418823, 'word': 'oh', 'start': 34, 'end': 36}, {'entity_group': 'ORG', 'score': 0.31899651885032654, 'word': 'meow', 'start': 36, 'end': 40}, {'entity_group': 'LOC', 'score': 0.1332944929599762, 'word': '.', 'start': 44, 'end': 45}, {'entity_group': 'LOC', 'score': 0.9964601397514343, 'word': 'California', 'start': 56, 'end': 66}, {'entity_group': 'LOC', 'score': 0.13329452276229858, 'word': '.', 'start': 66, 'end': 67}]]</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb39"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a>results <span class="op">=</span> learn.blurr_predict_tokens([txt, txt2])</span>
+<span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> res <span class="kw">in</span> results:</span>
+<span id="cb39-3"><a href="#cb39-3" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"</span><span class="sc">{</span>res<span class="sc">}</span><span class="ch">\n</span><span class="ss">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[{'entity_group': 'PER', 'score': 0.8786835372447968, 'word': 'Wayde Gilliam', 'start': 15, 'end': 28}, {'entity_group': 'PER', 'score': 0.30589407682418823, 'word': 'oh', 'start': 34, 'end': 36}, {'entity_group': 'ORG', 'score': 0.31899651885032654, 'word': 'meow', 'start': 36, 'end': 40}, {'entity_group': 'LOC', 'score': 0.1332944929599762, 'word': '.', 'start': 44, 'end': 45}, {'entity_group': 'LOC', 'score': 0.9964601397514343, 'word': 'California', 'start': 56, 'end': 66}, {'entity_group': 'LOC', 'score': 0.13329452276229858, 'word': '.', 'start': 66, 'end': 67}]
+
+[{'entity_group': 'LOC', 'score': 0.9927727580070496, 'word': 'Germany', 'start': 39, 'end': 46}, {'entity_group': 'ORG', 'score': 0.9933880269527435, 'word': 'Bayern Munich', 'start': 57, 'end': 70}, {'entity_group': 'MISC', 'score': 0.9065296053886414, 'word': 'Bundesliga', 'start': 83, 'end': 93}, {'entity_group': 'ORG', 'score': 0.12906739115715027, 'word': '.', 'start': 93, 'end': 94}]
+</code></pre>
+</div>
+</div>
+<section id="inference" class="level4">
+<h4 class="anchored" data-anchor-id="inference">Inference</h4>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb41"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a>export_fname <span class="op">=</span> <span class="st">"tok_class_learn_export"</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb42"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a>learn.export(fname<span class="op">=</span><span class="ss">f"</span><span class="sc">{</span>export_fname<span class="sc">}</span><span class="ss">.pkl"</span>)</span>
+<span id="cb42-2"><a href="#cb42-2" aria-hidden="true" tabindex="-1"></a>inf_learn <span class="op">=</span> load_learner(fname<span class="op">=</span><span class="ss">f"</span><span class="sc">{</span>export_fname<span class="sc">}</span><span class="ss">.pkl"</span>)</span>
+<span id="cb42-3"><a href="#cb42-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-4"><a href="#cb42-4" aria-hidden="true" tabindex="-1"></a>results <span class="op">=</span> inf_learn.blurr_predict_tokens([txt, txt2])</span>
+<span id="cb42-5"><a href="#cb42-5" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> res <span class="kw">in</span> results:</span>
+<span id="cb42-6"><a href="#cb42-6" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"</span><span class="sc">{</span>res<span class="sc">}</span><span class="ch">\n</span><span class="ss">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[{'entity_group': 'PER', 'score': 0.8786836713552475, 'word': 'Wayde Gilliam', 'start': 15, 'end': 28}, {'entity_group': 'PER', 'score': 0.30589422583580017, 'word': 'oh', 'start': 34, 'end': 36}, {'entity_group': 'ORG', 'score': 0.31899629533290863, 'word': 'meow', 'start': 36, 'end': 40}, {'entity_group': 'LOC', 'score': 0.1332944929599762, 'word': '.', 'start': 44, 'end': 45}, {'entity_group': 'LOC', 'score': 0.9964601397514343, 'word': 'California', 'start': 56, 'end': 66}, {'entity_group': 'LOC', 'score': 0.13329453766345978, 'word': '.', 'start': 66, 'end': 67}]
+
+[{'entity_group': 'LOC', 'score': 0.9927727580070496, 'word': 'Germany', 'start': 39, 'end': 46}, {'entity_group': 'ORG', 'score': 0.9933880269527435, 'word': 'Bayern Munich', 'start': 57, 'end': 70}, {'entity_group': 'MISC', 'score': 0.9065297245979309, 'word': 'Bundesliga', 'start': 83, 'end': 93}, {'entity_group': 'ORG', 'score': 0.12906737625598907, 'word': '.', 'start': 93, 'end': 94}]
+</code></pre>
+</div>
+</div>
+</section>
+</section>
+</section>
+<section id="high-level-api" class="level2">
+<h2 class="anchored" data-anchor-id="high-level-api">High-level API</h2>
+<hr>
+<p><a href="https://github.com/ohmeow/blurr/blob/master/blurr/text/modeling/token_classification.py#L348" target="_blank" style="float:right; font-size:smaller">source</a></p>
+<section id="blearnerfortokenclassification" class="level3">
+<h3 class="anchored" data-anchor-id="blearnerfortokenclassification">BlearnerForTokenClassification</h3>
+<blockquote class="blockquote">
+<pre><code> BlearnerForTokenClassification (dls:fastai.data.core.DataLoaders,
+                                 hf_model:transformers.modeling_utils.PreT
+                                 rainedModel, base_model_cb:blurr.text.mod
+                                 eling.core.BaseModelCallback=&lt;class 'blur
+                                 r.text.modeling.core.BaseModelCallback'&gt;,
+                                 loss_func:callable|None=None,
+                                 opt_func=&lt;function Adam&gt;, lr=0.001,
+                                 splitter:callable=&lt;function
+                                 trainable_params&gt;, cbs=None,
+                                 metrics=None, path=None,
+                                 model_dir='models', wd=None,
+                                 wd_bn_bias=False, train_bn=True,
+                                 moms=(0.95, 0.85, 0.95),
+                                 default_cbs:bool=True)</code></pre>
+</blockquote>
+<p>Group together a <code>model</code>, some <code>dls</code> and a <code>loss_func</code> to handle training</p>
+<table class="table">
+<colgroup>
+<col style="width: 9%">
+<col style="width: 38%">
+<col style="width: 52%">
+</colgroup>
+<thead>
+<tr class="header">
+<th></th>
+<th><strong>Type</strong></th>
+<th><strong>Details</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>dls</td>
+<td></td>
+<td><code>DataLoaders</code> containing data for each dataset needed for <code>model</code></td>
+</tr>
+<tr class="even">
+<td>hf_model</td>
+<td>PreTrainedModel</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="example-1" class="level3">
+<h3 class="anchored" data-anchor-id="example-1">Example</h3>
+<section id="define-your-blearner" class="level4">
+<h4 class="anchored" data-anchor-id="define-your-blearner">Define your <a href="https://ohmeow.github.io/blurr/text-modeling-core.html#blearner"><code>Blearner</code></a></h4>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb45"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a>hf_logging.set_verbosity_error()</span>
+<span id="cb45-2"><a href="#cb45-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb45-3"><a href="#cb45-3" aria-hidden="true" tabindex="-1"></a>learn <span class="op">=</span> BlearnerForTokenClassification.from_data(</span>
+<span id="cb45-4"><a href="#cb45-4" aria-hidden="true" tabindex="-1"></a>    conll2003_df,</span>
+<span id="cb45-5"><a href="#cb45-5" aria-hidden="true" tabindex="-1"></a>    <span class="st">"distilroberta-base"</span>,</span>
+<span id="cb45-6"><a href="#cb45-6" aria-hidden="true" tabindex="-1"></a>    tokens_attr<span class="op">=</span><span class="st">"tokens"</span>,</span>
+<span id="cb45-7"><a href="#cb45-7" aria-hidden="true" tabindex="-1"></a>    token_labels_attr<span class="op">=</span><span class="st">"ner_tags"</span>,</span>
+<span id="cb45-8"><a href="#cb45-8" aria-hidden="true" tabindex="-1"></a>    labels<span class="op">=</span>labels,</span>
+<span id="cb45-9"><a href="#cb45-9" aria-hidden="true" tabindex="-1"></a>    dl_kwargs<span class="op">=</span>{<span class="st">"bs"</span>: <span class="dv">2</span>},</span>
+<span id="cb45-10"><a href="#cb45-10" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb45-11"><a href="#cb45-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb45-12"><a href="#cb45-12" aria-hidden="true" tabindex="-1"></a>learn.unfreeze()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb46"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a>learn.dls.show_batch(dataloaders<span class="op">=</span>learn.dls, max_n<span class="op">=</span><span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+
+<table class="dataframe table table-sm table-striped">
+  <thead>
+    <tr>
+      <th></th>
+      <th>word / target label</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>[('MARKET', 'O'), ('TALK', 'O'), ('-', 'O'), ('USDA', 'B-ORG'), ('net', 'O'), ('change', 'O'), ('in', 'O'), ('weekly', 'O'), ('export', 'O'), ('commitments', 'O'), ('for', 'O'), ('the', 'O'), ('week', 'O'), ('ended', 'O'), ('August', 'O'), ('22', 'O'), (',', 'O'), ('includes', 'O'), ('old', 'O'), ('crop', 'O'), ('and', 'O'), ('new', 'O'), ('crop', 'O'), (',', 'O'), ('were', 'O'), (':', 'O'), ('wheat', 'O'), ('up', 'O'), ('595,400', 'O'), ('tonnes', 'O'), ('old', 'O'), (',', 'O'), ('nil', 'O'), ('new', 'O'), (';', 'O'), ('corn', 'O'), ('up', 'O'), ('1,900', 'O'), ('old', 'O'), (',', 'O'), ('up', 'O'), ('319,600', 'O'), ('new', 'O'), (';', 'O'), ('soybeans', 'O'), ('down', 'O'), ('12,300', 'O'), ('old', 'O'), (',', 'O'), ('up', 'O'), ('300,800', 'O'), ('new', 'O'), (';', 'O'), ('upland', 'O'), ('cotton', 'O'), ('up', 'O'), ('50,400', 'O'), ('bales', 'O'), ('new', 'O'), (',', 'O'), ('nil', 'O'), ('old', 'O'), (';', 'O'), ('soymeal', 'O'), ('54,800', 'O'), ('old', 'O'), (',', 'O'), ('up', 'O'), ('100,600', 'O'), ('new', 'O'), (',', 'O'), ('soyoil', 'O'), ('nil', 'O'), ('old', 'O'), (',', 'O'), ('up', 'O'), ('75,000', 'O'), ('new', 'O'), (';', 'O'), ('barley', 'O'), ('up', 'O'), ('1,700', 'O'), ('old', 'O'), (',', 'O'), ('nil', 'O'), ('new', 'O'), (';', 'O'), ('sorghum', 'O'), ('6,200', 'O'), ('old', 'O'), (',', 'O'), ('up', 'O'), ('156,700', 'O'), ('new', 'O'), (';', 'O'), ('pima', 'O'), ('cotton', 'O'), ('up', 'O'), ('4,000', 'O'), ('bales', 'O'), ('old', 'O'), (',', 'O'), ('nil', 'O'), ('new', 'O'), (';', 'O'), ('rice', 'O'), ('up', 'O'), ('49,900', 'O'), ('old', 'O'), (',', 'O'), ('nil', 'O'), ('new', 'O'), ('...', 'O')]</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>[('The', 'O'), ('Pirates', 'B-ORG'), (',', 'O'), ('who', 'O'), ('conceded', 'O'), ('earlier', 'O'), ('this', 'O'), ('week', 'O'), ('they', 'O'), ('would', 'O'), ('be', 'O'), ('forced', 'O'), ('to', 'O'), ('trim', 'O'), ('salary', 'O'), ('from', 'O'), ('next', 'O'), ('season', 'O'), ("'s", 'O'), ('payroll', 'O'), (',', 'O'), ('received', 'O'), ('Ron', 'B-PER'), ('Wright', 'I-PER'), (',', 'O'), ('a', 'O'), ('first', 'O'), ('baseman', 'O'), ('at', 'O'), ('Double-A', 'O'), ('Greenville', 'B-ORG'), (';', 'O'), ('Corey', 'B-PER'), ('Pointer', 'I-PER'), (',', 'O'), ('a', 'O'), ('pitcher', 'O'), ('at', 'O'), ('Class-A', 'O'), ('Eugene', 'B-ORG'), (',', 'O'), ('and', 'O'), ('a', 'O'), ('player', 'O'), ('to', 'O'), ('be', 'O'), ('named', 'O'), ('.', 'O')]</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+</section>
+<section id="train" class="level4">
+<h4 class="anchored" data-anchor-id="train">Train</h4>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb47"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a>learn.fit_one_cycle(<span class="dv">1</span>, lr_max<span class="op">=</span><span class="fl">3e-5</span>, moms<span class="op">=</span>(<span class="fl">0.8</span>, <span class="fl">0.7</span>, <span class="fl">0.8</span>), cbs<span class="op">=</span>[BlearnerForTokenClassification.get_metrics_cb()])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+
+<style>
+    /* Turns off some styling */
+    progress {
+        /* gets rid of default border in Firefox and Opera. */
+        border: none;
+        /* Needs to be in here for Safari polyfill so background images work as expected. */
+        background-size: auto;
+    }
+    progress:not([value]), progress:not([value])::-webkit-progress-bar {
+        background: repeating-linear-gradient(45deg, #7e7e7e, #7e7e7e 10px, #5c5c5c 10px, #5c5c5c 20px);
+    }
+    .progress-bar-interrupted, .progress-bar-interrupted::-webkit-progress-bar {
+        background: #F44336;
+    }
+</style>
+</div>
+<div class="cell-output cell-output-display">
+
+<table class="dataframe table table-sm table-striped">
+  <thead>
+    <tr>
+      <th>epoch</th>
+      <th>train_loss</th>
+      <th>valid_loss</th>
+      <th>accuracy</th>
+      <th>precision</th>
+      <th>recall</th>
+      <th>f1</th>
+      <th>time</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>0</td>
+      <td>0.066553</td>
+      <td>0.050842</td>
+      <td>0.988192</td>
+      <td>0.934066</td>
+      <td>0.930526</td>
+      <td>0.932293</td>
+      <td>03:59</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb48"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a>learn.show_results(learner<span class="op">=</span>learn, max_n<span class="op">=</span><span class="dv">2</span>, trunc_at<span class="op">=</span><span class="dv">10</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+
+<style>
+    /* Turns off some styling */
+    progress {
+        /* gets rid of default border in Firefox and Opera. */
+        border: none;
+        /* Needs to be in here for Safari polyfill so background images work as expected. */
+        background-size: auto;
+    }
+    progress:not([value]), progress:not([value])::-webkit-progress-bar {
+        background: repeating-linear-gradient(45deg, #7e7e7e, #7e7e7e 10px, #5c5c5c 10px, #5c5c5c 20px);
+    }
+    .progress-bar-interrupted, .progress-bar-interrupted::-webkit-progress-bar {
+        background: #F44336;
+    }
+</style>
+</div>
+<div class="cell-output cell-output-display">
+
+</div>
+<div class="cell-output cell-output-display">
+
+<table class="dataframe table table-sm table-striped">
+  <thead>
+    <tr>
+      <th></th>
+      <th>token / target label / predicted label</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>[('Innocent', 'B-PER', 'B-PER'), ('Butare', 'I-PER', 'I-PER'), (',', 'O', 'O'), ('executive', 'O', 'O'), ('secretary', 'O', 'O'), ('of', 'O', 'O'), ('the', 'O', 'O'), ('Rally', 'B-ORG', 'B-ORG'), ('for', 'I-ORG', 'I-ORG'), ('the', 'I-ORG', 'I-ORG')]</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>[('"', 'O', 'O'), ('I', 'O', 'O'), ('do', 'O', 'O'), ("n't", 'O', 'O'), ('know', 'O', 'O'), ('what', 'O', 'O'), ('the', 'O', 'O'), ('source', 'O', 'O'), ('of', 'O', 'O'), ('the', 'O', 'O')]</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb49"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(learn.token_classification_report)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>              precision    recall  f1-score   support
+
+         LOC       0.95      0.96      0.95      1401
+        MISC       0.87      0.89      0.88       676
+         ORG       0.91      0.89      0.90      1372
+         PER       0.98      0.97      0.97      1301
+
+   micro avg       0.93      0.93      0.93      4750
+   macro avg       0.93      0.93      0.93      4750
+weighted avg       0.93      0.93      0.93      4750
+</code></pre>
+</div>
+</div>
+</section>
+<section id="prediction-1" class="level4">
+<h4 class="anchored" data-anchor-id="prediction-1">Prediction</h4>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb51"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb51-1"><a href="#cb51-1" aria-hidden="true" tabindex="-1"></a>txt <span class="op">=</span> <span class="st">"Hi! My name is Wayde Gilliam from ohmeow.com. I live in California."</span></span>
+<span id="cb51-2"><a href="#cb51-2" aria-hidden="true" tabindex="-1"></a>txt2 <span class="op">=</span> <span class="st">"I wish covid was over so I could watch Lewandowski score some more goals for Bayern Munich in the Bundesliga."</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb52"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb52-1"><a href="#cb52-1" aria-hidden="true" tabindex="-1"></a>results <span class="op">=</span> learn.predict([txt, txt2])</span>
+<span id="cb52-2"><a href="#cb52-2" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> res <span class="kw">in</span> results:</span>
+<span id="cb52-3"><a href="#cb52-3" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"</span><span class="sc">{</span>res<span class="sc">}</span><span class="ch">\n</span><span class="ss">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[{'entity_group': 'PER', 'score': 0.9960938096046448, 'word': 'Way', 'start': 15, 'end': 18}, {'entity_group': 'PER', 'score': 0.9659706950187683, 'word': 'de Gilliam', 'start': 18, 'end': 28}, {'entity_group': 'ORG', 'score': 0.4243549704551697, 'word': 'ohmeow', 'start': 34, 'end': 40}, {'entity_group': 'LOC', 'score': 0.9980984330177307, 'word': 'California', 'start': 56, 'end': 66}]
+
+[{'entity_group': 'PER', 'score': 0.9737088978290558, 'word': 'Lewandowski', 'start': 39, 'end': 50}, {'entity_group': 'ORG', 'score': 0.983256071805954, 'word': 'Bayern Munich', 'start': 77, 'end': 90}, {'entity_group': 'MISC', 'score': 0.957284688949585, 'word': 'Bundesliga', 'start': 98, 'end': 108}]
+</code></pre>
+</div>
+</div>
+</section>
+</section>
+</section>
+<section id="tests" class="level2">
+<h2 class="anchored" data-anchor-id="tests">Tests</h2>
+<p>The tests below to ensure the token classification training code above works for <strong>all</strong> pretrained token classification models available in Hugging Face. These tests are excluded from the CI workflow because of how long they would take to run and the amount of data that would be required to download.</p>
+<p><strong>Note</strong>: Feel free to modify the code below to test whatever pretrained token classification models you are working with … and if any of your pretrained token classification models fail, please submit a github issue <em>(or a PR if you’d like to fix it yourself)</em></p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb54"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb54-1"><a href="#cb54-1" aria-hidden="true" tabindex="-1"></a>raw_datasets <span class="op">=</span> load_dataset(<span class="st">"conll2003"</span>)</span>
+<span id="cb54-2"><a href="#cb54-2" aria-hidden="true" tabindex="-1"></a>labels <span class="op">=</span> raw_datasets[<span class="st">"train"</span>].features[<span class="st">"ner_tags"</span>].feature.names</span>
+<span id="cb54-3"><a href="#cb54-3" aria-hidden="true" tabindex="-1"></a>conll2003_df <span class="op">=</span> pd.DataFrame(raw_datasets[<span class="st">"train"</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Reusing dataset conll2003 (/home/wgilliam/.cache/huggingface/datasets/conll2003/conll2003/1.0.0/9a4d16a94f8674ba3466315300359b0acd891b68b6c8743ddf60b9c702adce98)</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<script type="application/vnd.jupyter.widget-view+json">
+{"model_id":"9bd27d6b5d574d1bbcc595bd9c8496ff","version_major":2,"version_minor":0}
+</script>
+</div>
+</div>
+<div class="cell">
+<div class="cell-output cell-output-display">
+
+<table class="dataframe table table-sm table-striped">
+  <thead>
+    <tr>
+      <th></th>
+      <th>arch</th>
+      <th>tokenizer</th>
+      <th>model_name</th>
+      <th>result</th>
+      <th>error</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>albert</td>
+      <td>AlbertTokenizerFast</td>
+      <td>AlbertForTokenClassification</td>
+      <td>PASSED</td>
+      <td></td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>bert</td>
+      <td>BertTokenizerFast</td>
+      <td>BertForTokenClassification</td>
+      <td>PASSED</td>
+      <td></td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>big_bird</td>
+      <td>BigBirdTokenizerFast</td>
+      <td>BigBirdForTokenClassification</td>
+      <td>PASSED</td>
+      <td></td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>camembert</td>
+      <td>CamembertTokenizerFast</td>
+      <td>CamembertForTokenClassification</td>
+      <td>PASSED</td>
+      <td></td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>convbert</td>
+      <td>ConvBertTokenizerFast</td>
+      <td>ConvBertForTokenClassification</td>
+      <td>PASSED</td>
+      <td></td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>deberta</td>
+      <td>DebertaTokenizerFast</td>
+      <td>DebertaForTokenClassification</td>
+      <td>PASSED</td>
+      <td></td>
+    </tr>
+    <tr>
+      <th>6</th>
+      <td>bert</td>
+      <td>BertTokenizerFast</td>
+      <td>BertForTokenClassification</td>
+      <td>PASSED</td>
+      <td></td>
+    </tr>
+    <tr>
+      <th>7</th>
+      <td>electra</td>
+      <td>ElectraTokenizerFast</td>
+      <td>ElectraForTokenClassification</td>
+      <td>PASSED</td>
+      <td></td>
+    </tr>
+    <tr>
+      <th>8</th>
+      <td>funnel</td>
+      <td>FunnelTokenizerFast</td>
+      <td>FunnelForTokenClassification</td>
+      <td>PASSED</td>
+      <td></td>
+    </tr>
+    <tr>
+      <th>9</th>
+      <td>gpt2</td>
+      <td>GPT2TokenizerFast</td>
+      <td>GPT2ForTokenClassification</td>
+      <td>PASSED</td>
+      <td></td>
+    </tr>
+    <tr>
+      <th>10</th>
+      <td>layoutlm</td>
+      <td>LayoutLMTokenizerFast</td>
+      <td>LayoutLMForTokenClassification</td>
+      <td>PASSED</td>
+      <td></td>
+    </tr>
+    <tr>
+      <th>11</th>
+      <td>longformer</td>
+      <td>LongformerTokenizerFast</td>
+      <td>LongformerForTokenClassification</td>
+      <td>PASSED</td>
+      <td></td>
+    </tr>
+    <tr>
+      <th>12</th>
+      <td>mpnet</td>
+      <td>MPNetTokenizerFast</td>
+      <td>MPNetForTokenClassification</td>
+      <td>PASSED</td>
+      <td></td>
+    </tr>
+    <tr>
+      <th>13</th>
+      <td>ibert</td>
+      <td>RobertaTokenizerFast</td>
+      <td>IBertForTokenClassification</td>
+      <td>PASSED</td>
+      <td></td>
+    </tr>
+    <tr>
+      <th>14</th>
+      <td>mobilebert</td>
+      <td>MobileBertTokenizerFast</td>
+      <td>MobileBertForTokenClassification</td>
+      <td>PASSED</td>
+      <td></td>
+    </tr>
+    <tr>
+      <th>15</th>
+      <td>rembert</td>
+      <td>RemBertTokenizerFast</td>
+      <td>RemBertForTokenClassification</td>
+      <td>PASSED</td>
+      <td></td>
+    </tr>
+    <tr>
+      <th>16</th>
+      <td>roformer</td>
+      <td>RoFormerTokenizerFast</td>
+      <td>RoFormerForTokenClassification</td>
+      <td>PASSED</td>
+      <td></td>
+    </tr>
+    <tr>
+      <th>17</th>
+      <td>roberta</td>
+      <td>RobertaTokenizerFast</td>
+      <td>RobertaForTokenClassification</td>
+      <td>PASSED</td>
+      <td></td>
+    </tr>
+    <tr>
+      <th>18</th>
+      <td>squeezebert</td>
+      <td>SqueezeBertTokenizerFast</td>
+      <td>SqueezeBertForTokenClassification</td>
+      <td>PASSED</td>
+      <td></td>
+    </tr>
+    <tr>
+      <th>19</th>
+      <td>xlm_roberta</td>
+      <td>XLMRobertaTokenizerFast</td>
+      <td>XLMRobertaForTokenClassification</td>
+      <td>PASSED</td>
+      <td></td>
+    </tr>
+    <tr>
+      <th>20</th>
+      <td>xlnet</td>
+      <td>XLNetTokenizerFast</td>
+      <td>XLNetForTokenClassification</td>
+      <td>PASSED</td>
+      <td></td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const disableStylesheet = (stylesheets) => {
+    for (let i=0; i < stylesheets.length; i++) {
+      const stylesheet = stylesheets[i];
+      stylesheet.rel = 'prefetch';
+    }
+  }
+  const enableStylesheet = (stylesheets) => {
+    for (let i=0; i < stylesheets.length; i++) {
+      const stylesheet = stylesheets[i];
+      stylesheet.rel = 'stylesheet';
+    }
+  }
+  const manageTransitions = (selector, allowTransitions) => {
+    const els = window.document.querySelectorAll(selector);
+    for (let i=0; i < els.length; i++) {
+      const el = els[i];
+      if (allowTransitions) {
+        el.classList.remove('notransition');
+      } else {
+        el.classList.add('notransition');
+      }
+    }
+  }
+  const toggleColorMode = (alternate) => {
+    // Switch the stylesheets
+    const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+    manageTransitions('#quarto-margin-sidebar .nav-link', false);
+    if (alternate) {
+      enableStylesheet(alternateStylesheets);
+      for (const sheetNode of alternateStylesheets) {
+        if (sheetNode.id === "quarto-bootstrap") {
+          toggleBodyColorMode(sheetNode);
+        }
+      }
+    } else {
+      disableStylesheet(alternateStylesheets);
+      toggleBodyColorPrimary();
+    }
+    manageTransitions('#quarto-margin-sidebar .nav-link', true);
+    // Switch the toggles
+    const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+    for (let i=0; i < toggles.length; i++) {
+      const toggle = toggles[i];
+      if (toggle) {
+        if (alternate) {
+          toggle.classList.add("alternate");     
+        } else {
+          toggle.classList.remove("alternate");
+        }
+      }
+    }
+    // Hack to workaround the fact that safari doesn't
+    // properly recolor the scrollbar when toggling (#1455)
+    if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+      manageTransitions("body", false);
+      window.scrollTo(0, 1);
+      setTimeout(() => {
+        window.scrollTo(0, 0);
+        manageTransitions("body", true);
+      }, 40);  
+    }
+  }
+  const isFileUrl = () => { 
+    return window.location.protocol === 'file:';
+  }
+  const hasAlternateSentinel = () => {  
+    let styleSentinel = getColorSchemeSentinel();
+    if (styleSentinel !== null) {
+      return styleSentinel === "alternate";
+    } else {
+      return false;
+    }
+  }
+  const setStyleSentinel = (alternate) => {
+    const value = alternate ? "alternate" : "default";
+    if (!isFileUrl()) {
+      window.localStorage.setItem("quarto-color-scheme", value);
+    } else {
+      localAlternateSentinel = value;
+    }
+  }
+  const getColorSchemeSentinel = () => {
+    if (!isFileUrl()) {
+      const storageValue = window.localStorage.getItem("quarto-color-scheme");
+      return storageValue != null ? storageValue : localAlternateSentinel;
+    } else {
+      return localAlternateSentinel;
+    }
+  }
+  let localAlternateSentinel = 'default';
+  // Dark / light mode switch
+  window.quartoToggleColorScheme = () => {
+    // Read the current dark / light value 
+    let toAlternate = !hasAlternateSentinel();
+    toggleColorMode(toAlternate);
+    setStyleSentinel(toAlternate);
+  };
+  // Ensure there is a toggle, if there isn't float one in the top right
+  if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+    const a = window.document.createElement('a');
+    a.classList.add('top-right');
+    a.classList.add('quarto-color-scheme-toggle');
+    a.href = "";
+    a.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+    const i = window.document.createElement("i");
+    i.classList.add('bi');
+    a.appendChild(i);
+    window.document.body.appendChild(a);
+  }
+  // Switch to dark mode if need be
+  if (hasAlternateSentinel()) {
+    toggleColorMode(true);
+  } 
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    target: function(trigger) {
+      return trigger.previousElementSibling;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    setTimeout(function() {
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const cites = ref.parentNode.getAttribute('data-cites').split(' ');
+    tippyHover(ref, function() {
+      var popup = window.document.createElement('div');
+      cites.forEach(function(cite) {
+        var citeDiv = window.document.createElement('div');
+        citeDiv.classList.add('hanging-indent');
+        citeDiv.classList.add('csl-entry');
+        var biblioDiv = window.document.getElementById('ref-' + cite);
+        if (biblioDiv) {
+          citeDiv.innerHTML = biblioDiv.innerHTML;
+        }
+        popup.appendChild(citeDiv);
+      });
+      return popup.innerHTML;
+    });
+  }
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var filterRegex = new RegExp(/https:\/\/ohmeow\.github\.io\/blurr\//);
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+    var links = window.document.querySelectorAll('a:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+          // target, if specified
+          link.setAttribute("target", "_blank");
+      }
+    }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>

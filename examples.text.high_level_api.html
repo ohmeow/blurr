@@ -1,0 +1,2326 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.1.75">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="description" content="Show all of the high-level BlurrFor<Task> classes in action here with the raw data sourced from the Hugging Face Datasets library.">
+
+<title>blurr - Using the high-level Blurr API</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: 1;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1.6em;
+  vertical-align: middle;
+}
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { color: #008000; } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { color: #008000; font-weight: bold; } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<link href="./favicon.ico" rel="icon">
+<script src="site_libs/quarto-html/quarto.js"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-dark.css" rel="prefetch" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-dark.min.css" rel="prefetch" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit"
+  }
+}</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" integrity="sha512-c3Nl8+7g4LMSTdrm621y7kf9v3SDPnhxLNhcjFJbKECVnmZHTdo+IRO05sNLTH/D3vA6u1X32ehoLC7WFVdheg==" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script>
+<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
+<script src="https://unpkg.com/@jupyter-widgets/html-manager@*/dist/embed-amd.js" crossorigin="anonymous"></script>
+
+
+<link rel="stylesheet" href="styles.css">
+<meta property="og:title" content="blurr - Using the high-level Blurr API">
+<meta property="og:description" content="Show all of the high-level BlurrFor<Task> classes in action here with the raw data sourced from the Hugging Face Datasets library.">
+<meta property="og:site-name" content="blurr">
+<meta name="twitter:title" content="blurr - Using the high-level Blurr API">
+<meta name="twitter:description" content="Show all of the high-level BlurrFor<Task> classes in action here with the raw data sourced from the Hugging Face Datasets library.">
+<meta name="twitter:card" content="summary">
+</head>
+
+<body class="nav-sidebar floating nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg navbar-dark ">
+      <div class="navbar-container container-fluid">
+      <a class="navbar-brand" href="./index.html">
+    <span class="navbar-title">blurr</span>
+  </a>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link active" href="./index.html" aria-current="page">Getting Started</a>
+  </li>  
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-resources" role="button" data-bs-toggle="dropdown" aria-expanded="false">Resources</a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-resources">    
+        <li>
+    <a class="dropdown-item" href="https://www.youtube.com/playlist?list=PLD80i8An1OEF8UOb9N9uSoidOGIMKW96t"><i class="bi bi-play-btn-fill" role="img">
+</i> 
+ <span class="dropdown-text">fastai x Hugging Face Study Group</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="https://huggingface.co/course/chapter1/1"><i class="bi bi-journal-bookmark-fill" role="img">
+</i> 
+ <span class="dropdown-text">Hugging Face Course</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="https://docs.fast.ai/"><i class="bi bi-link" role="img">
+</i> 
+ <span class="dropdown-text">fast.ai (docs)</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="https://huggingface.co/docs/transformers/index"><i class="bi bi-link" role="img">
+</i> 
+ <span class="dropdown-text">transformers (docs)</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-help" role="button" data-bs-toggle="dropdown" aria-expanded="false">Help</a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-help">    
+        <li>
+    <a class="dropdown-item" href="https://github.com/ohmeow/blurr/issues"><i class="bi bi-bug" role="img">
+</i> 
+ <span class="dropdown-text">Report an Issue</span></a>
+  </li>  
+    </ul>
+  </li>
+</ul>
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/ohmeow/blurr/"><i class="bi bi-github" role="img">
+</i> 
+ </a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://twitter.com/waydegilliam"><i class="bi bi-twitter" role="img">
+</i> 
+ </a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://www.ohmeow.com/"><i class="bi bi-house" role="img" aria-label="Twitter">
+</i> 
+ </a>
+  </li>  
+</ul>
+              <div class="quarto-toggle-container">
+                  <a href="" class="quarto-color-scheme-toggle nav-link" onclick="window.quartoToggleColorScheme(); return false;" title="Toggle dark mode"><i class="bi"></i></a>
+              </div>
+              <div id="quarto-search" class="" title="Search"></div>
+          </div> <!-- /navcollapse -->
+      </div> <!-- /container-fluid -->
+    </nav>
+  <nav class="quarto-secondary-nav" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+    <div class="container-fluid d-flex justify-content-between">
+      <h1 class="quarto-secondary-nav-title">Using the high-level Blurr API</h1>
+      <button type="button" class="quarto-btn-toggle btn" aria-label="Show secondary navigation">
+        <i class="bi bi-chevron-right"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-full page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse sidebar-navigation floating overflow-auto">
+      <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+      </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true">Overview</a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">Getting Started</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./callbacks.html" class="sidebar-item-text sidebar-link">callbacks</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./utils.html" class="sidebar-item-text sidebar-link">utils</a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="true">Text</a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="true">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-expanded="false">Sequence Classification</a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-expanded="false">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./text.data.core.html" class="sidebar-item-text sidebar-link">Data</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./text.modeling.core.html" class="sidebar-item-text sidebar-link">Modeling</a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" aria-expanded="false">Token Classification</a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" aria-expanded="false">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./text.data.token_classification.html" class="sidebar-item-text sidebar-link">Data</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./text.modeling.token_classification.html" class="sidebar-item-text sidebar-link">Modeling</a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" aria-expanded="false">Question &amp; Answering</a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" aria-expanded="false">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./text.data.question_answering.html" class="sidebar-item-text sidebar-link">Data</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./text.modeling.question_answering.html" class="sidebar-item-text sidebar-link">Modeling</a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" aria-expanded="false">Language Modeling</a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" aria-expanded="false">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-6" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./text.data.language_modeling.html" class="sidebar-item-text sidebar-link">Data</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./text.modeling.language_modeling.html" class="sidebar-item-text sidebar-link">Modeling</a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" aria-expanded="false">Seq2Seq: Core</a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" aria-expanded="false">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-7" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./text.data.seq2seq.core.html" class="sidebar-item-text sidebar-link">Data</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./text.modeling.seq2seq.core.html" class="sidebar-item-text sidebar-link">Modeling</a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" aria-expanded="false">Seq2Seq: Summarization</a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" aria-expanded="false">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-8" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./text.data.seq2seq.summarization.html" class="sidebar-item-text sidebar-link">Data</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./text.modeling.seq2seq.summarization.html" class="sidebar-item-text sidebar-link">Modeling</a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-9" aria-expanded="false">Seq2Seq: Translation</a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-9" aria-expanded="false">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-9" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./text.data.seq2seq.translation.html" class="sidebar-item-text sidebar-link">Data</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./text.modeling.seq2seq.translation.html" class="sidebar-item-text sidebar-link">Modeling</a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./text.callbacks.html" class="sidebar-item-text sidebar-link">callbacks</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./text.utils.html" class="sidebar-item-text sidebar-link">utils</a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-10" aria-expanded="true">Examples</a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-10" aria-expanded="true">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-10" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./examples.text.high_level_api.html" class="sidebar-item-text sidebar-link active">Using the high-level Blurr API</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./examples.text.glue.html" class="sidebar-item-text sidebar-link">GLUE classification tasks</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./examples.text.glue_low_level_api.html" class="sidebar-item-text sidebar-link">Using the Low-level fastai API</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./examples.text.multilabel_classification.html" class="sidebar-item-text sidebar-link">Multi-label classification</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./examples.text.causal_lm_gpt2.html" class="sidebar-item-text sidebar-link">Causal Language Modeling with GPT-2</a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#sequence-classification" id="toc-sequence-classification" class="nav-link active" data-scroll-target="#sequence-classification">Sequence Classification</a>
+  <ul>
+  <li><a href="#multiclassification-one-input" id="toc-multiclassification-one-input" class="nav-link" data-scroll-target="#multiclassification-one-input">Multiclassification (one input)</a></li>
+  <li><a href="#multiclassification-two-inputs" id="toc-multiclassification-two-inputs" class="nav-link" data-scroll-target="#multiclassification-two-inputs">Multiclassification (two inputs)</a></li>
+  <li><a href="#multilabel-classification" id="toc-multilabel-classification" class="nav-link" data-scroll-target="#multilabel-classification">Multilabel classification</a></li>
+  </ul></li>
+  <li><a href="#token-classification" id="toc-token-classification" class="nav-link" data-scroll-target="#token-classification">Token Classification</a></li>
+  <li><a href="#question-answering" id="toc-question-answering" class="nav-link" data-scroll-target="#question-answering">Question Answering</a></li>
+  <li><a href="#language-modeling" id="toc-language-modeling" class="nav-link" data-scroll-target="#language-modeling">Language modeling</a></li>
+  <li><a href="#summarization" id="toc-summarization" class="nav-link" data-scroll-target="#summarization">Summarization</a></li>
+  <li><a href="#translation" id="toc-translation" class="nav-link" data-scroll-target="#translation">Translation</a></li>
+  <li><a href="#summary" id="toc-summary" class="nav-link" data-scroll-target="#summary">Summary</a></li>
+  </ul>
+<div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/ohmeow/blurr/issues/new" class="toc-action">Report an issue</a></p></div></div></nav>
+    </div>
+<!-- main -->
+<main class="content column-body" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title d-none d-lg-block">Using the high-level Blurr API</h1>
+</div>
+
+<div>
+  <div class="description">
+    Show all of the high-level <code>BlurrFor&lt;Task&gt;</code> classes in action here with the raw data sourced from the <a href="https://huggingface.co/docs/datasets/index.html">Hugging Face Datasets library</a>.
+  </div>
+</div>
+
+
+<div class="quarto-title-meta">
+
+    
+    
+  </div>
+  
+
+</header>
+
+<!-- WARNING: THIS FILE WAS AUTOGENERATED! DO NOT EDIT! -->
+<p>While most of the code and examples in the documentation show how to work with Blurr given a pandas Dataframe, these set of examples will show you how to use the high-level Blurr API with any Hugging Face dataset. The high-level API provides one liners to build your DataBlock, DataLoaders, and Learner (with sensible defaults) from a DataFrame, CSV file, or a list of dictionaries as we do so here.</p>
+<section id="sequence-classification" class="level2">
+<h2 class="anchored" data-anchor-id="sequence-classification">Sequence Classification</h2>
+<section id="multiclassification-one-input" class="level3">
+<h3 class="anchored" data-anchor-id="multiclassification-one-input">Multiclassification (one input)</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>raw_datasets <span class="op">=</span> load_dataset(<span class="st">"glue"</span>, <span class="st">"cola"</span>)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"</span><span class="sc">{</span>raw_datasets<span class="sc">}</span><span class="ch">\n</span><span class="ss">"</span>)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f'</span><span class="sc">{</span>raw_datasets[<span class="st">"train"</span>][<span class="dv">0</span>]<span class="sc">}</span><span class="ch">\n</span><span class="ss">'</span>)</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f'</span><span class="sc">{</span>raw_datasets[<span class="st">"train"</span>]<span class="sc">.</span>features<span class="sc">}</span><span class="ch">\n</span><span class="ss">'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Reusing dataset glue (/home/wgilliam/.cache/huggingface/datasets/glue/cola/1.0.0/dacbe3125aa31d7f70367a07a8a9e72a5a0bfeb5fc42e75c9db75b96da6053ad)</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<script type="application/vnd.jupyter.widget-view+json">
+{"model_id":"7a13852862e34e4a92a4cfbc33ed01c2","version_major":2,"version_minor":0}
+</script>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>DatasetDict({
+    train: Dataset({
+        features: ['idx', 'label', 'sentence'],
+        num_rows: 8551
+    })
+    validation: Dataset({
+        features: ['idx', 'label', 'sentence'],
+        num_rows: 1043
+    })
+    test: Dataset({
+        features: ['idx', 'label', 'sentence'],
+        num_rows: 1063
+    })
+})
+
+{'idx': 0, 'label': 1, 'sentence': "Our friends won't buy this analysis, let alone the next one we propose."}
+
+{'idx': Value(dtype='int32', id=None), 'label': ClassLabel(num_classes=2, names=['unacceptable', 'acceptable'], names_file=None, id=None), 'sentence': Value(dtype='string', id=None)}
+</code></pre>
+</div>
+</div>
+<p>Capture the indexes for both train and validation sets, use the datasets <code>concatenate_datasets</code> to put them into a single dataset, and finally use the <code>IndexSplitter</code> method to define our train/validation splits as such:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>train_ds <span class="op">=</span> raw_datasets[<span class="st">"train"</span>]  <span class="co"># .select(range(10000))</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>valid_ds <span class="op">=</span> raw_datasets[<span class="st">"validation"</span>]  <span class="co"># .select(range(2000))</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>n_train, n_valid <span class="op">=</span> train_ds.num_rows, valid_ds.num_rows</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>train_idxs, valid_idxs <span class="op">=</span> L(<span class="bu">range</span>(n_train)), L(<span class="bu">range</span>(n_train, n_train <span class="op">+</span> n_valid))</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>raw_ds <span class="op">=</span> concatenate_datasets([train_ds, valid_ds])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>dl_kwargs <span class="op">=</span> {<span class="st">"bs"</span>: <span class="dv">4</span>, <span class="st">"val_bs"</span>: <span class="dv">8</span>}</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>learn_kwargs <span class="op">=</span> {<span class="st">"metrics"</span>: [accuracy]}</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>learn <span class="op">=</span> BlearnerForSequenceClassification.from_data(</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>    raw_ds,</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>    <span class="st">"distilroberta-base"</span>,</span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>    text_attr<span class="op">=</span><span class="st">"sentence"</span>,</span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>    label_attr<span class="op">=</span><span class="st">"label"</span>,</span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>    dblock_splitter<span class="op">=</span>IndexSplitter(valid_idxs),</span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>    dl_kwargs<span class="op">=</span>dl_kwargs,</span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>    learner_kwargs<span class="op">=</span>learn_kwargs,</span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>learn <span class="op">=</span> learn.to_fp16()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>learn.dls.show_batch(dataloaders<span class="op">=</span>learn.dls, trunc_at<span class="op">=</span><span class="dv">500</span>, max_n<span class="op">=</span><span class="dv">5</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+
+<table class="dataframe table table-sm table-striped">
+  <thead>
+    <tr>
+      <th></th>
+      <th>text</th>
+      <th>target</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>Everybody who has ever, worked in any office which contained any typewriter which had ever been used to type any letters which had to be signed by any administrator who ever worked in any department like mine will know what I mean.</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>I watched the Indians who the man who had been my advisor in my freshman year had advised me to study when I got to Utah talk.</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>Which packages is it possible that Sam didn't pick up which are to be mailed tomorrow until it had stopped raining?</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>Willy is taller than Bill by as much as that Bill is taller than Dan is believed.</td>
+      <td>0</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>learn.fit_one_cycle(<span class="dv">1</span>, lr_max<span class="op">=</span><span class="fl">2e-3</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+
+<table class="dataframe table table-sm table-striped">
+  <thead>
+    <tr>
+      <th>epoch</th>
+      <th>train_loss</th>
+      <th>valid_loss</th>
+      <th>accuracy</th>
+      <th>time</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>0</td>
+      <td>0.477010</td>
+      <td>0.519977</td>
+      <td>0.746884</td>
+      <td>00:53</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>learn.show_results(learner<span class="op">=</span>learn, max_n<span class="op">=</span><span class="dv">5</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+
+</div>
+<div class="cell-output cell-output-display">
+
+<table class="dataframe table table-sm table-striped">
+  <thead>
+    <tr>
+      <th></th>
+      <th>text</th>
+      <th>target</th>
+      <th>prediction</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>Scientists at the South Hanoi Institute of Technology have succeeded in raising one dog with five legs, another with a cow's liver, and a third with no head.</td>
+      <td>1</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>The newspaper has reported that they are about to appoint someone, but I can't remember who the newspaper has reported that they are about to appoint.</td>
+      <td>1</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>Sandy is very anxious to see if the students will be able to solve the homework problem in a particular way, but she won't tell us in which way.</td>
+      <td>1</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>Sandy is very anxious to see if the students will be able to solve the homework problem in a particular way, but she won't tell us which.</td>
+      <td>1</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>Put a picture of Bill on your desk before tomorrow, this girl in the red coat will put a picture of Bill on your desk before tomorrow.</td>
+      <td>0</td>
+      <td>1</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+<p><a href="https://ohmeow.github.io/blurr/text-modeling-core.html#learner.blurr_predict"><code>Learner.blurr_predict</code></a> works here too</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>learn.blurr_predict(<span class="st">"Blurr aint no joke yo"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>[{'label': '0',
+  'score': 0.6082450747489929,
+  'class_index': 0,
+  'class_labels': [0, 1],
+  'probs': [0.6082450747489929, 0.3917549252510071]}]</code></pre>
+</div>
+</div>
+</section>
+<section id="multiclassification-two-inputs" class="level3">
+<h3 class="anchored" data-anchor-id="multiclassification-two-inputs">Multiclassification (two inputs)</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>raw_datasets <span class="op">=</span> load_dataset(<span class="st">"glue"</span>, <span class="st">"mrpc"</span>)</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"</span><span class="sc">{</span>raw_datasets<span class="sc">}</span><span class="ch">\n</span><span class="ss">"</span>)</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f'</span><span class="sc">{</span>raw_datasets[<span class="st">"train"</span>][<span class="dv">0</span>]<span class="sc">}</span><span class="ch">\n</span><span class="ss">'</span>)</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f'</span><span class="sc">{</span>raw_datasets[<span class="st">"train"</span>]<span class="sc">.</span>features<span class="sc">}</span><span class="ch">\n</span><span class="ss">'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Reusing dataset glue (/home/wgilliam/.cache/huggingface/datasets/glue/mrpc/1.0.0/dacbe3125aa31d7f70367a07a8a9e72a5a0bfeb5fc42e75c9db75b96da6053ad)</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<script type="application/vnd.jupyter.widget-view+json">
+{"model_id":"64e06990c9f542b0b7bd59754e5375f6","version_major":2,"version_minor":0}
+</script>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>DatasetDict({
+    train: Dataset({
+        features: ['idx', 'label', 'sentence1', 'sentence2'],
+        num_rows: 3668
+    })
+    validation: Dataset({
+        features: ['idx', 'label', 'sentence1', 'sentence2'],
+        num_rows: 408
+    })
+    test: Dataset({
+        features: ['idx', 'label', 'sentence1', 'sentence2'],
+        num_rows: 1725
+    })
+})
+
+{'idx': 0, 'label': 1, 'sentence1': 'Amrozi accused his brother , whom he called " the witness " , of deliberately distorting his evidence .', 'sentence2': 'Referring to him as only " the witness " , Amrozi accused his brother of deliberately distorting his evidence .'}
+
+{'idx': Value(dtype='int32', id=None), 'label': ClassLabel(num_classes=2, names=['not_equivalent', 'equivalent'], names_file=None, id=None), 'sentence1': Value(dtype='string', id=None), 'sentence2': Value(dtype='string', id=None)}
+</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>train_ds <span class="op">=</span> raw_datasets[<span class="st">"train"</span>]  <span class="co"># .select(range(10000))</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>valid_ds <span class="op">=</span> raw_datasets[<span class="st">"validation"</span>]  <span class="co"># .select(range(2000))</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>n_train, n_valid <span class="op">=</span> train_ds.num_rows, valid_ds.num_rows</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>train_idxs, valid_idxs <span class="op">=</span> L(<span class="bu">range</span>(n_train)), L(<span class="bu">range</span>(n_train, n_train <span class="op">+</span> n_valid))</span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>raw_ds <span class="op">=</span> concatenate_datasets([train_ds, valid_ds])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>dl_kwargs <span class="op">=</span> {<span class="st">"bs"</span>: <span class="dv">4</span>, <span class="st">"val_bs"</span>: <span class="dv">8</span>}</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>learn_kwargs <span class="op">=</span> {<span class="st">"metrics"</span>: [F1Score(), accuracy]}</span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>learn <span class="op">=</span> BlearnerForSequenceClassification.from_data(</span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>    raw_ds,</span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>    <span class="st">"distilroberta-base"</span>,</span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a>    text_attr<span class="op">=</span>[<span class="st">"sentence1"</span>, <span class="st">"sentence2"</span>],</span>
+<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a>    label_attr<span class="op">=</span><span class="st">"label"</span>,</span>
+<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a>    dblock_splitter<span class="op">=</span>IndexSplitter(valid_idxs),</span>
+<span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a>    dl_kwargs<span class="op">=</span>dl_kwargs,</span>
+<span id="cb17-11"><a href="#cb17-11" aria-hidden="true" tabindex="-1"></a>    learner_kwargs<span class="op">=</span>learn_kwargs,</span>
+<span id="cb17-12"><a href="#cb17-12" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb17-13"><a href="#cb17-13" aria-hidden="true" tabindex="-1"></a>learn <span class="op">=</span> learn.to_fp16()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>learn.dls.show_batch(dataloaders<span class="op">=</span>learn.dls, trunc_at<span class="op">=</span><span class="dv">500</span>, max_n<span class="op">=</span><span class="dv">5</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+
+<table class="dataframe table table-sm table-striped">
+  <thead>
+    <tr>
+      <th></th>
+      <th>text</th>
+      <th>target</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>" In Iraq, " Sen. Pat Roberts, R-Kan., chairman of the intelligence committee, said on CNN's " Late Edition " Sunday, " we're now fighting an anti-guerrilla... effort. " " In Iraq, " Sen. Pat Roberts ( R-Kan. ), chairman of the intelligence committee, said on CNN's " Late Edition " yesterday, " we're now fighting an anti-guerrilla... effort. "</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>Media moguls jostled for position as the deadline for bids for Vivendi Universal's U.S. entertainment empire neared on Monday in an auction of some of Hollywood's best-known assets. Media giant Vivendi Universal has given itself two weeks to sift through offers for its U.S. entertainment empire in a multi-billion dollar auction of some of Hollywood's best-known assets.</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>Against the dollar, the euro rose as high as $ 1.1535 -- a fresh four-year high -- in morning trade before standing at $ 1.1518 / 23 at 0215 GMT. Against the dollar, the euro rose as high as $ 1.1537, a fresh four-year high and up a half cent from around $ 1.1480 in late U.S. trade.</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>Under the NBC proposal, Vivendi would merge its U.S. film and TV business with NBC's broadcast network, Spanish-language network and cable channels including CNBC and Bravo. Under a deal with General Electric's NBC, Vivendi's film and TV business would merge with NBC's broadcast network, Spanish- language network and cable channels including CNBC and Bravo.</td>
+      <td>1</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>learn.fit_one_cycle(<span class="dv">1</span>, lr_max<span class="op">=</span><span class="fl">2e-3</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+
+<table class="dataframe table table-sm table-striped">
+  <thead>
+    <tr>
+      <th>epoch</th>
+      <th>train_loss</th>
+      <th>valid_loss</th>
+      <th>f1_score</th>
+      <th>accuracy</th>
+      <th>time</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>0</td>
+      <td>0.489009</td>
+      <td>0.444209</td>
+      <td>0.861386</td>
+      <td>0.794118</td>
+      <td>00:22</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>learn.show_results(learner<span class="op">=</span>learn, max_n<span class="op">=</span><span class="dv">5</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+
+</div>
+<div class="cell-output cell-output-display">
+
+<table class="dataframe table table-sm table-striped">
+  <thead>
+    <tr>
+      <th></th>
+      <th>text</th>
+      <th>target</th>
+      <th>prediction</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>He said the foodservice pie business doesn 't fit the company's long-term growth strategy. " The foodservice pie business does not fit our long-term growth strategy.</td>
+      <td>1</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>" Close co-operation between our law enforcement agencies, close co-operation between our intelligence services lie at the heart of the ongoing fight against terrorism. " Close cooperation between regional law enforcement agencies and intelligence services was at the heart of the fight against terrorism, he said.</td>
+      <td>1</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>They were being held Sunday in the Camden County Jail on $ 100,000 bail. They remained in Camden County Jail on Sunday on $ 100,000 bail.</td>
+      <td>1</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>Sales for the quarter beat expectations, rising 37 percent year-on-year to 1.76 billion euros. Sales rose 37 per cent year-on-year to 1.76bn, beating expectations.</td>
+      <td>1</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>ONG KONG, July 9 Tens of thousands of demonstrators gathered tonight before the legislature building here to call for free elections and the resignation of Hong Kong's leader. Tens of thousands of demonstrators gathered yesterday evening to stand before this city's legislature building and call for free elections and the resignation of Hong Kong's leader.</td>
+      <td>1</td>
+      <td>1</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+</section>
+<section id="multilabel-classification" class="level3">
+<h3 class="anchored" data-anchor-id="multilabel-classification">Multilabel classification</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>raw_datasets <span class="op">=</span> load_dataset(<span class="st">"civil_comments"</span>)</span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"</span><span class="sc">{</span>raw_datasets<span class="sc">}</span><span class="ch">\n</span><span class="ss">"</span>)</span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f'</span><span class="sc">{</span>raw_datasets[<span class="st">"train"</span>][<span class="dv">0</span>]<span class="sc">}</span><span class="ch">\n</span><span class="ss">'</span>)</span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f'</span><span class="sc">{</span>raw_datasets[<span class="st">"train"</span>]<span class="sc">.</span>features<span class="sc">}</span><span class="ch">\n</span><span class="ss">'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Using custom data configuration default
+Reusing dataset civil_comments (/home/wgilliam/.cache/huggingface/datasets/civil_comments/default/0.9.0/e7a3aacd2ab7d135fa958e7209d10b1fa03807d44c486e3c34897aa08ea8ffab)</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<script type="application/vnd.jupyter.widget-view+json">
+{"model_id":"e453091b84c54594805674db2d8f1bd1","version_major":2,"version_minor":0}
+</script>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>DatasetDict({
+    train: Dataset({
+        features: ['identity_attack', 'insult', 'obscene', 'severe_toxicity', 'sexual_explicit', 'text', 'threat', 'toxicity'],
+        num_rows: 1804874
+    })
+    validation: Dataset({
+        features: ['identity_attack', 'insult', 'obscene', 'severe_toxicity', 'sexual_explicit', 'text', 'threat', 'toxicity'],
+        num_rows: 97320
+    })
+    test: Dataset({
+        features: ['identity_attack', 'insult', 'obscene', 'severe_toxicity', 'sexual_explicit', 'text', 'threat', 'toxicity'],
+        num_rows: 97320
+    })
+})
+
+{'identity_attack': 0.0, 'insult': 0.0, 'obscene': 0.0, 'severe_toxicity': 0.0, 'sexual_explicit': 0.0, 'text': "This is so cool. It's like, 'would you want your mother to read this??' Really great idea, well done!", 'threat': 0.0, 'toxicity': 0.0}
+
+{'identity_attack': Value(dtype='float32', id=None), 'insult': Value(dtype='float32', id=None), 'obscene': Value(dtype='float32', id=None), 'severe_toxicity': Value(dtype='float32', id=None), 'sexual_explicit': Value(dtype='float32', id=None), 'text': Value(dtype='string', id=None), 'threat': Value(dtype='float32', id=None), 'toxicity': Value(dtype='float32', id=None)}
+</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>lbl_cols <span class="op">=</span> [<span class="st">"identity_attack"</span>, <span class="st">"insult"</span>, <span class="st">"obscene"</span>, <span class="st">"toxicity"</span>, <span class="st">"severe_toxicity"</span>, <span class="st">"sexual_explicit"</span>, <span class="st">"threat"</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>train_ds <span class="op">=</span> raw_datasets[<span class="st">"train"</span>].select(<span class="bu">range</span>(<span class="dv">10000</span>))</span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>valid_ds <span class="op">=</span> raw_datasets[<span class="st">"validation"</span>].select(<span class="bu">range</span>(<span class="dv">2000</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>n_train, n_valid <span class="op">=</span> <span class="bu">len</span>(train_ds), <span class="bu">len</span>(valid_ds)</span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>train_idxs, valid_idxs <span class="op">=</span> L(<span class="bu">range</span>(n_train)), L(<span class="bu">range</span>(n_train, n_train <span class="op">+</span> n_valid))</span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a>raw_ds <span class="op">=</span> concatenate_datasets([train_ds, valid_ds])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>The labels need to be OHE as ints (the raw data has them as floats). We could also do this kind of preprocessing by passing in a <code>preprocess_func</code> to our <a href="https://ohmeow.github.io/blurr/text-modeling-core.html#blearnerforsequenceclassification"><code>BlearnerForSequenceClassification</code></a> factory method, especially useful if such preprocessing depends on one or more of the Hugging Face objects (e.g., config, tokenizer, model, architecture)</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> make_ohe(item):</span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> k <span class="kw">in</span> item.keys():</span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> k <span class="kw">in</span> lbl_cols:</span>
+<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a>            item[k] <span class="op">=</span> <span class="bu">int</span>(np.<span class="bu">round</span>(item[k]))</span>
+<span id="cb27-5"><a href="#cb27-5" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> item</span>
+<span id="cb27-6"><a href="#cb27-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-7"><a href="#cb27-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-8"><a href="#cb27-8" aria-hidden="true" tabindex="-1"></a>raw_ds <span class="op">=</span> raw_ds.<span class="bu">map</span>(make_ohe)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<script type="application/vnd.jupyter.widget-view+json">
+{"model_id":"f63b7b472b12463b85a8eda12f5b3d9d","version_major":2,"version_minor":0}
+</script>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>dl_kwargs <span class="op">=</span> {<span class="st">"bs"</span>: <span class="dv">4</span>, <span class="st">"val_bs"</span>: <span class="dv">8</span>}</span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>learn_kwargs <span class="op">=</span> {<span class="st">"metrics"</span>: [F1ScoreMulti(), accuracy_multi]}</span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a><span class="co"># using a List[dict] such as a Hugging Face dataset</span></span>
+<span id="cb28-5"><a href="#cb28-5" aria-hidden="true" tabindex="-1"></a>learn <span class="op">=</span> BlearnerForSequenceClassification.from_data(</span>
+<span id="cb28-6"><a href="#cb28-6" aria-hidden="true" tabindex="-1"></a>    raw_ds,</span>
+<span id="cb28-7"><a href="#cb28-7" aria-hidden="true" tabindex="-1"></a>    <span class="st">"distilroberta-base"</span>,</span>
+<span id="cb28-8"><a href="#cb28-8" aria-hidden="true" tabindex="-1"></a>    text_attr<span class="op">=</span><span class="st">"text"</span>,</span>
+<span id="cb28-9"><a href="#cb28-9" aria-hidden="true" tabindex="-1"></a>    label_attr<span class="op">=</span>lbl_cols,</span>
+<span id="cb28-10"><a href="#cb28-10" aria-hidden="true" tabindex="-1"></a>    dblock_splitter<span class="op">=</span>IndexSplitter(valid_idxs),</span>
+<span id="cb28-11"><a href="#cb28-11" aria-hidden="true" tabindex="-1"></a>    dl_kwargs<span class="op">=</span>dl_kwargs,</span>
+<span id="cb28-12"><a href="#cb28-12" aria-hidden="true" tabindex="-1"></a>    learner_kwargs<span class="op">=</span>learn_kwargs,</span>
+<span id="cb28-13"><a href="#cb28-13" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb28-14"><a href="#cb28-14" aria-hidden="true" tabindex="-1"></a>learn <span class="op">=</span> learn.to_fp16()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>learn.dls.show_batch(dataloaders<span class="op">=</span>learn.dls, trunc_at<span class="op">=</span><span class="dv">500</span>, max_n<span class="op">=</span><span class="dv">5</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+
+<table class="dataframe table table-sm table-striped">
+  <thead>
+    <tr>
+      <th></th>
+      <th>text</th>
+      <th>target</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>I have had a question about Einstein's Special Theory of Relativity for some time which scientists all seem to run away from.  Until 1887 the equations used for Relativity were the Galilean transformation equations.\n\n                                                   x'=x-vt\n                                                   y'=y\n                                                   z'=z\n                                                   t'=t\n\nAfter 1887, scientists threw away the Galilean transfo</td>
+      <td>[]</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>To&nbsp;Maintain&nbsp;The&nbsp;Status Quo&nbsp;Of A&nbsp;12% Road Repair Deficit&nbsp;Over The Next Five Years\nFY 16/17 = $11,400,000 +&nbsp;$43,600,000&nbsp;= $55,00,000\nFY 17/18 = $11,400,000 +&nbsp;$43,600,000&nbsp;= $55,00,000\nFY 18/19 = $11,400,000 +&nbsp;$43,600,000&nbsp;= $55,00,000\nFY 19/20 = $11,400,000 +&nbsp;$43,600,000&nbsp;= $55,00,000\nFY 20/21 = $11,400,000 +&nbsp;$43,600,000&nbsp;= $55,00,000\nTotal over 5 years = $275,000,000\n\n1. The Portland city council shall adopt a five year road repair budget&nbsp;agreement&nbsp;that uses funds&nbsp;already available in the general fu</td>
+      <td>[]</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>"Voodoo Journalism: Dr. Krugman Strikes Again—Risking His Credibility":\n\n"The fact that Sanders’ ethical platform does, in fact, result in economic gains shouldn’t be surprising. Empirical evidence shows that the 3 times we’ve adopted a laisez-fair approach to regulating the economy, it has resulted in extreme income inequality leading inevitably to the 3 biggest economic disruptions in US history: the Depression in 1890’s, the Great Depression in 1930’s, and the Great Recession in 2008. This s</td>
+      <td>[]</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>Again, interesting.  First, I don’t think anyone in this discussion has self-defined as “far left.”  I would, for myself, as I believe in universal health care, nationalizing all utilities—including oil companies and big banks, free education (PK-grad), and 1950s tax rates (91% marginal tax rate is about right).  NOBODY in Congress is proposing any of those, so there really is no “far left” representation in Congress.\nRe the marriage equality issue.  What is RIGHT with it is that it guarantees</td>
+      <td>[]</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a>learn.fit_one_cycle(<span class="dv">1</span>, lr_max<span class="op">=</span><span class="fl">2e-3</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+
+<table class="dataframe table table-sm table-striped">
+  <thead>
+    <tr>
+      <th>epoch</th>
+      <th>train_loss</th>
+      <th>valid_loss</th>
+      <th>f1_score</th>
+      <th>accuracy_multi</th>
+      <th>time</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>0</td>
+      <td>0.029894</td>
+      <td>0.047098</td>
+      <td>0.098025</td>
+      <td>0.986285</td>
+      <td>01:10</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>/home/wgilliam/miniconda3/envs/blurr/lib/python3.9/site-packages/sklearn/metrics/_classification.py:1580: UndefinedMetricWarning: F-score is ill-defined and being set to 0.0 in labels with no true nor predicted samples. Use `zero_division` parameter to control this behavior.
+  _warn_prf(average, "true nor predicted", "F-score is", len(true_sum))</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a>learn.show_results(learner<span class="op">=</span>learn, trun_at<span class="op">=</span><span class="dv">500</span>, max_n<span class="op">=</span><span class="dv">5</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>/home/wgilliam/miniconda3/envs/blurr/lib/python3.9/site-packages/sklearn/metrics/_classification.py:1580: UndefinedMetricWarning: F-score is ill-defined and being set to 0.0 in labels with no true nor predicted samples. Use `zero_division` parameter to control this behavior.
+  _warn_prf(average, "true nor predicted", "F-score is", len(true_sum))</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+
+<table class="dataframe table table-sm table-striped">
+  <thead>
+    <tr>
+      <th></th>
+      <th>text</th>
+      <th>target</th>
+      <th>prediction</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>Everyone tries to hack everyone else.   I have no doubt Russia would try to hack even canada.   However, the US has been doing the same, if we recall Snowden.\n\nEven Merkel's phone conversations were being tapped by the CIA. \n\nThe real purpose of this issue is political.  Trump is upset because people are trying to imply that he didn't deserve his victory, that the Russians helped him.  It's an ego thing.  Good CEOs sometimes have giant egos.  I have no problem with that as long as they produce results, I gladly buy shares in their company.\n\nOtoh, Russia did invade Crimea recently, and their missile brought down a commercial airliner and killed lots of innocent people.  The world has a right to be annoyed at the Russians.\n\nIf you want to find evidence of Russians hacking, you will find them.  But if you want to find China or some guy in a basement somewhere, I have no doubt you can find the same as well.  Whether they succeeded or not, that's hard to prove, but there's lots of blackhats</td>
+      <td>[]</td>
+      <td>[]</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>"We will stand by the Governor as he searches for answers to the crime wave." says Senator Kelly.\n  Where the heck has Kelly been the last three years as the crime wave grew?.  And just what is your job Kelly?..if the Governor is doing the one doing the searching?  Oh I remember,..it`s to continue to be against broad-based taxes once again for Alaska, for any reasonable fix he comes up with, as your Senate caucus has said for four special sessions "there will be no tax bill to raise revenue" for whatever "fixes" you say we need, and that the Governor searches,,..without you apparently.  They say in the media your back-pedaling now, that your now willing to have the debate over the need for a tax to put this state on a balanced keel going forward.  We`ll see if your oily conflicted fellow senators agree.   Voters are watching, and want a plan to fix this crime/budget issue. If it takes more cops and new taxes to get it done then let's do it.  We had a tax before and nobody died from it.</td>
+      <td>[]</td>
+      <td>[]</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>Mr. Alali, I am sympathetic to your position and feelings. As a Canadian I hold no ill will towards you or your family relocating to Canada. You should be aware that you and your family have been used as political pawns following the glib and ill conceived election promise made by our Prime Minister to bring 25 thousand of your compatriots to Canada by the end of 2015. It sounds as if Mr McCallum and assistants scoured UN refugee lists in an effort to press gang hapless individuals and coerce them into settling and being shipped to Canada. The expedition of your arrival was made with no regard to the logistics of accommodating vulnerable and traumatized families in a respectful and decent manner following your staged and publicized arrivals. As for your future in Canada I fear you will be lucky to find some subsistence level employment. The chances are that your children, if you allow them to assimilate into the Canadian culture, will thrive and have a rewarding life in here. Good Luck</td>
+      <td>[]</td>
+      <td>[]</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>I abjure violence of any kind and this includes violence propagated through money by those who have the means to do so.  I believe in free speech except when used to incite violence or hatred.  I believe in the right of individual freedoms providing  harm to others is not caused..  This is my bias.\n\nOthers believe an economic and social order that favours a few is natural to human nature and that those who can gain advantage, without consideration of harm to others, should be allowed to do so.  That is their bias.\n\nEither view will result in bad behaviour by either side depending on who is ascendant.  Trump was not against suppressing free speech or condoning violence as one could see during his campaign rallies.\n\nThe world will never be perfect or fair but beginning with Roosevelt and ending with Reagan there was a time when average people could see a slow but steady increase in living standards and opportunity.  The rise of neo-liberal policies has removed this expectation for most.</td>
+      <td>[]</td>
+      <td>[]</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>Regarding "Lonely Woman" Yes, involve herself in organizations but perhaps not a church. I enjoy my church and it is important but... Many have gossips. When living in Denver my best friend Linda and I attended together for years and I was a maid of honer in her wedding. When they moved, I attended alone and some wives began speculating I was looking for a husband. Some of the single guys heard variations of that speculation. During service a guy slid across to me and began flirting. I whispered loud enough for all around me to hear, "Who are you! Get lost!" The minister heard. He took a second to force down a laugh and nodded at me. The guy slithered away. The gossips saw and were nice to me afterward but that was my last day. I still saw friends who assured me it was only a few bad apples. Point being to "Lonely Woman" Some churches have gossip mongrels who ruin it for young, decent women. Here's an oldie but goodie for you gossips. "Do not bare false witness against your neighbor."</td>
+      <td>[]</td>
+      <td>[]</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+</section>
+</section>
+<section id="token-classification" class="level2">
+<h2 class="anchored" data-anchor-id="token-classification">Token Classification</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a>raw_datasets <span class="op">=</span> load_dataset(<span class="st">"germeval_14"</span>)</span>
+<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"</span><span class="sc">{</span>raw_datasets<span class="sc">}</span><span class="ch">\n</span><span class="ss">"</span>)</span>
+<span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f'</span><span class="sc">{</span>raw_datasets[<span class="st">"train"</span>][<span class="dv">0</span>]<span class="sc">}</span><span class="ch">\n</span><span class="ss">'</span>)</span>
+<span id="cb34-4"><a href="#cb34-4" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f'</span><span class="sc">{</span>raw_datasets[<span class="st">"train"</span>]<span class="sc">.</span>features<span class="sc">}</span><span class="ch">\n</span><span class="ss">'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Reusing dataset germ_eval14 (/home/wgilliam/.cache/huggingface/datasets/germ_eval14/germeval_14/2.0.0/0f174b84866aa3b8ebae65c271610520be4422405d7e8467bd24cfd493d325f0)</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<script type="application/vnd.jupyter.widget-view+json">
+{"model_id":"e037548434c54d38b0619edc832d610d","version_major":2,"version_minor":0}
+</script>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>DatasetDict({
+    train: Dataset({
+        features: ['id', 'ner_tags', 'nested_ner_tags', 'source', 'tokens'],
+        num_rows: 24000
+    })
+    validation: Dataset({
+        features: ['id', 'ner_tags', 'nested_ner_tags', 'source', 'tokens'],
+        num_rows: 2200
+    })
+    test: Dataset({
+        features: ['id', 'ner_tags', 'nested_ner_tags', 'source', 'tokens'],
+        num_rows: 5100
+    })
+})
+
+{'id': '0', 'ner_tags': [19, 0, 0, 0, 7, 0, 0, 0, 0, 19, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], 'nested_ner_tags': [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], 'source': 'n-tv.de vom 26.02.2005 [2005-02-26] ', 'tokens': ['Schartau', 'sagte', 'dem', '"', 'Tagesspiegel', '"', 'vom', 'Freitag', ',', 'Fischer', 'sei', '"', 'in', 'einer', 'Weise', 'aufgetreten', ',', 'die', 'alles', 'andere', 'als', 'überzeugend', 'war', '"', '.']}
+
+{'id': Value(dtype='string', id=None), 'ner_tags': Sequence(feature=ClassLabel(num_classes=25, names=['O', 'B-LOC', 'I-LOC', 'B-LOCderiv', 'I-LOCderiv', 'B-LOCpart', 'I-LOCpart', 'B-ORG', 'I-ORG', 'B-ORGderiv', 'I-ORGderiv', 'B-ORGpart', 'I-ORGpart', 'B-OTH', 'I-OTH', 'B-OTHderiv', 'I-OTHderiv', 'B-OTHpart', 'I-OTHpart', 'B-PER', 'I-PER', 'B-PERderiv', 'I-PERderiv', 'B-PERpart', 'I-PERpart'], names_file=None, id=None), length=-1, id=None), 'nested_ner_tags': Sequence(feature=ClassLabel(num_classes=25, names=['O', 'B-LOC', 'I-LOC', 'B-LOCderiv', 'I-LOCderiv', 'B-LOCpart', 'I-LOCpart', 'B-ORG', 'I-ORG', 'B-ORGderiv', 'I-ORGderiv', 'B-ORGpart', 'I-ORGpart', 'B-OTH', 'I-OTH', 'B-OTHderiv', 'I-OTHderiv', 'B-OTHpart', 'I-OTHpart', 'B-PER', 'I-PER', 'B-PERderiv', 'I-PERderiv', 'B-PERpart', 'I-PERpart'], names_file=None, id=None), length=-1, id=None), 'source': Value(dtype='string', id=None), 'tokens': Sequence(feature=Value(dtype='string', id=None), length=-1, id=None)}
+</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a>train_ds <span class="op">=</span> raw_datasets[<span class="st">"train"</span>].select(<span class="bu">range</span>(<span class="dv">1000</span>))</span>
+<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a>valid_ds <span class="op">=</span> raw_datasets[<span class="st">"validation"</span>].select(<span class="bu">range</span>(<span class="dv">500</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb38"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a>n_train, n_valid <span class="op">=</span> train_ds.num_rows, valid_ds.num_rows</span>
+<span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a>train_idxs, valid_idxs <span class="op">=</span> L(<span class="bu">range</span>(n_train)), L(<span class="bu">range</span>(n_train, n_train <span class="op">+</span> n_valid))</span>
+<span id="cb38-3"><a href="#cb38-3" aria-hidden="true" tabindex="-1"></a>raw_ds <span class="op">=</span> concatenate_datasets([train_ds, valid_ds])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>We can grab the “labels” a token can be associated with as we do here or we can let the <a href="https://ohmeow.github.io/blurr/text-modeling-token-classification.html#blearnerfortokenclassification"><code>BlearnerForTokenClassification</code></a> factory methods figure it out for us.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb39"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a>labels <span class="op">=</span> train_ds.features[<span class="st">"ner_tags"</span>].feature.names</span>
+<span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a><span class="bu">len</span>(labels)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>25</code></pre>
+</div>
+</div>
+<p>As we need pass the tag (not the index) for each example’s tokens in a list, we use the handy <code>datasets.map</code> function to create a new attribute, “token_labels”, with that data. This could also be done by passing in a <code>preprocess_func</code> to a <a href="https://ohmeow.github.io/blurr/text-modeling-token-classification.html#blearnerfortokenclassification"><code>BlearnerForTokenClassification</code></a> factory method; especially useful if we need to use one or more of the Hugging Face objects (e.g., tokenzier, model, config, or architecture name)</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb41"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> get_item_labels(example):</span>
+<span id="cb41-2"><a href="#cb41-2" aria-hidden="true" tabindex="-1"></a>    example[<span class="st">"token_labels"</span>] <span class="op">=</span> [labels[tag_idx] <span class="cf">for</span> tag_idx <span class="kw">in</span> example[<span class="st">"ner_tags"</span>]]</span>
+<span id="cb41-3"><a href="#cb41-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> example</span>
+<span id="cb41-4"><a href="#cb41-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb41-5"><a href="#cb41-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb41-6"><a href="#cb41-6" aria-hidden="true" tabindex="-1"></a>raw_ds <span class="op">=</span> raw_ds.<span class="bu">map</span>(get_item_labels)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<script type="application/vnd.jupyter.widget-view+json">
+{"model_id":"8803b65306db4dee980a758a9930894a","version_major":2,"version_minor":0}
+</script>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb42"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a>learn <span class="op">=</span> BlearnerForTokenClassification.from_data(</span>
+<span id="cb42-2"><a href="#cb42-2" aria-hidden="true" tabindex="-1"></a>    raw_ds,</span>
+<span id="cb42-3"><a href="#cb42-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">"distilroberta-base"</span>,</span>
+<span id="cb42-4"><a href="#cb42-4" aria-hidden="true" tabindex="-1"></a>    tokens_attr<span class="op">=</span><span class="st">"tokens"</span>,</span>
+<span id="cb42-5"><a href="#cb42-5" aria-hidden="true" tabindex="-1"></a>    token_labels_attr<span class="op">=</span><span class="st">"ner_tags"</span>,</span>
+<span id="cb42-6"><a href="#cb42-6" aria-hidden="true" tabindex="-1"></a>    labels<span class="op">=</span>labels,</span>
+<span id="cb42-7"><a href="#cb42-7" aria-hidden="true" tabindex="-1"></a>    dl_kwargs<span class="op">=</span>{<span class="st">"bs"</span>: <span class="dv">2</span>},</span>
+<span id="cb42-8"><a href="#cb42-8" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb42-9"><a href="#cb42-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-10"><a href="#cb42-10" aria-hidden="true" tabindex="-1"></a>learn.unfreeze()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb43"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a>learn.dls.show_batch(dataloaders<span class="op">=</span>learn.dls, max_n<span class="op">=</span><span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+
+<table class="dataframe table table-sm table-striped">
+  <thead>
+    <tr>
+      <th></th>
+      <th>word / target label</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>[('Helbig', 'B-OTH'), ('et', 'I-OTH'), ('al', 'I-OTH'), ('.', 'O'), ('(', 'O'), ('1994', 'O'), (')', 'O'), ('S.', 'O'), ('593.', 'O'), ('Wink', 'B-OTH'), ('&amp;', 'I-OTH'), ('Seibold', 'I-OTH'), ('et', 'I-OTH'), ('al', 'I-OTH'), ('.', 'O'), ('(', 'O'), ('1998', 'O'), (')', 'O'), ('S.', 'O'), ('32', 'O'), ('Inwieweit', 'O'), ('noch', 'O'), ('andere', 'O'), ('Falken', 'O'), (',', 'O'), ('wie', 'O'), ('der', 'O'), ('Afrikanische', 'B-LOCderiv'), ('Baumfalke', 'O'), ('(', 'O'), ('Falco', 'O'), ('cuvieri', 'O'), (')', 'O'), ('oder', 'O'), ('der', 'O'), ('Malaienbaumfalke', 'O'), ('(', 'O'), ('Falco', 'O'), ('serverus', 'O'), (')', 'O'), ('dieser', 'O'), ('Gruppe', 'O'), ('zuzuzählen', 'O'), ('sind', 'O'), (',', 'O'), ('ist', 'O'), ('Gegenstand', 'O'), ('der', 'O'), ('Forschung', 'O'), ('.', 'O')]</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>[('Erstmals', 'O'), ('Urkundlich', 'O'), ('erwähnt', 'O'), ('ist', 'O'), ('Nimburg', 'B-LOC'), ('bereits', 'O'), ('im', 'O'), ('Jahre', 'O'), ('977', 'O'), ('.', 'O'), ('Im', 'O'), ('ausgehenden', 'O'), ('11.', 'O'), ('Jahrhundert', 'O'), ('werden', 'O'), ('die', 'O'), ('Grafen', 'O'), ('von', 'O'), ('Nimburg', 'B-LOC'), ('erwähnt', 'O'), (',', 'O'), ('die', 'O'), ('Gefolgsleute', 'O'), ('der', 'O'), ('in', 'O'), ('jener', 'O'), ('Zeit', 'O'), ('mächtigen', 'O'), ('Herzöge', 'O'), ('von', 'O'), ('Zähringen', 'O'), ('und', 'O'), ('unter', 'O'), ('anderem', 'O'), ('auch', 'O'), ('Teilnehmer', 'O'), ('der', 'O'), ('Kreuzzüge', 'O'), ('waren', 'O'), ('.', 'O')]</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb44"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a>learn.fit_one_cycle(<span class="dv">1</span>, lr_max<span class="op">=</span><span class="fl">3e-5</span>, moms<span class="op">=</span>(<span class="fl">0.8</span>, <span class="fl">0.7</span>, <span class="fl">0.8</span>), cbs<span class="op">=</span>[BlearnerForTokenClassification.get_metrics_cb()])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+
+<table class="dataframe table table-sm table-striped">
+  <thead>
+    <tr>
+      <th>epoch</th>
+      <th>train_loss</th>
+      <th>valid_loss</th>
+      <th>accuracy</th>
+      <th>precision</th>
+      <th>recall</th>
+      <th>f1</th>
+      <th>time</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>0</td>
+      <td>0.287480</td>
+      <td>0.260162</td>
+      <td>0.934187</td>
+      <td>0.422222</td>
+      <td>0.548077</td>
+      <td>0.476987</td>
+      <td>00:28</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>/home/wgilliam/miniconda3/envs/blurr/lib/python3.9/site-packages/seqeval/metrics/v1.py:57: UndefinedMetricWarning: Recall and F-score are ill-defined and being set to 0.0 in labels with no true samples. Use `zero_division` parameter to control this behavior.
+  _warn_prf(average, modifier, msg_start, len(result))</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb46"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a>learn.show_results(learner<span class="op">=</span>learn, max_n<span class="op">=</span><span class="dv">2</span>, trunc_at<span class="op">=</span><span class="dv">10</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+
+</div>
+<div class="cell-output cell-output-display">
+
+<table class="dataframe table table-sm table-striped">
+  <thead>
+    <tr>
+      <th></th>
+      <th>token / target label / predicted label</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>[('Wenn', 'O', 'O'), ('man', 'O', 'O'), ('gegen', 'O', 'O'), ('so', 'O', 'O'), ('eine', 'O', 'O'), ('Mannschaft', 'O', 'O'), ('trifft', 'O', 'O'), (',', 'O', 'O'), ('hat', 'O', 'O'), ('man', 'O', 'O')]</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>[('Die', 'O', 'O'), ('Flügel', 'O', 'O'), ('Die', 'O', 'O'), ('geöffneten', 'O', 'O'), ('Flügel', 'O', 'O'), ('zeigen', 'O', 'O'), ('in', 'O', 'O'), ('vier', 'O', 'O'), ('Szenen', 'O', 'O'), ('Höhepunkte', 'O', 'O')]</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb47"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(learn.token_classification_report)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>              precision    recall  f1-score   support
+
+         LOC       0.62      0.51      0.56       129
+    LOCderiv       0.49      0.72      0.58        25
+     LOCpart       0.00      0.00      0.00         0
+         ORG       0.22      0.27      0.24        60
+     ORGpart       0.00      0.00      0.00         0
+         OTH       0.04      0.67      0.08         3
+    OTHderiv       0.00      0.00      0.00         0
+     OTHpart       0.00      0.00      0.00         0
+         PER       0.69      0.73      0.71        95
+    PERderiv       0.00      0.00      0.00         0
+     PERpart       0.00      0.00      0.00         0
+
+   micro avg       0.42      0.55      0.48       312
+   macro avg       0.19      0.26      0.20       312
+weighted avg       0.55      0.55      0.54       312
+</code></pre>
+</div>
+</div>
+<p><a href="https://ohmeow.github.io/blurr/text-modeling-token-classification.html#learner.blurr_predict_tokens"><code>Learner.blurr_predict_tokens</code></a> works here too</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb49"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a>txt <span class="op">=</span> <span class="st">"I live in California, but I'd love to travel to Scotland and visit the Macallan distillery."</span></span>
+<span id="cb49-2"><a href="#cb49-2" aria-hidden="true" tabindex="-1"></a>txt2 <span class="op">=</span> <span class="st">"Jane Doe loves working for ohmeow.com."</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb50"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true" tabindex="-1"></a>results <span class="op">=</span> learn.predict([txt, txt2])</span>
+<span id="cb50-2"><a href="#cb50-2" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> res <span class="kw">in</span> results:</span>
+<span id="cb50-3"><a href="#cb50-3" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"</span><span class="sc">{</span>res<span class="sc">}</span><span class="ch">\n</span><span class="ss">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[{'entity_group': 'LOC', 'score': 0.2773939371109009, 'word': 'in', 'start': 7, 'end': 9}, {'entity_group': 'LOC', 'score': 0.354379802942276, 'word': 'California', 'start': 10, 'end': 20}, {'entity_group': 'LOC', 'score': 0.2855808138847351, 'word': 'to', 'start': 45, 'end': 47}, {'entity_group': 'LOC', 'score': 0.41248050332069397, 'word': 'Scotland', 'start': 48, 'end': 56}, {'entity_group': 'LOC', 'score': 0.26863470673561096, 'word': 'Mac', 'start': 71, 'end': 74}, {'entity_group': 'LOC', 'score': 0.17475469410419464, 'word': 'all', 'start': 74, 'end': 77}, {'entity_group': 'LOC', 'score': 0.11444361507892609, 'word': 'an', 'start': 77, 'end': 79}]
+
+[{'entity_group': 'PER', 'score': 0.6308206021785736, 'word': 'Jane Doe', 'start': 0, 'end': 8}]
+</code></pre>
+</div>
+</div>
+</section>
+<section id="question-answering" class="level2">
+<h2 class="anchored" data-anchor-id="question-answering">Question Answering</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb52"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb52-1"><a href="#cb52-1" aria-hidden="true" tabindex="-1"></a>raw_datasets <span class="op">=</span> load_dataset(<span class="st">"squad_v2"</span>)</span>
+<span id="cb52-2"><a href="#cb52-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"</span><span class="sc">{</span>raw_datasets<span class="sc">}</span><span class="ch">\n</span><span class="ss">"</span>)</span>
+<span id="cb52-3"><a href="#cb52-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f'</span><span class="sc">{</span>raw_datasets[<span class="st">"train"</span>][<span class="dv">0</span>]<span class="sc">}</span><span class="ch">\n</span><span class="ss">'</span>)</span>
+<span id="cb52-4"><a href="#cb52-4" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f'</span><span class="sc">{</span>raw_datasets[<span class="st">"train"</span>]<span class="sc">.</span>features<span class="sc">}</span><span class="ch">\n</span><span class="ss">'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Reusing dataset squad_v2 (/home/wgilliam/.cache/huggingface/datasets/squad_v2/squad_v2/2.0.0/09187c73c1b837c95d9a249cd97c2c3f1cebada06efe667b4427714b27639b1d)</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<script type="application/vnd.jupyter.widget-view+json">
+{"model_id":"1b9d5629615d4163932d313cf3adf339","version_major":2,"version_minor":0}
+</script>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>DatasetDict({
+    train: Dataset({
+        features: ['id', 'title', 'context', 'question', 'answers'],
+        num_rows: 130319
+    })
+    validation: Dataset({
+        features: ['id', 'title', 'context', 'question', 'answers'],
+        num_rows: 11873
+    })
+})
+
+{'id': '56be85543aeaaa14008c9063', 'title': 'Beyoncé', 'context': 'Beyoncé Giselle Knowles-Carter (/biːˈjɒnseɪ/ bee-YON-say) (born September 4, 1981) is an American singer, songwriter, record producer and actress. Born and raised in Houston, Texas, she performed in various singing and dancing competitions as a child, and rose to fame in the late 1990s as lead singer of R&amp;B girl-group Destiny\'s Child. Managed by her father, Mathew Knowles, the group became one of the world\'s best-selling girl groups of all time. Their hiatus saw the release of Beyoncé\'s debut album, Dangerously in Love (2003), which established her as a solo artist worldwide, earned five Grammy Awards and featured the Billboard Hot 100 number-one singles "Crazy in Love" and "Baby Boy".', 'question': 'When did Beyonce start becoming popular?', 'answers': {'text': ['in the late 1990s'], 'answer_start': [269]}}
+
+{'id': Value(dtype='string', id=None), 'title': Value(dtype='string', id=None), 'context': Value(dtype='string', id=None), 'question': Value(dtype='string', id=None), 'answers': Sequence(feature={'text': Value(dtype='string', id=None), 'answer_start': Value(dtype='int32', id=None)}, length=-1, id=None)}
+</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb55"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb55-1"><a href="#cb55-1" aria-hidden="true" tabindex="-1"></a>train_ds <span class="op">=</span> raw_datasets[<span class="st">"train"</span>].select(<span class="bu">range</span>(<span class="dv">1000</span>))</span>
+<span id="cb55-2"><a href="#cb55-2" aria-hidden="true" tabindex="-1"></a>train_df <span class="op">=</span> train_ds.to_pandas()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Extractive question/answering tasks require preprocessing, which we’ll apply prior to creating our <a href="https://ohmeow.github.io/blurr/text-modeling-question-answering.html#blearnerforquestionanswering"><code>BlearnerForQuestionAnswering</code></a>.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb56"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb56-1"><a href="#cb56-1" aria-hidden="true" tabindex="-1"></a>train_df[<span class="st">"ans_start_char_idx"</span>] <span class="op">=</span> train_df.answers.<span class="bu">apply</span>(<span class="kw">lambda</span> v: v[<span class="st">"answer_start"</span>][<span class="dv">0</span>] <span class="cf">if</span> <span class="bu">len</span>(v[<span class="st">"answer_start"</span>]) <span class="op">&gt;</span> <span class="dv">0</span> <span class="cf">else</span> <span class="st">"0"</span>)</span>
+<span id="cb56-2"><a href="#cb56-2" aria-hidden="true" tabindex="-1"></a>train_df[<span class="st">"answer_text"</span>] <span class="op">=</span> train_df.answers.<span class="bu">apply</span>(<span class="kw">lambda</span> v: v[<span class="st">"text"</span>][<span class="dv">0</span>] <span class="cf">if</span> <span class="bu">len</span>(v[<span class="st">"text"</span>]) <span class="op">&gt;</span> <span class="dv">0</span> <span class="cf">else</span> <span class="st">""</span>)</span>
+<span id="cb56-3"><a href="#cb56-3" aria-hidden="true" tabindex="-1"></a>train_df[<span class="st">"ans_end_char_idx"</span>] <span class="op">=</span> train_df[<span class="st">"ans_start_char_idx"</span>].astype(<span class="bu">int</span>) <span class="op">+</span> train_df[<span class="st">"answer_text"</span>].<span class="bu">str</span>.<span class="bu">len</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb57"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb57-1"><a href="#cb57-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> blurr.text.data.question_answering <span class="im">import</span> QAPreprocessor</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb58"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb58-1"><a href="#cb58-1" aria-hidden="true" tabindex="-1"></a>pretrained_model_name <span class="op">=</span> <span class="st">"bert-large-uncased-whole-word-masking-finetuned-squad"</span></span>
+<span id="cb58-2"><a href="#cb58-2" aria-hidden="true" tabindex="-1"></a>hf_tokenizer <span class="op">=</span> AutoTokenizer.from_pretrained(pretrained_model_name)</span>
+<span id="cb58-3"><a href="#cb58-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb58-4"><a href="#cb58-4" aria-hidden="true" tabindex="-1"></a><span class="co"># preprocess</span></span>
+<span id="cb58-5"><a href="#cb58-5" aria-hidden="true" tabindex="-1"></a>tok_kwargs <span class="op">=</span> {<span class="st">"return_overflowing_tokens"</span>: <span class="va">True</span>, <span class="st">"max_length"</span>: <span class="dv">128</span>, <span class="st">"stride"</span>: <span class="dv">24</span>}</span>
+<span id="cb58-6"><a href="#cb58-6" aria-hidden="true" tabindex="-1"></a>preprocessor <span class="op">=</span> QAPreprocessor(hf_tokenizer, id_attr<span class="op">=</span><span class="st">"id"</span>, tok_kwargs<span class="op">=</span>tok_kwargs)</span>
+<span id="cb58-7"><a href="#cb58-7" aria-hidden="true" tabindex="-1"></a>proc_df <span class="op">=</span> preprocessor.process_df(train_df)</span>
+<span id="cb58-8"><a href="#cb58-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb58-9"><a href="#cb58-9" aria-hidden="true" tabindex="-1"></a><span class="co"># build our `Learner`</span></span>
+<span id="cb58-10"><a href="#cb58-10" aria-hidden="true" tabindex="-1"></a>learn <span class="op">=</span> BlearnerForQuestionAnswering.from_data(</span>
+<span id="cb58-11"><a href="#cb58-11" aria-hidden="true" tabindex="-1"></a>    proc_df, pretrained_model_name, max_seq_len<span class="op">=</span><span class="dv">128</span>, dblock_splitter<span class="op">=</span>RandomSplitter(), dl_kwargs<span class="op">=</span>{<span class="st">"bs"</span>: <span class="dv">4</span>}</span>
+<span id="cb58-12"><a href="#cb58-12" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb58-13"><a href="#cb58-13" aria-hidden="true" tabindex="-1"></a>learn <span class="op">=</span> learn.to_fp16()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb59"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb59-1"><a href="#cb59-1" aria-hidden="true" tabindex="-1"></a>learn.dls.show_batch(dataloaders<span class="op">=</span>learn.dls, max_n<span class="op">=</span><span class="dv">2</span>, trunc_at<span class="op">=</span><span class="dv">500</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+
+<table class="dataframe table table-sm table-striped">
+  <thead>
+    <tr>
+      <th></th>
+      <th>text</th>
+      <th>found</th>
+      <th>start/end</th>
+      <th>answer</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>which prominent star felt the 2009 female video of the year award should have went to beyonce instead of taylor swift? on april 4, 2008, beyonce married jay z. she publicly revealed their marriage in a video montage at the listening party for her third studio album, i am... sasha fierce, in manhattan's sony club on october 22, 2008. i am... sasha fierce was released on november 18, 2008 in the united states. the album formally introduces beyonce's alter ego sasha fierce, conceived during the mak</td>
+      <td>True</td>
+      <td>(74, 76)</td>
+      <td>. i</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>for which decade, did beyonce have more top ten songs than any other woman? on april 4, 2008, beyonce married jay z. she publicly revealed their marriage in a video montage at the listening party for her third studio album, i am... sasha fierce, in manhattan's sony club on october 22, 2008. i am... sasha fierce was released on november 18, 2008 in the united states. the album formally introduces beyonce's alter ego sasha fierce, conceived during the making of her 2003 single " crazy in love ", s</td>
+      <td>False</td>
+      <td>(0, 0)</td>
+      <td></td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb60"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb60-1"><a href="#cb60-1" aria-hidden="true" tabindex="-1"></a>learn.fit_one_cycle(<span class="dv">1</span>, lr_max<span class="op">=</span><span class="fl">1e-3</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+
+<table class="dataframe table table-sm table-striped">
+  <thead>
+    <tr>
+      <th>epoch</th>
+      <th>train_loss</th>
+      <th>valid_loss</th>
+      <th>time</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>0</td>
+      <td>2.262114</td>
+      <td>1.950846</td>
+      <td>01:09</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb61"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb61-1"><a href="#cb61-1" aria-hidden="true" tabindex="-1"></a>learn.show_results(learner<span class="op">=</span>learn, skip_special_tokens<span class="op">=</span><span class="va">True</span>, max_n<span class="op">=</span><span class="dv">2</span>, trunc_at<span class="op">=</span><span class="dv">500</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+
+</div>
+<div class="cell-output cell-output-display">
+
+<table class="dataframe table table-sm table-striped">
+  <thead>
+    <tr>
+      <th></th>
+      <th>text</th>
+      <th>found</th>
+      <th>start/end</th>
+      <th>answer</th>
+      <th>pred start/end</th>
+      <th>pred answer</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>where was beyonce's first public performance after giving birth? on january 7, 2012, beyonce gave birth to her first child, a daughter, blue ivy carter, at lenox hill hospital in new york. five months later, she performed for four nights at revel atlantic city's ovation hall to celebrate the resort's opening, her first performances since giving birth to blue ivy.</td>
+      <td>True</td>
+      <td>(54, 63)</td>
+      <td>revel atlantic city's ovation hall</td>
+      <td>(54, 0)</td>
+      <td></td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>what was the name of beyonce's first dance instructor? beyonce attended st. mary's elementary school in fredericksburg, texas, where she enrolled in dance classes. her singing talent was discovered when dance instructor darlette johnson began humming a song and she finished it, able to hit the high - pitched notes. beyonce's interest in music and performing continued after winning a school talent show at age seven, singing john lennon's " imagine " to beat 15 / 16 - year - olds. in fall of 1990,</td>
+      <td>False</td>
+      <td>(0, 0)</td>
+      <td></td>
+      <td>(44, 0)</td>
+      <td></td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+</section>
+<section id="language-modeling" class="level2">
+<h2 class="anchored" data-anchor-id="language-modeling">Language modeling</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb62"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb62-1"><a href="#cb62-1" aria-hidden="true" tabindex="-1"></a>raw_datasets <span class="op">=</span> load_dataset(<span class="st">"wikitext"</span>, <span class="st">"wikitext-2-raw-v1"</span>)</span>
+<span id="cb62-2"><a href="#cb62-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"</span><span class="sc">{</span>raw_datasets<span class="sc">}</span><span class="ch">\n</span><span class="ss">"</span>)</span>
+<span id="cb62-3"><a href="#cb62-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f'</span><span class="sc">{</span>raw_datasets[<span class="st">"train"</span>][<span class="dv">0</span>]<span class="sc">}</span><span class="ch">\n</span><span class="ss">'</span>)</span>
+<span id="cb62-4"><a href="#cb62-4" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f'</span><span class="sc">{</span>raw_datasets[<span class="st">"train"</span>]<span class="sc">.</span>features<span class="sc">}</span><span class="ch">\n</span><span class="ss">'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<script type="application/vnd.jupyter.widget-view+json">
+{"model_id":"73d6554a546d4df5a20be29c1b3bb9df","version_major":2,"version_minor":0}
+</script>
+</div>
+<div class="cell-output cell-output-display">
+<script type="application/vnd.jupyter.widget-view+json">
+{"model_id":"1d887b52e53641b697c16a88eac924f8","version_major":2,"version_minor":0}
+</script>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Downloading and preparing dataset wikitext/wikitext-2-raw-v1 (download: 4.50 MiB, generated: 12.90 MiB, post-processed: Unknown size, total: 17.40 MiB) to /home/wgilliam/.cache/huggingface/datasets/wikitext/wikitext-2-raw-v1/1.0.0/a241db52902eaf2c6aa732210bead40c090019a499ceb13bcbfa3f8ab646a126...</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<script type="application/vnd.jupyter.widget-view+json">
+{"model_id":"c16397f76b1e49cc86244d0a8ad94f92","version_major":2,"version_minor":0}
+</script>
+</div>
+<div class="cell-output cell-output-display">
+<script type="application/vnd.jupyter.widget-view+json">
+{"model_id":"97651ec04b174c3d9385b24877c42589","version_major":2,"version_minor":0}
+</script>
+</div>
+<div class="cell-output cell-output-display">
+<script type="application/vnd.jupyter.widget-view+json">
+{"model_id":"e50b090457d744efaff92bb4addcaccf","version_major":2,"version_minor":0}
+</script>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Dataset wikitext downloaded and prepared to /home/wgilliam/.cache/huggingface/datasets/wikitext/wikitext-2-raw-v1/1.0.0/a241db52902eaf2c6aa732210bead40c090019a499ceb13bcbfa3f8ab646a126. Subsequent calls will reuse this data.</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<script type="application/vnd.jupyter.widget-view+json">
+{"model_id":"9da6c682aaed4a408ba42b58fa67d556","version_major":2,"version_minor":0}
+</script>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>DatasetDict({
+    test: Dataset({
+        features: ['text'],
+        num_rows: 4358
+    })
+    train: Dataset({
+        features: ['text'],
+        num_rows: 36718
+    })
+    validation: Dataset({
+        features: ['text'],
+        num_rows: 3760
+    })
+})
+
+{'text': ''}
+
+{'text': Value(dtype='string', id=None)}
+</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb66"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb66-1"><a href="#cb66-1" aria-hidden="true" tabindex="-1"></a>train_ds <span class="op">=</span> raw_datasets[<span class="st">"train"</span>].select(<span class="bu">range</span>(<span class="dv">1000</span>))</span>
+<span id="cb66-2"><a href="#cb66-2" aria-hidden="true" tabindex="-1"></a>valid_ds <span class="op">=</span> raw_datasets[<span class="st">"validation"</span>].select(<span class="bu">range</span>(<span class="dv">1000</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb67"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb67-1"><a href="#cb67-1" aria-hidden="true" tabindex="-1"></a>n_train, n_valid <span class="op">=</span> train_ds.num_rows, valid_ds.num_rows</span>
+<span id="cb67-2"><a href="#cb67-2" aria-hidden="true" tabindex="-1"></a>train_idxs, valid_idxs <span class="op">=</span> L(<span class="bu">range</span>(n_train)), L(<span class="bu">range</span>(n_train, n_train <span class="op">+</span> n_valid))</span>
+<span id="cb67-3"><a href="#cb67-3" aria-hidden="true" tabindex="-1"></a>raw_ds <span class="op">=</span> concatenate_datasets([train_ds, valid_ds])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb68"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb68-1"><a href="#cb68-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> remove_empty_text(example):</span>
+<span id="cb68-2"><a href="#cb68-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> example[<span class="st">"text"</span>].strip() <span class="op">==</span> <span class="st">""</span>:</span>
+<span id="cb68-3"><a href="#cb68-3" aria-hidden="true" tabindex="-1"></a>        example[<span class="st">"text"</span>] <span class="op">=</span> <span class="st">"  "</span></span>
+<span id="cb68-4"><a href="#cb68-4" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> example</span>
+<span id="cb68-5"><a href="#cb68-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb68-6"><a href="#cb68-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb68-7"><a href="#cb68-7" aria-hidden="true" tabindex="-1"></a>raw_ds <span class="op">=</span> raw_ds.<span class="bu">map</span>(remove_empty_text)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<script type="application/vnd.jupyter.widget-view+json">
+{"model_id":"3ea8ff8bcb8c412a895644082434a8a9","version_major":2,"version_minor":0}
+</script>
+</div>
+</div>
+<p>Causal language modeling</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb69"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb69-1"><a href="#cb69-1" aria-hidden="true" tabindex="-1"></a>learn <span class="op">=</span> BlearnerForLM.from_data(</span>
+<span id="cb69-2"><a href="#cb69-2" aria-hidden="true" tabindex="-1"></a>    raw_ds, <span class="st">"gpt2"</span>, text_attr<span class="op">=</span><span class="st">"text"</span>, lm_strategy_cls<span class="op">=</span>CausalLMStrategy, dblock_splitter<span class="op">=</span>IndexSplitter(valid_idxs), dl_kwargs<span class="op">=</span>{<span class="st">"bs"</span>: <span class="dv">2</span>}</span>
+<span id="cb69-3"><a href="#cb69-3" aria-hidden="true" tabindex="-1"></a>).to_fp16()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Using pad_token, but it is not set yet.</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb71"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb71-1"><a href="#cb71-1" aria-hidden="true" tabindex="-1"></a>learn.dls.show_batch(dataloaders<span class="op">=</span>learn.dls, max_n<span class="op">=</span><span class="dv">2</span>, trunc_at<span class="op">=</span><span class="dv">250</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+
+<table class="dataframe table table-sm table-striped">
+  <thead>
+    <tr>
+      <th></th>
+      <th>text</th>
+      <th>target</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>A lookout aboard Weehawken spotted Atlanta at 04 : 10 on the morning of 17 June. When the latter ship closed to within about 1 @.@ 5 miles ( 2 @.@ 4 km ) of the two Union ships, she fired one round from her bow gun that passed over Weehawken and lan</td>
+      <td>lookout aboard Weehawken spotted Atlanta at 04 : 10 on the morning of 17 June. When the latter ship closed to within about 1 @.@ 5 miles ( 2 @.@ 4 km ) of the two Union ships, she fired one round from her bow gun that passed over Weehawken and lande</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>The music was composed by Hitoshi Sakimoto, who had also worked on the previous Valkyria Chronicles games. When he originally heard about the project, he thought it would be a light tone similar to other Valkyria Chronicles games, but found the them</td>
+      <td>music was composed by Hitoshi Sakimoto, who had also worked on the previous Valkyria Chronicles games. When he originally heard about the project, he thought it would be a light tone similar to other Valkyria Chronicles games, but found the themes m</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb72"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb72-1"><a href="#cb72-1" aria-hidden="true" tabindex="-1"></a>learn.fit_one_cycle(<span class="dv">1</span>, lr_max<span class="op">=</span><span class="fl">3e-4</span>, cbs<span class="op">=</span>[BlearnerForLM.get_metrics_cb()])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+
+<table class="dataframe table table-sm table-striped">
+  <thead>
+    <tr>
+      <th>epoch</th>
+      <th>train_loss</th>
+      <th>valid_loss</th>
+      <th>perplexity</th>
+      <th>lm_accuracy</th>
+      <th>time</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>0</td>
+      <td>4.627799</td>
+      <td>4.504875</td>
+      <td>90.457054</td>
+      <td>0.268662</td>
+      <td>00:35</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb73"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb73-1"><a href="#cb73-1" aria-hidden="true" tabindex="-1"></a>learn.show_results(learner<span class="op">=</span>learn, max_n<span class="op">=</span><span class="dv">2</span>, trunc_at<span class="op">=</span><span class="dv">500</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+
+</div>
+<div class="cell-output cell-output-display">
+
+<table class="dataframe table table-sm table-striped">
+  <thead>
+    <tr>
+      <th></th>
+      <th>text</th>
+      <th>target</th>
+      <th>prediction</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>Meridian is rightly considered an architectural treasure trove being one the nations most intact cities from the turn of the last century. Architecture students from around the nation and Canada are known to visit Meridian in groups as part of their coursework due to numerous structures in the city having been designed by noted architects. The only home in the US south designed by noted Canadian born Architect Louis S. Curtiss, famous for inventing the glass curtain wall skyscraper, is extant o</td>
+      <td>is rightly considered an architectural treasure trove being one the nations most intact cities from the turn of the last century. Architecture students from around the nation and Canada are known to visit Meridian in groups as part of their coursework due to numerous structures in the city having been designed by noted architects. The only home in the US south designed by noted Canadian born Architect Louis S. Curtiss, famous for inventing the glass curtain wall skyscraper, is extant on Highlan</td>
+      <td>\n a the.. of of and. the time of the century century.\n is are the the world are the are for be the, the of well of the academic.. to the historical and the city. been built by and architect and\n city of the world of of by renowned architects architect and.a.Siss. is for hising the first and,,raper, famous known in the Park, The onlyfort, by Mile,, located considered an of the most buildingsistico buildingsrapers in the world, is generally considered to the'ss Three Threeman. The only American ar</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>Meridian is served by the Meridian @-@ Lauderdale County Public Library, located at the corner of 7th Street and 26th Avenue. The city originally had two Carnegie libraries, both built in 1913 – one for blacks and one for whites. A group of women had formed the Fortnightly Book and Magazine Club in the 1880s and began raising money to build a library for the city. The books they collected and shared within the club were later the basis of the library collection for Meridian. With wide support f</td>
+      <td>is served by the Meridian @-@ Lauderdale County Public Library, located at the corner of 7th Street and 26th Avenue. The city originally had two Carnegie libraries, both built in 1913 – one for blacks and one for whites. A group of women had formed the Fortnightly Book and Magazine Club in the 1880s and began raising money to build a library for the city. The books they collected and shared within the club were later the basis of the library collection for Meridian. With wide support for the li</td>
+      <td>\n a by the United Hotel The -,, Library. and at: intersection ofth and andth Avenue,\n Meridian of opened a lakes Mellon, located of by the. the in the and one for whites. The new of people, been the " Lauderdale @, Club Book,, citys. 1890 publishing money for a new. blacks city. The city were were were published with the city were the used book of the... the. The the from the city, the city was the,, a-, to the library libraryic, Carnegie, the the in The city was the and located in theth Street</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+<p><a href="https://ohmeow.github.io/blurr/text-modeling-core.html#learner.blurr_generate"><code>Learner.blurr_generate</code></a> works here too</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb74"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb74-1"><a href="#cb74-1" aria-hidden="true" tabindex="-1"></a>learn.blurr_generate(<span class="st">"Blurr is fun to work with because"</span>, max_length<span class="op">=</span><span class="dv">50</span>, do_sample<span class="op">=</span><span class="va">True</span>, top_k<span class="op">=</span><span class="dv">25</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>[{'generated_texts': ' Blurr is fun to work with because and\n and the and the and the and of the and.\n\nThere will be some of those with those who are not with us and some of those who are.\nand the'}]</code></pre>
+</div>
+</div>
+<p>Masked language modeling</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb76"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb76-1"><a href="#cb76-1" aria-hidden="true" tabindex="-1"></a>learn <span class="op">=</span> BlearnerForLM.from_data(</span>
+<span id="cb76-2"><a href="#cb76-2" aria-hidden="true" tabindex="-1"></a>    raw_ds,</span>
+<span id="cb76-3"><a href="#cb76-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">"bert-base-uncased"</span>,</span>
+<span id="cb76-4"><a href="#cb76-4" aria-hidden="true" tabindex="-1"></a>    text_attr<span class="op">=</span><span class="st">"text"</span>,</span>
+<span id="cb76-5"><a href="#cb76-5" aria-hidden="true" tabindex="-1"></a>    lm_strategy_cls<span class="op">=</span>BertMLMStrategy,</span>
+<span id="cb76-6"><a href="#cb76-6" aria-hidden="true" tabindex="-1"></a>    dblock_splitter<span class="op">=</span>IndexSplitter(valid_idxs),</span>
+<span id="cb76-7"><a href="#cb76-7" aria-hidden="true" tabindex="-1"></a>    dl_kwargs<span class="op">=</span>{<span class="st">"bs"</span>: <span class="dv">2</span>},</span>
+<span id="cb76-8"><a href="#cb76-8" aria-hidden="true" tabindex="-1"></a>).to_fp16()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb77"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb77-1"><a href="#cb77-1" aria-hidden="true" tabindex="-1"></a>learn.fit_one_cycle(<span class="dv">1</span>, lr_max<span class="op">=</span><span class="fl">3e-4</span>, cbs<span class="op">=</span>[BlearnerForLM.get_metrics_cb()])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+
+<table class="dataframe table table-sm table-striped">
+  <thead>
+    <tr>
+      <th>epoch</th>
+      <th>train_loss</th>
+      <th>valid_loss</th>
+      <th>perplexity</th>
+      <th>lm_accuracy</th>
+      <th>time</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>0</td>
+      <td>1.062873</td>
+      <td>0.823877</td>
+      <td>2.279321</td>
+      <td>0.676234</td>
+      <td>00:32</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb78"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb78-1"><a href="#cb78-1" aria-hidden="true" tabindex="-1"></a>learn.show_results(learner<span class="op">=</span>learn, max_n<span class="op">=</span><span class="dv">2</span>, trunc_at<span class="op">=</span><span class="dv">500</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+
+</div>
+<div class="cell-output cell-output-display">
+
+<table class="dataframe table table-sm table-striped">
+  <thead>
+    <tr>
+      <th></th>
+      <th>text</th>
+      <th>target</th>
+      <th>prediction</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>meridian is right ##ly considered an architectural treasure tr ##ove being one the nations most intact cities from [meta] turn of the last century [MASK] architecture students from around [MASK] nation [baptiste] canada are known to [MASK] meridian in [MASK] as part of their course ##work due to numerous structures in the city having been designed by noted architects . the only home in the us south [MASK] by noted [MASK] born architect [MASK] s . curtiss , famous for [MASK] ##venting the glass curtain wall skyscraper [MASK] [MASK] extant on highland park . the frank fort designed [MASK] [MASK] building is generally considered one of the best [MASK] deco skyscraper [MASK] [MASK] the us and is [MASK] compared to [detroit] ' s famed fisher building [##top] noted california [MASK] wallace ne ##ff designed a number of homes [MASK] [MASK] as well [MASK] in [MASK] alabama black [MASK] [which] [MASK] ##jo ##ins the city across the [MASK] [MASK] state line [.] he had relatives in meridian and selma who were [MASK] in the then thriving railroad industry and would take commissions [MASK] the area when [MASK] [discipline] california were lean . [MASK] work is mostly [concentrated] in the lower numbered blocks of pop ##lar springs drive where his 251 ##6 pop ##lar [MASK] [wheeler] is [often] compared to the similarly designed falcon lair [MASK] the beverly hills [MASK] in benedict canyon of rudolph valentin ##o . [MASK] ne ##ff work was lost to an expansion of anderson hospital in [MASK] and another in marion park [MASK] in the 1950s . the meridian post office with [MASK] interior done entirely [of] bronze and verde marble is also [MASK] as a very fine example of [MASK] type of post office structures built in thriving and [MASK] to do cities [MASK] the 1920s and [MASK] had lal [MASK] lighting [MASK] was removed sadly during a 1960s re ##mo ##del ##ing and which are now in private residences on pop ##lar springs drive and in north hills [MASK]</td>
+      <td>meridian is right ##ly considered an architectural treasure tr ##ove being one the nations most intact cities from [the] turn of the last century [.] architecture students from around [the] nation [and] canada are known to [visit] meridian in [groups] as part of their course ##work due to numerous structures in the city having been designed by noted architects . the only home in the us south [designed] by noted [canadian] born architect [louis] s . curtiss , famous for [in] ##venting the glass curtain wall skyscraper [,] [is] extant on highland park . the frank fort designed [three] [##foot] building is generally considered one of the best [art] deco skyscraper [##s] [in] the us and is [often] compared to [detroit] ' s famed fisher building [.] noted california [architect] wallace ne ##ff designed a number of homes [in] [meridian] as well [as] in [the] alabama black [belt] [which] [ad] ##jo ##ins the city across the [nearby] [alabama] state line [.] he had relatives in meridian and selma who were [executives] in the then thriving railroad industry and would take commissions [in] the area when [commissions] [in] california were lean . [his] work is mostly [concentrated] in the lower numbered blocks of pop ##lar springs drive where his 251 ##6 pop ##lar [springs] [drive] is [often] compared to the similarly designed falcon lair [,] the beverly hills [home] in benedict canyon of rudolph valentin ##o . [one] ne ##ff work was lost to an expansion of anderson hospital in [1990] and another in marion park [burned] in the 1950s . the meridian post office with [its] interior done entirely [of] bronze and verde marble is also [noteworthy] as a very fine example of [the] type of post office structures built in thriving and [well] to do cities [in] the 1920s and [originally] had lal [##ique] lighting [which] was removed sadly during a 1960s re ##mo ##del ##ing and which are now in private residences on pop ##lar springs drive and in north hills [.]</td>
+      <td>meridian is right ##ly considered an architectural treasure tr ##ove being one the nations most intact cities from [the] turn of the last century [.] architecture students from around [the] nation [and] canada are known to [visit] meridian in [particular] as part of their course ##work due to numerous structures in the city having been designed by noted architects . the only home in the us south [is] by noted [american] born architect [william] s . curtiss , famous for [in] ##venting the glass curtain wall skyscraper [that] [still] extant on highland park . the frank fort designed [the] [tower] building is generally considered one of the best [art] deco skyscraper [##s] [in] the us and is [often] compared to [detroit] ' s famed fisher building [.] noted california [architect] wallace ne ##ff designed a number of homes [in] [meridian] as well [as] in [the] alabama black [hills] [which] [ad] ##jo ##ins the city across the [alabama] [tennessee] state line [.] he had relatives in meridian and selma who were [involved] in the then thriving railroad industry and would take commissions [in] the area when [the] [in] california were lean . [his] work is mostly [concentrated] in the lower numbered blocks of pop ##lar springs drive where his 251 ##6 pop ##lar [springs] [wheeler] is [often] compared to the similarly designed falcon lair [and] the beverly hills [and] in benedict canyon of rudolph valentin ##o . [the] ne ##ff work was lost to an expansion of anderson hospital in [1950] and another in marion park [beginning] in the 1950s . the meridian post office with [its] interior done entirely [of] bronze and verde marble is also [regarded] as a very fine example of [the] type of post office structures built in thriving and [well] to do cities [in] the 1920s and [1930s] had lal [##l] lighting [which] was removed sadly during a 1960s re ##mo ##del ##ing and which are now in private residences on pop ##lar springs drive and in north hills [.]</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>[MASK] cap is [light] [MASK] @ - @ brown , with a diameter typically ranging from 1 [MASK] 4 @ [##我] @ 5 cm ( 0 @ . @ 4 [MASK] 1 @ . @ 8 in ) . initially con ##ic to bell @ - @ shaped to convex , it flat ##tens during [MASK] [MASK] [MASK] [visible] surface grooves corresponding to the gills underneath the cap . the margin of the cap has minute but distinct [MASK] [MASK] ##ops . the surface is moist and smooth , and h ##y ##gr ##op ##han ##ous [MASK] the cap frequently develops splits [MASK] [fraternity] margin , or cracks in the [MASK] [MASK] the central part of the cap ) . the flesh of the cap is thick [MASK] [MASK] [repertory] but [MASK] elsewhere , gray ##ish to whitish , fragile , and with a slightly meal ##y odor [MASK] taste . the gills have a dec ##urrent attachment to the stem ( [##pta] [MASK] , running down the length of [MASK] [MASK] [MASK] and are a pale brownish color with ting ##es of red . they are broad ( between 3 and 6 mm ) , and have a close to sub ##dis ##tan [MASK] spa ##cing , with about 26 – 35 gills reaching the stem . the fragile stem is 3 to [MASK] [MASK] [MASK] [MASK] @ . @ 2 to 3 @ . @ 5 in ) long by [MASK] [MASK] . @ [MASK] to 0 @ . @ 4 cm [MASK] 0 @ [MASK] @ 06 to 0 @ . [cm] 16 in ) thick and yellow [MASK] yellow @ [-] @ brown , becoming reddish @ - @ brown to orange @ - @ brown [MASK] [MASK] bottom half [in] maturity [MASK] [MASK] lower portion [MASK] young stems is covered with white fl ##eck ##s . roughly equal in [MASK] at [MASK] [MASK] and bottom , the base of the [MASK] is covered by [MASK] yellowish my ##cel ##ium [that] can be [up] to a third of the length of the stem . the ed ##ibility of the mushroom [MASK] " doubtful [MASK] and consumption " best avoided " .</td>
+      <td>[the] cap is [light] [reddish] @ - @ brown , with a diameter typically ranging from 1 [to] 4 @ [.] @ 5 cm ( 0 @ . @ 4 [to] 1 @ . @ 8 in ) . initially con ##ic to bell @ - @ shaped to convex , it flat ##tens during [maturity] [,] [developing] [visible] surface grooves corresponding to the gills underneath the cap . the margin of the cap has minute but distinct [sc] [##all] ##ops . the surface is moist and smooth , and h ##y ##gr ##op ##han ##ous [.] the cap frequently develops splits [in] [the] margin , or cracks in the [disc] [(] the central part of the cap ) . the flesh of the cap is thick [in] [the] [center] but [thin] elsewhere , gray ##ish to whitish , fragile , and with a slightly meal ##y odor [and] taste . the gills have a dec ##urrent attachment to the stem ( [that] [is] , running down the length of [the] [stem] [)] and are a pale brownish color with ting ##es of red . they are broad ( between 3 and 6 mm ) , and have a close to sub ##dis ##tan [##t] spa ##cing , with about 26 – 35 gills reaching the stem . the fragile stem is 3 to [9] [cm] [(] [1] @ . @ 2 to 3 @ . @ 5 in ) long by [0] [@] . @ [15] to 0 @ . @ 4 cm [(] 0 @ [.] @ 06 to 0 @ . [@] 16 in ) thick and yellow [to] yellow @ [-] @ brown , becoming reddish @ - @ brown to orange @ - @ brown [in] [the] bottom half [in] maturity [.] [the] lower portion [of] young stems is covered with white fl ##eck ##s . roughly equal in [thickness] at [the] [top] and bottom , the base of the [stem] is covered by [a] yellowish my ##cel ##ium [that] can be [up] to a third of the length of the stem . the ed ##ibility of the mushroom [is] " doubtful ["] and consumption " best avoided " .</td>
+      <td>[the] cap is [light] [brown] @ - @ brown , with a diameter typically ranging from 1 [.] 4 @ [.] @ 5 cm ( 0 @ . @ 4 [@] 1 @ . @ 8 in ) . initially con ##ic to bell @ - @ shaped to convex , it flat ##tens during [growth] [,] [with] [visible] surface grooves corresponding to the gills underneath the cap . the margin of the cap has minute but distinct [white] [wall] ##ops . the surface is moist and smooth , and h ##y ##gr ##op ##han ##ous [(] the cap frequently develops splits [,] [the] margin , or cracks in the [cap] [of] the central part of the cap ) . the flesh of the cap is thick [in] [in] [,] but [,] elsewhere , gray ##ish to whitish , fragile , and with a slightly meal ##y odor [and] taste . the gills have a dec ##urrent attachment to the stem ( [gills] [)] , running down the length of [the] [cap] [,] and are a pale brownish color with ting ##es of red . they are broad ( between 3 and 6 mm ) , and have a close to sub ##dis ##tan [##t] spa ##cing , with about 26 – 35 gills reaching the stem . the fragile stem is 3 to [4] [4] [.] [@] @ . @ 2 to 3 @ . @ 5 in ) long by [4] [@] . @ [1] to 0 @ . @ 4 cm [(] 0 @ [.] @ 06 to 0 @ . [@] 16 in ) thick and yellow [to] yellow @ [-] @ brown , becoming reddish @ - @ brown to orange @ - @ brown [in] [in] bottom half [in] maturity [.] [the] lower portion [of] young stems is covered with white fl ##eck ##s . roughly equal in [size] at [top] [top] and bottom , the base of the [stem] is covered by [a] yellowish my ##cel ##ium [that] can be [up] to a third of the length of the stem . the ed ##ibility of the mushroom [is] " doubtful ["] and consumption " best avoided " .</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb79"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb79-1"><a href="#cb79-1" aria-hidden="true" tabindex="-1"></a>tfm <span class="op">=</span> first_blurr_tfm(learn.dls)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p><a href="https://ohmeow.github.io/blurr/text-modeling-language-modeling.html#learner.blurr_fill_mask"><code>Learner.blurr_fill_mask</code></a> works here too</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb80"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb80-1"><a href="#cb80-1" aria-hidden="true" tabindex="-1"></a>learn.blurr_fill_mask(<span class="ss">f"Blurr is a </span><span class="sc">{</span>tfm<span class="sc">.</span>hf_tokenizer<span class="sc">.</span>mask_token<span class="sc">}</span><span class="ss">."</span>, n_preds<span class="op">=</span><span class="dv">5</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>['Blurr is a word.',
+ 'Blurr is a game.',
+ 'Blurr is a term.',
+ 'Blurr is a concept.',
+ 'Blurr is a name.']</code></pre>
+</div>
+</div>
+</section>
+<section id="summarization" class="level2">
+<h2 class="anchored" data-anchor-id="summarization">Summarization</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb82"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb82-1"><a href="#cb82-1" aria-hidden="true" tabindex="-1"></a>raw_datasets <span class="op">=</span> load_dataset(<span class="st">"cnn_dailymail"</span>, <span class="st">"3.0.0"</span>)</span>
+<span id="cb82-2"><a href="#cb82-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"</span><span class="sc">{</span>raw_datasets<span class="sc">}</span><span class="ch">\n</span><span class="ss">"</span>)</span>
+<span id="cb82-3"><a href="#cb82-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f'</span><span class="sc">{</span>raw_datasets[<span class="st">"train"</span>][<span class="dv">0</span>]<span class="sc">}</span><span class="ch">\n</span><span class="ss">'</span>)</span>
+<span id="cb82-4"><a href="#cb82-4" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f'</span><span class="sc">{</span>raw_datasets[<span class="st">"train"</span>]<span class="sc">.</span>features<span class="sc">}</span><span class="ch">\n</span><span class="ss">'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Reusing dataset cnn_dailymail (/home/wgilliam/.cache/huggingface/datasets/cnn_dailymail/3.0.0/3.0.0/3cb851bf7cf5826e45d49db2863f627cba583cbc32342df7349dfe6c38060234)</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<script type="application/vnd.jupyter.widget-view+json">
+{"model_id":"7fe98ab2d7a64ebda01465d3212c92ca","version_major":2,"version_minor":0}
+</script>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>DatasetDict({
+    train: Dataset({
+        features: ['article', 'highlights', 'id'],
+        num_rows: 287113
+    })
+    validation: Dataset({
+        features: ['article', 'highlights', 'id'],
+        num_rows: 13368
+    })
+    test: Dataset({
+        features: ['article', 'highlights', 'id'],
+        num_rows: 11490
+    })
+})
+
+{'article': 'It\'s official: U.S. President Barack Obama wants lawmakers to weigh in on whether to use military force in Syria. Obama sent a letter to the heads of the House and Senate on Saturday night, hours after announcing that he believes military action against Syrian targets is the right step to take over the alleged use of chemical weapons. The proposed legislation from Obama asks Congress to approve the use of military force "to deter, disrupt, prevent and degrade the potential for future uses of chemical weapons or other weapons of mass destruction." It\'s a step that is set to turn an international crisis into a fierce domestic political battle. There are key questions looming over the debate: What did U.N. weapons inspectors find in Syria? What happens if Congress votes no? And how will the Syrian government react? In a televised address from the White House Rose Garden earlier Saturday, the president said he would take his case to Congress, not because he has to -- but because he wants to. "While I believe I have the authority to carry out this military action without specific congressional authorization, I know that the country will be stronger if we take this course, and our actions will be even more effective," he said. "We should have this debate, because the issues are too big for business as usual." Obama said top congressional leaders had agreed to schedule a debate when the body returns to Washington on September 9. The Senate Foreign Relations Committee will hold a hearing over the matter on Tuesday, Sen. Robert Menendez said. Transcript: Read Obama\'s full remarks . Syrian crisis: Latest developments . U.N. inspectors leave Syria . Obama\'s remarks came shortly after U.N. inspectors left Syria, carrying evidence that will determine whether chemical weapons were used in an attack early last week in a Damascus suburb. "The aim of the game here, the mandate, is very clear -- and that is to ascertain whether chemical weapons were used -- and not by whom," U.N. spokesman Martin Nesirky told reporters on Saturday. But who used the weapons in the reported toxic gas attack in a Damascus suburb on August 21 has been a key point of global debate over the Syrian crisis. Top U.S. officials have said there\'s no doubt that the Syrian government was behind it, while Syrian officials have denied responsibility and blamed jihadists fighting with the rebels. British and U.S. intelligence reports say the attack involved chemical weapons, but U.N. officials have stressed the importance of waiting for an official report from inspectors. The inspectors will share their findings with U.N. Secretary-General Ban Ki-moon Ban, who has said he wants to wait until the U.N. team\'s final report is completed before presenting it to the U.N. Security Council. The Organization for the Prohibition of Chemical Weapons, which nine of the inspectors belong to, said Saturday that it could take up to three weeks to analyze the evidence they collected. "It needs time to be able to analyze the information and the samples," Nesirky said. He noted that Ban has repeatedly said there is no alternative to a political solution to the crisis in Syria, and that "a military solution is not an option." Bergen:  Syria is a problem from hell for the U.S. Obama: \'This menace must be confronted\' Obama\'s senior advisers have debated the next steps to take, and the president\'s comments Saturday came amid mounting political pressure over the situation in Syria. Some U.S. lawmakers have called for immediate action while others warn of stepping into what could become a quagmire. Some global leaders have expressed support, but the British Parliament\'s vote against military action earlier this week was a blow to Obama\'s hopes of getting strong backing from key NATO allies. On Saturday, Obama proposed what he said would be a limited military action against Syrian President Bashar al-Assad. Any military attack would not be open-ended or include U.S. ground forces, he said. Syria\'s alleged use of chemical weapons earlier this month "is an assault on human dignity," the president said. A failure to respond with force, Obama argued,  "could lead to escalating use of chemical weapons or their proliferation to terrorist groups who would do our people harm. In a world with many dangers, this menace must be confronted." Syria missile strike: What would happen next? Map: U.S. and allied assets around Syria . Obama decision came Friday night . On Friday night, the president made a last-minute decision to consult lawmakers. What will happen if they vote no? It\'s unclear. A senior administration official told CNN that Obama has the authority to act without Congress -- even if Congress rejects his request for authorization to use force. Obama on Saturday continued to shore up support for a strike on the al-Assad government. He spoke by phone with French President Francois Hollande before his Rose Garden speech. "The two leaders agreed that the international community must deliver a resolute message to the Assad regime -- and others who would consider using chemical weapons -- that these crimes are unacceptable and those who violate this international norm will be held accountable by the world," the White House said. Meanwhile, as uncertainty loomed over how Congress would weigh in, U.S. military officials said they remained at the ready. 5 key assertions: U.S. intelligence report on Syria . Syria: Who wants what after chemical weapons horror . Reactions mixed to Obama\'s speech . A spokesman for the Syrian National Coalition said that the opposition group was disappointed by Obama\'s announcement. "Our fear now is that the lack of action could embolden the regime and they repeat his attacks in a more serious way," said spokesman Louay Safi. "So we are quite concerned." Some members of Congress applauded Obama\'s decision. House Speaker John Boehner, Majority Leader Eric Cantor, Majority Whip Kevin McCarthy and Conference Chair Cathy McMorris Rodgers issued a statement Saturday praising the president. "Under the Constitution, the responsibility to declare war lies with Congress," the Republican lawmakers said. "We are glad the president is seeking authorization for any military action in Syria in response to serious, substantive questions being raised." More than 160 legislators, including 63 of Obama\'s fellow Democrats, had signed letters calling for either a vote or at least a "full debate" before any U.S. action. British Prime Minister David Cameron, whose own attempt to get lawmakers in his country to support military action in Syria failed earlier this week, responded to Obama\'s speech in a Twitter post Saturday. "I understand and support Barack Obama\'s position on Syria," Cameron said. An influential lawmaker in Russia -- which has stood by Syria and criticized the United States -- had his own theory. "The main reason Obama is turning to the Congress:  the military operation did not get enough support either in the world, among allies of the US or in the United States itself," Alexei Pushkov, chairman of the international-affairs committee of the Russian State Duma, said in a Twitter post. In the United States, scattered groups of anti-war protesters around the country took to the streets Saturday. "Like many other Americans...we\'re just tired of the United States getting involved and invading and bombing other countries," said Robin Rosecrans, who was among hundreds at a Los Angeles demonstration. What do Syria\'s neighbors think? Why Russia, China, Iran stand by Assad . Syria\'s government unfazed . After Obama\'s speech, a military and political analyst on Syrian state TV said Obama is "embarrassed" that Russia opposes military action against Syria, is "crying for help" for someone to come to his rescue and is facing two defeats -- on the political and military levels. Syria\'s prime minister appeared unfazed by the saber-rattling. "The Syrian Army\'s status is on maximum readiness and fingers are on the trigger to confront all challenges," Wael Nader al-Halqi said during a meeting with a delegation of Syrian expatriates from Italy, according to a banner on Syria State TV that was broadcast prior to Obama\'s address. An anchor on Syrian state television said Obama "appeared to be preparing for an aggression on Syria based on repeated lies." A top Syrian diplomat told the state television network that Obama was facing pressure to take military action from Israel, Turkey, some Arabs and right-wing extremists in the United States. "I think he has done well by doing what Cameron did in terms of taking the issue to Parliament," said Bashar Jaafari, Syria\'s ambassador to the United Nations. Both Obama and Cameron, he said, "climbed to the top of the tree and don\'t know how to get down." The Syrian government has denied that it used chemical weapons in the August 21 attack, saying that jihadists fighting with the rebels used them in an effort to turn global sentiments against it. British intelligence had put the number of people killed in the attack at more than 350. On Saturday, Obama said "all told, well over 1,000 people were murdered." U.S. Secretary of State John Kerry on Friday cited a death toll of 1,429, more than 400 of them children. No explanation was offered for the discrepancy. Iran: U.S. military action in Syria would spark \'disaster\' Opinion: Why strikes in Syria are a bad idea .', 'highlights': 'Syrian official: Obama climbed to the top of the tree, "doesn\'t know how to get down"\nObama sends a letter to the heads of the House and Senate .\nObama to seek congressional approval on military action against Syria .\nAim is to determine whether CW were used, not by whom, says U.N. spokesman .', 'id': '0001d1afc246a7964130f43ae940af6bc6c57f01'}
+
+{'article': Value(dtype='string', id=None), 'highlights': Value(dtype='string', id=None), 'id': Value(dtype='string', id=None)}
+</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb85"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb85-1"><a href="#cb85-1" aria-hidden="true" tabindex="-1"></a>train_ds <span class="op">=</span> raw_datasets[<span class="st">"train"</span>].select(<span class="bu">range</span>(<span class="dv">1000</span>))</span>
+<span id="cb85-2"><a href="#cb85-2" aria-hidden="true" tabindex="-1"></a>valid_ds <span class="op">=</span> raw_datasets[<span class="st">"validation"</span>].select(<span class="bu">range</span>(<span class="dv">500</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb86"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb86-1"><a href="#cb86-1" aria-hidden="true" tabindex="-1"></a>n_train, n_valid <span class="op">=</span> train_ds.num_rows, valid_ds.num_rows</span>
+<span id="cb86-2"><a href="#cb86-2" aria-hidden="true" tabindex="-1"></a>train_idxs, valid_idxs <span class="op">=</span> L(<span class="bu">range</span>(n_train)), L(<span class="bu">range</span>(n_train, n_train <span class="op">+</span> n_valid))</span>
+<span id="cb86-3"><a href="#cb86-3" aria-hidden="true" tabindex="-1"></a>raw_ds <span class="op">=</span> concatenate_datasets([train_ds, valid_ds])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb87"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb87-1"><a href="#cb87-1" aria-hidden="true" tabindex="-1"></a>learn <span class="op">=</span> BlearnerForSummarization.from_data(</span>
+<span id="cb87-2"><a href="#cb87-2" aria-hidden="true" tabindex="-1"></a>    raw_ds,</span>
+<span id="cb87-3"><a href="#cb87-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">"facebook/bart-large-cnn"</span>,</span>
+<span id="cb87-4"><a href="#cb87-4" aria-hidden="true" tabindex="-1"></a>    text_attr<span class="op">=</span><span class="st">"article"</span>,</span>
+<span id="cb87-5"><a href="#cb87-5" aria-hidden="true" tabindex="-1"></a>    summary_attr<span class="op">=</span><span class="st">"highlights"</span>,</span>
+<span id="cb87-6"><a href="#cb87-6" aria-hidden="true" tabindex="-1"></a>    max_length<span class="op">=</span><span class="dv">256</span>,</span>
+<span id="cb87-7"><a href="#cb87-7" aria-hidden="true" tabindex="-1"></a>    max_target_length<span class="op">=</span><span class="dv">130</span>,</span>
+<span id="cb87-8"><a href="#cb87-8" aria-hidden="true" tabindex="-1"></a>    dblock_splitter<span class="op">=</span>IndexSplitter(valid_idxs),</span>
+<span id="cb87-9"><a href="#cb87-9" aria-hidden="true" tabindex="-1"></a>    dl_kwargs<span class="op">=</span>{<span class="st">"bs"</span>: <span class="dv">2</span>},</span>
+<span id="cb87-10"><a href="#cb87-10" aria-hidden="true" tabindex="-1"></a>).to_fp16()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb88"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb88-1"><a href="#cb88-1" aria-hidden="true" tabindex="-1"></a>learn.dls.show_batch(dataloaders<span class="op">=</span>learn.dls, max_n<span class="op">=</span><span class="dv">2</span>, input_trunc_at<span class="op">=</span><span class="dv">500</span>, target_trunc_at<span class="op">=</span><span class="dv">250</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+
+<table class="dataframe table table-sm table-striped">
+  <thead>
+    <tr>
+      <th></th>
+      <th>text</th>
+      <th>target</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>&lt;s&gt; (CNN) -- When Ji Yeqing awakened, she was already in the recovery room. Chinese authorities had dragged her out of her home and down four flights of stairs, she said, restraining and beating her husband as he tried to come to her aid. They whisked her into a clinic, held her down on a bed and forced her to undergo an abortion. Her offense? Becoming pregnant with a second child, in violation of China's one-child policy. "After the abortion, I felt empty, as if something was scooped out of me,</td>
+      <td>China's one-child policy results in forced abortions and sterilizations, activists say.\nWomen tell of emotional and physical consequences from the procedures.\nActivist Chen Guangcheng works to advocate for victims of such practices.</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>&lt;s&gt; (CNN Student News) -- January 13, 2011. Download PDF maps related to today's show:. • Arizona • Australia. Transcript. THIS IS A RUSH TRANSCRIPT. THIS COPY MAY NOT BE IN ITS FINAL FORM AND MAY BE UPDATED. CARL AZUZ, CNN STUDENT NEWS ANCHOR: A problem that won't be solved, even if the solution is clear. The story and the reasons, leading off today's broadcast of CNN Student News! My name is Carl Azuz! First Up: Winter Storm Woes. AZUZ: Florida is the only state in the union without snow on th</td>
+      <td>A winter storm slams the northeastern United States.\nThe U.S. House of Representatives condemns the Arizona shooting.\nMassive floods leave vast areas of Australia underwater.\nUse the Daily Discussion to help students understand today's featured news</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb89"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb89-1"><a href="#cb89-1" aria-hidden="true" tabindex="-1"></a>metrics_cb <span class="op">=</span> BlearnerForSummarization.get_metrics_cb()</span>
+<span id="cb89-2"><a href="#cb89-2" aria-hidden="true" tabindex="-1"></a>learn.fit_one_cycle(<span class="dv">1</span>, lr_max<span class="op">=</span><span class="fl">4e-5</span>, cbs<span class="op">=</span>[metrics_cb])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+
+<table class="dataframe table table-sm table-striped">
+  <thead>
+    <tr>
+      <th>epoch</th>
+      <th>train_loss</th>
+      <th>valid_loss</th>
+      <th>rouge1</th>
+      <th>rouge2</th>
+      <th>rougeL</th>
+      <th>rougeLsum</th>
+      <th>bertscore_precision</th>
+      <th>bertscore_recall</th>
+      <th>bertscore_f1</th>
+      <th>time</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>0</td>
+      <td>1.805652</td>
+      <td>1.987627</td>
+      <td>0.348567</td>
+      <td>0.148174</td>
+      <td>0.243829</td>
+      <td>0.319418</td>
+      <td>0.871049</td>
+      <td>0.893810</td>
+      <td>0.882177</td>
+      <td>10:06</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb90"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb90-1"><a href="#cb90-1" aria-hidden="true" tabindex="-1"></a>learn.show_results(learner<span class="op">=</span>learn, max_n<span class="op">=</span><span class="dv">2</span>, input_trunc_at<span class="op">=</span><span class="dv">500</span>, target_trunc_at<span class="op">=</span><span class="dv">250</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+
+</div>
+<div class="cell-output cell-output-display">
+
+<table class="dataframe table table-sm table-striped">
+  <thead>
+    <tr>
+      <th></th>
+      <th>text</th>
+      <th>target</th>
+      <th>prediction</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>(CNN)Reading the headlines out of Madison, Wisconsin, it's hard not to think about Ferguson, Missouri. But law enforcement's response to the shooting of 19-year-old Tony Robinson will not unfold in the same chaotic, violent and distrusting way as the shooting of 18-year-old Michael Brown, Madison's top police leaders vowed. "I think it's very clear that Madison, Wisconsin, is not Ferguson, Missouri," said Jim Palmer, the executive director of the Wisconsin Professional Police Association. The h</td>
+      <td>Police officials in Madison say their responses to shooting by officer reflect their role in community.\nOne example: Madison chief talked to teen's family soon after shooting.\nA month went by before Ferguson chief apologized to Brown's family.</td>
+      <td>[ Law enforcement in Madison, Wisconsin, says it has a strong relationship with the people it serves .\nPolice chief says he understands people are angry and want answers .\nChief says he went to the shooting victim's mother's home within hours of the shooting .\nThe chief says the department is working to "bring community back into the fold" of the community .,  ISIS claimed responsibility for Yemen's deadliest terror attack on Friday .\nThe group's momentum may have stalled in Syria and Iraq, but its supporters appear to be heeding its call to "erupt volcanoes of jihad"\nISIS was only thought to have a fledgling presence in Yemen and had only claimed one previous attack .]</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+<p><a href="https://ohmeow.github.io/blurr/text-modeling-core.html#learner.blurr_generate"><code>Learner.blurr_generate</code></a> works here too</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb91"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb91-1"><a href="#cb91-1" aria-hidden="true" tabindex="-1"></a>test_article <span class="op">=</span> <span class="st">"""</span></span>
+<span id="cb91-2"><a href="#cb91-2" aria-hidden="true" tabindex="-1"></a><span class="st">About 10 men armed with pistols and small machine guns raided a casino in Switzerland and made off </span></span>
+<span id="cb91-3"><a href="#cb91-3" aria-hidden="true" tabindex="-1"></a><span class="st">into France with several hundred thousand Swiss francs in the early hours of Sunday morning, police said. </span></span>
+<span id="cb91-4"><a href="#cb91-4" aria-hidden="true" tabindex="-1"></a><span class="st">The men, dressed in black clothes and black ski masks, split into two groups during the raid on the Grand Casino </span></span>
+<span id="cb91-5"><a href="#cb91-5" aria-hidden="true" tabindex="-1"></a><span class="st">Basel, Chief Inspector Peter Gill told CNN. One group tried to break into the casino's vault on the lower level </span></span>
+<span id="cb91-6"><a href="#cb91-6" aria-hidden="true" tabindex="-1"></a><span class="st">but could not get in, but they did rob the cashier of the money that was not secured, he said. The second group </span></span>
+<span id="cb91-7"><a href="#cb91-7" aria-hidden="true" tabindex="-1"></a><span class="st">of armed robbers entered the upper level where the roulette and blackjack tables are located and robbed the </span></span>
+<span id="cb91-8"><a href="#cb91-8" aria-hidden="true" tabindex="-1"></a><span class="st">cashier there, he said. As the thieves were leaving the casino, a woman driving by and unaware of what was </span></span>
+<span id="cb91-9"><a href="#cb91-9" aria-hidden="true" tabindex="-1"></a><span class="st">occurring unknowingly blocked the armed robbers' vehicles. A gunman pulled the woman from her vehicle, beat </span></span>
+<span id="cb91-10"><a href="#cb91-10" aria-hidden="true" tabindex="-1"></a><span class="st">her, and took off for the French border. The other gunmen followed into France, which is only about 100 </span></span>
+<span id="cb91-11"><a href="#cb91-11" aria-hidden="true" tabindex="-1"></a><span class="st">meters (yards) from the casino, Gill said. There were about 600 people in the casino at the time of the robbery. </span></span>
+<span id="cb91-12"><a href="#cb91-12" aria-hidden="true" tabindex="-1"></a><span class="st">There were no serious injuries, although one guest on the Casino floor was kicked in the head by one of the </span></span>
+<span id="cb91-13"><a href="#cb91-13" aria-hidden="true" tabindex="-1"></a><span class="st">robbers when he moved, the police officer said. Swiss authorities are working closely with French authorities, </span></span>
+<span id="cb91-14"><a href="#cb91-14" aria-hidden="true" tabindex="-1"></a><span class="st">Gill said. The robbers spoke French and drove vehicles with French lRicense plates. CNN's Andreena Narayan </span></span>
+<span id="cb91-15"><a href="#cb91-15" aria-hidden="true" tabindex="-1"></a><span class="st">contributed to this report.</span></span>
+<span id="cb91-16"><a href="#cb91-16" aria-hidden="true" tabindex="-1"></a><span class="st">"""</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb92"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb92-1"><a href="#cb92-1" aria-hidden="true" tabindex="-1"></a>outputs <span class="op">=</span> learn.blurr_generate(test_article, num_return_sequences<span class="op">=</span><span class="dv">3</span>)</span>
+<span id="cb92-2"><a href="#cb92-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb92-3"><a href="#cb92-3" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> idx, o <span class="kw">in</span> <span class="bu">enumerate</span>(outputs):</span>
+<span id="cb92-4"><a href="#cb92-4" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"=== Prediction </span><span class="sc">{</span>idx<span class="op">+</span><span class="dv">1</span><span class="sc">}</span><span class="ss"> ===</span><span class="ch">\n</span><span class="sc">{</span>o<span class="sc">}</span><span class="ch">\n</span><span class="ss">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>=== Prediction 1 ===
+{'generated_texts': [" Robbers made off with several hundred thousand Swiss francs in the early hours of Sunday morning, police say .\nThe men, dressed in black clothes and black ski masks, split into two groups during the raid on the Grand Casino Basel .\nOne group tried to break into the casino's vault on the lower level, but could not get in .\nA woman driving by unknowingly blocked the robbers' vehicles and a gunman beat her to death .\nThere were no serious injuries, although one guest on the Casino floor was kicked in the head .", " Robbers made off with several hundred thousand Swiss francs in the early hours of Sunday morning, police say .\nThe men, dressed in black clothes and black ski masks, split into two groups during the raid on the Grand Casino Basel .\nOne group tried to break into the casino's vault on the lower level, but could not get in .\nA woman driving by unknowingly blocked the robbers' vehicles and a gunman beat her to death .\nThere were about 600 people in the casino at the time of the robbery .", " Robbers made off with several hundred thousand Swiss francs in the early hours of Sunday morning, police say .\nThe men, dressed in black clothes and black ski masks, split into two groups during the raid on the Grand Casino Basel .\nOne group tried to break into the casino's vault on the lower level, but could not get in .\nA woman driving by unknowingly blocked the robbers' vehicles and a gunman beat her to death ."]}
+</code></pre>
+</div>
+</div>
+</section>
+<section id="translation" class="level2">
+<h2 class="anchored" data-anchor-id="translation">Translation</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb94"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb94-1"><a href="#cb94-1" aria-hidden="true" tabindex="-1"></a>raw_datasets <span class="op">=</span> load_dataset(<span class="st">"wmt16"</span>, <span class="st">"de-en"</span>)</span>
+<span id="cb94-2"><a href="#cb94-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"</span><span class="sc">{</span>raw_datasets<span class="sc">}</span><span class="ch">\n</span><span class="ss">"</span>)</span>
+<span id="cb94-3"><a href="#cb94-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f'</span><span class="sc">{</span>raw_datasets[<span class="st">"train"</span>][<span class="dv">0</span>]<span class="sc">}</span><span class="ch">\n</span><span class="ss">'</span>)</span>
+<span id="cb94-4"><a href="#cb94-4" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f'</span><span class="sc">{</span>raw_datasets[<span class="st">"train"</span>]<span class="sc">.</span>features<span class="sc">}</span><span class="ch">\n</span><span class="ss">'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Reusing dataset wmt16 (/home/wgilliam/.cache/huggingface/datasets/wmt16/de-en/1.0.0/af3c5d746b307726d0de73ebe7f10545361b9cb6f75c83a1734c000e48b6264f)</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<script type="application/vnd.jupyter.widget-view+json">
+{"model_id":"40107ced754044b19a817b8ff0082f2f","version_major":2,"version_minor":0}
+</script>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>DatasetDict({
+    train: Dataset({
+        features: ['translation'],
+        num_rows: 4548885
+    })
+    validation: Dataset({
+        features: ['translation'],
+        num_rows: 2169
+    })
+    test: Dataset({
+        features: ['translation'],
+        num_rows: 2999
+    })
+})
+
+{'translation': {'de': 'Wiederaufnahme der Sitzungsperiode', 'en': 'Resumption of the session'}}
+
+{'translation': Translation(languages=['de', 'en'], id=None)}
+</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb97"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb97-1"><a href="#cb97-1" aria-hidden="true" tabindex="-1"></a>train_ds <span class="op">=</span> raw_datasets[<span class="st">"train"</span>].select(<span class="bu">range</span>(<span class="dv">1000</span>))</span>
+<span id="cb97-2"><a href="#cb97-2" aria-hidden="true" tabindex="-1"></a>valid_ds <span class="op">=</span> raw_datasets[<span class="st">"validation"</span>].select(<span class="bu">range</span>(<span class="dv">500</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb98"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb98-1"><a href="#cb98-1" aria-hidden="true" tabindex="-1"></a>n_train, n_valid <span class="op">=</span> train_ds.num_rows, valid_ds.num_rows</span>
+<span id="cb98-2"><a href="#cb98-2" aria-hidden="true" tabindex="-1"></a>train_idxs, valid_idxs <span class="op">=</span> L(<span class="bu">range</span>(n_train)), L(<span class="bu">range</span>(n_train, n_train <span class="op">+</span> n_valid))</span>
+<span id="cb98-3"><a href="#cb98-3" aria-hidden="true" tabindex="-1"></a>raw_ds <span class="op">=</span> concatenate_datasets([train_ds, valid_ds])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb99"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb99-1"><a href="#cb99-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> make_dict(item):</span>
+<span id="cb99-2"><a href="#cb99-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> item[<span class="st">"translation"</span>]</span>
+<span id="cb99-3"><a href="#cb99-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb99-4"><a href="#cb99-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb99-5"><a href="#cb99-5" aria-hidden="true" tabindex="-1"></a>raw_ds <span class="op">=</span> raw_ds.<span class="bu">map</span>(make_dict)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Loading cached processed dataset at /home/wgilliam/.cache/huggingface/datasets/wmt16/de-en/1.0.0/af3c5d746b307726d0de73ebe7f10545361b9cb6f75c83a1734c000e48b6264f/cache-33c5db1dfc9c3c37.arrow</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb101"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb101-1"><a href="#cb101-1" aria-hidden="true" tabindex="-1"></a>train_df <span class="op">=</span> pd.DataFrame(raw_ds[<span class="st">"translation"</span>], columns<span class="op">=</span>[<span class="st">"de"</span>, <span class="st">"en"</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb102"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb102-1"><a href="#cb102-1" aria-hidden="true" tabindex="-1"></a>learn <span class="op">=</span> BlearnerForTranslation.from_data(</span>
+<span id="cb102-2"><a href="#cb102-2" aria-hidden="true" tabindex="-1"></a>    train_df,</span>
+<span id="cb102-3"><a href="#cb102-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Helsinki-NLP/opus-mt-de-en"</span>,</span>
+<span id="cb102-4"><a href="#cb102-4" aria-hidden="true" tabindex="-1"></a>    src_lang_name<span class="op">=</span><span class="st">"German"</span>,</span>
+<span id="cb102-5"><a href="#cb102-5" aria-hidden="true" tabindex="-1"></a>    src_lang_attr<span class="op">=</span><span class="st">"de"</span>,</span>
+<span id="cb102-6"><a href="#cb102-6" aria-hidden="true" tabindex="-1"></a>    trg_lang_name<span class="op">=</span><span class="st">"English"</span>,</span>
+<span id="cb102-7"><a href="#cb102-7" aria-hidden="true" tabindex="-1"></a>    trg_lang_attr<span class="op">=</span><span class="st">"en"</span>,</span>
+<span id="cb102-8"><a href="#cb102-8" aria-hidden="true" tabindex="-1"></a>    dblock_splitter<span class="op">=</span>RandomSplitter(),</span>
+<span id="cb102-9"><a href="#cb102-9" aria-hidden="true" tabindex="-1"></a>    dl_kwargs<span class="op">=</span>{<span class="st">"bs"</span>: <span class="dv">2</span>},</span>
+<span id="cb102-10"><a href="#cb102-10" aria-hidden="true" tabindex="-1"></a>).to_fp16()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb103"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb103-1"><a href="#cb103-1" aria-hidden="true" tabindex="-1"></a>learn.dls.show_batch(dataloaders<span class="op">=</span>learn.dls, max_n<span class="op">=</span><span class="dv">2</span>, input_trunc_at<span class="op">=</span><span class="dv">500</span>, target_trunc_at<span class="op">=</span><span class="dv">250</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+
+<table class="dataframe table table-sm table-striped">
+  <thead>
+    <tr>
+      <th></th>
+      <th>text</th>
+      <th>target</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>▁Angesichts▁dieser Situation▁muß▁aus dem▁Bericht, den das▁Parlament annimmt,▁klar▁hervorgehen,▁daß▁Maßnahmen▁notwendig▁sind, die▁eindeutig auf die▁Bekämpfung der relativen▁Armut und der Arbeitslosigkeit▁gerichtet▁sind.▁Maßnahmen▁wie die für diese▁Zwecke▁angemessene▁Verwendung der▁Strukturfonds, die▁häufig▁unsachgemäß▁eingesetzt▁werden, und▁zwar mit▁zentralen▁staatlichen▁Politiken, die▁Modernisierung der▁Bereiche Telekommunikation und▁Kommunikation,▁indem man vor▁allem die am▁wenigsten▁entwickelt</td>
+      <td>Given this situation, the report approved by Parliament must highlight the need for measures that aim unequivocally to fight relative poverty and unemployment: measures such as the appropriate use of structural funds for these purposes, which are oft</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>In▁unseren Änderungsanträgen▁haben wir▁festgeschrieben,▁welche▁Bedeutung wir der Herausbildung der▁notwendigen▁Synergien▁zwischen den▁Strukturfonds, dem▁Kohäsionsfonds und den▁Gemeinschaftsinitiativen▁beimessen, so▁daß▁ihre▁Anwendung auf▁optimale und rentabelste▁Weise im▁zunehmenden▁Abbau der▁regionalen▁Ungleichheiten und in der▁Schaffung von▁Arbeitsplätzen▁ihren▁Niederschlag▁findet, die▁letztendlich die▁beiden▁Hauptziele der hier zur▁Debatte▁stehenden▁Fonds▁sind.&lt;pad&gt;&lt;pad&gt;&lt;pad&gt;&lt;pad&gt;&lt;pad&gt;&lt;pad&gt;&lt;p</td>
+      <td>In our amendments, we have stated the importance of the necessary synergies being produced between the Structural Funds, the Cohesion Fund and Community initiatives, so that their application should be reflected, in the best and most profitable way,</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb104"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb104-1"><a href="#cb104-1" aria-hidden="true" tabindex="-1"></a>metrics_cb <span class="op">=</span> BlearnerForTranslation.get_metrics_cb()</span>
+<span id="cb104-2"><a href="#cb104-2" aria-hidden="true" tabindex="-1"></a>learn.fit_one_cycle(<span class="dv">1</span>, lr_max<span class="op">=</span><span class="fl">4e-5</span>, cbs<span class="op">=</span>[metrics_cb])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>[nltk_data] Downloading package wordnet to /home/wgilliam/nltk_data...
+[nltk_data]   Package wordnet is already up-to-date!
+[nltk_data] Downloading package punkt to /home/wgilliam/nltk_data...
+[nltk_data]   Package punkt is already up-to-date!
+[nltk_data] Downloading package omw-1.4 to /home/wgilliam/nltk_data...
+[nltk_data]   Package omw-1.4 is already up-to-date!</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+
+<table class="dataframe table table-sm table-striped">
+  <thead>
+    <tr>
+      <th>epoch</th>
+      <th>train_loss</th>
+      <th>valid_loss</th>
+      <th>bleu</th>
+      <th>meteor</th>
+      <th>sacrebleu</th>
+      <th>time</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>0</td>
+      <td>1.360521</td>
+      <td>1.345847</td>
+      <td>0.334178</td>
+      <td>0.613131</td>
+      <td>31.482812</td>
+      <td>01:14</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb106"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb106-1"><a href="#cb106-1" aria-hidden="true" tabindex="-1"></a>learn.show_results(learner<span class="op">=</span>learn, max_n<span class="op">=</span><span class="dv">2</span>, input_trunc_at<span class="op">=</span><span class="dv">500</span>, target_trunc_at<span class="op">=</span><span class="dv">250</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+
+</div>
+<div class="cell-output cell-output-display">
+
+<table class="dataframe table table-sm table-striped">
+  <thead>
+    <tr>
+      <th></th>
+      <th>text</th>
+      <th>target</th>
+      <th>prediction</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>▁Angesichts▁dessen▁müssen wir in▁diesem▁Parlament auf▁jeden Fall▁verlangen,▁daß die▁gemeinschaftlichen▁Förderkonzepte für den▁fraglichen▁Zeitraum in▁diesem▁Parlament vor▁ihrer▁Annahme▁geprüft und▁erörtert▁werden, und▁zwar▁anhand der▁Leitlinien, die wir▁heute▁vorlegen,▁denn wir▁halten▁sie für▁ganz▁besonders▁geeignet,▁Arbeitsplätze in den▁ärmsten oder am▁wenigsten▁entwickelten▁Regionen zu▁schaffen, und so▁tragen wir▁dazu▁bei, den▁negativen, zur▁Ungleichheit▁führenden▁Tendenzen in der▁europäischen</td>
+      <td>Bearing this in mind, this House should, in any event, demand that, before the Community support frameworks for the period in question are approved, they be studied and submitted for debate in this Parliament, specifically in light of the guidelines</td>
+      <td>[In view of this, we in this Parliament must in any case demand that the Community support frameworks for the period in question be examined and discussed in this Parliament before they are adopted, on the basis of the guidelines that we are presenting today, because we consider them to be particularly suitable for creating jobs in the poorest or least developed regions, and thus we are helping to counter the negative trends leading to inequality in European society, so that we can achieve a fairer Europe., The guidelines, moreover, are based on two horizontal principles: rural development - and the issue of a sustainable transport structure, Madam rapporteur, which has been at my heart for a long time, especially since my time as my country' s Minister for the Environment - and the second principle is equal opportunities, especially between women and men, as well as the European employment strategy and economic and monetary union.]</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+<p><a href="https://ohmeow.github.io/blurr/text-modeling-core.html#learner.blurr_generate"><code>Learner.blurr_generate</code></a> works here too</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb107"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb107-1"><a href="#cb107-1" aria-hidden="true" tabindex="-1"></a>test_de <span class="op">=</span> <span class="st">"Ich trinke gerne Bier"</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb108"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb108-1"><a href="#cb108-1" aria-hidden="true" tabindex="-1"></a>learn.blurr_generate(test_de)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>[{'generated_texts': 'I like to drink beer'}]</code></pre>
+</div>
+</div>
+</section>
+<section id="summary" class="level2">
+<h2 class="anchored" data-anchor-id="summary">Summary</h2>
+<p>In summary, whether you want to work with Blurr’s low, mid, or high-level API … we got you covered :)</p>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const disableStylesheet = (stylesheets) => {
+    for (let i=0; i < stylesheets.length; i++) {
+      const stylesheet = stylesheets[i];
+      stylesheet.rel = 'prefetch';
+    }
+  }
+  const enableStylesheet = (stylesheets) => {
+    for (let i=0; i < stylesheets.length; i++) {
+      const stylesheet = stylesheets[i];
+      stylesheet.rel = 'stylesheet';
+    }
+  }
+  const manageTransitions = (selector, allowTransitions) => {
+    const els = window.document.querySelectorAll(selector);
+    for (let i=0; i < els.length; i++) {
+      const el = els[i];
+      if (allowTransitions) {
+        el.classList.remove('notransition');
+      } else {
+        el.classList.add('notransition');
+      }
+    }
+  }
+  const toggleColorMode = (alternate) => {
+    // Switch the stylesheets
+    const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+    manageTransitions('#quarto-margin-sidebar .nav-link', false);
+    if (alternate) {
+      enableStylesheet(alternateStylesheets);
+      for (const sheetNode of alternateStylesheets) {
+        if (sheetNode.id === "quarto-bootstrap") {
+          toggleBodyColorMode(sheetNode);
+        }
+      }
+    } else {
+      disableStylesheet(alternateStylesheets);
+      toggleBodyColorPrimary();
+    }
+    manageTransitions('#quarto-margin-sidebar .nav-link', true);
+    // Switch the toggles
+    const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+    for (let i=0; i < toggles.length; i++) {
+      const toggle = toggles[i];
+      if (toggle) {
+        if (alternate) {
+          toggle.classList.add("alternate");     
+        } else {
+          toggle.classList.remove("alternate");
+        }
+      }
+    }
+    // Hack to workaround the fact that safari doesn't
+    // properly recolor the scrollbar when toggling (#1455)
+    if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+      manageTransitions("body", false);
+      window.scrollTo(0, 1);
+      setTimeout(() => {
+        window.scrollTo(0, 0);
+        manageTransitions("body", true);
+      }, 40);  
+    }
+  }
+  const isFileUrl = () => { 
+    return window.location.protocol === 'file:';
+  }
+  const hasAlternateSentinel = () => {  
+    let styleSentinel = getColorSchemeSentinel();
+    if (styleSentinel !== null) {
+      return styleSentinel === "alternate";
+    } else {
+      return false;
+    }
+  }
+  const setStyleSentinel = (alternate) => {
+    const value = alternate ? "alternate" : "default";
+    if (!isFileUrl()) {
+      window.localStorage.setItem("quarto-color-scheme", value);
+    } else {
+      localAlternateSentinel = value;
+    }
+  }
+  const getColorSchemeSentinel = () => {
+    if (!isFileUrl()) {
+      const storageValue = window.localStorage.getItem("quarto-color-scheme");
+      return storageValue != null ? storageValue : localAlternateSentinel;
+    } else {
+      return localAlternateSentinel;
+    }
+  }
+  let localAlternateSentinel = 'default';
+  // Dark / light mode switch
+  window.quartoToggleColorScheme = () => {
+    // Read the current dark / light value 
+    let toAlternate = !hasAlternateSentinel();
+    toggleColorMode(toAlternate);
+    setStyleSentinel(toAlternate);
+  };
+  // Ensure there is a toggle, if there isn't float one in the top right
+  if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+    const a = window.document.createElement('a');
+    a.classList.add('top-right');
+    a.classList.add('quarto-color-scheme-toggle');
+    a.href = "";
+    a.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+    const i = window.document.createElement("i");
+    i.classList.add('bi');
+    a.appendChild(i);
+    window.document.body.appendChild(a);
+  }
+  // Switch to dark mode if need be
+  if (hasAlternateSentinel()) {
+    toggleColorMode(true);
+  } 
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    target: function(trigger) {
+      return trigger.previousElementSibling;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    setTimeout(function() {
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const cites = ref.parentNode.getAttribute('data-cites').split(' ');
+    tippyHover(ref, function() {
+      var popup = window.document.createElement('div');
+      cites.forEach(function(cite) {
+        var citeDiv = window.document.createElement('div');
+        citeDiv.classList.add('hanging-indent');
+        citeDiv.classList.add('csl-entry');
+        var biblioDiv = window.document.getElementById('ref-' + cite);
+        if (biblioDiv) {
+          citeDiv.innerHTML = biblioDiv.innerHTML;
+        }
+        popup.appendChild(citeDiv);
+      });
+      return popup.innerHTML;
+    });
+  }
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var filterRegex = new RegExp(/https:\/\/ohmeow\.github\.io\/blurr\//);
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+    var links = window.document.querySelectorAll('a:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+          // target, if specified
+          link.setAttribute("target", "_blank");
+      }
+    }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>
