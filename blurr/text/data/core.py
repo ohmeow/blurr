@@ -308,7 +308,7 @@ class BatchDecodeTransform(Transform):
     def __init__(
         self,
         # Used by typedispatched show methods
-        input_return_type: Type = TextInput,
+        input_return_type: type = TextInput,
         # The abbreviation/name of your Hugging Face transformer architecture (not required if passing in an instance of `BatchTokenizeTransform` to `before_batch_tfm`)
         hf_arch: str = None,
         # A Hugging Face configuration object (not required if passing in an instance of `BatchTokenizeTransform` to `before_batch_tfm`)
@@ -390,7 +390,7 @@ class TextBlock(TransformBlock):
         # Set this to `True` if your inputs are pre-tokenized (not numericalized)
         is_split_into_words: bool = False,
         # The return type your decoded inputs should be cast too (used by methods such as `show_batch`)
-        input_return_type: Type = TextInput,
+        input_return_type: type = TextInput,
         # The type of `DataLoader` you want created (defaults to `SortedDL`)
         dl_type: DataLoader = None,
         # Any keyword arguments you want applied to your `batch_tokenize_tfm`
@@ -574,7 +574,7 @@ class TextDataLoader(TfmdDL):
     def __init__(
         self,
         # A standard PyTorch Dataset
-        dataset: torch.utils.data.dataset.Dataset|Datasets,
+        dataset: torch.utils.data.dataset.Dataset | Datasets,
         # The abbreviation/name of your Hugging Face transformer architecture (not required if passing in an \
         # instance of `BatchTokenizeTransform` to `before_batch_tfm`)
         hf_arch: str,
@@ -590,7 +590,7 @@ class TextDataLoader(TfmdDL):
         # The batch_tfm used to decode Blurr batches (defaults to `BatchDecodeTransform`)
         batch_decode_tfm: BatchDecodeTransform = None,
         # Used by typedispatched show methods
-        input_return_type: Type = TextInput,
+        input_return_type: type = TextInput,
         # (optional) A preprocessing function that will be applied to your dataset
         preproccesing_func: Callable = None,
         # Keyword arguments to be applied to your `batch_decode_tfm`
@@ -624,7 +624,7 @@ class TextDataLoader(TfmdDL):
         # A standard PyTorch and fastai dataset
         dataset: Union[torch.utils.data.dataset.Dataset, Datasets] = None,
         # The class you want to create an instance of (will be "self" if None)
-        cls: Type = None,
+        cls: type = None,
         #  Any additional keyword arguments you want to pass to the __init__ method of `cls`
         **kwargs,
     ):
