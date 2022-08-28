@@ -1,4 +1,5 @@
 ipynb-filters: [nbdev_filter]
+link-external-newwindow: true
 
 project:
   type: website
@@ -9,7 +10,11 @@ project:
 
 format:
   html:
-    theme: cosmo
+    theme:
+      light: [cosmo, style-light.scss]
+      dark: [darkly, style-dark.scss]
+
+    max-width: 100%
     css: styles.css
     toc: true
     toc-depth: 4
@@ -24,7 +29,8 @@ website:
   repo-url: "https://github.com/ohmeow/blurr/tree/master/"
   repo-actions: [issue]
   navbar:
-    background: primary
+    pinned: true
+   
     search: true
     right:
       - icon: github
