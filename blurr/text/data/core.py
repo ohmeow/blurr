@@ -6,6 +6,7 @@ from __future__ import annotations
 import os, inspect, warnings
 from dataclasses import dataclass
 from functools import reduce, partial
+from typing import Callable
 
 from datasets import Dataset, load_dataset, concatenate_datasets
 from fastcore.all import *
@@ -546,7 +547,7 @@ class TextBatchCreator:
         # A Hugging Face model
         hf_model: PreTrainedModel,
         # Defaults to use Hugging Face's DataCollatorWithPadding(tokenizer=hf_tokenizer)
-        data_collator: Type = None,
+        data_collator: type = None,
     ):
         store_attr()
         self.data_collator = data_collator if (data_collator) else DataCollatorWithPadding(tokenizer=hf_tokenizer)
