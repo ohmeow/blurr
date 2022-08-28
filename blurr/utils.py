@@ -126,9 +126,9 @@ class MultiTargetLoss(Module):
         # The loss function for each target
         loss_classes: list[Callable] = [CrossEntropyLossFlat, CrossEntropyLossFlat],
         # Any kwargs you want to pass to the loss functions above
-        loss_classes_kwargs: List[dict] = [{}, {}],
+        loss_classes_kwargs: list[dict] = [{}, {}],
         # The weights you want to apply to each loss (default: [1,1])
-        weights: list[float] | List[int] = [1, 1],
+        weights: list[float] | list[int] = [1, 1],
         # The `reduction` parameter of the lass function (default: 'mean')
         reduction: str = "mean",
     ):

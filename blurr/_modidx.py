@@ -3,7 +3,7 @@
 d = { 'settings': { 'branch': 'master',
                 'doc_baseurl': '/blurr/',
                 'doc_host': 'https://ohmeow.github.io',
-                'git_url': 'https://github.com/ohmeow/blurr/tree/master/',
+                'git_url': 'https://github.com/ohmeow/blurr/',
                 'lib_path': 'blurr'},
   'syms': { 'blurr.callbacks': { 'blurr.callbacks.CheckpointingNotSupported': ( 'callbacks.html#checkpointingnotsupported',
                                                                                 'blurr/callbacks.py'),
