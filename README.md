@@ -152,7 +152,7 @@ model = BaseModelWrapper(hf_model)
 
 learn = Learner(
     dls,
-    hf_model,
+    model,
     opt_func=partial(Adam, decouple_wd=True),
     loss_func=CrossEntropyLossFlat(),
     metrics=[accuracy],
