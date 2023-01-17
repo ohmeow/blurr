@@ -16,7 +16,8 @@ variety of tasks. It includes a high, mid, and low-level API that will
 allow developers to use much of it out-of-the-box or customize it as
 needed.
 
-**Supported Text/NLP Tasks**: - Sequence Classification  
+**Supported Text/NLP Tasks**: 
+- Sequence Classification  
 - Token Classification  
 - Question Answering  
 - Summarization  
