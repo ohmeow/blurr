@@ -14,17 +14,26 @@ from fastai.imports import *
 from fastai.losses import CrossEntropyLossFlat
 from fastai.torch_core import *
 from fastai.torch_imports import *
-from transformers import AutoModelForQuestionAnswering, PretrainedConfig, PreTrainedTokenizerBase, PreTrainedModel
+from transformers import (
+    AutoModelForQuestionAnswering,
+    PretrainedConfig,
+    PreTrainedTokenizerBase,
+    PreTrainedModel,
+)
 from transformers.utils import logging as hf_logging
 
-from .core import TextInput, BatchTokenizeTransform, Preprocessor, first_blurr_tfm
+from blurr.text.data.core import (
+    TextInput,
+    BatchTokenizeTransform,
+    Preprocessor,
+    first_blurr_tfm,
+)
 from ..utils import get_hf_objects
 
 # %% ../../../nbs/14_text-data-question-answering.ipynb 7
 # silence all the HF warnings
 warnings.simplefilter("ignore")
 hf_logging.set_verbosity_error()
-
 
 # %% ../../../nbs/14_text-data-question-answering.ipynb 20
 class QAPreprocessor(Preprocessor):
@@ -64,16 +73,26 @@ class QAPreprocessor(Preprocessor):
             tok_kwargs["truncation"] = "only_first"
             text_attrs = [ctx_attr, qst_attr]
 
-        super().__init__(hf_tokenizer, batch_size, text_attr=text_attrs[0], text_pair_attr=text_attrs[1], tok_kwargs=tok_kwargs)
+        super().__init__(
+            hf_tokenizer,
+            batch_size,
+            text_attr=text_attrs[0],
+            text_pair_attr=text_attrs[1],
+            tok_kwargs=tok_kwargs,
+        )
         store_attr()
 
-    def process_df(self, training_df: pd.DataFrame, validation_df: Optional[pd.DataFrame] = None):
+    def process_df(
+        self, training_df: pd.DataFrame, validation_df: Optional[pd.DataFrame] = None
+    ):
         df = super().process_df(training_df, validation_df)
 
         # a unique Id for each example is required to properly score question answering results when chunking long
         # documents (e.g., return_overflowing_tokens=True)
         chunk_docs = self.tok_kwargs.get("return_overflowing_tokens", False)
-        max_length = self.tok_kwargs.get("max_length", self.hf_tokenizer.model_max_length)
+        max_length = self.tok_kwargs.get(
+            "max_length", self.hf_tokenizer.model_max_length
+        )
 
         if self.id_attr is None and chunk_docs:
             df.insert(0, "_id", range(len(df)))
@@ -81,12 +100,16 @@ class QAPreprocessor(Preprocessor):
         # process df in mini-batches
         final_df = pd.DataFrame()
         for g, batch_df in df.groupby(np.arange(len(df)) // self.batch_size):
-            final_df = final_df.append(self._process_df_batch(batch_df, chunk_docs, max_length))
+            final_df = final_df.append(
+                self._process_df_batch(batch_df, chunk_docs, max_length)
+            )
 
         final_df.reset_index(drop=True, inplace=True)
         return final_df
 
-    def process_hf_dataset(self, training_ds: Dataset, validation_ds: Optional[Dataset] = None):
+    def process_hf_dataset(
+        self, training_ds: Dataset, validation_ds: Optional[Dataset] = None
+    ):
         ds = super().process_hf_dataset(training_ds, validation_ds)
         return Dataset.from_pandas(self.process_df(pd.DataFrame(ds)))
 
@@ -108,9 +131,20 @@ class QAPreprocessor(Preprocessor):
             seq_ids = inputs.sequence_ids(idx)
 
             # get question and context associated with the inputs at "idx"
-            qst_mask = [i != 1 if self.hf_tokenizer.padding_side == "right" else i != 0 for i in seq_ids]
-            qst_offsets = [offsets[i] for i, is_qst in enumerate(qst_mask) if is_qst and seq_ids[i] is not None]
-            ctx_offsets = [offsets[i] for i, is_qst in enumerate(qst_mask) if not is_qst and seq_ids[i] is not None]
+            qst_mask = [
+                i != 1 if self.hf_tokenizer.padding_side == "right" else i != 0
+                for i in seq_ids
+            ]
+            qst_offsets = [
+                offsets[i]
+                for i, is_qst in enumerate(qst_mask)
+                if is_qst and seq_ids[i] is not None
+            ]
+            ctx_offsets = [
+                offsets[i]
+                for i, is_qst in enumerate(qst_mask)
+                if not is_qst and seq_ids[i] is not None
+            ]
 
             proc_qst = row[self.qst_attr][min(qst_offsets)[0] : max(qst_offsets)[1]]
             proc_ctx = row[self.ctx_attr][min(ctx_offsets)[0] : max(ctx_offsets)[1]]
@@ -118,10 +152,17 @@ class QAPreprocessor(Preprocessor):
             # if we are chunking long documents, we need to tokenize the chunked question, context in order to correctly assign
             # the start/end token indices, else we can just the above since we are only looking at one example at a time
             if is_chunked:
-                chunk_texts = (proc_qst, proc_ctx) if self.hf_tokenizer.padding_side == "right" else (proc_ctx, proc_qst)
+                chunk_texts = (
+                    (proc_qst, proc_ctx)
+                    if self.hf_tokenizer.padding_side == "right"
+                    else (proc_ctx, proc_qst)
+                )
                 chunk_inputs = self.hf_tokenizer(chunk_texts[0], chunk_texts[1])
                 chunk_input_ids = chunk_inputs["input_ids"]
-                chunk_qst_mask = [i != 1 if self.hf_tokenizer.padding_side == "right" else i != 0 for i in chunk_inputs.sequence_ids()]
+                chunk_qst_mask = [
+                    i != 1 if self.hf_tokenizer.padding_side == "right" else i != 0
+                    for i in chunk_inputs.sequence_ids()
+                ]
             else:
                 chunk_input_ids, chunk_qst_mask = input_ids, qst_mask
 
@@ -133,7 +174,11 @@ class QAPreprocessor(Preprocessor):
             start_idx, end_idx = 0, 0
             for idx, (tok, is_qst_tok) in enumerate(zip(tok_input, chunk_qst_mask)):
                 try:
-                    if is_qst_tok == False and tok == tok_ans[0] and tok_input[idx : idx + len(tok_ans)] == tok_ans:
+                    if (
+                        is_qst_tok == False
+                        and tok == tok_ans[0]
+                        and tok_input[idx : idx + len(tok_ans)] == tok_ans
+                    ):
                         # ensure we are within the max_length
                         last_idx = idx + len(tok_ans)
                         if last_idx < max_length:
@@ -155,11 +200,9 @@ class QAPreprocessor(Preprocessor):
 
         return pd.DataFrame(proc_data)
 
-
 # %% ../../../nbs/14_text-data-question-answering.ipynb 28
 class QATextInput(TextInput):
     pass
-
 
 # %% ../../../nbs/14_text-data-question-answering.ipynb 30
 class QABatchTokenizeTransform(BatchTokenizeTransform):
@@ -201,7 +244,10 @@ class QABatchTokenizeTransform(BatchTokenizeTransform):
     ):
 
         # "return_special_tokens_mask" and "return_offsets_mapping" are mandatory for extractive QA in blurr
-        tok_kwargs = {**tok_kwargs, **{"return_special_tokens_mask": True, "return_offsets_mapping": True}}
+        tok_kwargs = {
+            **tok_kwargs,
+            **{"return_special_tokens_mask": True, "return_offsets_mapping": True},
+        }
 
         super().__init__(
             hf_arch,
@@ -219,17 +265,23 @@ class QABatchTokenizeTransform(BatchTokenizeTransform):
         )
 
     def encodes(self, samples, return_batch_encoding=False):
-        updated_samples, batch_encoding = super().encodes(samples, return_batch_encoding=True)
+        updated_samples, batch_encoding = super().encodes(
+            samples, return_batch_encoding=True
+        )
 
         for idx, s in enumerate(updated_samples):
             # cls_index: location of CLS token (used by xlnet and xlm); is a list.index(value) for pytorch tensor's
-            s[0]["cls_index"] = (s[0]["input_ids"] == self.hf_tokenizer.cls_token_id).nonzero()[0]
+            s[0]["cls_index"] = (
+                s[0]["input_ids"] == self.hf_tokenizer.cls_token_id
+            ).nonzero()[0]
             # p_mask: mask with 1 for token than cannot be in the answer, else 0 (used by xlnet and xlm)
             s[0]["p_mask"] = s[0]["special_tokens_mask"]
 
             trgs = s[1:]
             if self.include_labels and len(trgs) > 0:
-                s[0].pop("labels")  # this is added by base class, but is not needed for extractive QA
+                s[0].pop(
+                    "labels"
+                )  # this is added by base class, but is not needed for extractive QA
                 s[0]["start_positions"] = trgs[0]
                 s[0]["end_positions"] = trgs[1]
 
@@ -237,7 +289,6 @@ class QABatchTokenizeTransform(BatchTokenizeTransform):
             return updated_samples, inputs
 
         return updated_samples
-
 
 # %% ../../../nbs/14_text-data-question-answering.ipynb 45
 @typedispatch
@@ -271,6 +322,7 @@ def show_batch(
         ans_text = hf_tokenizer.decode(input_ids[start:end], skip_special_tokens=True)
         res.append((txt, found, (start.item(), end.item()), ans_text))
 
-    display_df(pd.DataFrame(res, columns=["text", "found", "start/end", "answer"])[:max_n])
+    display_df(
+        pd.DataFrame(res, columns=["text", "found", "start/end", "answer"])[:max_n]
+    )
     return ctxs
-

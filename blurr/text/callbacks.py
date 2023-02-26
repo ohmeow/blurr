@@ -13,6 +13,5 @@ from fastai.imports import *
 from fastai.learner import *
 from fastai.torch_core import *
 
-
 # %% auto 0
 __all__ = []

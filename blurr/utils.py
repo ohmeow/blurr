@@ -11,16 +11,20 @@ from fastcore.all import *
 from fastai.callback.all import *
 from fastai.imports import *
 from fastai.learner import *
-from fastai.losses import BaseLoss, BCEWithLogitsLossFlat, CrossEntropyLossFlat, MSELossFlat
+from fastai.losses import (
+    BaseLoss,
+    BCEWithLogitsLossFlat,
+    CrossEntropyLossFlat,
+    MSELossFlat,
+)
 from fastai.torch_core import *
 from fastai.torch_imports import *
-
 
 # %% auto 0
 __all__ = ['Singleton', 'str_to_type', 'print_versions', 'set_seed', 'reset_memory', 'PreCalculatedLoss',
            'PreCalculatedCrossEntropyLoss', 'PreCalculatedBCELoss', 'PreCalculatedMSELoss', 'MultiTargetLoss']
 
-# %% ../nbs/00_utils.ipynb 8
+# %% ../nbs/00_utils.ipynb 7
 class Singleton:
     def __init__(self, cls):
         self._cls, self._instance = cls, None
@@ -30,14 +34,14 @@ class Singleton:
             self._instance = self._cls(*args, **kwargs)
         return self._instance
 
-
-# %% ../nbs/00_utils.ipynb 12
-def str_to_type(typename: str) -> type:  # The name of a type as a string  # Returns the actual type
+# %% ../nbs/00_utils.ipynb 11
+def str_to_type(
+    typename: str,
+) -> type:  # The name of a type as a string  # Returns the actual type
     "Converts a type represented as a string to the actual class"
     return getattr(sys.modules[__name__], typename)
 
-
-# %% ../nbs/00_utils.ipynb 16
+# %% ../nbs/00_utils.ipynb 15
 def print_versions(
     # A string of space delimited package names or a list of package names
     packages: str
@@ -50,8 +54,7 @@ def print_versions(
         item = item.strip()
         print(f"{item}: {importlib.import_module(item).__version__}")
 
-
-# %% ../nbs/00_utils.ipynb 20
+# %% ../nbs/00_utils.ipynb 19
 # see the following threads for more info:
 # - https://forums.fast.ai/t/solved-reproducibility-where-is-the-randomness-coming-in/31628?u=wgpubs
 # - https://docs.fast.ai/dev/test.html#getting-reproducible-results
@@ -69,8 +72,7 @@ def set_seed(seed_value: int = 42):
         torch.backends.cudnn.deterministic = True  # needed
         torch.backends.cudnn.benchmark = False
 
-
-# %% ../nbs/00_utils.ipynb 22
+# %% ../nbs/00_utils.ipynb 21
 def reset_memory(
     # The fastai learner to delete
     learn: Learner = None,
@@ -81,8 +83,7 @@ def reset_memory(
     torch.cuda.empty_cache()
     gc.collect()
 
-
-# %% ../nbs/00_utils.ipynb 25
+# %% ../nbs/00_utils.ipynb 24
 class PreCalculatedLoss(BaseLoss):
     """
     If you want to let your Hugging Face model calculate the loss for you, make sure you include the `labels` argument in your inputs and use
@@ -108,10 +109,11 @@ class PreCalculatedBCELoss(PreCalculatedLoss, BCEWithLogitsLossFlat):
 
 class PreCalculatedMSELoss(PreCalculatedLoss):
     def __init__(self, *args, axis=-1, floatify=True, **kwargs):
-        super().__init__(nn.MSELoss, *args, axis=axis, floatify=floatify, is_2d=False, **kwargs)
+        super().__init__(
+            nn.MSELoss, *args, axis=axis, floatify=floatify, is_2d=False, **kwargs
+        )
 
-
-# %% ../nbs/00_utils.ipynb 26
+# %% ../nbs/00_utils.ipynb 25
 class MultiTargetLoss(Module):
     """
     Provides the ability to apply different loss functions to multi-modal targets/predictions.
@@ -132,7 +134,10 @@ class MultiTargetLoss(Module):
         # The `reduction` parameter of the lass function (default: 'mean')
         reduction: str = "mean",
     ):
-        loss_funcs = [cls(reduction=reduction, **kwargs) for cls, kwargs in zip(loss_classes, loss_classes_kwargs)]
+        loss_funcs = [
+            cls(reduction=reduction, **kwargs)
+            for cls, kwargs in zip(loss_classes, loss_classes_kwargs)
+        ]
         store_attr(self=self, names="loss_funcs, weights")
         self._reduction = reduction
 
@@ -151,7 +156,9 @@ class MultiTargetLoss(Module):
 
     def forward(self, outputs, *targets):
         loss = 0.0
-        for i, loss_func, weights, output, target in zip(range(len(outputs)), self.loss_funcs, self.weights, outputs, targets):
+        for i, loss_func, weights, output, target in zip(
+            range(len(outputs)), self.loss_funcs, self.weights, outputs, targets
+        ):
             loss += weights * loss_func(output, target)
 
         return loss
@@ -163,4 +170,3 @@ class MultiTargetLoss(Module):
     def decodes(self, outs):
         decodes = [self.loss_funcs[i].decodes(o) for i, o in enumerate(outs)]
         return decodes
-

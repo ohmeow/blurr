@@ -14,21 +14,18 @@ from fastai.learner import *
 from fastai.torch_core import *
 from transformers import PreTrainedModel
 
-
 # %% auto 0
 __all__ = ['CheckpointingNotSupported', 'GradientCheckpointing']
 
-# %% ../nbs/00b_callbacks.ipynb 7
+# %% ../nbs/00b_callbacks.ipynb 6
 os.environ["TOKENIZERS_PARALLELISM"] = "false"
 
-
-# %% ../nbs/00b_callbacks.ipynb 10
+# %% ../nbs/00b_callbacks.ipynb 9
 class CheckpointingNotSupported(Exception):
     def __init__(self, msg="Model does not support gradient checkpointing."):
         super().__init__(msg)
 
-
-# %% ../nbs/00b_callbacks.ipynb 11
+# %% ../nbs/00b_callbacks.ipynb 10
 class GradientCheckpointing(Callback):
     """A fastai callback to enable gradient checkpointing for compatible HuggingFace models."""
 
@@ -51,4 +48,3 @@ class GradientCheckpointing(Callback):
     def supported(model: PreTrainedModel):
         """Tests whether a HuggingFace `PreTrainedModel` supports gradient checkpointing."""
         return model.supports_gradient_checkpointing
-

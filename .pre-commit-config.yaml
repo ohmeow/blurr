@@ -1,0 +1,29 @@
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.3.0
+    hooks:
+      # list of definitions and supported hooks: https://pre-commit.com/hooks.html
+      - id: trailing-whitespace      # removes any whitespace at the ends of lines
+      - id: check-toml               # check toml syntax by loading all toml files
+      - id: check-yaml               # check yaml syntax by loading all yaml files
+      - id: check-json               # check-json syntax by loading all json files
+      - id: check-merge-conflict     # check for files with merge conflict strings
+        args: ['--assume-in-merge']  #  and run this check even when not explicitly in a merge
+      - id: check-added-large-files  # check that no "large" files have been added
+        args: ['--maxkb=10240']      #  where large means 10MB+, as in Hugging Face's git server
+      - id: debug-statements         # check for python debug statements (import pdb, breakpoint, etc.)
+      - id: detect-private-key       # checks for private keys (BEGIN X PRIVATE KEY, etc.)
+
+  # black python autoformatting
+  - repo: https://github.com/psf/black
+    rev: 22.10.0
+    hooks:
+      - id: black-jupyter
+        exclude: setup.py|blurr/
+    # additional configuration of black in pyproject.toml
+
+  - repo: https://github.com/fastai/nbdev
+    rev: 2.3.9
+    hooks:
+    - id: nbdev_clean
+    - id: nbdev_export

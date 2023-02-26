@@ -8,7 +8,13 @@ import inspect, torch, warnings
 from typing import Callable, Dict, List, Optional, Union
 
 from fastai.callback.all import *
-from fastai.data.block import DataBlock, ColReader, ItemGetter, ColSplitter, RandomSplitter
+from fastai.data.block import (
+    DataBlock,
+    ColReader,
+    ItemGetter,
+    ColSplitter,
+    RandomSplitter,
+)
 from fastai.data.core import DataLoaders
 from fastai.imports import *
 from fastai.learner import *
@@ -18,12 +24,18 @@ from fastcore.all import *
 from transformers import AutoModelForSeq2SeqLM, PreTrainedModel
 from transformers.utils import logging as hf_logging
 
-from ...data.seq2seq.core import Seq2SeqBatchTokenizeTransform, Seq2SeqTextBlock, default_text_gen_kwargs
+from blurr.text.data.seq2seq.core import (
+    Seq2SeqBatchTokenizeTransform,
+    Seq2SeqTextBlock,
+    default_text_gen_kwargs,
+)
 from ..core import BaseModelCallback, BaseModelWrapper, Blearner
-from .core import Seq2SeqMetricsCallback, blurr_seq2seq_splitter
+from blurr.text.modeling.seq2seq.core import (
+    Seq2SeqMetricsCallback,
+    blurr_seq2seq_splitter,
+)
 from ...utils import get_hf_objects
 from ....utils import PreCalculatedCrossEntropyLoss
-
 
 # %% ../../../../nbs/22_text-modeling-seq2seq-translation.ipynb 7
 # silence all the HF warnings
@@ -35,7 +47,6 @@ hf_logging.set_verbosity_error()
 def blurr_translate(self: Learner, inp, **kwargs):
     preds = self.blurr_generate(inp, key="translation_texts", **kwargs)
     return preds
-
 
 # %% ../../../../nbs/22_text-modeling-seq2seq-translation.ipynb 42
 @delegates(Blearner.__init__)
@@ -56,7 +67,11 @@ class BlearnerForTranslation(Blearner):
 
     @classmethod
     def get_metrics_cb(self):
-        seq2seq_metrics = {"bleu": {"returns": "bleu"}, "meteor": {"returns": "meteor"}, "sacrebleu": {"returns": "score"}}
+        seq2seq_metrics = {
+            "bleu": {"returns": "bleu"},
+            "meteor": {"returns": "meteor"},
+            "sacrebleu": {"returns": "score"},
+        }
 
         return Seq2SeqMetricsCallback(custom_metrics=seq2seq_metrics)
 
@@ -95,7 +110,10 @@ class BlearnerForTranslation(Blearner):
         # if we get a path/str then we're loading something like a .csv file
         if isinstance(data, Path) or isinstance(data, str):
             content_type = mimetypes.guess_type(data)[0]
-            if content_type == "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
+            if (
+                content_type
+                == "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            ):
                 data = pd.read_excel(data)
             elif content_type == "text/csv":
                 data = pd.read_csv(data)
@@ -108,7 +126,9 @@ class BlearnerForTranslation(Blearner):
 
         # infer our datablock splitter if None
         if dblock_splitter is None:
-            dblock_splitter = ColSplitter() if hasattr(data, "is_valid") else RandomSplitter()
+            dblock_splitter = (
+                ColSplitter() if hasattr(data, "is_valid") else RandomSplitter()
+            )
 
         # we need to find the architecture to ensure "mbart" specific tokenizer kwargs are included
         model_cls = cls.get_model_cls()
@@ -116,18 +136,28 @@ class BlearnerForTranslation(Blearner):
         hf_arch = model.__module__.split(".")[2]
 
         if hf_arch == "mbart":
-            hf_tok_kwargs = {**{"src_lang": "en_XX", "tgt_lang": "en_XX"}, **hf_tok_kwargs}
+            hf_tok_kwargs = {
+                **{"src_lang": "en_XX", "tgt_lang": "en_XX"},
+                **hf_tok_kwargs,
+            }
 
         # get our hf objects
         hf_arch, hf_config, hf_tokenizer, hf_model = get_hf_objects(
-            pretrained_model_name_or_path, model_cls=model_cls, tokenizer_kwargs=hf_tok_kwargs
+            pretrained_model_name_or_path,
+            model_cls=model_cls,
+            tokenizer_kwargs=hf_tok_kwargs,
         )
 
         # update text generation kwargs
-        text_gen_kwargs = {**text_gen_kwargs, **default_text_gen_kwargs(hf_config, hf_model, task="translation")}
+        text_gen_kwargs = {
+            **text_gen_kwargs,
+            **default_text_gen_kwargs(hf_config, hf_model, task="translation"),
+        }
 
         # not all "translation" parameters are for the model.generate method ... remove them here
-        generate_func_args = list(inspect.signature(hf_model.generate).parameters.keys())
+        generate_func_args = list(
+            inspect.signature(hf_model.generate).parameters.keys()
+        )
         for k in text_gen_kwargs.copy():
             if k not in generate_func_args:
                 del text_gen_kwargs[k]
@@ -141,7 +171,13 @@ class BlearnerForTranslation(Blearner):
         get_y = ItemGetter(trg_lang_attr)
 
         if hf_arch == "t5":
-            get_x.add(partial(cls._add_t5_prefix, src_lang_name=src_lang_name, trg_lang_name=trg_lang_name))
+            get_x.add(
+                partial(
+                    cls._add_t5_prefix,
+                    src_lang_name=src_lang_name,
+                    trg_lang_name=trg_lang_name,
+                )
+            )
 
         batch_tokenize_tfm = Seq2SeqBatchTokenizeTransform(
             hf_arch,
@@ -154,12 +190,17 @@ class BlearnerForTranslation(Blearner):
         )
 
         blocks = (Seq2SeqTextBlock(batch_tokenize_tfm=batch_tokenize_tfm), noop)
-        dblock = DataBlock(blocks=blocks, get_x=get_x, get_y=get_y, splitter=dblock_splitter)
+        dblock = DataBlock(
+            blocks=blocks, get_x=get_x, get_y=get_y, splitter=dblock_splitter
+        )
 
         dls = dblock.dataloaders(data, **dl_kwargs.copy())
 
         # return BLearner instance
-        learner_kwargs["splitter"] = learner_kwargs.pop("splitter", partial(blurr_seq2seq_splitter, arch=hf_arch))
-        learner_kwargs["loss_func"] = learner_kwargs.pop("loss_func", PreCalculatedCrossEntropyLoss())
+        learner_kwargs["splitter"] = learner_kwargs.pop(
+            "splitter", partial(blurr_seq2seq_splitter, arch=hf_arch)
+        )
+        learner_kwargs["loss_func"] = learner_kwargs.pop(
+            "loss_func", PreCalculatedCrossEntropyLoss()
+        )
         return cls(dls, hf_model, **learner_kwargs.copy())
-

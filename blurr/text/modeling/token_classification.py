@@ -10,7 +10,13 @@ from typing import Any, Callable, Dict, List, Optional, Union, Type
 
 from fastcore.all import *
 from fastai.callback.all import *
-from fastai.data.block import DataBlock, ColReader, ItemGetter, ColSplitter, RandomSplitter
+from fastai.data.block import (
+    DataBlock,
+    ColReader,
+    ItemGetter,
+    ColSplitter,
+    RandomSplitter,
+)
 from fastai.data.core import DataLoaders
 from fastai.imports import *
 from fastai.learner import *
@@ -19,10 +25,19 @@ from fastai.metrics import perplexity
 from fastai.torch_core import *
 from fastai.torch_imports import *
 from seqeval import metrics as seq_metrics
-from transformers import AutoModelForTokenClassification, PreTrainedTokenizerBase, PreTrainedModel
+from transformers import (
+    AutoModelForTokenClassification,
+    PreTrainedTokenizerBase,
+    PreTrainedModel,
+)
 from transformers.utils import logging as hf_logging
 
-from ..data.core import TextBlock, TextDataLoader, get_blurr_tfm, first_blurr_tfm
+from blurr.text.data.core import (
+    TextBlock,
+    TextDataLoader,
+    get_blurr_tfm,
+    first_blurr_tfm,
+)
 from blurr.text.data.token_classification import (
     get_token_labels_from_input_ids,
     get_word_labels_from_token_labels,
@@ -36,12 +51,10 @@ from .core import Blearner
 from ..utils import get_hf_objects
 from ...utils import PreCalculatedCrossEntropyLoss
 
-
 # %% ../../../nbs/13_text-modeling-token-classification.ipynb 7
 # silence all the HF warnings
 warnings.simplefilter("ignore")
 hf_logging.set_verbosity_error()
-
 
 # %% ../../../nbs/13_text-modeling-token-classification.ipynb 19
 def calculate_token_class_metrics(pred_toks, targ_toks, metric_key):
@@ -59,7 +72,6 @@ def calculate_token_class_metrics(pred_toks, targ_toks, metric_key):
 
     if metric_key == "classification_report":
         return seq_metrics.classification_report(targ_toks, pred_toks)
-
 
 # %% ../../../nbs/13_text-modeling-token-classification.ipynb 22
 class TokenClassMetricsCallback(Callback):
@@ -86,7 +98,9 @@ class TokenClassMetricsCallback(Callback):
 
         # grab the hf_tokenizer from the TokenClassBatchTokenizeTransform
         tfm = first_blurr_tfm(self.learn.dls, tfms=[TokenClassBatchTokenizeTransform])
-        hf_tok_categorize_tfm = get_blurr_tfm(self.learn.dls.tfms[1], tfm_class=TokenCategorize)
+        hf_tok_categorize_tfm = get_blurr_tfm(
+            self.learn.dls.tfms[1], tfm_class=TokenCategorize
+        )
 
         self.hf_tokenizer = tfm.hf_tokenizer
         self.ignore_label_token_id = hf_tok_categorize_tfm.ignore_token_id
@@ -95,7 +109,12 @@ class TokenClassMetricsCallback(Callback):
 
         # add custom text generation specific metrics
         custom_metric_keys = self.custom_metrics_dict.keys()
-        custom_metrics = L([ValueMetric(partial(self.metric_value, metric_key=k), k) for k in custom_metric_keys])
+        custom_metrics = L(
+            [
+                ValueMetric(partial(self.metric_value, metric_key=k), k)
+                for k in custom_metric_keys
+            ]
+        )
         self.learn.metrics = self.learn.metrics + custom_metrics
         self.learn.token_classification_report = None
 
@@ -140,17 +159,20 @@ class TokenClassMetricsCallback(Callback):
 
         preds, targs = map(list, zip(*self.results))
         for k in self.custom_metrics_dict.keys():
-            self.custom_metrics_dict[k] = calculate_token_class_metrics(targs, preds, metric_key=k)
+            self.custom_metrics_dict[k] = calculate_token_class_metrics(
+                targs, preds, metric_key=k
+            )
 
         try:
-            self.learn.token_classification_report = calculate_token_class_metrics(targs, preds, "classification_report")
+            self.learn.token_classification_report = calculate_token_class_metrics(
+                targs, preds, "classification_report"
+            )
         except ZeroDivisionError as err:
             print(f"Couldn't calcualte classification report: {err}")
 
     # --- for ValueMetric metrics ---
     def metric_value(self, metric_key):
         return self.custom_metrics_dict[metric_key]
-
 
 # %% ../../../nbs/13_text-modeling-token-classification.ipynb 36
 @typedispatch
@@ -185,9 +207,15 @@ def show_results(
         # align "tokens" with labels
         tok_labels = get_token_labels_from_input_ids(hf_tokenizer, inp, trg, vocab)
         # align "words" with labels
-        word_labels = get_word_labels_from_token_labels(hf_arch, hf_tokenizer, tok_labels)
+        word_labels = get_word_labels_from_token_labels(
+            hf_arch, hf_tokenizer, tok_labels
+        )
         # align "words" with "predicted" labels
-        word_pred_labels = [pred_lbl for lbl_id, pred_lbl in zip(trg, ast.literal_eval(pred[0])) if lbl_id != ignore_token_id]
+        word_pred_labels = [
+            pred_lbl
+            for lbl_id, pred_lbl in zip(trg, ast.literal_eval(pred[0]))
+            if lbl_id != ignore_token_id
+        ]
         # stringify list of (word,label) for example
         res.append(
             [
@@ -195,9 +223,10 @@ def show_results(
             ]
         )
 
-    display_df(pd.DataFrame(res, columns=["token / target label / predicted label"])[:max_n])
+    display_df(
+        pd.DataFrame(res, columns=["token / target label / predicted label"])[:max_n]
+    )
     return ctxs
-
 
 # %% ../../../nbs/13_text-modeling-token-classification.ipynb 39
 class TokenAggregationStrategies:
@@ -206,7 +235,12 @@ class TokenAggregationStrategies:
     token classication tasks (e.g, NER, POS, chunking, etc...)
     """
 
-    def __init__(self, hf_tokenizer: PreTrainedTokenizerBase, labels: List[str], non_entity_label: str = "O") -> None:
+    def __init__(
+        self,
+        hf_tokenizer: PreTrainedTokenizerBase,
+        labels: List[str],
+        non_entity_label: str = "O",
+    ) -> None:
         self.hf_tokenizer = hf_tokenizer
         self.labels = labels
         self.non_entity_label = non_entity_label
@@ -220,18 +254,33 @@ class TokenAggregationStrategies:
 
     def by_token(self, tokens, input_ids, offsets, preds, probs):
         results = []
-        for tok_idx, (token, input_id, offset, pred, prob) in enumerate(zip(tokens, input_ids, offsets, preds, probs)):
+        for tok_idx, (token, input_id, offset, pred, prob) in enumerate(
+            zip(tokens, input_ids, offsets, preds, probs)
+        ):
             # pass over any non-entity labels and "special" tokens
             label = self.labels[pred]
-            if label == self.non_entity_label or input_id.item() in self.hf_tokenizer.all_special_ids:
+            if (
+                label == self.non_entity_label
+                or input_id.item() in self.hf_tokenizer.all_special_ids
+            ):
                 continue
 
             start, end = offset
-            results.append({"entity": label, "score": prob[pred], "word": token, "start": start.item(), "end": end.item()})
+            results.append(
+                {
+                    "entity": label,
+                    "score": prob[pred],
+                    "word": token,
+                    "start": start.item(),
+                    "end": end.item(),
+                }
+            )
 
         return results
 
-    def by_word_strategy(self, strategy_name, text, input_ids, offsets, preds, probs, word_ids=None):
+    def by_word_strategy(
+        self, strategy_name, text, input_ids, offsets, preds, probs, word_ids=None
+    ):
         # validate `strategy_name`
         if strategy_name not in self.valid_strategies:
             raise ValueError("The 'strategy_name' is not supported by this class")
@@ -247,7 +296,10 @@ class TokenAggregationStrategies:
             label = self.labels[pred]
 
             # pass over any non-entity labels and "special" tokens
-            if label == self.non_entity_label or input_ids[idx].item() in self.hf_tokenizer.all_special_ids:
+            if (
+                label == self.non_entity_label
+                or input_ids[idx].item() in self.hf_tokenizer.all_special_ids
+            ):
                 idx += 1
                 continue
 
@@ -282,15 +334,26 @@ class TokenAggregationStrategies:
             if strategy_name == "average":
                 score = np.mean([np.mean(v).item() for k, v in word_scores.items()])
             else:
-                score = np.max(all_scores).item() if strategy_name == "max" else np.mean(all_scores).item()
+                score = (
+                    np.max(all_scores).item()
+                    if strategy_name == "max"
+                    else np.mean(all_scores).item()
+                )
 
             word = text[start:end]
-            results.append({"entity_group": label, "score": score, "word": word, "start": start.item(), "end": end.item()})
+            results.append(
+                {
+                    "entity_group": label,
+                    "score": score,
+                    "word": word,
+                    "start": start.item(),
+                    "end": end.item(),
+                }
+            )
 
             idx += 1
 
         return results
-
 
 # %% ../../../nbs/13_text-modeling-token-classification.ipynb 40
 @patch
@@ -313,9 +376,17 @@ def blurr_predict_tokens(
     tfm = first_blurr_tfm(self.dls, tfms=[TokenClassBatchTokenizeTransform])
     hf_tokenizer = tfm.hf_tokenizer
 
-    strategies = TokenAggregationStrategies(hf_tokenizer, self.dls.vocab, non_entity_label)
+    strategies = TokenAggregationStrategies(
+        hf_tokenizer, self.dls.vocab, non_entity_label
+    )
 
-    inputs = hf_tokenizer(items, return_offsets_mapping=True, return_tensors="pt", padding=True, truncation=True)
+    inputs = hf_tokenizer(
+        items,
+        return_offsets_mapping=True,
+        return_tensors="pt",
+        padding=True,
+        truncation=True,
+    )
     inputs_offsets = inputs["offset_mapping"]
     inputs_input_ids = inputs["input_ids"]
 
@@ -334,14 +405,29 @@ def blurr_predict_tokens(
     ):
         # build our results for the current input
         tokens = inputs.tokens(input_idx)
-        word_ids = inputs.word_ids(input_idx) if hf_tokenizer.is_fast else slow_word_ids_func(hf_tokenizer, input_idx, inputs)
+        word_ids = (
+            inputs.word_ids(input_idx)
+            if hf_tokenizer.is_fast
+            else slow_word_ids_func(hf_tokenizer, input_idx, inputs)
+        )
 
         if aggregation_strategy == "token":
-            results.append(strategies.by_token(tokens, input_ids, offsets, preds, probs))
+            results.append(
+                strategies.by_token(tokens, input_ids, offsets, preds, probs)
+            )
         else:
-            results.append(strategies.by_word_strategy(aggregation_strategy, text, input_ids, offsets, preds, probs, word_ids))
+            results.append(
+                strategies.by_word_strategy(
+                    aggregation_strategy,
+                    text,
+                    input_ids,
+                    offsets,
+                    preds,
+                    probs,
+                    word_ids,
+                )
+            )
     return results
-
 
 # %% ../../../nbs/13_text-modeling-token-classification.ipynb 52
 @delegates(Blearner.__init__)
@@ -385,7 +471,10 @@ class BlearnerForTokenClassification(Blearner):
         # if we get a path/str then we're loading something like a .csv file
         if isinstance(data, Path) or isinstance(data, str):
             content_type = mimetypes.guess_type(data)[0]
-            if content_type == "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
+            if (
+                content_type
+                == "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            ):
                 data = pd.read_excel(data)
             elif content_type == "text/csv":
                 data = pd.read_csv(data)
@@ -399,18 +488,32 @@ class BlearnerForTokenClassification(Blearner):
         # we need to tell transformer how many labels/classes to expect
         if labels is None:
             if isinstance(data, pd.DataFrame):
-                labels = sorted(list(set([lbls for sublist in data[token_labels_attr].tolist() for lbls in sublist])))
+                labels = sorted(
+                    list(
+                        set(
+                            [
+                                lbls
+                                for sublist in data[token_labels_attr].tolist()
+                                for lbls in sublist
+                            ]
+                        )
+                    )
+                )
             else:
                 labels = sorted(list(set([item[token_labels_attr] for item in data])))
 
         # infer our datablock splitter if None
         if dblock_splitter is None:
-            dblock_splitter = ColSplitter() if hasattr(data, "is_valid") else RandomSplitter()
+            dblock_splitter = (
+                ColSplitter() if hasattr(data, "is_valid") else RandomSplitter()
+            )
 
         # get our hf objects
         n_labels = len(labels)
         hf_arch, hf_config, hf_tokenizer, hf_model = get_hf_objects(
-            pretrained_model_name_or_path, model_cls=cls.get_model_cls(), config_kwargs={"num_labels": n_labels}
+            pretrained_model_name_or_path,
+            model_cls=cls.get_model_cls(),
+            config_kwargs={"num_labels": n_labels},
         )
 
         # not all architectures include a native pad_token (e.g., gpt2, ctrl, etc...), so we add one here
@@ -419,15 +522,23 @@ class BlearnerForTokenClassification(Blearner):
             hf_config.pad_token_id = hf_tokenizer.get_vocab()["<pad>"]
             hf_model.resize_token_embeddings(len(hf_tokenizer))
 
-        batch_tok_tfm = TokenClassBatchTokenizeTransform(hf_arch, hf_config, hf_tokenizer, hf_model)
+        batch_tok_tfm = TokenClassBatchTokenizeTransform(
+            hf_arch, hf_config, hf_tokenizer, hf_model
+        )
         blocks = (
-            TextBlock(batch_tokenize_tfm=batch_tok_tfm, input_return_type=TokenClassTextInput),
+            TextBlock(
+                batch_tokenize_tfm=batch_tok_tfm, input_return_type=TokenClassTextInput
+            ),
             TokenCategoryBlock(vocab=labels),
         )
 
-        dblock = DataBlock(blocks=blocks, get_x=ItemGetter(tokens_attr), get_y=ItemGetter(token_labels_attr), splitter=dblock_splitter)
+        dblock = DataBlock(
+            blocks=blocks,
+            get_x=ItemGetter(tokens_attr),
+            get_y=ItemGetter(token_labels_attr),
+            splitter=dblock_splitter,
+        )
         dls = dblock.dataloaders(data, **dl_kwargs.copy())
 
         # return BLearner instance
         return cls(dls, hf_model, **learner_kwargs.copy())
-

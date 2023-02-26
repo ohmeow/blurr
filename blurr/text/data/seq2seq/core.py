@@ -17,9 +17,15 @@ from fastcore.all import *
 from transformers import PretrainedConfig, PreTrainedTokenizerBase, PreTrainedModel
 from transformers.utils import logging as hf_logging
 
-from ..core import BatchDecodeTransform, BatchTokenizeTransform, Preprocessor, TextBlock, TextInput, first_blurr_tfm
+from blurr.text.data.core import (
+    BatchDecodeTransform,
+    BatchTokenizeTransform,
+    Preprocessor,
+    TextBlock,
+    TextInput,
+    first_blurr_tfm,
+)
 from ...utils import get_hf_objects
-
 
 # %% ../../../../nbs/20_text-data-seq2seq-core.ipynb 7
 # silence all the HF warnings
@@ -52,10 +58,16 @@ class Seq2SeqPreprocessor(Preprocessor):
         # remove "max_length" if set on tok_kwargs as this is set differently for inputs and targets
         tok_kwargs.pop("max_length", None)
 
-        super().__init__(hf_tokenizer, batch_size, text_attr, is_valid_attr, tok_kwargs=tok_kwargs)
+        super().__init__(
+            hf_tokenizer, batch_size, text_attr, is_valid_attr, tok_kwargs=tok_kwargs
+        )
 
         # inputs
-        self.max_input_tok_length = max_input_tok_length if max_input_tok_length is not None else hf_tokenizer.model_max_length
+        self.max_input_tok_length = (
+            max_input_tok_length
+            if max_input_tok_length is not None
+            else hf_tokenizer.model_max_length
+        )
 
         # targets
         self.target_text_attr = target_text_attr
@@ -63,18 +75,24 @@ class Seq2SeqPreprocessor(Preprocessor):
 
     def _tokenize_function(self, example):
         # tokenize inputs
-        inputs = self.hf_tokenizer(example[self.text_attr], max_length=self.max_input_tok_length, **self.tok_kwargs)
+        inputs = self.hf_tokenizer(
+            example[self.text_attr],
+            max_length=self.max_input_tok_length,
+            **self.tok_kwargs
+        )
         # tokenize targets
         with self.hf_tokenizer.as_target_tokenizer():
-            targets = self.hf_tokenizer(example[self.target_text_attr], max_length=self.max_target_tok_length, **self.tok_kwargs)
+            targets = self.hf_tokenizer(
+                example[self.target_text_attr],
+                max_length=self.max_target_tok_length,
+                **self.tok_kwargs
+            )
 
         return (inputs, targets)
-
 
 # %% ../../../../nbs/20_text-data-seq2seq-core.ipynb 16
 class Seq2SeqTextInput(TextInput):
     pass
-
 
 # %% ../../../../nbs/20_text-data-seq2seq-core.ipynb 20
 class Seq2SeqBatchTokenizeTransform(BatchTokenizeTransform):
@@ -146,7 +164,12 @@ class Seq2SeqBatchTokenizeTransform(BatchTokenizeTransform):
 
         # input text
         inputs = self.hf_tokenizer(
-            src_texts, max_length=self.max_length, padding=self.padding, truncation=self.truncation, return_tensors="pt", **self.tok_kwargs
+            src_texts,
+            max_length=self.max_length,
+            padding=self.padding,
+            truncation=self.truncation,
+            return_tensors="pt",
+            **self.tok_kwargs
         )
 
         # target text
@@ -163,7 +186,10 @@ class Seq2SeqBatchTokenizeTransform(BatchTokenizeTransform):
                 )
 
                 # padding tokens should be be changed to ignore_token_id so not factored into loss calculation
-                targ_inputs["input_ids"].masked_fill_(targ_inputs["input_ids"] == self.hf_tokenizer.pad_token_id, self.ignore_token_id)
+                targ_inputs["input_ids"].masked_fill_(
+                    targ_inputs["input_ids"] == self.hf_tokenizer.pad_token_id,
+                    self.ignore_token_id,
+                )
 
                 # set targets to target input_ids (req. if calculating loss in fastai training loop and for show methods)
                 targ_ids = targ_inputs["input_ids"].clone()
@@ -174,27 +200,41 @@ class Seq2SeqBatchTokenizeTransform(BatchTokenizeTransform):
                 if self.include_labels:
                     inputs["labels"] = targ_inputs["input_ids"]
                 else:
-                    decoder_start_tok_id = self.hf_config.get("decoder_start_token_id", self.hf_config.pad_token_id)
-                    inputs["decoder_input_ids"] = F.pad(targ_inputs["input_ids"].clone(), pad=(1, 0), value=decoder_start_tok_id)[:, :-1]
+                    decoder_start_tok_id = self.hf_config.get(
+                        "decoder_start_token_id", self.hf_config.pad_token_id
+                    )
+                    inputs["decoder_input_ids"] = F.pad(
+                        targ_inputs["input_ids"].clone(),
+                        pad=(1, 0),
+                        value=decoder_start_tok_id,
+                    )[:, :-1]
                     inputs["decoder_input_ids"].masked_fill_(
-                        inputs["decoder_input_ids"] == self.ignore_token_id, self.hf_tokenizer.pad_token_id
+                        inputs["decoder_input_ids"] == self.ignore_token_id,
+                        self.hf_tokenizer.pad_token_id,
                     )
 
         # update samples with tokenized inputs (e.g. input_ids, attention_mask, etc...)
         d_keys = inputs.keys()
         updated_samples = [
-            (*[{k: inputs[k][idx] for k in d_keys}], *tuplify(targ_ids[idx]), *sample[2:]) for idx, sample in enumerate(samples)
+            (
+                *[{k: inputs[k][idx] for k in d_keys}],
+                *tuplify(targ_ids[idx]),
+                *sample[2:],
+            )
+            for idx, sample in enumerate(samples)
         ]
 
         return updated_samples
 
-
 # %% ../../../../nbs/20_text-data-seq2seq-core.ipynb 23
 class Seq2SeqBatchDecodeTransform(BatchDecodeTransform):
     def decodes(self, encoded_samples):
-        input_ids = encoded_samples["input_ids"] if (isinstance(encoded_samples, dict)) else encoded_samples
+        input_ids = (
+            encoded_samples["input_ids"]
+            if (isinstance(encoded_samples, dict))
+            else encoded_samples
+        )
         return self.input_return_type(input_ids)
-
 
 # %% ../../../../nbs/20_text-data-seq2seq-core.ipynb 25
 def default_text_gen_kwargs(hf_config, hf_model, task=None):
@@ -209,12 +249,14 @@ def default_text_gen_kwargs(hf_config, hf_model, task=None):
     # not all configs even have a task_specific_params property
     if task is not None:
         try:
-            text_gen_kwargs = {**text_gen_kwargs, **hf_config.task_specific_params[task]}
+            text_gen_kwargs = {
+                **text_gen_kwargs,
+                **hf_config.task_specific_params[task],
+            }
         except:
             pass
 
     return text_gen_kwargs
-
 
 # %% ../../../../nbs/20_text-data-seq2seq-core.ipynb 28
 class Seq2SeqTextBlock(TextBlock):
@@ -299,8 +341,14 @@ class Seq2SeqTextBlock(TextBlock):
             )
 
         if batch_decode_tfm is None:
-            hf_tokenizer = hf_tokenizer if (hf_tokenizer is not None) else batch_tokenize_tfm.hf_tokenizer
-            batch_decode_tfm = Seq2SeqBatchDecodeTransform(input_return_type, **batch_decode_kwargs.copy())
+            hf_tokenizer = (
+                hf_tokenizer
+                if (hf_tokenizer is not None)
+                else batch_tokenize_tfm.hf_tokenizer
+            )
+            batch_decode_tfm = Seq2SeqBatchDecodeTransform(
+                input_return_type, **batch_decode_kwargs.copy()
+            )
 
         return super().__init__(
             batch_tokenize_tfm=batch_tokenize_tfm,
@@ -316,7 +364,6 @@ class Seq2SeqTextBlock(TextBlock):
             after_batch_kwargs=batch_decode_kwargs,
             **kwargs
         )
-
 
 # %% ../../../../nbs/20_text-data-seq2seq-core.ipynb 30
 @typedispatch
@@ -350,7 +397,9 @@ def show_batch(
         [
             (
                 hf_tokenizer.decode(s[0], skip_special_tokens=False)[:input_trunc_at],
-                hf_tokenizer.decode(s[1][s[1] != ignore_token_id], skip_special_tokens=True)[:target_trunc_at],
+                hf_tokenizer.decode(
+                    s[1][s[1] != ignore_token_id], skip_special_tokens=True
+                )[:target_trunc_at],
             )
             for s in samples
         ]
@@ -358,4 +407,3 @@ def show_batch(
 
     display_df(pd.DataFrame(res, columns=["text", "target"])[:max_n])
     return ctxs
-

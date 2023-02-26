@@ -25,14 +25,18 @@ from transformers import (
 )
 from transformers.utils import logging as hf_logging
 
-from .core import TextInput, BatchTokenizeTransform, Preprocessor, first_blurr_tfm
+from blurr.text.data.core import (
+    TextInput,
+    BatchTokenizeTransform,
+    Preprocessor,
+    first_blurr_tfm,
+)
 from ..utils import get_hf_objects
 
 # %% ../../../nbs/12_text-data-language-modeling.ipynb 6
 # silence all the HF warnings
 warnings.simplefilter("ignore")
 hf_logging.set_verbosity_error()
-
 
 # %% ../../../nbs/12_text-data-language-modeling.ipynb 17
 class LMPreprocessor(Preprocessor):
@@ -55,28 +59,38 @@ class LMPreprocessor(Preprocessor):
         tok_kwargs: dict = {},
     ):
         tok_kwargs = {**tok_kwargs, "truncation": False, "return_offsets_mapping": True}
-        super().__init__(hf_tokenizer, batch_size, text_attr, None, is_valid_attr, tok_kwargs)
+        super().__init__(
+            hf_tokenizer, batch_size, text_attr, None, is_valid_attr, tok_kwargs
+        )
 
         self.chunk_size = chunk_size or hf_tokenizer.model_max_length
         self.sep_token = sep_token or hf_tokenizer.eos_token or hf_tokenizer.sep_token
 
-    def process_df(self, training_df: pd.DataFrame, validation_df: Optional[pd.DataFrame] = None):
+    def process_df(
+        self, training_df: pd.DataFrame, validation_df: Optional[pd.DataFrame] = None
+    ):
         # process df in mini-batches
         final_train_df = pd.DataFrame()
-        for g, batch_df in training_df.groupby(np.arange(len(training_df)) // self.batch_size):
+        for g, batch_df in training_df.groupby(
+            np.arange(len(training_df)) // self.batch_size
+        ):
             final_train_df = final_train_df.append(self._process_df_batch(batch_df))
             final_train_df.reset_index(drop=True, inplace=True)
 
         final_val_df = pd.DataFrame() if validation_df is not None else None
         if final_val_df is not None:
-            for g, batch_df in validation_df.groupby(np.arange(len(validation_df)) // self.batch_size):
+            for g, batch_df in validation_df.groupby(
+                np.arange(len(validation_df)) // self.batch_size
+            ):
                 final_val_df = final_val_df.append(self._process_df_batch(batch_df))
                 final_val_df.reset_index(drop=True, inplace=True)
 
         final_df = super().process_df(final_train_df, final_val_df)
         return final_df
 
-    def process_hf_dataset(self, training_ds: Dataset, validation_ds: Optional[Dataset] = None):
+    def process_hf_dataset(
+        self, training_ds: Dataset, validation_ds: Optional[Dataset] = None
+    ):
         ds = super().process_hf_dataset(training_ds, validation_ds)
         return Dataset.from_pandas(self.process_df(pd.DataFrame(ds)))
 
@@ -85,14 +99,20 @@ class LMPreprocessor(Preprocessor):
         batch_df.reset_index(drop=True, inplace=True)
 
         # concatenate our texts
-        concat_txts = {self.text_attr: f" {self.sep_token} ".join(batch_df[self.text_attr].values.tolist())}
+        concat_txts = {
+            self.text_attr: f" {self.sep_token} ".join(
+                batch_df[self.text_attr].values.tolist()
+            )
+        }
         inputs = self._tokenize_function(concat_txts)
 
         # compute the length of our concatenated texts
         n_total_toks = len(inputs["input_ids"])
 
         # need to modify chunk_size to included the # of special tokens added
-        max_chunk_size = self.chunk_size - self.hf_tokenizer.num_special_tokens_to_add() - 1
+        max_chunk_size = (
+            self.chunk_size - self.hf_tokenizer.num_special_tokens_to_add() - 1
+        )
 
         # drop the last chunk of text if it is smaller than chunk size (see the HF course, section 7 on training MLMs)
         total_length = (n_total_toks // max_chunk_size) * max_chunk_size
@@ -101,11 +121,12 @@ class LMPreprocessor(Preprocessor):
         examples = []
         for i in range(0, total_length, max_chunk_size):
             chunked_offsets = inputs["offset_mapping"][i : i + max_chunk_size]
-            chunked_text = concat_txts[self.text_attr][min(chunked_offsets)[0] : max(chunked_offsets)[1]]
+            chunked_text = concat_txts[self.text_attr][
+                min(chunked_offsets)[0] : max(chunked_offsets)[1]
+            ]
             examples.append(chunked_text)
 
         return pd.DataFrame(examples, columns=[f"proc_{self.text_attr}"])
-
 
 # %% ../../../nbs/12_text-data-language-modeling.ipynb 24
 class LMType(Enum):
@@ -114,16 +135,22 @@ class LMType(Enum):
     CAUSAL = 1
     MASKED = 2
 
-
 # %% ../../../nbs/12_text-data-language-modeling.ipynb 26
 class BaseLMStrategy(ABC):
     """ABC for various language modeling strategies (e.g., causal, BertMLM, WholeWordMLM, etc...)"""
 
-    def __init__(self, hf_tokenizer, ignore_token_id=CrossEntropyLossFlat().ignore_index):
+    def __init__(
+        self, hf_tokenizer, ignore_token_id=CrossEntropyLossFlat().ignore_index
+    ):
         store_attr(["hf_tokenizer", "ignore_token_id"])
 
     @abstractmethod
-    def build_inputs_targets(self, samples, include_labels: bool = True, inputs: Optional[BatchEncoding] = None):
+    def build_inputs_targets(
+        self,
+        samples,
+        include_labels: bool = True,
+        inputs: Optional[BatchEncoding] = None,
+    ):
         pass
 
     # utility methods
@@ -135,21 +162,29 @@ class BaseLMStrategy(ABC):
     def get_lm_type(cls):
         pass
 
-
 # %% ../../../nbs/12_text-data-language-modeling.ipynb 29
 class CausalLMStrategy(BaseLMStrategy):
     """For next token prediction language modeling tasks, we want to use the `CausalLMStrategy` which makes the
     necessary changes in your inputs/targets for causal LMs
     """
 
-    def build_inputs_targets(self, samples, include_labels: bool = True, inputs: Optional[BatchEncoding] = None):
+    def build_inputs_targets(
+        self,
+        samples,
+        include_labels: bool = True,
+        inputs: Optional[BatchEncoding] = None,
+    ):
         updated_samples = []
         for s in samples:
             if include_labels:
                 s[0]["labels"] = s[0]["input_ids"].clone()
-                s[0]["labels"][s[0]["labels"] == self.hf_tokenizer.pad_token_id] = self.ignore_token_id
+                s[0]["labels"][
+                    s[0]["labels"] == self.hf_tokenizer.pad_token_id
+                ] = self.ignore_token_id
 
-            targ_ids = torch.cat([s[0]["input_ids"][1:], tensor([self.hf_tokenizer.eos_token_id])])
+            targ_ids = torch.cat(
+                [s[0]["input_ids"][1:], tensor([self.hf_tokenizer.eos_token_id])]
+            )
 
             updated_samples.append((s[0], targ_ids))
 
@@ -159,20 +194,28 @@ class CausalLMStrategy(BaseLMStrategy):
     def get_lm_type(cls: LMType):
         return LMType.CAUSAL
 
-
 # %% ../../../nbs/12_text-data-language-modeling.ipynb 31
 class BertMLMStrategy(BaseLMStrategy):
     """A masked language modeling strategy using the default BERT masking definition."""
 
-    def __init__(self, hf_tokenizer, ignore_token_id=CrossEntropyLossFlat().ignore_index):
+    def __init__(
+        self, hf_tokenizer, ignore_token_id=CrossEntropyLossFlat().ignore_index
+    ):
         super().__init__(hf_tokenizer, ignore_token_id)
 
         vocab = hf_tokenizer.get_vocab()
         self.dnm_tok_ids = [
-            vocab[tok] for tok in list(hf_tokenizer.special_tokens_map.values()) if vocab[tok] != hf_tokenizer.mask_token_id
+            vocab[tok]
+            for tok in list(hf_tokenizer.special_tokens_map.values())
+            if vocab[tok] != hf_tokenizer.mask_token_id
         ]
 
-    def build_inputs_targets(self, samples, include_labels: bool = True, inputs: Optional[BatchEncoding] = None):
+    def build_inputs_targets(
+        self,
+        samples,
+        include_labels: bool = True,
+        inputs: Optional[BatchEncoding] = None,
+    ):
         updated_samples = []
         for s in samples:
             # mask the input_ids
@@ -187,16 +230,22 @@ class BertMLMStrategy(BaseLMStrategy):
             n_rnd_idxs = int(total_masked_idxs * 0.1)
 
             # we only want non-special tokens
-            mask_idxs = [idx for idx in idxs if masked_input_ids[idx] not in self.dnm_tok_ids][:total_masked_idxs]
+            mask_idxs = [
+                idx for idx in idxs if masked_input_ids[idx] not in self.dnm_tok_ids
+            ][:total_masked_idxs]
 
             # replace 80% with [MASK]
             if n_mask_idxs > 0 and len(mask_idxs) >= n_mask_idxs:
-                masked_input_ids[[mask_idxs[:n_mask_idxs]]] = self.hf_tokenizer.mask_token_id
+                masked_input_ids[
+                    [mask_idxs[:n_mask_idxs]]
+                ] = self.hf_tokenizer.mask_token_id
 
             # replace 10% with a random token
             if n_rnd_idxs > 0 and len(mask_idxs) >= (n_mask_idxs + n_rnd_idxs):
                 rnd_tok_ids = self._get_random_token_id(n_rnd_idxs)
-                masked_input_ids[[mask_idxs[n_mask_idxs : (n_mask_idxs + n_rnd_idxs)]]] = tensor(rnd_tok_ids)
+                masked_input_ids[
+                    [mask_idxs[n_mask_idxs : (n_mask_idxs + n_rnd_idxs)]]
+                ] = tensor(rnd_tok_ids)
 
             # ignore padding when calculating the loss
             lbls = s[0]["input_ids"].clone()
@@ -218,7 +267,6 @@ class BertMLMStrategy(BaseLMStrategy):
     def get_lm_type(cls: LMType):
         return LMType.MASKED
 
-
 # %% ../../../nbs/12_text-data-language-modeling.ipynb 35
 class CausalLMTextInput(TextInput):
     pass
@@ -227,7 +275,6 @@ class CausalLMTextInput(TextInput):
 # export
 class MLMTextInput(TextInput):
     pass
-
 
 # %% ../../../nbs/12_text-data-language-modeling.ipynb 38
 class LMBatchTokenizeTransform(BatchTokenizeTransform):
@@ -287,7 +334,9 @@ class LMBatchTokenizeTransform(BatchTokenizeTransform):
             **kwargs
         )
 
-        self.lm_strategy = lm_strategy_cls(hf_tokenizer=hf_tokenizer, ignore_token_id=ignore_token_id)
+        self.lm_strategy = lm_strategy_cls(
+            hf_tokenizer=hf_tokenizer, ignore_token_id=ignore_token_id
+        )
         self.text_gen_kwargs, self.ignore_token_id = text_gen_kwargs, ignore_token_id
 
     def encodes(self, samples, return_batch_encoding=False):
@@ -296,13 +345,14 @@ class LMBatchTokenizeTransform(BatchTokenizeTransform):
         if len(samples[0]) == 1:
             return samples
 
-        updated_samples = self.lm_strategy.build_inputs_targets(samples, self.include_labels, inputs)
+        updated_samples = self.lm_strategy.build_inputs_targets(
+            samples, self.include_labels, inputs
+        )
 
         if return_batch_encoding:
             return updated_samples, inputs
 
         return updated_samples
-
 
 # %% ../../../nbs/12_text-data-language-modeling.ipynb 54
 @typedispatch
@@ -334,7 +384,9 @@ def show_batch(
         [
             (
                 hf_tokenizer.decode(s[0], skip_special_tokens=False)[:trunc_at],
-                hf_tokenizer.decode(s[1][s[1] != ignore_token_id], skip_special_tokens=True)[:trunc_at],
+                hf_tokenizer.decode(
+                    s[1][s[1] != ignore_token_id], skip_special_tokens=True
+                )[:trunc_at],
             )
             for s in samples
         ]
@@ -342,7 +394,6 @@ def show_batch(
 
     display_df(pd.DataFrame(res, columns=["text", "target"])[:max_n])
     return ctxs
-
 
 # %% ../../../nbs/12_text-data-language-modeling.ipynb 68
 @typedispatch
@@ -374,26 +425,35 @@ def show_batch(
     mask_token_id = hf_tokenizer.mask_token_id
 
     vocab = hf_tokenizer.get_vocab()
-    dnm_tok_ids = [vocab[tok] for tok in list(hf_tokenizer.special_tokens_map.values()) if vocab[tok] != mask_token_id]
+    dnm_tok_ids = [
+        vocab[tok]
+        for tok in list(hf_tokenizer.special_tokens_map.values())
+        if vocab[tok] != mask_token_id
+    ]
 
     res = L()
     for s in samples:
         # exclue dnm tokens from input
         inps = [
-            hf_tokenizer.decode(tok_id) if (tok_id == mask_token_id or s[1][idx] == ignore_token_id) else f"[{hf_tokenizer.decode(tok_id)}]"
+            hf_tokenizer.decode(tok_id)
+            if (tok_id == mask_token_id or s[1][idx] == ignore_token_id)
+            else f"[{hf_tokenizer.decode(tok_id)}]"
             for idx, tok_id in enumerate(s[0])
             if (tok_id not in dnm_tok_ids)
         ]
 
         # replaced masked tokens with "[{actual_token}]"
         trgs = [
-            hf_tokenizer.decode(s[0][idx]) if (tok_id == ignore_token_id) else f"[{hf_tokenizer.decode(tok_id)}]"
+            hf_tokenizer.decode(s[0][idx])
+            if (tok_id == ignore_token_id)
+            else f"[{hf_tokenizer.decode(tok_id)}]"
             for idx, tok_id in enumerate(s[1])
             if (s[0][idx] not in dnm_tok_ids)
         ]
 
-        res.append((" ".join(inps[:trunc_at]).strip(), " ".join(trgs[:trunc_at]).strip()))
+        res.append(
+            (" ".join(inps[:trunc_at]).strip(), " ".join(trgs[:trunc_at]).strip())
+        )
 
     display_df(pd.DataFrame(res, columns=["text", "target"])[:max_n])
     return ctxs
-

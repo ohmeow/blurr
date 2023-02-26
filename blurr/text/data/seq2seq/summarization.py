@@ -15,10 +15,12 @@ from fastai.data.block import DataBlock
 from transformers import AutoModelForSeq2SeqLM, PreTrainedTokenizerBase
 from transformers.utils import logging as hf_logging
 
-from .core import Seq2SeqBatchTokenizeTransform, Seq2SeqPreprocessor, Seq2SeqTextBlock
+from blurr.text.data.seq2seq.core import (
+    Seq2SeqBatchTokenizeTransform,
+    Seq2SeqPreprocessor,
+    Seq2SeqTextBlock,
+)
 from ...utils import get_hf_objects
-
-
 
 # %% ../../../../nbs/21_text-data-seq2seq-summarization.ipynb 7
 # silence all the HF warnings
@@ -56,13 +58,22 @@ class SummarizationPreprocessor(Seq2SeqPreprocessor):
         tok_kwargs = {**tok_kwargs, "return_offsets_mapping": True}
 
         super().__init__(
-            hf_tokenizer, batch_size, text_attr, max_input_tok_length, target_text_attr, max_target_tok_length, is_valid_attr, tok_kwargs
+            hf_tokenizer,
+            batch_size,
+            text_attr,
+            max_input_tok_length,
+            target_text_attr,
+            max_target_tok_length,
+            is_valid_attr,
+            tok_kwargs,
         )
 
         self.id_attr = id_attr
         self.min_summary_char_length = min_summary_char_length
 
-    def process_df(self, training_df: pd.DataFrame, validation_df: Optional[pd.DataFrame] = None):
+    def process_df(
+        self, training_df: pd.DataFrame, validation_df: Optional[pd.DataFrame] = None
+    ):
         df = super().process_df(training_df, validation_df)
 
         # process df in mini-batches
@@ -73,7 +84,9 @@ class SummarizationPreprocessor(Seq2SeqPreprocessor):
         final_df.reset_index(drop=True, inplace=True)
         return final_df
 
-    def process_hf_dataset(self, training_ds: Dataset, validation_ds: Optional[Dataset] = None):
+    def process_hf_dataset(
+        self, training_ds: Dataset, validation_ds: Optional[Dataset] = None
+    ):
         ds = super().process_hf_dataset(training_ds, validation_ds)
         return Dataset.from_pandas(self.process_df(pd.DataFrame(ds)))
 
@@ -81,7 +94,10 @@ class SummarizationPreprocessor(Seq2SeqPreprocessor):
     def _process_df_batch(self, batch_df):
         # remove summaries that are too short if a min character length is specified
         if self.min_summary_char_length:
-            batch_df = batch_df[batch_df[self.target_text_attr].str.len() >= self.min_summary_char_length]
+            batch_df = batch_df[
+                batch_df[self.target_text_attr].str.len()
+                >= self.min_summary_char_length
+            ]
 
         batch_df.reset_index(drop=True, inplace=True)
 
@@ -89,23 +105,43 @@ class SummarizationPreprocessor(Seq2SeqPreprocessor):
         inputs, targets = self._tokenize_function(batch_df.to_dict(orient="list"))
 
         # add are processed text and target texts to the batched DataFrame
-        for txt_seq_idx, (txt_attr, batch_enc) in enumerate(zip([self.text_attr, self.target_text_attr], [inputs, targets])):
+        for txt_seq_idx, (txt_attr, batch_enc) in enumerate(
+            zip([self.text_attr, self.target_text_attr], [inputs, targets])
+        ):
             if txt_attr is None:
                 break
 
             char_idxs = []
             for idx, offset_mapping in enumerate(batch_enc["offset_mapping"]):
-                text_offsets = [offset_mapping[i] for i, seq_id in enumerate(batch_enc.sequence_ids(idx))]
+                text_offsets = [
+                    offset_mapping[i]
+                    for i, seq_id in enumerate(batch_enc.sequence_ids(idx))
+                ]
                 char_idxs.append([min(text_offsets)[0], max(text_offsets)[1]])
 
             batch_df = pd.concat(
-                [batch_df, pd.DataFrame(char_idxs, columns=[f"{txt_attr}_start_char_idx", f"{txt_attr}_end_char_idx"])], axis=1
+                [
+                    batch_df,
+                    pd.DataFrame(
+                        char_idxs,
+                        columns=[
+                            f"{txt_attr}_start_char_idx",
+                            f"{txt_attr}_end_char_idx",
+                        ],
+                    ),
+                ],
+                axis=1,
             )
             batch_df.insert(
                 0,
                 f"proc_{txt_attr}",
-                batch_df.apply(lambda r: r[txt_attr][r[f"{txt_attr}_start_char_idx"] : r[f"{txt_attr}_end_char_idx"] + 1], axis=1),
+                batch_df.apply(
+                    lambda r: r[txt_attr][
+                        r[f"{txt_attr}_start_char_idx"] : r[f"{txt_attr}_end_char_idx"]
+                        + 1
+                    ],
+                    axis=1,
+                ),
             )
 
         return batch_df
-

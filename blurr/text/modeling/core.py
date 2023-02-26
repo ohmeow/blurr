@@ -10,7 +10,14 @@ from typing import Any, Callable, Dict, List, Optional, Union, Type
 
 from fastcore.all import *
 from fastai.callback.all import *
-from fastai.data.block import DataBlock, ColReader, CategoryBlock, MultiCategoryBlock, ColSplitter, RandomSplitter
+from fastai.data.block import (
+    DataBlock,
+    ColReader,
+    CategoryBlock,
+    MultiCategoryBlock,
+    ColSplitter,
+    RandomSplitter,
+)
 from fastai.data.core import DataLoader, DataLoaders, TfmdDL
 from fastai.imports import *
 from fastai.learner import *
@@ -24,16 +31,18 @@ from transformers.utils import logging as hf_logging
 
 from ..data.core import TextBlock, TextInput, first_blurr_tfm
 from ..utils import get_hf_objects
-from ...utils import PreCalculatedLoss, PreCalculatedBCELoss, PreCalculatedCrossEntropyLoss, PreCalculatedMSELoss, set_seed
-
-
-
+from blurr.utils import (
+    PreCalculatedLoss,
+    PreCalculatedBCELoss,
+    PreCalculatedCrossEntropyLoss,
+    PreCalculatedMSELoss,
+    set_seed,
+)
 
 # %% ../../../nbs/11_text-modeling-core.ipynb 6
 # silence all the HF warnings
 warnings.simplefilter("ignore")
 hf_logging.set_verbosity_error()
-
 
 # %% ../../../nbs/11_text-modeling-core.ipynb 11
 def blurr_splitter(m: Module):
@@ -46,7 +55,6 @@ def blurr_splitter(m: Module):
     groups += L([m for m_name, m in root_modules[1:]])
 
     return groups.map(params).filter(lambda el: len(el) > 0)
-
 
 # %% ../../../nbs/11_text-modeling-core.ipynb 14
 class BaseModelWrapper(Module):
@@ -65,7 +73,9 @@ class BaseModelWrapper(Module):
 
         store_attr()
         self.hf_model = hf_model.cuda() if torch.cuda.is_available() else hf_model
-        self.hf_model_fwd_args = list(inspect.signature(self.hf_model.forward).parameters.keys())
+        self.hf_model_fwd_args = list(
+            inspect.signature(self.hf_model.forward).parameters.keys()
+        )
 
     def forward(self, x):
         for k in list(x):
@@ -80,7 +90,6 @@ class BaseModelWrapper(Module):
             **self.hf_model_kwargs
         )
 
-
 # %% ../../../nbs/11_text-modeling-core.ipynb 17
 class BaseModelCallback(Callback):
     def __init__(
@@ -92,7 +101,9 @@ class BaseModelCallback(Callback):
 
     def after_create(self):
         if isinstance(self.learn.model, PreTrainedModel):
-            self.learn.model = BaseModelWrapper(self.learn.model, **self.base_model_wrapper_kwargs)
+            self.learn.model = BaseModelWrapper(
+                self.learn.model, **self.base_model_wrapper_kwargs
+            )
 
     def before_batch(self):
         self.hf_loss = None
@@ -117,7 +128,6 @@ class BaseModelCallback(Callback):
         if self.hf_loss is not None:
             self.learn.loss_grad = self.hf_loss
             self.learn.loss = self.learn.loss_grad.clone()
-
 
 # %% ../../../nbs/11_text-modeling-core.ipynb 34
 @typedispatch
@@ -163,7 +173,15 @@ def show_results(
             if not torch.is_tensor(item):
                 trg = trg_labels[int(item)] if trg_labels else item
             elif is_listy(item.tolist()):
-                trg = [trg_labels[idx] for idx, val in enumerate(label.numpy().tolist()) if (val == 1)] if (trg_labels) else label.numpy()
+                trg = (
+                    [
+                        trg_labels[idx]
+                        for idx, val in enumerate(label.numpy().tolist())
+                        if (val == 1)
+                    ]
+                    if (trg_labels)
+                    else label.numpy()
+                )
             else:
                 trg = trg_labels[label.item()] if (trg_labels) else label.item()
 
@@ -173,7 +191,15 @@ def show_results(
             if not torch.is_tensor(item):
                 p = trg_labels[int(item)] if trg_labels else item
             elif is_listy(item.tolist()):
-                p = [trg_labels[idx] for idx, val in enumerate(item.numpy().tolist()) if (val == 1)] if (trg_labels) else item.numpy()
+                p = (
+                    [
+                        trg_labels[idx]
+                        for idx, val in enumerate(item.numpy().tolist())
+                        if (val == 1)
+                    ]
+                    if (trg_labels)
+                    else item.numpy()
+                )
             else:
                 p = trg_labels[item.item()] if (trg_labels) else item.item()
 
@@ -181,11 +207,15 @@ def show_results(
 
         res.append(tuplify(rets))
 
-    cols = ["text"] + ["target" if (i == 0) else f"target_{i}" for i in range(len(res[0]) - n_inp * 2)]
-    cols += ["prediction" if (i == 0) else f"prediction_{i}" for i in range(len(res[0]) - n_inp * 2)]
+    cols = ["text"] + [
+        "target" if (i == 0) else f"target_{i}" for i in range(len(res[0]) - n_inp * 2)
+    ]
+    cols += [
+        "prediction" if (i == 0) else f"prediction_{i}"
+        for i in range(len(res[0]) - n_inp * 2)
+    ]
     display_df(pd.DataFrame(res, columns=cols)[:max_n])
     return ctxs
-
 
 # %% ../../../nbs/11_text-modeling-core.ipynb 41
 @patch
@@ -203,7 +233,9 @@ def blurr_predict(self: Learner, items, rm_type_tfms=None):
     dl = self.dls.test_dl(items, rm_type_tfms=rm_type_tfms, num_workers=0)
 
     with self.no_bar():
-        probs, _, decoded_preds = self.get_preds(dl=dl, with_input=False, with_decoded=True)
+        probs, _, decoded_preds = self.get_preds(
+            dl=dl, with_input=False, with_decoded=True
+        )
 
     trg_tfms = self.dls.tfms[self.dls.n_inp :]
 
@@ -213,9 +245,16 @@ def blurr_predict(self: Learner, items, rm_type_tfms=None):
     for i in range(len(items)):
         item_probs = probs.itemgot(i)
         item_dec_preds = decoded_preds.itemgot(i)
-        item_dec_labels = tuplify([tfm.decode(item_dec_preds[tfm_idx]) for tfm_idx, tfm in enumerate(trg_tfms)])[0]
+        item_dec_labels = tuplify(
+            [
+                tfm.decode(item_dec_preds[tfm_idx])
+                for tfm_idx, tfm in enumerate(trg_tfms)
+            ]
+        )[0]
         if trg_labels:
-            item_dec_labels = [trg_labels[int(lbl)] for item in item_dec_labels for lbl in item]
+            item_dec_labels = [
+                trg_labels[int(lbl)] for item in item_dec_labels for lbl in item
+            ]
 
         res = {}
         if is_multilabel:
@@ -236,7 +275,6 @@ def blurr_predict(self: Learner, items, rm_type_tfms=None):
         # outs.append((item_dec_labels, [p.tolist() if p.dim() > 0 else p.item() for p in item_dec_preds], [p.tolist() for p in item_probs]))
 
     return outs
-
 
 # %% ../../../nbs/11_text-modeling-core.ipynb 47
 @patch
@@ -261,7 +299,9 @@ def blurr_generate(self: Learner, items, key="generated_texts", **kwargs):
     results = []
     for idx, inp in enumerate(items):
         if isinstance(inp, str):
-            input_ids = hf_tokenizer.encode(inp, padding=True, truncation=True, return_tensors="pt", **tok_kwargs)
+            input_ids = hf_tokenizer.encode(
+                inp, padding=True, truncation=True, return_tensors="pt", **tok_kwargs
+            )
         else:
             # note (10/30/2020): as of pytorch 1.7, this has to be a plain ol tensor (not a subclass of TensorBase)
             input_ids = inp.as_subclass(Tensor)
@@ -269,7 +309,12 @@ def blurr_generate(self: Learner, items, key="generated_texts", **kwargs):
         input_ids = input_ids.to(self.model.hf_model.device)
 
         gen_texts = self.model.hf_model.generate(input_ids, **text_gen_kwargs)
-        outputs = [hf_tokenizer.decode(txt, skip_special_tokens=True, clean_up_tokenization_spaces=False) for txt in gen_texts]
+        outputs = [
+            hf_tokenizer.decode(
+                txt, skip_special_tokens=True, clean_up_tokenization_spaces=False
+            )
+            for txt in gen_texts
+        ]
 
         if tfm.hf_arch == "pegasus":
             outputs = [o.replace("<n>", " ") for o in outputs]
@@ -277,7 +322,6 @@ def blurr_generate(self: Learner, items, key="generated_texts", **kwargs):
         results.append({key: outputs[0] if len(outputs) == 1 else outputs})
 
     return results
-
 
 # %% ../../../nbs/11_text-modeling-core.ipynb 57
 @delegates(Learner.__init__)
@@ -298,7 +342,9 @@ class Blearner(Learner):
         """
         model = kwargs.get("model", BaseModelWrapper(hf_model))
         splitter = kwargs.pop("splitter", blurr_splitter)
-        loss_func = kwargs.pop("loss_func", dls.loss_func if hasattr(dls, "loss_func") else None)
+        loss_func = kwargs.pop(
+            "loss_func", dls.loss_func if hasattr(dls, "loss_func") else None
+        )
 
         # if we are letting the Hugging Face model calculate the loss for us (which is the default), we update
         # our loss function here to simply used the correct `PrecalculatedLoss`
@@ -318,10 +364,11 @@ class Blearner(Learner):
         else:
             kwargs["cbs"] = [base_model_cb]
 
-        super().__init__(dls, model=model, loss_func=loss_func, splitter=splitter, **kwargs)
+        super().__init__(
+            dls, model=model, loss_func=loss_func, splitter=splitter, **kwargs
+        )
 
         self.freeze()
-
 
 # %% ../../../nbs/11_text-modeling-core.ipynb 66
 @delegates(Blearner.__init__)
@@ -369,7 +416,10 @@ class BlearnerForSequenceClassification(Blearner):
         # if we get a path/str then we're loading something like a .csv file
         if isinstance(data, Path) or isinstance(data, str):
             content_type = mimetypes.guess_type(data)[0]
-            if content_type == "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
+            if (
+                content_type
+                == "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            ):
                 data = pd.read_excel(data)
             elif content_type == "text/csv":
                 data = pd.read_csv(data)
@@ -383,17 +433,29 @@ class BlearnerForSequenceClassification(Blearner):
         # we need to tell transformer how many labels/classes to expect
         if n_labels is None:
             if isinstance(data, pd.DataFrame):
-                n_labels = len(label_attr) if (is_listy(label_attr)) else len(data[label_attr].unique())
+                n_labels = (
+                    len(label_attr)
+                    if (is_listy(label_attr))
+                    else len(data[label_attr].unique())
+                )
             else:
-                n_labels = len(label_attr) if (is_listy(label_attr)) else len(set([item[label_attr] for item in data]))
+                n_labels = (
+                    len(label_attr)
+                    if (is_listy(label_attr))
+                    else len(set([item[label_attr] for item in data]))
+                )
 
         # infer our datablock splitter if None
         if dblock_splitter is None:
-            dblock_splitter = ColSplitter() if hasattr(data, "is_valid") else RandomSplitter()
+            dblock_splitter = (
+                ColSplitter() if hasattr(data, "is_valid") else RandomSplitter()
+            )
 
         # get our hf objects
         hf_arch, hf_config, hf_tokenizer, hf_model = get_hf_objects(
-            pretrained_model_name_or_path, model_cls=cls.get_model_cls(), config_kwargs={"num_labels": n_labels}
+            pretrained_model_name_or_path,
+            model_cls=cls.get_model_cls(),
+            config_kwargs={"num_labels": n_labels},
         )
 
         # not all architectures include a native pad_token (e.g., gpt2, ctrl, etc...), so we add one here
@@ -405,19 +467,25 @@ class BlearnerForSequenceClassification(Blearner):
         # infer loss function and default metrics
         if is_listy(label_attr):
             trg_block = MultiCategoryBlock(encoded=True, vocab=label_attr)
-            learner_kwargs["metrics"] = learner_kwargs.get("metrics", [F1ScoreMulti(), accuracy_multi])
+            learner_kwargs["metrics"] = learner_kwargs.get(
+                "metrics", [F1ScoreMulti(), accuracy_multi]
+            )
         else:
             trg_block = CategoryBlock
-            learner_kwargs["metrics"] = learner_kwargs.get("metrics", [F1Score(), accuracy])
+            learner_kwargs["metrics"] = learner_kwargs.get(
+                "metrics", [F1Score(), accuracy]
+            )
 
         # build our DataBlock and DataLoaders
         blocks = (TextBlock(hf_arch, hf_config, hf_tokenizer, hf_model), trg_block)
         dblock = DataBlock(
-            blocks=blocks, get_x=partial(cls._get_x, attr=text_attr), get_y=partial(cls._get_y, attr=label_attr), splitter=dblock_splitter
+            blocks=blocks,
+            get_x=partial(cls._get_x, attr=text_attr),
+            get_y=partial(cls._get_y, attr=label_attr),
+            splitter=dblock_splitter,
         )
 
         dls = dblock.dataloaders(data, **dl_kwargs.copy())
 
         # return BLearner instance
         return cls(dls, hf_model, **learner_kwargs.copy())
-

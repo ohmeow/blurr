@@ -28,19 +28,17 @@ from transformers.utils import logging as hf_logging
 
 from ..utils import get_hf_objects
 
-
 # %% auto 0
 __all__ = ['Preprocessor', 'ClassificationPreprocessor', 'TextInput', 'BatchTokenizeTransform', 'BatchDecodeTransform',
            'blurr_sort_func', 'TextBlock', 'get_blurr_tfm', 'first_blurr_tfm', 'show_batch', 'TextBatchCreator',
            'TextDataLoader', 'preproc_hf_dataset']
 
-# %% ../../../nbs/11_text-data-core.ipynb 7
+# %% ../../../nbs/11_text-data-core.ipynb 6
 # silence all the HF warnings
 warnings.simplefilter("ignore")
 hf_logging.set_verbosity_error()
 
-
-# %% ../../../nbs/11_text-data-core.ipynb 16
+# %% ../../../nbs/11_text-data-core.ipynb 15
 class Preprocessor:
     def __init__(
         self,
@@ -67,7 +65,9 @@ class Preprocessor:
         if "truncation" not in self.tok_kwargs:
             self.tok_kwargs["truncation"] = True
 
-    def process_df(self, training_df: pd.DataFrame, validation_df: Optional[pd.DataFrame] = None):
+    def process_df(
+        self, training_df: pd.DataFrame, validation_df: Optional[pd.DataFrame] = None
+    ):
         df = training_df.copy()
 
         # concatenate the validation dataset if it is included
@@ -82,7 +82,9 @@ class Preprocessor:
 
         return df
 
-    def process_hf_dataset(self, training_ds: Dataset, validation_ds: Optional[Dataset] = None):
+    def process_hf_dataset(
+        self, training_ds: Dataset, validation_ds: Optional[Dataset] = None
+    ):
         ds = training_ds
 
         # concatenate the validation dataset if it is included
@@ -90,8 +92,12 @@ class Preprocessor:
             # add an "is_valid_col" column to both training/validation DataFrames to indicate what data is part of
             # the validation set
             if self.is_valid_attr:
-                validation_ds = validation_ds.add_column(self.is_valid_attr, [True] * len(validation_ds))
-                training_ds = training_ds.add_column(self.is_valid_attr, [False] * len(training_ds))
+                validation_ds = validation_ds.add_column(
+                    self.is_valid_attr, [True] * len(validation_ds)
+                )
+                training_ds = training_ds.add_column(
+                    self.is_valid_attr, [False] * len(training_ds)
+                )
 
             ds = concatenate_datasets([training_ds, validation_ds])
 
@@ -103,8 +109,7 @@ class Preprocessor:
 
         return self.hf_tokenizer(txts, txt_pairs, **self.tok_kwargs)
 
-
-# %% ../../../nbs/11_text-data-core.ipynb 18
+# %% ../../../nbs/11_text-data-core.ipynb 17
 class ClassificationPreprocessor(Preprocessor):
     def __init__(
         self,
@@ -133,14 +138,23 @@ class ClassificationPreprocessor(Preprocessor):
         tok_kwargs: dict = {},
     ):
         tok_kwargs = {**tok_kwargs, "return_offsets_mapping": True}
-        super().__init__(hf_tokenizer, batch_size, text_attr, text_pair_attr, is_valid_attr, tok_kwargs)
+        super().__init__(
+            hf_tokenizer,
+            batch_size,
+            text_attr,
+            text_pair_attr,
+            is_valid_attr,
+            tok_kwargs,
+        )
 
         self.is_multilabel = is_multilabel
         self.id_attr = id_attr
         self.label_attrs = label_attrs
         self.label_mapping = label_mapping
 
-    def process_df(self, training_df: pd.DataFrame, validation_df: Optional[pd.DataFrame] = None):
+    def process_df(
+        self, training_df: pd.DataFrame, validation_df: Optional[pd.DataFrame] = None
+    ):
         df = super().process_df(training_df, validation_df)
 
         # convert even single "labels" to a list to make things easier
@@ -149,12 +163,16 @@ class ClassificationPreprocessor(Preprocessor):
         # if "is_multilabel", convert all targets to an int, 0 or 1, rounding floats if necessary
         if self.is_multilabel:
             for label_col in label_cols:
-                df[label_col] = df[label_col].apply(lambda v: int(bool(max(0, round(v)))))
+                df[label_col] = df[label_col].apply(
+                    lambda v: int(bool(max(0, round(v))))
+                )
 
         # if a "label_mapping" is included, add a "[label_col]_name" field with the label Ids converted to their label names
         if self.label_mapping:
             for label_col in label_cols:
-                df[f"{label_col}_name"] = df[label_col].apply(lambda v: self.label_mapping[v])
+                df[f"{label_col}_name"] = df[label_col].apply(
+                    lambda v: self.label_mapping[v]
+                )
 
         # process df in mini-batches
         final_df = pd.DataFrame()
@@ -164,7 +182,9 @@ class ClassificationPreprocessor(Preprocessor):
         final_df.reset_index(drop=True, inplace=True)
         return final_df
 
-    def process_hf_dataset(self, training_ds: Dataset, validation_ds: Optional[Dataset] = None):
+    def process_hf_dataset(
+        self, training_ds: Dataset, validation_ds: Optional[Dataset] = None
+    ):
         ds = super().process_hf_dataset(training_ds, validation_ds)
         return Dataset.from_pandas(self.process_df(pd.DataFrame(ds)))
 
@@ -181,29 +201,47 @@ class ClassificationPreprocessor(Preprocessor):
 
             char_idxs = []
             for idx, offset_mapping in enumerate(inputs["offset_mapping"]):
-                text_offsets = [offset_mapping[i] for i, seq_id in enumerate(inputs.sequence_ids(idx)) if seq_id == txt_seq_idx]
+                text_offsets = [
+                    offset_mapping[i]
+                    for i, seq_id in enumerate(inputs.sequence_ids(idx))
+                    if seq_id == txt_seq_idx
+                ]
                 char_idxs.append([min(text_offsets)[0], max(text_offsets)[1]])
 
             batch_df = pd.concat(
-                [batch_df, pd.DataFrame(char_idxs, columns=[f"{txt_attr}_start_char_idx", f"{txt_attr}_end_char_idx"])], axis=1
+                [
+                    batch_df,
+                    pd.DataFrame(
+                        char_idxs,
+                        columns=[
+                            f"{txt_attr}_start_char_idx",
+                            f"{txt_attr}_end_char_idx",
+                        ],
+                    ),
+                ],
+                axis=1,
             )
             batch_df.insert(
                 0,
                 f"proc_{txt_attr}",
-                batch_df.apply(lambda r: r[txt_attr][r[f"{txt_attr}_start_char_idx"] : r[f"{txt_attr}_end_char_idx"] + 1], axis=1),
+                batch_df.apply(
+                    lambda r: r[txt_attr][
+                        r[f"{txt_attr}_start_char_idx"] : r[f"{txt_attr}_end_char_idx"]
+                        + 1
+                    ],
+                    axis=1,
+                ),
             )
 
         return batch_df
 
-
-# %% ../../../nbs/11_text-data-core.ipynb 26
+# %% ../../../nbs/11_text-data-core.ipynb 25
 class TextInput(TensorBase):
     """The base represenation of your inputs; used by the various fastai `show` methods"""
 
     pass
 
-
-# %% ../../../nbs/11_text-data-core.ipynb 29
+# %% ../../../nbs/11_text-data-core.ipynb 28
 class BatchTokenizeTransform(Transform):
     """
     Handles everything you need to assemble a mini-batch of inputs and targets, as well as
@@ -263,11 +301,18 @@ class BatchTokenizeTransform(Transform):
 
         if is_listy(test_inp) and not self.is_split_into_words:
             if is_dict:
-                inps = [(item["text"][0], item["text"][1]) for item in samples.itemgot(0).items]
+                inps = [
+                    (item["text"][0], item["text"][1])
+                    for item in samples.itemgot(0).items
+                ]
             else:
                 inps = list(zip(samples.itemgot(0, 0), samples.itemgot(0, 1)))
         else:
-            inps = [item["text"] for item in samples.itemgot(0).items] if is_dict else samples.itemgot(0).items
+            inps = (
+                [item["text"] for item in samples.itemgot(0).items]
+                if is_dict
+                else samples.itemgot(0).items
+            )
 
         inputs = self.hf_tokenizer(
             inps,
@@ -288,7 +333,10 @@ class BatchTokenizeTransform(Transform):
         for idx, sample in enumerate(samples):
             inps = {k: inputs[k][idx] for k in d_keys}
             if is_dict:
-                inps = {**inps, **{k: v for k, v in sample[0].items() if k not in ["text"]}}
+                inps = {
+                    **inps,
+                    **{k: v for k, v in sample[0].items() if k not in ["text"]},
+                }
 
             trgs = sample[1:]
             if self.include_labels and len(trgs) > 0:
@@ -301,8 +349,7 @@ class BatchTokenizeTransform(Transform):
 
         return updated_samples
 
-
-# %% ../../../nbs/11_text-data-core.ipynb 32
+# %% ../../../nbs/11_text-data-core.ipynb 31
 class BatchDecodeTransform(Transform):
     """A class used to cast your inputs as `input_return_type` for fastai `show` methods"""
 
@@ -328,8 +375,7 @@ class BatchDecodeTransform(Transform):
         """Returns the proper object and data for show related fastai methods"""
         return self.input_return_type(items["input_ids"])
 
-
-# %% ../../../nbs/11_text-data-core.ipynb 35
+# %% ../../../nbs/11_text-data-core.ipynb 34
 def blurr_sort_func(
     example,
     # A Hugging Face tokenizer
@@ -342,10 +388,13 @@ def blurr_sort_func(
 ):
     """This method is used by the `SortedDL` to ensure your dataset is sorted *after* tokenization"""
     txt = example[0]["text"] if isinstance(example[0], dict) else example[0]
-    return len(txt) if is_split_into_words else len(hf_tokenizer.tokenize(txt, **tok_kwargs))
+    return (
+        len(txt)
+        if is_split_into_words
+        else len(hf_tokenizer.tokenize(txt, **tok_kwargs))
+    )
 
-
-# %% ../../../nbs/11_text-data-core.ipynb 37
+# %% ../../../nbs/11_text-data-core.ipynb 36
 class TextBlock(TransformBlock):
     """The core `TransformBlock` to prepare your inputs for training in Blurr with fastai's `DataBlock` API"""
 
@@ -405,8 +454,12 @@ class TextBlock(TransformBlock):
         # Any keyword arguments you want applied to `TextBlock`
         **kwargs
     ):
-        if (not all([hf_arch, hf_config, hf_tokenizer, hf_model])) and batch_tokenize_tfm is None:
-            raise ValueError("You must supply an hf_arch, hf_config, hf_tokenizer, hf_model -or- a BatchTokenizeTransform")
+        if (
+            not all([hf_arch, hf_config, hf_tokenizer, hf_model])
+        ) and batch_tokenize_tfm is None:
+            raise ValueError(
+                "You must supply an hf_arch, hf_config, hf_tokenizer, hf_model -or- a BatchTokenizeTransform"
+            )
 
         if batch_tokenize_tfm is None:
             batch_tokenize_tfm = BatchTokenizeTransform(
@@ -425,7 +478,9 @@ class TextBlock(TransformBlock):
             )
 
         if batch_decode_tfm is None:
-            batch_decode_tfm = BatchDecodeTransform(input_return_type=input_return_type, **batch_decode_kwargs.copy())
+            batch_decode_tfm = BatchDecodeTransform(
+                input_return_type=input_return_type, **batch_decode_kwargs.copy()
+            )
 
         if dl_type is None:
             dl_sort_func = partial(
@@ -437,10 +492,13 @@ class TextBlock(TransformBlock):
 
             dl_type = partial(SortedDL, sort_func=dl_sort_func)
 
-        return super().__init__(dl_type=dl_type, dls_kwargs={"before_batch": batch_tokenize_tfm}, batch_tfms=batch_decode_tfm)
+        return super().__init__(
+            dl_type=dl_type,
+            dls_kwargs={"before_batch": batch_tokenize_tfm},
+            batch_tfms=batch_decode_tfm,
+        )
 
-
-# %% ../../../nbs/11_text-data-core.ipynb 40
+# %% ../../../nbs/11_text-data-core.ipynb 39
 def get_blurr_tfm(
     # A list of transforms (e.g., dls.after_batch, dls.before_batch, etc...)
     tfms_list: Pipeline,
@@ -453,8 +511,7 @@ def get_blurr_tfm(
     """
     return next(filter(lambda el: issubclass(type(el), tfm_class), tfms_list), None)
 
-
-# %% ../../../nbs/11_text-data-core.ipynb 42
+# %% ../../../nbs/11_text-data-core.ipynb 41
 def first_blurr_tfm(
     # Your fast.ai `DataLoaders
     dls: DataLoaders,
@@ -475,8 +532,7 @@ def first_blurr_tfm(
         if found_tfm:
             return found_tfm
 
-
-# %% ../../../nbs/11_text-data-core.ipynb 45
+# %% ../../../nbs/11_text-data-core.ipynb 44
 @typedispatch
 def show_batch(
     # This typedispatched `show_batch` will be called for `TextInput` typed inputs
@@ -516,19 +572,28 @@ def show_batch(
             if not torch.is_tensor(item):
                 trg = trg_labels[int(item)] if trg_labels else item
             elif is_listy(item.tolist()):
-                trg = [trg_labels[idx] for idx, val in enumerate(label.numpy().tolist()) if (val == 1)] if (trg_labels) else label.numpy()
+                trg = (
+                    [
+                        trg_labels[idx]
+                        for idx, val in enumerate(label.numpy().tolist())
+                        if (val == 1)
+                    ]
+                    if (trg_labels)
+                    else label.numpy()
+                )
             else:
                 trg = trg_labels[label.item()] if (trg_labels) else label.item()
 
             rets.append(trg)
         res.append(tuplify(rets))
 
-    cols = ["text"] + ["target" if (i == 0) else f"target_{i}" for i in range(len(res[0]) - n_inp)]
+    cols = ["text"] + [
+        "target" if (i == 0) else f"target_{i}" for i in range(len(res[0]) - n_inp)
+    ]
     display_df(pd.DataFrame(res, columns=cols)[:max_n])
     return ctxs
 
-
-# %% ../../../nbs/11_text-data-core.ipynb 76
+# %% ../../../nbs/11_text-data-core.ipynb 75
 @dataclass
 class TextBatchCreator:
     """
@@ -550,7 +615,11 @@ class TextBatchCreator:
         data_collator: type = None,
     ):
         store_attr()
-        self.data_collator = data_collator if (data_collator) else DataCollatorWithPadding(tokenizer=hf_tokenizer)
+        self.data_collator = (
+            data_collator
+            if (data_collator)
+            else DataCollatorWithPadding(tokenizer=hf_tokenizer)
+        )
 
     def __call__(self, features):
         """This method will collate your data using `self.data_collator` and add a target element to the
@@ -558,12 +627,13 @@ class TextBatchCreator:
         """
         batch = self.data_collator(features)
         if isinstance(features[0], dict):
-            return dict(batch), batch["labels"] if ("labels" in features[0]) else dict(batch)
+            return dict(batch), batch["labels"] if ("labels" in features[0]) else dict(
+                batch
+            )
 
         return batch
 
-
-# %% ../../../nbs/11_text-data-core.ipynb 78
+# %% ../../../nbs/11_text-data-core.ipynb 77
 @delegates()
 class TextDataLoader(TfmdDL):
     """
@@ -614,10 +684,20 @@ class TextDataLoader(TfmdDL):
             kwargs.pop("after_batch")
         if not batch_decode_tfm:
             batch_decode_tfm = BatchDecodeTransform(
-                input_return_type, hf_arch, hf_config, hf_tokenizer, hf_model, **batch_decode_kwargs.copy()
+                input_return_type,
+                hf_arch,
+                hf_config,
+                hf_tokenizer,
+                hf_model,
+                **batch_decode_kwargs.copy(),
             )
 
-        super().__init__(dataset=dataset, create_batch=batch_creator, after_batch=batch_decode_tfm, **kwargs)
+        super().__init__(
+            dataset=dataset,
+            create_batch=batch_creator,
+            after_batch=batch_decode_tfm,
+            **kwargs,
+        )
         store_attr(names="hf_arch, hf_config, hf_tokenizer, hf_model")
 
     def new(
@@ -642,8 +722,7 @@ class TextDataLoader(TfmdDL):
 
         return super().new(dataset, cls, **kwargs)
 
-
-# %% ../../../nbs/11_text-data-core.ipynb 84
+# %% ../../../nbs/11_text-data-core.ipynb 83
 def preproc_hf_dataset(
     # A standard PyTorch Dataset or fast.ai Datasets
     dataset: torch.utils.data.dataset.Dataset | Datasets,
@@ -664,4 +743,3 @@ def preproc_hf_dataset(
 
     dataset.set_format("torch")
     return dataset
-

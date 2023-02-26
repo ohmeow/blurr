@@ -9,7 +9,13 @@ from typing import Any, Callable, Dict, List, Optional, Union, Type
 
 from fastcore.all import *
 from fastai.callback.all import *
-from fastai.data.block import DataBlock, ColReader, ItemGetter, ColSplitter, RandomSplitter
+from fastai.data.block import (
+    DataBlock,
+    ColReader,
+    ItemGetter,
+    ColSplitter,
+    RandomSplitter,
+)
 from fastai.data.core import DataLoader, DataLoaders, TfmdDL
 from fastai.imports import *
 from fastai.learner import *
@@ -20,7 +26,13 @@ from fastai.torch_core import *
 from fastai.torch_imports import *
 from fastprogress.fastprogress import progress_bar, master_bar
 from sklearn.metrics import accuracy_score
-from transformers import AutoModelForCausalLM, AutoModelForMaskedLM, PretrainedConfig, PreTrainedTokenizerBase, PreTrainedModel
+from transformers import (
+    AutoModelForCausalLM,
+    AutoModelForMaskedLM,
+    PretrainedConfig,
+    PreTrainedTokenizerBase,
+    PreTrainedModel,
+)
 from transformers.utils import logging as hf_logging
 
 from ..data.core import TextDataLoader, TextBlock, first_blurr_tfm
@@ -39,12 +51,10 @@ from .core import Blearner
 from ..utils import get_hf_objects
 from ...utils import PreCalculatedCrossEntropyLoss
 
-
 # %% ../../../nbs/12_text-modeling-language-modeling.ipynb 7
 # silence all the HF warnings
 warnings.simplefilter("ignore")
 hf_logging.set_verbosity_error()
-
 
 # %% ../../../nbs/12_text-modeling-language-modeling.ipynb 14
 class LMMetricsCallback(Callback):
@@ -65,7 +75,12 @@ class LMMetricsCallback(Callback):
 
         # add custom text generation specific metrics
         custom_metric_keys = self.custom_metrics_dict.keys()
-        custom_metrics = L([ValueMetric(partial(self.metric_value, metric_key=k), k) for k in custom_metric_keys])
+        custom_metrics = L(
+            [
+                ValueMetric(partial(self.metric_value, metric_key=k), k)
+                for k in custom_metric_keys
+            ]
+        )
         self.learn.metrics = self.learn.metrics + custom_metrics
 
         self.do_setup = False
@@ -106,7 +121,6 @@ class LMMetricsCallback(Callback):
     def metric_value(self, metric_key):
         return self.custom_metrics_dict[metric_key]
 
-
 # %% ../../../nbs/12_text-modeling-language-modeling.ipynb 32
 @typedispatch
 def show_results(
@@ -141,7 +155,9 @@ def show_results(
         [
             (
                 hf_tokenizer.decode(s[0], skip_special_tokens=True)[:trunc_at],
-                hf_tokenizer.decode(s[1][s[1] != ignore_token_id], skip_special_tokens=True)[:trunc_at],
+                hf_tokenizer.decode(
+                    s[1][s[1] != ignore_token_id], skip_special_tokens=True
+                )[:trunc_at],
                 hf_tokenizer.decode(pred[0], skip_special_tokens=True)[:trunc_at],
             )
             for s, pred in zip(samples, outs)
@@ -150,7 +166,6 @@ def show_results(
 
     display_df(pd.DataFrame(res, columns=["text", "target", "prediction"])[:max_n])
     return ctxs
-
 
 # %% ../../../nbs/12_text-modeling-language-modeling.ipynb 50
 @typedispatch
@@ -186,36 +201,51 @@ def show_results(
     mask_token_id = hf_tokenizer.mask_token_id
 
     vocab = hf_tokenizer.get_vocab()
-    dnm_tok_ids = [vocab[tok] for tok in list(hf_tokenizer.special_tokens_map.values()) if vocab[tok] != mask_token_id]
+    dnm_tok_ids = [
+        vocab[tok]
+        for tok in list(hf_tokenizer.special_tokens_map.values())
+        if vocab[tok] != mask_token_id
+    ]
 
     res = L()
     for s, t in zip(samples, outs):
         # exclue dnm tokens from input
         inps = [
-            hf_tokenizer.decode(tok_id) if (tok_id == mask_token_id or s[1][idx] == ignore_token_id) else f"[{hf_tokenizer.decode(tok_id)}]"
+            hf_tokenizer.decode(tok_id)
+            if (tok_id == mask_token_id or s[1][idx] == ignore_token_id)
+            else f"[{hf_tokenizer.decode(tok_id)}]"
             for idx, tok_id in enumerate(s[0])
             if (tok_id not in dnm_tok_ids)
         ]
 
         # replaced masked tokens with "[{actual_token}]"
         trgs = [
-            hf_tokenizer.decode(s[0][idx]) if (tok_id == ignore_token_id) else f"[{hf_tokenizer.decode(tok_id)}]"
+            hf_tokenizer.decode(s[0][idx])
+            if (tok_id == ignore_token_id)
+            else f"[{hf_tokenizer.decode(tok_id)}]"
             for idx, tok_id in enumerate(s[1])
             if (s[0][idx] not in dnm_tok_ids)
         ]
 
         # same as above except we replace the [MASK] with the PREDICTED token
         preds = [
-            hf_tokenizer.decode(s[0][idx]) if (tok_id == ignore_token_id) else f"[{hf_tokenizer.decode(t[0][idx])}]"
+            hf_tokenizer.decode(s[0][idx])
+            if (tok_id == ignore_token_id)
+            else f"[{hf_tokenizer.decode(t[0][idx])}]"
             for idx, tok_id in enumerate(s[1])
             if (s[0][idx] not in dnm_tok_ids)
         ]
 
-        res.append((" ".join(inps[:trunc_at]).strip(), " ".join(trgs[:trunc_at]).strip(), " ".join(preds[:trunc_at]).strip()))
+        res.append(
+            (
+                " ".join(inps[:trunc_at]).strip(),
+                " ".join(trgs[:trunc_at]).strip(),
+                " ".join(preds[:trunc_at]).strip(),
+            )
+        )
 
     display_df(pd.DataFrame(res, columns=["text", "target", "prediction"])[:max_n])
     return ctxs
-
 
 # %% ../../../nbs/12_text-modeling-language-modeling.ipynb 54
 @patch
@@ -240,7 +270,9 @@ def blurr_fill_mask(
     text_gen_kwargs = tfm.text_gen_kwargs if (len(kwargs) == 0) else kwargs
 
     if isinstance(inp, str):
-        input_ids = hf_tokenizer.encode(inp, padding=True, truncation=True, return_tensors="pt", **tok_kwargs)
+        input_ids = hf_tokenizer.encode(
+            inp, padding=True, truncation=True, return_tensors="pt", **tok_kwargs
+        )
     else:
         # note (10/30/2020): as of pytorch 1.7, this has to be a plain ol tensor (not a subclass of TensorBase)
         input_ids = inp.as_subclass(Tensor)
@@ -252,10 +284,12 @@ def blurr_fill_mask(
     mask_token_logits = outputs.logits[0, mask_token_index, :]
     preds = torch.topk(mask_token_logits, n_preds, dim=-1).indices[0].tolist()
 
-    outputs = [inp.replace(hf_tokenizer.mask_token, hf_tokenizer.decode([tok_id]).strip()) for tok_id in preds]
+    outputs = [
+        inp.replace(hf_tokenizer.mask_token, hf_tokenizer.decode([tok_id]).strip())
+        for tok_id in preds
+    ]
 
     return outputs
-
 
 # %% ../../../nbs/12_text-modeling-language-modeling.ipynb 59
 @delegates(Blearner.__init__)
@@ -266,7 +300,9 @@ class BlearnerForLM(Blearner):
 
     @classmethod
     def get_model_cls(self, lm_type):
-        return AutoModelForCausalLM if (lm_type == LMType.CAUSAL) else AutoModelForMaskedLM
+        return (
+            AutoModelForCausalLM if (lm_type == LMType.CAUSAL) else AutoModelForMaskedLM
+        )
 
     @classmethod
     def get_metrics_cb(self):
@@ -295,7 +331,10 @@ class BlearnerForLM(Blearner):
         # if we get a path/str then we're loading something like a .csv file
         if isinstance(data, Path) or isinstance(data, str):
             content_type = mimetypes.guess_type(data)[0]
-            if content_type == "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
+            if (
+                content_type
+                == "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            ):
                 data = pd.read_excel(data)
             elif content_type == "text/csv":
                 data = pd.read_csv(data)
@@ -308,12 +347,16 @@ class BlearnerForLM(Blearner):
 
         # infer our datablock splitter if None
         if dblock_splitter is None:
-            dblock_splitter = ColSplitter() if hasattr(data, "is_valid") else RandomSplitter()
+            dblock_splitter = (
+                ColSplitter() if hasattr(data, "is_valid") else RandomSplitter()
+            )
 
         # get our hf objects
         lm_type = lm_strategy_cls.get_lm_type()
         model_cls = cls.get_model_cls(lm_type=lm_type)
-        hf_arch, hf_config, hf_tokenizer, hf_model = get_hf_objects(pretrained_model_name_or_path, model_cls=model_cls)
+        hf_arch, hf_config, hf_tokenizer, hf_model = get_hf_objects(
+            pretrained_model_name_or_path, model_cls=model_cls
+        )
 
         # not all architectures include a native pad_token (e.g., gpt2, ctrl, etc...), so we add one here
         if hf_tokenizer.pad_token is None:
@@ -322,15 +365,23 @@ class BlearnerForLM(Blearner):
             hf_model.resize_token_embeddings(len(hf_tokenizer))
 
         # define DataBlock and DataLoaders
-        bbtfm = LMBatchTokenizeTransform(hf_arch, hf_config, hf_tokenizer, hf_model, lm_strategy_cls=lm_strategy_cls)
+        bbtfm = LMBatchTokenizeTransform(
+            hf_arch, hf_config, hf_tokenizer, hf_model, lm_strategy_cls=lm_strategy_cls
+        )
 
-        input_return_type = CausalLMTextInput if (lm_type == LMType.CAUSAL) else MLMTextInput
-        blocks = (TextBlock(batch_tokenize_tfm=bbtfm, input_return_type=input_return_type), noop)
+        input_return_type = (
+            CausalLMTextInput if (lm_type == LMType.CAUSAL) else MLMTextInput
+        )
+        blocks = (
+            TextBlock(batch_tokenize_tfm=bbtfm, input_return_type=input_return_type),
+            noop,
+        )
 
-        dblock = DataBlock(blocks=blocks, get_x=ItemGetter(text_attr), splitter=dblock_splitter)
+        dblock = DataBlock(
+            blocks=blocks, get_x=ItemGetter(text_attr), splitter=dblock_splitter
+        )
         dls = dblock.dataloaders(data, **dl_kwargs.copy())
 
         # return BLearner instance with default metrics (optional)
         learner_kwargs["metrics"] = learner_kwargs.pop("metrics", [perplexity])
         return cls(dls, hf_model, **learner_kwargs.copy())
-

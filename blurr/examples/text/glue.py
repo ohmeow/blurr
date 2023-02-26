@@ -16,7 +16,6 @@ from ...text.modeling.core import *
 from ...text.utils import *
 from ...utils import *
 
-
 # %% ../../../nbs/99b_text-examples-glue.ipynb 7
 # silence all the HF warnings
 warnings.simplefilter("ignore")

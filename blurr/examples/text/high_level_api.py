@@ -22,7 +22,6 @@ from ...text.modeling.seq2seq.translation import *
 from ...text.utils import *
 from ...utils import *
 
-
 # %% ../../../nbs/99a_text-examples-high-level-api.ipynb 7
 # silence all the HF warnings
 warnings.simplefilter("ignore")

@@ -1,16 +1,21 @@
-name: blurr
+name: blurr-v3
 channels:
+  - pytorch
+  - nvidia
   - fastchan
   - conda-forge
 dependencies:
-  - python=3.9
+  - python=3.10
   - black
   - notebook
   - jupyter_contrib_nbextensions
   - ipywidgets
   - seaborn
   - pytorch
+  - pytorch-cuda=11.7
   - pip
   - pip:
+      - ipykernel
       - nbdev
+      - pre-commit
       - -r requirements.txt

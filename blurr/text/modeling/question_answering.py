@@ -11,7 +11,14 @@ from typing import Any, Callable, Dict, List, Optional, Union, Type
 from datasets import load_metric
 from fastcore.all import *
 from fastai.callback.all import *
-from fastai.data.block import DataBlock, CategoryBlock, ColReader, ItemGetter, ColSplitter, RandomSplitter
+from fastai.data.block import (
+    DataBlock,
+    CategoryBlock,
+    ColReader,
+    ItemGetter,
+    ColSplitter,
+    RandomSplitter,
+)
 from fastai.data.core import DataLoader, DataLoaders, TfmdDL
 from fastai.imports import *
 from fastai.learner import *
@@ -24,13 +31,14 @@ from transformers import AutoModelForQuestionAnswering, PreTrainedModel
 from transformers.utils import logging as hf_logging
 
 from ..data.core import TextBlock, TextDataLoader, first_blurr_tfm
-from ..data.question_answering import QAPreprocessor, QATextInput, QABatchTokenizeTransform
+from blurr.text.data.question_answering import (
+    QAPreprocessor,
+    QATextInput,
+    QABatchTokenizeTransform,
+)
 from .core import BaseModelCallback, Blearner
 from ..utils import get_hf_objects
 from ...utils import PreCalculatedLoss, MultiTargetLoss
-
-
-
 
 # %% ../../../nbs/14_text-modeling-question-answering.ipynb 7
 # metrics we'll use in extractive qa
@@ -40,7 +48,6 @@ squad_metric = load_metric("squad")
 warnings.simplefilter("ignore")
 hf_logging.set_verbosity_error()
 
-
 # %% ../../../nbs/14_text-modeling-question-answering.ipynb 20
 class QAModelCallback(BaseModelCallback):
     """The prediction is a combination start/end logits"""
@@ -49,10 +56,15 @@ class QAModelCallback(BaseModelCallback):
         super().after_pred()
         self.learn.pred = (self.pred.start_logits, self.pred.end_logits)
 
-
 # %% ../../../nbs/14_text-modeling-question-answering.ipynb 23
 class QAMetricsCallback(Callback):
-    def __init__(self, compute_metrics_func, validation_ds, qa_metrics=["exact_match", "f1"], **kwargs):
+    def __init__(
+        self,
+        compute_metrics_func,
+        validation_ds,
+        qa_metrics=["exact_match", "f1"],
+        **kwargs
+    ):
         self.run_before = Recorder
 
         store_attr()
@@ -70,7 +82,12 @@ class QAMetricsCallback(Callback):
         self.tok_kwargs = tfm.tok_kwargs
 
         # add custom question answering specific metrics
-        custom_metrics = L([ValueMetric(partial(self.metric_value, metric_key=k), k) for k in self.qa_metrics])
+        custom_metrics = L(
+            [
+                ValueMetric(partial(self.metric_value, metric_key=k), k)
+                for k in self.qa_metrics
+            ]
+        )
         self.learn.metrics = self.learn.metrics + custom_metrics
 
         self.do_setup = False
@@ -83,7 +100,10 @@ class QAMetricsCallback(Callback):
         if self.training or self.learn.y is None:
             return
 
-        self.batch_inputs = {k: v.cpu().detach().numpy() if isinstance(v, Tensor) else v for k, v in self.x.items()}
+        self.batch_inputs = {
+            k: v.cpu().detach().numpy() if isinstance(v, Tensor) else v
+            for k, v in self.x.items()
+        }
 
     def after_batch(self):
         if self.training or self.learn.y is None:
@@ -92,7 +112,11 @@ class QAMetricsCallback(Callback):
         for i in range(len(self.batch_inputs["input_ids"])):
             batch_inps = {k: self.batch_inputs[k][i] for k in self.batch_inputs.keys()}
             self.results.append(
-                {**batch_inps, "start_logits": self.pred[0][i].cpu().detach().numpy(), "end_logits": self.pred[1][i].cpu().detach().numpy()}
+                {
+                    **batch_inps,
+                    "start_logits": self.pred[0][i].cpu().detach().numpy(),
+                    "end_logits": self.pred[1][i].cpu().detach().numpy(),
+                }
             )
 
     # --- validation begin/after phases ---
@@ -103,7 +127,9 @@ class QAMetricsCallback(Callback):
         if len(self.results) < 1:
             return
 
-        metric_vals_d = self.compute_metrics_func(self.results, self.validation_ds, self.hf_tokenizer, self.tok_kwargs)
+        metric_vals_d = self.compute_metrics_func(
+            self.results, self.validation_ds, self.hf_tokenizer, self.tok_kwargs
+        )
         for k, v in metric_vals_d.items():
             self.custom_metrics_dict[k] = v
 
@@ -111,9 +137,10 @@ class QAMetricsCallback(Callback):
     def metric_value(self, metric_key):
         return self.custom_metrics_dict[metric_key]
 
-
 # %% ../../../nbs/14_text-modeling-question-answering.ipynb 24
-def compute_qa_metrics(results, dataset, hf_tokenizer, tok_kwargs, id_attr="id", n_best=20):
+def compute_qa_metrics(
+    results, dataset, hf_tokenizer, tok_kwargs, id_attr="id", n_best=20
+):
     # what is the max length for our inputs?
     max_length = tok_kwargs.get("max_length", hf_tokenizer.model_max_length)
 
@@ -143,27 +170,39 @@ def compute_qa_metrics(results, dataset, hf_tokenizer, tok_kwargs, id_attr="id",
                         continue
 
                     # Skip answers with a length that is either < 0 or > max_answer_length
-                    if end_index < start_index or end_index - start_index + 1 > max_length:
+                    if (
+                        end_index < start_index
+                        or end_index - start_index + 1 > max_length
+                    ):
                         continue
 
                     answer = {
-                        "text": hf_tokenizer.decode(input_ids[start_index:end_index], skip_special_tokens=True),
-                        "logit_score": start_logits[start_index] + end_logits[end_index],
+                        "text": hf_tokenizer.decode(
+                            input_ids[start_index:end_index], skip_special_tokens=True
+                        ),
+                        "logit_score": start_logits[start_index]
+                        + end_logits[end_index],
                     }
                     answers.append(answer)
 
         # select the answer with the best score
         if len(answers) > 0:
             best_answer = max(answers, key=lambda x: x["logit_score"])
-            predicted_answers.append({"id": example_id, "prediction_text": best_answer["text"]})
+            predicted_answers.append(
+                {"id": example_id, "prediction_text": best_answer["text"]}
+            )
         else:
             predicted_answers.append({"id": example_id, "prediction_text": ""})
 
-    ref_answers = [{"id": item["id"], "answers": item["answers"]} for item_idx, item in enumerate(dataset)]
+    ref_answers = [
+        {"id": item["id"], "answers": item["answers"]}
+        for item_idx, item in enumerate(dataset)
+    ]
 
-    metric_vals_d = squad_metric.compute(predictions=predicted_answers, references=ref_answers)
+    metric_vals_d = squad_metric.compute(
+        predictions=predicted_answers, references=ref_answers
+    )
     return metric_vals_d
-
 
 # %% ../../../nbs/14_text-modeling-question-answering.ipynb 27
 class PreCalculatedQALoss(PreCalculatedLoss):
@@ -178,7 +217,6 @@ class PreCalculatedQALoss(PreCalculatedLoss):
 
     def activation(self, x):
         return F.softmax(x[0], dim=self.axis), F.softmax(x[1], dim=self.axis)
-
 
 # %% ../../../nbs/14_text-modeling-question-answering.ipynb 37
 @typedispatch
@@ -214,14 +252,36 @@ def show_results(
         found = start.item() != 0 and end.item() != 0
         ans_text = hf_tokenizer.decode(input_ids[start:end], skip_special_tokens=False)
 
-        pred_ans_toks = hf_tokenizer.convert_ids_to_tokens(input_ids, skip_special_tokens=False)[int(pred[0]) : int(pred[1])]
+        pred_ans_toks = hf_tokenizer.convert_ids_to_tokens(
+            input_ids, skip_special_tokens=False
+        )[int(pred[0]) : int(pred[1])]
         pred_ans_txt = hf_tokenizer.convert_tokens_to_string(pred_ans_toks)
 
-        res.append((txt, found, (start.item(), end.item()), ans_text, (int(pred[0]), int(pred[1])), pred_ans_txt))
+        res.append(
+            (
+                txt,
+                found,
+                (start.item(), end.item()),
+                ans_text,
+                (int(pred[0]), int(pred[1])),
+                pred_ans_txt,
+            )
+        )
 
-    display_df(pd.DataFrame(res, columns=["text", "found", "start/end", "answer", "pred start/end", "pred answer"]))
+    display_df(
+        pd.DataFrame(
+            res,
+            columns=[
+                "text",
+                "found",
+                "start/end",
+                "answer",
+                "pred start/end",
+                "pred answer",
+            ],
+        )
+    )
     return ctxs
-
 
 # %% ../../../nbs/14_text-modeling-question-answering.ipynb 44
 @patch
@@ -241,13 +301,25 @@ def blurr_predict_answers(
     hf_tokenizer = tfm.hf_tokenizer
     tok_kwargs = tfm.tok_kwargs
     tok_kwargs["return_overflowing_tokens"] = True
-    tok_kwargs["truncation"] = "only_second" if hf_tokenizer.padding_side == "right" else "only_first"
+    tok_kwargs["truncation"] = (
+        "only_second" if hf_tokenizer.padding_side == "right" else "only_first"
+    )
 
     results = []
     for qc in question_contexts:
-        inps = [qc["question"], qc["context"]] if hf_tokenizer.padding_side == "right" else [qc["context"], qc["question"]]
+        inps = (
+            [qc["question"], qc["context"]]
+            if hf_tokenizer.padding_side == "right"
+            else [qc["context"], qc["question"]]
+        )
 
-        inputs = hf_tokenizer(*inps, max_length=tfm.max_length, padding=tfm.padding, return_tensors="pt", **tok_kwargs)
+        inputs = hf_tokenizer(
+            *inps,
+            max_length=tfm.max_length,
+            padding=tfm.padding,
+            return_tensors="pt",
+            **tok_kwargs
+        )
         inputs_offsets = inputs["offset_mapping"]
 
         # run inputs through model
@@ -261,11 +333,15 @@ def blurr_predict_answers(
         # mask any tokens that shouldn't be considered
         seq_ids = inputs.sequence_ids()
         # mask question tokens
-        ignore_mask = [i != 1 if hf_tokenizer.padding_side == "right" else i != 0 for i in seq_ids]
+        ignore_mask = [
+            i != 1 if hf_tokenizer.padding_side == "right" else i != 0 for i in seq_ids
+        ]
         # unmask the [CLS] token
         ignore_mask[0] = False
         # mask all the [PAD] tokens
-        ignore_mask = torch.logical_or(torch.tensor(ignore_mask)[None], (inputs["attention_mask"] == 0))
+        ignore_mask = torch.logical_or(
+            torch.tensor(ignore_mask)[None], (inputs["attention_mask"] == 0)
+        )
 
         start_logits[ignore_mask] = tfm.ignore_token_id
         end_logits[ignore_mask] = tfm.ignore_token_id
@@ -276,7 +352,9 @@ def blurr_predict_answers(
 
         # get scores for each chunk
         candidates = []
-        for offset_idx, (chunk_start_probs, chunk_end_probs) in enumerate(zip(start_probs, end_probs)):
+        for offset_idx, (chunk_start_probs, chunk_end_probs) in enumerate(
+            zip(start_probs, end_probs)
+        ):
             scores = chunk_start_probs[:, None] * chunk_end_probs[None, :]
             idx = torch.triu(scores).argmax().item()
 
@@ -297,11 +375,17 @@ def blurr_predict_answers(
             end_char_idx = inputs_offsets[best[0]][best[2] - 1][1]
             ans = inps[1][start_char_idx:end_char_idx].strip()
 
-            results.append({"answer": ans, "start": start_char_idx.item(), "end": end_char_idx.item(), "score": best[3]})
+            results.append(
+                {
+                    "answer": ans,
+                    "start": start_char_idx.item(),
+                    "end": end_char_idx.item(),
+                    "score": best[3],
+                }
+            )
 
     # build our results
     return results
-
 
 # %% ../../../nbs/14_text-modeling-question-answering.ipynb 54
 @delegates(Blearner.__init__)
@@ -317,7 +401,9 @@ class BlearnerForQuestionAnswering(Blearner):
     @classmethod
     def _get_x(cls, x, qst, ctx, id=None, padding_side="right"):
         inps = {}
-        inps["text"] = (x[qst], x[ctx]) if (padding_side == "right") else (x[ctx], x[qst])
+        inps["text"] = (
+            (x[qst], x[ctx]) if (padding_side == "right") else (x[ctx], x[qst])
+        )
 
         if id is not None:
             inps["id"] = x[id]
@@ -356,7 +442,10 @@ class BlearnerForQuestionAnswering(Blearner):
         # if we get a path/str then we're loading something like a .csv file
         if isinstance(data, Path) or isinstance(data, str):
             content_type = mimetypes.guess_type(data)[0]
-            if content_type == "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
+            if (
+                content_type
+                == "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            ):
                 data = pd.read_excel(data)
             elif content_type == "text/csv":
                 data = pd.read_csv(data)
@@ -369,9 +458,13 @@ class BlearnerForQuestionAnswering(Blearner):
 
         # infer our datablock splitter if None
         if dblock_splitter is None:
-            dblock_splitter = ColSplitter() if hasattr(data, "is_valid") else RandomSplitter()
+            dblock_splitter = (
+                ColSplitter() if hasattr(data, "is_valid") else RandomSplitter()
+            )
 
-        hf_arch, hf_config, hf_tokenizer, hf_model = get_hf_objects(pretrained_model_name_or_path, model_cls=cls.get_model_cls())
+        hf_arch, hf_config, hf_tokenizer, hf_model = get_hf_objects(
+            pretrained_model_name_or_path, model_cls=cls.get_model_cls()
+        )
 
         # potentially used by our preprocess_func, it is the basis for our CategoryBlock vocab
         if max_seq_len is None:
@@ -382,15 +475,25 @@ class BlearnerForQuestionAnswering(Blearner):
         padding_side = hf_tokenizer.padding_side
 
         # define DataBlock and DataLoaders
-        before_batch_tfm = QABatchTokenizeTransform(hf_arch, hf_config, hf_tokenizer, hf_model, max_length=max_seq_len)
+        before_batch_tfm = QABatchTokenizeTransform(
+            hf_arch, hf_config, hf_tokenizer, hf_model, max_length=max_seq_len
+        )
         blocks = (
-            TextBlock(batch_tokenize_tfm=before_batch_tfm, input_return_type=QATextInput),
+            TextBlock(
+                batch_tokenize_tfm=before_batch_tfm, input_return_type=QATextInput
+            ),
             CategoryBlock(vocab=vocab),
             CategoryBlock(vocab=vocab),
         )
         dblock = DataBlock(
             blocks=blocks,
-            get_x=partial(cls._get_x, qst=question_attr, ctx=context_attr, id=id_attr, padding_side=padding_side),
+            get_x=partial(
+                cls._get_x,
+                qst=question_attr,
+                ctx=context_attr,
+                id=id_attr,
+                padding_side=padding_side,
+            ),
             get_y=[ItemGetter(tok_ans_start_attr), ItemGetter(tok_ans_end_attr)],
             splitter=dblock_splitter,
             n_inp=1,
@@ -400,4 +503,3 @@ class BlearnerForQuestionAnswering(Blearner):
 
         # return BLearner instance
         return cls(dls, hf_model, **learner_kwargs.copy())
-

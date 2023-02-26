@@ -11,31 +11,35 @@ import torch
 
 from enum import Enum
 from fastcore.foundation import L
-from transformers import AutoConfig, AutoTokenizer, PretrainedConfig, PreTrainedTokenizerBase, PreTrainedModel
+from transformers import (
+    AutoConfig,
+    AutoTokenizer,
+    PretrainedConfig,
+    PreTrainedTokenizerBase,
+    PreTrainedModel,
+)
 from transformers.utils import logging as hf_logging
 
 from ..utils import Singleton
 
-
 # %% auto 0
 __all__ = ['get_hf_objects', 'BlurrText']
 
-# %% ../../nbs/01_text-utils.ipynb 5
+# %% ../../nbs/01_text-utils.ipynb 4
 # silence all the HF warnings
 warnings.simplefilter("ignore")
 hf_logging.set_verbosity_error()
 
-
-# %% ../../nbs/01_text-utils.ipynb 9
+# %% ../../nbs/01_text-utils.ipynb 8
 def get_hf_objects(
-    pretrained_model_name_or_path: str|os.PathLike,
+    pretrained_model_name_or_path: str | os.PathLike,
     model_cls: PreTrainedModel,
-    config: PretrainedConfig|str|os.PathLike = None,
+    config: PretrainedConfig | str | os.PathLike = None,
     tokenizer_cls: PreTrainedTokenizerBase = None,
     config_kwargs: dict = {},
     tokenizer_kwargs: dict = {},
     model_kwargs: dict = {},
-    cache_dir: str|os.PathLike = None,
+    cache_dir: str | os.PathLike = None,
 ) -> tuple[str, PretrainedConfig, PreTrainedTokenizerBase, PreTrainedModel]:
     """
     Given at minimum a `pretrained_model_name_or_path` and `model_cls (such as
@@ -44,19 +48,33 @@ def get_hf_objects(
     """
     # config
     if config is None:
-        config = AutoConfig.from_pretrained(pretrained_model_name_or_path, cache_dir=cache_dir, **config_kwargs)
+        config = AutoConfig.from_pretrained(
+            pretrained_model_name_or_path, cache_dir=cache_dir, **config_kwargs
+        )
 
     # tokenizer (gpt2, roberta, bart (and maybe others) tokenizers require a prefix space)
-    if any(s in pretrained_model_name_or_path for s in ["gpt2", "roberta", "bart", "longformer"]):
+    if any(
+        s in pretrained_model_name_or_path
+        for s in ["gpt2", "roberta", "bart", "longformer"]
+    ):
         tokenizer_kwargs = {**{"add_prefix_space": True}, **tokenizer_kwargs}
 
     if tokenizer_cls is None:
-        tokenizer = AutoTokenizer.from_pretrained(pretrained_model_name_or_path, cache_dir=cache_dir, **tokenizer_kwargs)
+        tokenizer = AutoTokenizer.from_pretrained(
+            pretrained_model_name_or_path, cache_dir=cache_dir, **tokenizer_kwargs
+        )
     else:
-        tokenizer = tokenizer_cls.from_pretrained(pretrained_model_name_or_path, cache_dir=cache_dir, **tokenizer_kwargs)
+        tokenizer = tokenizer_cls.from_pretrained(
+            pretrained_model_name_or_path, cache_dir=cache_dir, **tokenizer_kwargs
+        )
 
     # model
-    model = model_cls.from_pretrained(pretrained_model_name_or_path, config=config, cache_dir=cache_dir, **model_kwargs)
+    model = model_cls.from_pretrained(
+        pretrained_model_name_or_path,
+        config=config,
+        cache_dir=cache_dir,
+        **model_kwargs
+    )
 
     # arch
     try:
@@ -66,19 +84,24 @@ def get_hf_objects(
 
     return (arch, config, tokenizer, model)
 
-
-# %% ../../nbs/01_text-utils.ipynb 12
+# %% ../../nbs/01_text-utils.ipynb 11
 @Singleton
 class BlurrText:
     """A general utility class for getting your Hugging Face objects"""
 
     def __init__(self):
         # get hf classes (tokenizers, configs, models, etc...)
-        transformer_classes = inspect.getmembers(importlib.import_module("transformers"))
+        transformer_classes = inspect.getmembers(
+            importlib.import_module("transformers")
+        )
 
         # build a df that we can query against to get various transformers objects/info
-        self._df = pd.DataFrame(transformer_classes, columns=["class_name", "class_location"])
-        self._df = self._df[self._df.class_location.apply(lambda v: isinstance(v, type))]
+        self._df = pd.DataFrame(
+            transformer_classes, columns=["class_name", "class_location"]
+        )
+        self._df = self._df[
+            self._df.class_location.apply(lambda v: isinstance(v, type))
+        ]
 
         # add the module each class is included in
         self._df["module"] = self._df.class_location.apply(lambda v: v.__module__)
@@ -101,26 +124,44 @@ class BlurrText:
         self._df = self._df[~self._df["arch"].isin(["auto", "utils"])]
 
         # if functional area = modeling, pull out the task it is built for
-        model_type_df = self._df[(self._df.functional_area == "modeling")].class_name.str.rsplit("For", n=1, expand=True)
+        model_type_df = self._df[
+            (self._df.functional_area == "modeling")
+        ].class_name.str.rsplit("For", n=1, expand=True)
 
-        model_type_df[1] = np.where(model_type_df[1].notnull(), "For" + model_type_df[1].astype(str), model_type_df[1])
-
-        self._df["model_task"] = model_type_df[1]
-        self._df["model_task"] = self._df["model_task"].str.replace("For", "", n=1, case=True, regex=False)
-
-        model_type_df = self._df[(self._df.functional_area == "modeling")].class_name.str.rsplit("With", n=1, expand=True)
         model_type_df[1] = np.where(
-            model_type_df[1].notnull(), "With" + model_type_df[1].astype(str), self._df[(self._df.functional_area == "modeling")].model_task
+            model_type_df[1].notnull(),
+            "For" + model_type_df[1].astype(str),
+            model_type_df[1],
         )
 
         self._df["model_task"] = model_type_df[1]
-        self._df["model_task"] = self._df["model_task"].str.replace("With", "", n=1, case=True, regex=False)
+        self._df["model_task"] = self._df["model_task"].str.replace(
+            "For", "", n=1, case=True, regex=False
+        )
+
+        model_type_df = self._df[
+            (self._df.functional_area == "modeling")
+        ].class_name.str.rsplit("With", n=1, expand=True)
+        model_type_df[1] = np.where(
+            model_type_df[1].notnull(),
+            "With" + model_type_df[1].astype(str),
+            self._df[(self._df.functional_area == "modeling")].model_task,
+        )
+
+        self._df["model_task"] = model_type_df[1]
+        self._df["model_task"] = self._df["model_task"].str.replace(
+            "With", "", n=1, case=True, regex=False
+        )
 
         # look at what we're going to remove (use to verify we're just getting rid of stuff we want too)
         # df[~df['hf_class_type'].isin(['modeling', 'configuration', 'tokenization'])]
 
         # only need these 3 functional areas for our querying purposes
-        self._df = self._df[self._df["functional_area"].isin(["modeling", "configuration", "tokenization"])]
+        self._df = self._df[
+            self._df["functional_area"].isin(
+                ["modeling", "configuration", "tokenization"]
+            )
+        ]
 
     def get_tasks(self, arch: str = None):
         """This method can be used to get a list of all tasks supported by your transformers install, or
@@ -130,10 +171,18 @@ class BlurrText:
         if arch:
             query.append(f'arch == "{arch}"')
 
-        return sorted(self._df.query(" & ".join(query), engine="python").model_task.unique().tolist())
+        return sorted(
+            self._df.query(" & ".join(query), engine="python")
+            .model_task.unique()
+            .tolist()
+        )
 
     def get_architectures(self):
-        return sorted(self._df[(self._df.arch.notna()) & (self._df.arch != None)].arch.unique().tolist())
+        return sorted(
+            self._df[(self._df.arch.notna()) & (self._df.arch != None)]
+            .arch.unique()
+            .tolist()
+        )
 
     def get_models(self, arch: str = None, task: str = None):
         """The transformer models available for use (optional: by architecture | task)"""
@@ -148,7 +197,11 @@ class BlurrText:
 
     def get_model_architecture(self, model_name_or_enum):
         """Get the architecture for a given model name / enum"""
-        model_name = model_name_or_enum if isinstance(model_name_or_enum, str) else model_name_or_enum.name
+        model_name = (
+            model_name_or_enum
+            if isinstance(model_name_or_enum, str)
+            else model_name_or_enum.name
+        )
         return self._df[self._df.class_name == model_name].arch.values[0]
 
     def get_hf_objects(
@@ -164,11 +217,17 @@ class BlurrText:
     ) -> Tuple[str, PretrainedConfig, PreTrainedTokenizerBase, PreTrainedModel]:
 
         arch, config, tokenizer, model = get_hf_objects(
-            pretrained_model_name_or_path, model_cls, config, tokenizer_cls, config_kwargs, tokenizer_kwargs, model_kwargs, cache_dir
+            pretrained_model_name_or_path,
+            model_cls,
+            config,
+            tokenizer_cls,
+            config_kwargs,
+            tokenizer_kwargs,
+            model_kwargs,
+            cache_dir,
         )
 
         if arch == "unknown":
             arch = self.get_model_architecture(type(model).__name__)
 
         return (arch, config, tokenizer, model)
-

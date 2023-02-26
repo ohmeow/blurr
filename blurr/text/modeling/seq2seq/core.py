@@ -21,10 +21,15 @@ from transformers.utils import logging as hf_logging
 
 import nltk
 from nltk.tokenize import sent_tokenize
+
 nltk.download("wordnet", quiet=True)  # download punctuation rules
 
 from ...data.core import first_blurr_tfm
-from ...data.seq2seq.core import Seq2SeqBatchTokenizeTransform, Seq2SeqTextBlock, Seq2SeqTextInput
+from blurr.text.data.seq2seq.core import (
+    Seq2SeqBatchTokenizeTransform,
+    Seq2SeqTextBlock,
+    Seq2SeqTextInput,
+)
 from ..core import BaseModelWrapper, BaseModelCallback
 from ...utils import get_hf_objects
 from ....utils import PreCalculatedCrossEntropyLoss
@@ -44,7 +49,15 @@ def blurr_seq2seq_splitter(
     """Custom param splitter for summarization models"""
     model = m.hf_model if (hasattr(m, "hf_model")) else m
 
-    if arch in ["bart", "blenderbot", "blenderbot_small", "fsmt", "marian", "mbart", "pegasus"]:
+    if arch in [
+        "bart",
+        "blenderbot",
+        "blenderbot_small",
+        "fsmt",
+        "marian",
+        "mbart",
+        "pegasus",
+    ]:
         embeds_modules = [
             model.model.encoder.embed_positions,
             model.model.encoder.embed_tokens,
@@ -71,7 +84,9 @@ def blurr_seq2seq_splitter(
         return groups.map(params).filter(lambda el: len(el) > 0)
 
     if arch in ["mt5", "t5"]:
-        embeds = nn.Sequential(model.shared, model.encoder.embed_tokens, model.decoder.embed_tokens)
+        embeds = nn.Sequential(
+            model.shared, model.encoder.embed_tokens, model.decoder.embed_tokens
+        )
 
         groups = L(embeds, model.encoder, model.decoder)
         return groups.map(params).filter(lambda el: len(el) > 0)
@@ -86,11 +101,15 @@ def blurr_seq2seq_splitter(
             model.prophetnet.decoder.ngram_embeddings,
         )
 
-        groups = L(embeds, model.prophetnet.encoder.layers, model.prophetnet.decoder.layers, model.lm_head)
+        groups = L(
+            embeds,
+            model.prophetnet.encoder.layers,
+            model.prophetnet.decoder.layers,
+            model.lm_head,
+        )
         return groups.map(params).filter(lambda el: len(el) > 0)
 
     raise ValueError(f"seq2seq_splitter does not support this architecutre: {arch}")
-
 
 # %% ../../../../nbs/20_text-modeling-seq2seq-core.ipynb 16
 class Seq2SeqMetricsCallback(Callback):
@@ -114,7 +133,10 @@ class Seq2SeqMetricsCallback(Callback):
         super().__init__(**kwargs)
         self.order = Recorder.order - 1
 
-        store_attr(self=self, names="custom_metrics, calc_every, ignore_token_id, text_gen_kwargs, kwargs")
+        store_attr(
+            self=self,
+            names="custom_metrics, calc_every, ignore_token_id, text_gen_kwargs, kwargs",
+        )
         self.custom_metric_funcs, self.custom_metric_vals, self.do_calc = {}, {}, True
 
         if custom_metrics is not None:
@@ -126,16 +148,27 @@ class Seq2SeqMetricsCallback(Callback):
                 else:
                     compute_func = hf_load_metric(metric_name).compute
 
-                compute_kwargs = metric_info_dict["compute_kwargs"] if ("compute_kwargs" in metric_info_dict) else {}
+                compute_kwargs = (
+                    metric_info_dict["compute_kwargs"]
+                    if ("compute_kwargs" in metric_info_dict)
+                    else {}
+                )
                 metric_returns = metric_info_dict["returns"]
 
-                self.custom_metric_funcs[metric_name] = (partial(compute_func, **compute_kwargs), metric_returns)
+                self.custom_metric_funcs[metric_name] = (
+                    partial(compute_func, **compute_kwargs),
+                    metric_returns,
+                )
 
                 # self.custom_metric_vals (list): all the custom metrics to report as a "ValueMetric"
                 if metric_name == "rouge":
-                    self.custom_metric_vals.update({rouge_type: None for rouge_type in metric_returns})
+                    self.custom_metric_vals.update(
+                        {rouge_type: None for rouge_type in metric_returns}
+                    )
                 elif is_listy(metric_returns):
-                    self.custom_metric_vals.update({f"{metric_name}_{ret_val}": None for ret_val in metric_returns})
+                    self.custom_metric_vals.update(
+                        {f"{metric_name}_{ret_val}": None for ret_val in metric_returns}
+                    )
                 else:
                     self.custom_metric_vals.update({metric_name: None})
 
@@ -157,7 +190,12 @@ class Seq2SeqMetricsCallback(Callback):
 
         # add seq2seq generation specific metrics (rouge, bertscore, bleu, etc...) to learner metrics
         metric_keys = list(self.custom_metric_vals.keys())
-        custom_metrics = L([ValueMetric(partial(self.metric_value, metric_key=k), k) for k in metric_keys])
+        custom_metrics = L(
+            [
+                ValueMetric(partial(self.metric_value, metric_key=k), k)
+                for k in metric_keys
+            ]
+        )
         self.learn.metrics = self.learn.metrics + custom_metrics
 
         self.do_setup = False
@@ -179,15 +217,27 @@ class Seq2SeqMetricsCallback(Callback):
 
     # --- batch begin/after phases ---
     def after_batch(self):
-        if self.training or self.learn.y is None or self.custom_metrics is None or not self.do_calc:
+        if (
+            self.training
+            or self.learn.y is None
+            or self.custom_metrics is None
+            or not self.do_calc
+        ):
             return
 
         # grab predicted and reference ids for any metrics that need them
-        input_ids, attention_mask = self.xb[0]["input_ids"], self.xb[0]["attention_mask"]
-        gen_ids = self.learn.model.hf_model.generate(input_ids=input_ids, attention_mask=attention_mask, **self.text_gen_kwargs)
+        input_ids, attention_mask = (
+            self.xb[0]["input_ids"],
+            self.xb[0]["attention_mask"],
+        )
+        gen_ids = self.learn.model.hf_model.generate(
+            input_ids=input_ids, attention_mask=attention_mask, **self.text_gen_kwargs
+        )
 
         self.generated_ids += gen_ids.tolist()
-        self.refernce_ids += [seq[seq != self.ignore_token_id].tolist() for seq in self.yb[0]]
+        self.refernce_ids += [
+            seq[seq != self.ignore_token_id].tolist() for seq in self.yb[0]
+        ]
 
     # --- validation begin/after phases ---
     def before_validate(self):
@@ -198,11 +248,25 @@ class Seq2SeqMetricsCallback(Callback):
             return
 
         # fetch the generated prediction and reference tokens and texts
-        gen_toks = [self.hf_tokenizer.convert_ids_to_tokens(ids, skip_special_tokens=True) for ids in self.generated_ids]
-        ref_toks = [self.hf_tokenizer.convert_ids_to_tokens(ids, skip_special_tokens=True) for ids in self.refernce_ids]
+        gen_toks = [
+            self.hf_tokenizer.convert_ids_to_tokens(ids, skip_special_tokens=True)
+            for ids in self.generated_ids
+        ]
+        ref_toks = [
+            self.hf_tokenizer.convert_ids_to_tokens(ids, skip_special_tokens=True)
+            for ids in self.refernce_ids
+        ]
 
-        gen_texts = self.hf_tokenizer.batch_decode(self.generated_ids, skip_special_tokens=True, clean_up_tokenization_spaces=True)
-        ref_texts = self.hf_tokenizer.batch_decode(self.refernce_ids, skip_special_tokens=True, clean_up_tokenization_spaces=True)
+        gen_texts = self.hf_tokenizer.batch_decode(
+            self.generated_ids,
+            skip_special_tokens=True,
+            clean_up_tokenization_spaces=True,
+        )
+        ref_texts = self.hf_tokenizer.batch_decode(
+            self.refernce_ids,
+            skip_special_tokens=True,
+            clean_up_tokenization_spaces=True,
+        )
 
         # calculate any seq2seq metrics
         for metric_name, metric_info in self.custom_metric_funcs.items():
@@ -216,8 +280,12 @@ class Seq2SeqMetricsCallback(Callback):
             elif metric_name == "sacrebleu":
                 predictions, references = gen_texts, [[txt] for txt in ref_texts]
             elif metric_name == "rouge":
-                predictions = ["\n".join(sent_tokenize(pred.strip())) for pred in gen_texts]
-                references = ["\n".join(sent_tokenize(ref_text.strip())) for ref_text in ref_texts]
+                predictions = [
+                    "\n".join(sent_tokenize(pred.strip())) for pred in gen_texts
+                ]
+                references = [
+                    "\n".join(sent_tokenize(ref_text.strip())) for ref_text in ref_texts
+                ]
             else:
                 predictions, references = gen_texts, ref_texts
 
@@ -232,7 +300,9 @@ class Seq2SeqMetricsCallback(Callback):
                 for score_key, score in res.items():
                     if f"{metric_name}_{score_key}" not in self.custom_metric_vals:
                         continue
-                    self.custom_metric_vals[f"{metric_name}_{score_key}"] = np.array(score).mean().item()
+                    self.custom_metric_vals[f"{metric_name}_{score_key}"] = (
+                        np.array(score).mean().item()
+                    )
             elif is_listy(return_val):
                 for score_key, score in res.items():
                     if f"{metric_name}_{score_key}" not in self.custom_metric_vals:
@@ -244,7 +314,6 @@ class Seq2SeqMetricsCallback(Callback):
     # --- for ValueMetric metrics ---
     def metric_value(self, metric_key):
         return self.custom_metric_vals[metric_key]
-
 
 # %% ../../../../nbs/20_text-modeling-seq2seq-core.ipynb 38
 @typedispatch
@@ -286,7 +355,9 @@ def show_results(
         [
             (
                 hf_tokenizer.decode(s[0], skip_special_tokens=True)[:input_trunc_at],
-                hf_tokenizer.decode(s[1][s[1] != ignore_token_id], skip_special_tokens=True)[:target_trunc_at],
+                hf_tokenizer.decode(
+                    s[1][s[1] != ignore_token_id], skip_special_tokens=True
+                )[:target_trunc_at],
                 gen_txt["generated_texts"][:target_trunc_at],
             )
             for s, gen_txt in zip(samples, gen_text_txts)
@@ -295,4 +366,3 @@ def show_results(
 
     display_df(pd.DataFrame(res, columns=["text", "target", "prediction"])[:max_n])
     return ctxs
-
