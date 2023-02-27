@@ -28,13 +28,14 @@ from transformers import (
 )
 from transformers import AutoModelForSequenceClassification
 from transformers import logging as hf_logging
+from transformers.data.data_collator import DataCollatorWithPadding
 
 from ..utils import clean_memory, get_hf_objects, set_seed, PreCalculatedLoss
 
 # %% auto 0
-__all__ = ['logger', 'BlurrDataCollatorWithPadding', 'blurr_splitter', 'BaseModelWrapper', 'BaseModelCallback']
+__all__ = ['logger', 'TextCollatorWithPadding', 'blurr_splitter', 'BaseModelWrapper', 'BaseModelCallback']
 
-# %% ../../nbs/10_text-core.ipynb 5
+# %% ../../nbs/10_text-core.ipynb 6
 # silence all the HF warnings and load environment variables
 warnings.simplefilter("ignore")
 hf_logging.set_verbosity_error()
@@ -42,27 +43,43 @@ logger = get_logger(__name__)
 
 load_dotenv()
 
-# %% ../../nbs/10_text-core.ipynb 13
+# %% ../../nbs/10_text-core.ipynb 14
 @dataclass
-class BlurrDataCollatorWithPadding:
-    tokenizer: PreTrainedTokenizerBase
-    padding: bool = True
-    max_length: int = None
-    pad_to_multiple_of: int = None
-    return_tensors: str = "pt"
-    n_inp: int = 1
+class TextCollatorWithPadding:
+    def __init__(
+        self,
+        # A Hugging Face tokenizer
+        hf_tokenizer: PreTrainedTokenizerBase,
+        # The abbreviation/name of your Hugging Face transformer architecture (e.b., bert, bart, etc..)
+        hf_arch: str = None,
+        # A specific configuration instance you want to use
+        hf_config: PretrainedConfig = None,
+        # A Hugging Face model
+        hf_model: PreTrainedModel = None,
+        # The number of inputs expected by your model
+        n_inp: int = 1,
+        # Defaults to use Hugging Face's DataCollatorWithPadding(tokenizer=hf_tokenizer)
+        data_collator_cls: type = DataCollatorWithPadding,
+        # kwyargs specific for the instantiation of the `data_collator`
+        data_collator_kwargs: dict = {},
+    ):
+        store_attr()
+
+        self.hf_tokenizer = data_collator_kwargs.pop("tokenizer", self.hf_tokenizer)
+        self.data_collator = data_collator_cls(
+            tokenizer=self.hf_tokenizer, **data_collator_kwargs
+        )
 
     def __call__(self, features):
         features = L(features)
-
-        batch = []
         inputs, labels, targs = [], [], []
+
         if isinstance(features[0], dict):
             feature_keys = list(features[0].keys())
             inputs = [
                 {
                     fwd_arg_name: list(features.attrgot(fwd_arg_name))
-                    for fwd_arg_name in self.tokenizer.model_input_names
+                    for fwd_arg_name in self.hf_tokenizer.model_input_names
                     if fwd_arg_name in feature_keys
                 }
             ]
@@ -80,7 +97,7 @@ class BlurrDataCollatorWithPadding:
                         fwd_arg_name: list(
                             features.itemgot(f_idx).attrgot(fwd_arg_name)
                         )
-                        for fwd_arg_name in self.tokenizer.model_input_names
+                        for fwd_arg_name in self.hf_tokenizer.model_input_names
                         if fwd_arg_name in feature_keys
                     }
                 )
@@ -97,26 +114,22 @@ class BlurrDataCollatorWithPadding:
                 for f_idx in range(self.n_inp, len(features[0]))
             ]
 
+        return self._build_batch(inputs, labels, targs)
+
+    def _build_batch(self, inputs, labels, targs):
+        batch = []
+
         for input, input_labels in zip(inputs, labels):
-            inp = dict(
-                self.tokenizer.pad(
-                    input,
-                    padding=self.padding,
-                    max_length=self.max_length,
-                    pad_to_multiple_of=self.pad_to_multiple_of,
-                    return_tensors=self.return_tensors,
-                )
-            )
             if len(input_labels) > 0:
-                inp["labels"] = input_labels
-            batch.append(dict(inp))
+                input["labels"] = input_labels
+            batch.append(dict(self.data_collator(input)))
 
         for targ in targs:
             batch.append(targ)
 
         return batch
 
-# %% ../../nbs/10_text-core.ipynb 16
+# %% ../../nbs/10_text-core.ipynb 17
 def blurr_splitter(m: Module):
     """Splits the Hugging Face model based on various model architecture conventions"""
     model = m.hf_model if (hasattr(m, "hf_model")) else m
@@ -128,7 +141,7 @@ def blurr_splitter(m: Module):
 
     return groups.map(params).filter(lambda el: len(el) > 0)
 
-# %% ../../nbs/10_text-core.ipynb 21
+# %% ../../nbs/10_text-core.ipynb 22
 class BaseModelWrapper(Module):
     def __init__(
         self,
@@ -162,7 +175,7 @@ class BaseModelWrapper(Module):
             **self.hf_model_kwargs
         )
 
-# %% ../../nbs/10_text-core.ipynb 24
+# %% ../../nbs/10_text-core.ipynb 25
 class BaseModelCallback(Callback):
     def __init__(
         self,
