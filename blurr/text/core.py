@@ -13,7 +13,13 @@ from fastai.callback.all import *
 from fastai.imports import *
 from fastai.learner import *
 from fastai.losses import BaseLoss, BCEWithLogitsLossFlat, CrossEntropyLossFlat
-from fastai.data.transforms import DataLoaders, Datasets, ColSplitter, ItemTransform
+from fastai.data.transforms import (
+    DataLoaders,
+    Datasets,
+    ColSplitter,
+    ItemTransform,
+    TfmdDL,
+)
 from fastai.optimizer import Adam, OptimWrapper, params
 from fastai.metrics import accuracy, F1Score, accuracy_multi, F1ScoreMulti
 from fastai.test_utils import show_install
@@ -33,7 +39,8 @@ from transformers.data.data_collator import DataCollatorWithPadding
 from ..utils import clean_memory, get_hf_objects, set_seed, PreCalculatedLoss
 
 # %% auto 0
-__all__ = ['logger', 'TextCollatorWithPadding', 'blurr_splitter', 'BaseModelWrapper', 'BaseModelCallback']
+__all__ = ['logger', 'TextCollatorWithPadding', 'blurr_params', 'blurr_splitter', 'BaseModelWrapper', 'BaseModelCallback',
+           'TextInput', 'BatchDecodeTransform', 'get_blurr_tfm', 'first_blurr_tfm', 'show_batch', 'TextDataLoader']
 
 # %% ../../nbs/10_text-core.ipynb 6
 # silence all the HF warnings and load environment variables
@@ -130,6 +137,13 @@ class TextCollatorWithPadding:
         return batch
 
 # %% ../../nbs/10_text-core.ipynb 17
+def blurr_params(modules):
+    "Return all parameters of `m`"
+    if not is_listy(modules):
+        modules = [modules]
+    return [p for m in modules for p in m.parameters()]
+
+# %% ../../nbs/10_text-core.ipynb 18
 def blurr_splitter(m: Module):
     """Splits the Hugging Face model based on various model architecture conventions"""
     model = m.hf_model if (hasattr(m, "hf_model")) else m
@@ -141,7 +155,7 @@ def blurr_splitter(m: Module):
 
     return groups.map(params).filter(lambda el: len(el) > 0)
 
-# %% ../../nbs/10_text-core.ipynb 22
+# %% ../../nbs/10_text-core.ipynb 23
 class BaseModelWrapper(Module):
     def __init__(
         self,
@@ -175,7 +189,7 @@ class BaseModelWrapper(Module):
             **self.hf_model_kwargs
         )
 
-# %% ../../nbs/10_text-core.ipynb 25
+# %% ../../nbs/10_text-core.ipynb 26
 class BaseModelCallback(Callback):
     def __init__(
         self,
@@ -213,3 +227,222 @@ class BaseModelCallback(Callback):
         if self.hf_loss is not None:
             self.learn.loss_grad = self.hf_loss
             self.learn.loss = self.learn.loss_grad.clone()
+
+# %% ../../nbs/10_text-core.ipynb 53
+class TextInput(TensorBase):
+    """The base represenation of your inputs; used by the various fastai `show` methods"""
+
+    pass
+
+# %% ../../nbs/10_text-core.ipynb 55
+class BatchDecodeTransform(Transform):
+    """A class used to cast your inputs as `input_return_type` for fastai `show` methods"""
+
+    def __init__(
+        self,
+        # A Hugging Face tokenizer (not required if passing in an instance of `BatchTokenizeTransform` to `before_batch_tfm`)
+        hf_tokenizer: PreTrainedTokenizerBase,
+        # The abbreviation/name of your Hugging Face transformer architecture (not required if passing in an instance of `BatchTokenizeTransform` to `before_batch_tfm`)
+        hf_arch: str = None,
+        # A Hugging Face configuration object (not required if passing in an instance of `BatchTokenizeTransform` to `before_batch_tfm`)
+        hf_config: PretrainedConfig = None,
+        # A Hugging Face model (not required if passing in an instance of `BatchTokenizeTransform` to `before_batch_tfm`)
+        hf_model: PreTrainedModel = None,
+        # Used by typedispatched show methods
+        input_return_type: type = TextInput,
+        # Any other keyword arguments
+        **kwargs,
+    ):
+        store_attr()
+        self.kwargs = kwargs
+
+    def decodes(self, items):
+        """Returns the proper object and data for show related fastai methods"""
+        inps = self.input_return_type(items[0]["input_ids"])
+        if len(items) > 1:
+            return inps, *items[1:]
+        else:
+            labels = items[0].get("labels", [None] * items[0]["input_ids"])
+            return inps, labels
+
+# %% ../../nbs/10_text-core.ipynb 57
+def get_blurr_tfm(
+    # A list of transforms (e.g., dls.after_batch, dls.before_batch, etc...)
+    tfms_list: Pipeline,
+    # The transform to find
+    tfm_class: Transform = BatchDecodeTransform,
+):
+    """
+    Given a fastai DataLoaders batch transforms, this method can be used to get at a transform
+    instance used in your Blurr DataBlock
+    """
+    return next(filter(lambda el: issubclass(type(el), tfm_class), tfms_list), None)
+
+# %% ../../nbs/10_text-core.ipynb 59
+def first_blurr_tfm(
+    # Your fast.ai `DataLoaders
+    dls: DataLoaders,
+    # The Blurr transforms to look for in order
+    tfms: list[Transform] = [BatchDecodeTransform],
+):
+    """
+    This convenience method will find the first Blurr transform required for methods such as
+    `show_batch` and `show_results`. The returned transform should have everything you need to properly
+    decode and 'show' your Hugging Face inputs/targets
+    """
+    for tfm in tfms:
+        found_tfm = get_blurr_tfm(dls.before_batch, tfm_class=tfm)
+        if found_tfm:
+            return found_tfm
+
+        found_tfm = get_blurr_tfm(dls.after_batch, tfm_class=tfm)
+        if found_tfm:
+            return found_tfm
+
+# %% ../../nbs/10_text-core.ipynb 62
+@typedispatch
+def show_batch(
+    # This typedispatched `show_batch` will be called for `TextInput` typed inputs
+    x: TextInput,
+    # Your targets
+    y,
+    # Your raw inputs/targets
+    samples,
+    # Your `DataLoaders`. This is required so as to get at the Hugging Face objects for
+    # decoding them into something understandable
+    dataloaders,
+    # Your `show_batch` context
+    ctxs=None,
+    # The maximum number of items to show
+    max_n=6,
+    # Any truncation your want applied to your decoded inputs
+    trunc_at=None,
+    # Any other keyword arguments you want applied to `show_batch`
+    **kwargs,
+):
+    # grab our tokenizer
+    tfm = first_blurr_tfm(dataloaders)
+    hf_tokenizer = tfm.hf_tokenizer
+
+    # if we've included our labels list, we'll use it to look up the value of our target(s)
+    trg_labels = tfm.kwargs["labels"] if ("labels" in tfm.kwargs) else None
+
+    res = L()
+    n_inp = dataloaders.n_inp
+
+    n_samples = min(max_n, dataloaders.bs)
+    for idx in range(n_samples):
+        input_ids = x[idx]
+        label = y[idx] if y is not None else None
+        sample = samples[idx] if samples is not None else None
+
+        rets = [hf_tokenizer.decode(input_ids, skip_special_tokens=True)[:trunc_at]]
+        for item in sample[n_inp:]:
+            if not torch.is_tensor(item):
+                trg = trg_labels[int(item)] if trg_labels else item
+            elif is_listy(item.tolist()):
+                trg = (
+                    [
+                        trg_labels[idx]
+                        for idx, val in enumerate(label.numpy().tolist())
+                        if (val == 1)
+                    ]
+                    if (trg_labels)
+                    else label.numpy()
+                )
+            else:
+                trg = trg_labels[label.item()] if (trg_labels) else label.item()
+
+            rets.append(trg)
+        res.append(tuplify(rets))
+
+    cols = ["text"] + [
+        "target" if (i == 0) else f"target_{i}" for i in range(len(res[0]) - n_inp)
+    ]
+    display_df(pd.DataFrame(res, columns=cols)[:max_n])
+    return ctxs
+
+# %% ../../nbs/10_text-core.ipynb 64
+@delegates()
+class TextDataLoader(TfmdDL):
+    """
+    A transformed `DataLoader` that works with Blurr.
+    From the fastai docs: A `TfmDL` is described as "a DataLoader that creates Pipeline from a list of Transforms
+    for the callbacks `after_item`, `before_batch` and `after_batch`. As a result, it can decode or show a processed batch.
+    """
+
+    def __init__(
+        self,
+        # A standard PyTorch Dataset
+        dataset: torch.utils.data.dataset.Dataset | Datasets,
+        # A Hugging Face tokenizer (not required if passing in an instance of `BatchTokenizeTransform` to `before_batch_tfm`)
+        hf_tokenizer: PreTrainedTokenizerBase,
+        # The abbreviation/name of your Hugging Face transformer architecture (not required if passing in an \
+        # instance of `BatchTokenizeTransform` to `before_batch_tfm`)
+        hf_arch: str = None,
+        # A Hugging Face configuration object (not required if passing in an  \
+        # instance of `BatchTokenizeTransform` to `before_batch_tfm`)
+        hf_config: PretrainedConfig = None,
+        # A Hugging Face model (not required if passing in an instance of `BatchTokenizeTransform` to `before_batch_tfm`)
+        hf_model: PreTrainedModel = None,
+        # An instance of `TextCollatorWithPadding` or equivalent (defaults to `BlurrBatchCreator`)
+        text_collator: TextCollatorWithPadding = None,
+        # The batch_tfm used to decode Blurr batches (defaults to `BatchDecodeTransform`)
+        batch_decode_tfm: BatchDecodeTransform = None,
+        # Used by typedispatched show methods
+        input_return_type: type = TextInput,
+        # Keyword arguments to be applied to your `batch_decode_tfm`
+        batch_decode_kwargs: dict = {},
+        # Keyword arguments to be applied to `BlurrDataLoader`
+        **kwargs,
+    ):
+        # define what happens when a batch is created (e.g., this is where collation happens)
+        if "create_batch" in kwargs:
+            kwargs.pop("create_batch")
+        if not text_collator:
+            text_collator = TextCollatorWithPadding(
+                hf_tokenizer, hf_arch, hf_config, hf_model
+            )
+
+        # define the transform applied after the batch is created (used of show methods)
+        if "after_batch" in kwargs:
+            kwargs.pop("after_batch")
+        if not batch_decode_tfm:
+            batch_decode_tfm = BatchDecodeTransform(
+                hf_tokenizer,
+                hf_arch,
+                hf_config,
+                hf_model,
+                input_return_type,
+                **batch_decode_kwargs.copy(),
+            )
+
+        super().__init__(
+            dataset=dataset,
+            create_batch=text_collator,
+            after_batch=batch_decode_tfm,
+            **kwargs,
+        )
+        store_attr(names="hf_arch, hf_config, hf_tokenizer, hf_model")
+
+    def new(
+        self,
+        # A standard PyTorch and fastai dataset
+        dataset: Union[torch.utils.data.dataset.Dataset, Datasets] = None,
+        # The class you want to create an instance of (will be "self" if None)
+        cls: type = None,
+        #  Any additional keyword arguments you want to pass to the __init__ method of `cls`
+        **kwargs,
+    ):
+        """
+        We have to override the new method in order to add back the Hugging Face objects in this factory
+        method (called for example in places like `show_results`). With the exception of the additions to the kwargs
+        dictionary, the code below is pulled from the `DataLoaders.new` method as is.
+        """
+        # we need to add these arguments back in (these, after_batch, and create_batch will go in as kwargs)
+        kwargs["hf_arch"] = self.hf_arch
+        kwargs["hf_config"] = self.hf_config
+        kwargs["hf_tokenizer"] = self.hf_tokenizer
+        kwargs["hf_model"] = self.hf_model
+
+        return super().new(dataset, cls, **kwargs)
