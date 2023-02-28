@@ -13,25 +13,13 @@ from fastai.callback.all import *
 from fastai.imports import *
 from fastai.learner import *
 from fastai.losses import BaseLoss, BCEWithLogitsLossFlat, CrossEntropyLossFlat
-from fastai.data.transforms import (
-    DataLoaders,
-    Datasets,
-    ColSplitter,
-    ItemTransform,
-    TfmdDL,
-)
+from fastai.data.transforms import DataLoaders, Datasets, ColSplitter, ItemTransform, TfmdDL
 from fastai.optimizer import Adam, OptimWrapper, params
 from fastai.metrics import accuracy, F1Score, accuracy_multi, F1ScoreMulti
 from fastai.test_utils import show_install
 from fastai.torch_core import *
 from fastai.torch_imports import *
-from transformers import (
-    AutoConfig,
-    AutoTokenizer,
-    PretrainedConfig,
-    PreTrainedTokenizerBase,
-    PreTrainedModel,
-)
+from transformers import AutoConfig, AutoTokenizer, PretrainedConfig, PreTrainedTokenizerBase, PreTrainedModel
 from transformers import AutoModelForSequenceClassification
 from transformers import logging as hf_logging
 from transformers.data.data_collator import DataCollatorWithPadding
@@ -73,9 +61,7 @@ class TextCollatorWithPadding:
         store_attr()
 
         self.hf_tokenizer = data_collator_kwargs.pop("tokenizer", self.hf_tokenizer)
-        self.data_collator = data_collator_cls(
-            tokenizer=self.hf_tokenizer, **data_collator_kwargs
-        )
+        self.data_collator = data_collator_cls(tokenizer=self.hf_tokenizer, **data_collator_kwargs)
 
     def __call__(self, features):
         features = L(features)
@@ -90,36 +76,21 @@ class TextCollatorWithPadding:
                     if fwd_arg_name in feature_keys
                 }
             ]
-            labels = [
-                torch.tensor(
-                    list(features.attrgot("label")) if "label" in feature_keys else []
-                )
-            ]
+            labels = [torch.tensor(list(features.attrgot("label")) if "label" in feature_keys else [])]
             targs = labels
         elif isinstance(features[0], tuple):
             for f_idx in range(self.n_inp):
                 feature_keys = list(features[0][f_idx].keys())
                 inputs.append(
                     {
-                        fwd_arg_name: list(
-                            features.itemgot(f_idx).attrgot(fwd_arg_name)
-                        )
+                        fwd_arg_name: list(features.itemgot(f_idx).attrgot(fwd_arg_name))
                         for fwd_arg_name in self.hf_tokenizer.model_input_names
                         if fwd_arg_name in feature_keys
                     }
                 )
-                labels.append(
-                    torch.tensor(
-                        list(features.itemgot(f_idx).attrgot("label"))
-                        if "label" in feature_keys
-                        else []
-                    )
-                )
+                labels.append(torch.tensor(list(features.itemgot(f_idx).attrgot("label")) if "label" in feature_keys else []))
 
-            targs = [
-                torch.tensor(list(features.itemgot(f_idx)))
-                for f_idx in range(self.n_inp, len(features[0]))
-            ]
+            targs = [torch.tensor(list(features.itemgot(f_idx))) for f_idx in range(self.n_inp, len(features[0]))]
 
         return self._build_batch(inputs, labels, targs)
 
@@ -172,9 +143,7 @@ class BaseModelWrapper(Module):
 
         store_attr()
         self.hf_model = hf_model.cuda() if torch.cuda.is_available() else hf_model
-        self.hf_model_fwd_args = list(
-            inspect.signature(self.hf_model.forward).parameters.keys()
-        )
+        self.hf_model_fwd_args = list(inspect.signature(self.hf_model.forward).parameters.keys())
 
     def forward(self, x):
         for k in list(x):
@@ -186,7 +155,7 @@ class BaseModelWrapper(Module):
             output_hidden_states=self.output_hidden_states,
             output_attentions=self.output_attentions,
             return_dict=True,
-            **self.hf_model_kwargs
+            **self.hf_model_kwargs,
         )
 
 # %% ../../nbs/10_text-core.ipynb 26
@@ -200,9 +169,7 @@ class BaseModelCallback(Callback):
 
     def after_create(self):
         if isinstance(self.learn.model, PreTrainedModel):
-            self.learn.model = BaseModelWrapper(
-                self.learn.model, **self.base_model_wrapper_kwargs
-            )
+            self.learn.model = BaseModelWrapper(self.learn.model, **self.base_model_wrapper_kwargs)
 
     def before_batch(self):
         self.hf_loss = None
@@ -341,24 +308,14 @@ def show_batch(
             if not torch.is_tensor(item):
                 trg = trg_labels[int(item)] if trg_labels else item
             elif is_listy(item.tolist()):
-                trg = (
-                    [
-                        trg_labels[idx]
-                        for idx, val in enumerate(label.numpy().tolist())
-                        if (val == 1)
-                    ]
-                    if (trg_labels)
-                    else label.numpy()
-                )
+                trg = [trg_labels[idx] for idx, val in enumerate(label.numpy().tolist()) if (val == 1)] if (trg_labels) else label.numpy()
             else:
                 trg = trg_labels[label.item()] if (trg_labels) else label.item()
 
             rets.append(trg)
         res.append(tuplify(rets))
 
-    cols = ["text"] + [
-        "target" if (i == 0) else f"target_{i}" for i in range(len(res[0]) - n_inp)
-    ]
+    cols = ["text"] + ["target" if (i == 0) else f"target_{i}" for i in range(len(res[0]) - n_inp)]
     display_df(pd.DataFrame(res, columns=cols)[:max_n])
     return ctxs
 
@@ -400,9 +357,7 @@ class TextDataLoader(TfmdDL):
         if "create_batch" in kwargs:
             kwargs.pop("create_batch")
         if not text_collator:
-            text_collator = TextCollatorWithPadding(
-                hf_tokenizer, hf_arch, hf_config, hf_model
-            )
+            text_collator = TextCollatorWithPadding(hf_tokenizer, hf_arch, hf_config, hf_model)
 
         # define the transform applied after the batch is created (used of show methods)
         if "after_batch" in kwargs:
