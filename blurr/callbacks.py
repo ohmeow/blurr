@@ -17,16 +17,16 @@ from transformers import PreTrainedModel
 # %% auto 0
 __all__ = ['CheckpointingNotSupported', 'GradientCheckpointing']
 
-# %% ../nbs/90_callbacks.ipynb 7
+# %% ../nbs/90_callbacks.ipynb 6
 os.environ["TOKENIZERS_PARALLELISM"] = "false"
 load_dotenv()
 
-# %% ../nbs/90_callbacks.ipynb 10
+# %% ../nbs/90_callbacks.ipynb 9
 class CheckpointingNotSupported(Exception):
     def __init__(self, msg="Model does not support gradient checkpointing."):
         super().__init__(msg)
 
-# %% ../nbs/90_callbacks.ipynb 11
+# %% ../nbs/90_callbacks.ipynb 10
 class GradientCheckpointing(Callback):
     """A fastai callback to enable gradient checkpointing for compatible HuggingFace models."""
 

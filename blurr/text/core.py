@@ -30,7 +30,7 @@ from ..utils import clean_memory, get_hf_objects, set_seed, PreCalculatedLoss
 __all__ = ['logger', 'TextCollatorWithPadding', 'blurr_params', 'blurr_splitter', 'BaseModelWrapper', 'BaseModelCallback',
            'TextInput', 'BatchDecodeTransform', 'get_blurr_tfm', 'first_blurr_tfm', 'show_batch', 'TextDataLoader']
 
-# %% ../../nbs/10_text-core.ipynb 6
+# %% ../../nbs/10_text-core.ipynb 5
 # silence all the HF warnings and load environment variables
 warnings.simplefilter("ignore")
 hf_logging.set_verbosity_error()
@@ -38,7 +38,7 @@ logger = get_logger(__name__)
 
 load_dotenv()
 
-# %% ../../nbs/10_text-core.ipynb 14
+# %% ../../nbs/10_text-core.ipynb 17
 @dataclass
 class TextCollatorWithPadding:
     def __init__(
@@ -59,7 +59,6 @@ class TextCollatorWithPadding:
         data_collator_kwargs: dict = {},
     ):
         store_attr()
-
         self.hf_tokenizer = data_collator_kwargs.pop("tokenizer", self.hf_tokenizer)
         self.data_collator = data_collator_cls(tokenizer=self.hf_tokenizer, **data_collator_kwargs)
 
@@ -67,54 +66,74 @@ class TextCollatorWithPadding:
         features = L(features)
         inputs, labels, targs = [], [], []
 
+        # features contain dictionaries
         if isinstance(features[0], dict):
             feature_keys = list(features[0].keys())
-            inputs = [
-                {
-                    fwd_arg_name: list(features.attrgot(fwd_arg_name))
-                    for fwd_arg_name in self.hf_tokenizer.model_input_names
-                    if fwd_arg_name in feature_keys
-                }
-            ]
-            labels = [torch.tensor(list(features.attrgot("label")) if "label" in feature_keys else [])]
-            targs = labels
+            inputs = [self._build_inputs_d(features, feature_keys)]
+
+            input_labels = self._build_input_labels(features, feature_keys)
+            if input_labels is not None:
+                labels, targs = [input_labels], [input_labels.clone()]
+        # features contains tuples, each of which can contain multiple inputs and/or targets
         elif isinstance(features[0], tuple):
             for f_idx in range(self.n_inp):
                 feature_keys = list(features[0][f_idx].keys())
-                inputs.append(
-                    {
-                        fwd_arg_name: list(features.itemgot(f_idx).attrgot(fwd_arg_name))
-                        for fwd_arg_name in self.hf_tokenizer.model_input_names
-                        if fwd_arg_name in feature_keys
-                    }
-                )
-                labels.append(torch.tensor(list(features.itemgot(f_idx).attrgot("label")) if "label" in feature_keys else []))
+                inputs.append(self._build_inputs_d(features.itemgot(f_idx), feature_keys))
 
-            targs = [torch.tensor(list(features.itemgot(f_idx))) for f_idx in range(self.n_inp, len(features[0]))]
+                input_labels = self._build_input_labels(features.itemgot(f_idx), feature_keys)
+                labels.append(input_labels if input_labels is not None else [])
+
+            targs = [self._proc_targets(list(features.itemgot(f_idx))) for f_idx in range(self.n_inp, len(features[0]))]
 
         return self._build_batch(inputs, labels, targs)
 
+    # ----- utility methods -----
+
+    # to build the inputs dictionary
+    def _build_inputs_d(self, features, feature_keys):
+        return {fwd_arg: list(features.attrgot(fwd_arg)) for fwd_arg in self.hf_tokenizer.model_input_names if fwd_arg in feature_keys}
+
+    # to build the input "labels"
+    def _build_input_labels(self, features, feature_keys):
+        if "label" in feature_keys:
+            labels = list(features.attrgot("label"))
+            return self._proc_targets(labels)
+        return None
+
+    # used to give the labels/targets the right shape
+    def _proc_targets(self, targs):
+        if is_listy(targs[0]):
+            targs = torch.stack([tensor(lbls) for lbls in targs])
+        elif isinstance(targs[0], torch.Tensor) and len(targs[0].size()) > 0:
+            targs = torch.stack(targs)
+        else:
+            targs = torch.tensor(targs)
+
+        return targs
+
+    # will properly assemble are batch given a list of inputs, labels, and targets
     def _build_batch(self, inputs, labels, targs):
         batch = []
 
         for input, input_labels in zip(inputs, labels):
+            input_d = dict(self.data_collator(input))
             if len(input_labels) > 0:
-                input["labels"] = input_labels
-            batch.append(dict(self.data_collator(input)))
+                input_d["labels"] = input_labels
+            batch.append(input_d)
 
         for targ in targs:
             batch.append(targ)
 
         return batch
 
-# %% ../../nbs/10_text-core.ipynb 17
-def blurr_params(modules):
-    "Return all parameters of `m`"
+# %% ../../nbs/10_text-core.ipynb 20
+def blurr_params(modules: Module | list[Module]):
+    "Like fast.ai's `params()` method, this method returns all parameters of `m` but also works with lists of modules"
     if not is_listy(modules):
         modules = [modules]
     return [p for m in modules for p in m.parameters()]
 
-# %% ../../nbs/10_text-core.ipynb 18
+# %% ../../nbs/10_text-core.ipynb 22
 def blurr_splitter(m: Module):
     """Splits the Hugging Face model based on various model architecture conventions"""
     model = m.hf_model if (hasattr(m, "hf_model")) else m
@@ -126,7 +145,7 @@ def blurr_splitter(m: Module):
 
     return groups.map(params).filter(lambda el: len(el) > 0)
 
-# %% ../../nbs/10_text-core.ipynb 23
+# %% ../../nbs/10_text-core.ipynb 27
 class BaseModelWrapper(Module):
     def __init__(
         self,
@@ -158,7 +177,7 @@ class BaseModelWrapper(Module):
             **self.hf_model_kwargs,
         )
 
-# %% ../../nbs/10_text-core.ipynb 26
+# %% ../../nbs/10_text-core.ipynb 30
 class BaseModelCallback(Callback):
     def __init__(
         self,
@@ -195,13 +214,13 @@ class BaseModelCallback(Callback):
             self.learn.loss_grad = self.hf_loss
             self.learn.loss = self.learn.loss_grad.clone()
 
-# %% ../../nbs/10_text-core.ipynb 53
+# %% ../../nbs/10_text-core.ipynb 128
 class TextInput(TensorBase):
     """The base represenation of your inputs; used by the various fastai `show` methods"""
 
     pass
 
-# %% ../../nbs/10_text-core.ipynb 55
+# %% ../../nbs/10_text-core.ipynb 131
 class BatchDecodeTransform(Transform):
     """A class used to cast your inputs as `input_return_type` for fastai `show` methods"""
 
@@ -232,7 +251,7 @@ class BatchDecodeTransform(Transform):
             labels = items[0].get("labels", [None] * items[0]["input_ids"])
             return inps, labels
 
-# %% ../../nbs/10_text-core.ipynb 57
+# %% ../../nbs/10_text-core.ipynb 134
 def get_blurr_tfm(
     # A list of transforms (e.g., dls.after_batch, dls.before_batch, etc...)
     tfms_list: Pipeline,
@@ -245,7 +264,7 @@ def get_blurr_tfm(
     """
     return next(filter(lambda el: issubclass(type(el), tfm_class), tfms_list), None)
 
-# %% ../../nbs/10_text-core.ipynb 59
+# %% ../../nbs/10_text-core.ipynb 136
 def first_blurr_tfm(
     # Your fast.ai `DataLoaders
     dls: DataLoaders,
@@ -266,7 +285,7 @@ def first_blurr_tfm(
         if found_tfm:
             return found_tfm
 
-# %% ../../nbs/10_text-core.ipynb 62
+# %% ../../nbs/10_text-core.ipynb 139
 @typedispatch
 def show_batch(
     # This typedispatched `show_batch` will be called for `TextInput` typed inputs
@@ -319,7 +338,7 @@ def show_batch(
     display_df(pd.DataFrame(res, columns=cols)[:max_n])
     return ctxs
 
-# %% ../../nbs/10_text-core.ipynb 64
+# %% ../../nbs/10_text-core.ipynb 141
 @delegates()
 class TextDataLoader(TfmdDL):
     """
@@ -378,7 +397,7 @@ class TextDataLoader(TfmdDL):
             after_batch=batch_decode_tfm,
             **kwargs,
         )
-        store_attr(names="hf_arch, hf_config, hf_tokenizer, hf_model")
+        store_attr()
 
     def new(
         self,
@@ -400,4 +419,111 @@ class TextDataLoader(TfmdDL):
         kwargs["hf_tokenizer"] = self.hf_tokenizer
         kwargs["hf_model"] = self.hf_model
 
+        kwargs["text_collator"] = self.text_collator
+        kwargs["batch_decode_tfm"] = self.batch_decode_tfm
+        kwargs["batch_decode_kwargs"] = self.batch_decode_kwargs
+
         return super().new(dataset, cls, **kwargs)
+
+# %% ../../nbs/10_text-core.ipynb 235
+@patch
+def blurr_predict(self: Learner, items, rm_type_tfms=None, tok_is_split_into_words=False):
+    # grab our blurr tfm with the bits to properly decode/show our inputs/targets
+    tfm = first_blurr_tfm(self.dls)
+    hf_tokenizer = tfm.hf_tokenizer
+    trg_labels = tfm.kwargs["labels"] if ("labels" in tfm.kwargs) else None
+
+    is_split_into_words = getattr(tfm, "is_split_into_words", tok_is_split_into_words)
+    is_split_str = is_split_into_words == True and isinstance(items[0], str)
+    is_df = isinstance(items, pd.DataFrame)
+
+    if not is_df and (is_split_str or not is_listy(items)):
+        items = [items]
+
+    inputs_d = dict(
+        hf_tokenizer(items, is_split_into_words=is_split_into_words, padding=True, max_length=True, truncation=True, return_tensors="pt")
+    )
+    encoded_items = [{k: inputs_d[k][idx] for k in inputs_d.keys()} for idx in range(len(inputs_d["input_ids"]))]
+    dl = self.dls.test_dl(encoded_items, rm_type_tfms=rm_type_tfms, num_workers=0)
+
+    with self.no_bar():
+        probs, _, decoded_preds = self.get_preds(dl=dl, with_input=False, with_decoded=True)
+
+    trg_tfms = self.dls.tfms[self.dls.n_inp :]
+
+    outs = []
+    is_multilabel = isinstance(self.loss_func, BCEWithLogitsLossFlat)
+    probs, decoded_preds = L(probs), L(decoded_preds)
+    for i in range(len(items)):
+        item_probs = probs.itemgot(i)
+        item_dec_preds = decoded_preds.itemgot(i)
+        item_dec_labels = tuplify([tfm.decode(item_dec_preds[tfm_idx]) for tfm_idx, tfm in enumerate(trg_tfms)])[0]
+
+        if trg_labels:
+            # handle multiclass output
+            if len(item_dec_labels.size()) == 0:
+                item_dec_labels = [item_dec_labels.item()]
+            # handle multilabel output
+            else:
+                item_dec_labels = [trg_labels[lbl_idx] for lbl_idx, lbl in enumerate(item_dec_labels) if lbl == True]
+
+        res = {}
+        if is_multilabel:
+            res["labels"] = list(item_dec_labels)
+            msk = item_dec_preds[0]
+            res["scores"] = item_probs[0][msk].tolist()
+            res["class_indices"] = [int(val) for val in item_dec_preds[0]]
+        else:
+            res["label"] = item_dec_labels[0]
+            res["score"] = item_probs[0].tolist()[item_dec_preds[0]]
+            res["class_index"] = item_dec_preds[0].item()
+
+        if trg_labels is not None or hasattr(self.dls, "vocab"):
+            res["class_labels"] = trg_labels if trg_labels else self.dls.vocab
+        else:
+            res["class_labels"] = None
+
+        res["probs"] = item_probs[0].tolist()
+
+        outs.append(res)
+    return outs
+
+# %% ../../nbs/10_text-core.ipynb 243
+@patch
+def blurr_generate(self: Learner, items, key="generated_texts", **kwargs):
+    """Uses the built-in `generate` method to generate the text
+    (see [here](https://huggingface.co/transformers/main_classes/model.html#transformers.PreTrainedModel.generate)
+    for a list of arguments you can pass in)
+    """
+    if not is_listy(items):
+        items = [items]
+
+    # grab our blurr tfm with the bits to properly decode/show our inputs/targets
+    tfm = first_blurr_tfm(self.dls)
+
+    # grab the Hugging Face tokenizer from the learner's dls.tfms
+    hf_tokenizer = tfm.hf_tokenizer
+    tok_kwargs = tfm.tok_kwargs
+
+    # grab the text generation kwargs
+    text_gen_kwargs = tfm.text_gen_kwargs if (len(kwargs) == 0) else kwargs
+
+    results = []
+    for idx, inp in enumerate(items):
+        if isinstance(inp, str):
+            input_ids = hf_tokenizer.encode(inp, padding=True, truncation=True, return_tensors="pt", **tok_kwargs)
+        else:
+            # note (10/30/2020): as of pytorch 1.7, this has to be a plain ol tensor (not a subclass of TensorBase)
+            input_ids = inp.as_subclass(Tensor)
+
+        input_ids = input_ids.to(self.model.hf_model.device)
+
+        gen_texts = self.model.hf_model.generate(input_ids, **text_gen_kwargs)
+        outputs = [hf_tokenizer.decode(txt, skip_special_tokens=True, clean_up_tokenization_spaces=False) for txt in gen_texts]
+
+        if tfm.hf_arch == "pegasus":
+            outputs = [o.replace("<n>", " ") for o in outputs]
+
+        results.append({key: outputs[0] if len(outputs) == 1 else outputs})
+
+    return results

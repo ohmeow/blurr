@@ -26,7 +26,7 @@ from transformers import logging as hf_logging
 # %% auto 0
 __all__ = ['logger']
 
-# %% ../nbs/01_core.ipynb 6
+# %% ../nbs/01_core.ipynb 5
 # silence all the HF warnings and load environment variables
 warnings.simplefilter("ignore")
 hf_logging.set_verbosity_error()

@@ -28,7 +28,7 @@ __all__ = ['logger', 'DEFAULT_SEED', 'Singleton', 'str_to_type', 'set_seed', 'pr
            'clean_ipython_hist', 'clean_tb', 'clean_memory', 'PreCalculatedLoss', 'PreCalculatedCrossEntropyLoss',
            'PreCalculatedBCELoss', 'PreCalculatedMSELoss', 'MultiTargetLoss', 'get_hf_objects']
 
-# %% ../nbs/00_utils.ipynb 6
+# %% ../nbs/00_utils.ipynb 5
 # silence all the HF warnings and load environment variables
 warnings.simplefilter("ignore")
 hf_logging.set_verbosity_error()
@@ -36,10 +36,10 @@ logger = get_logger(__name__)
 
 load_dotenv()
 
-# %% ../nbs/00_utils.ipynb 9
+# %% ../nbs/00_utils.ipynb 8
 DEFAULT_SEED = int(os.getenv("RANDOM_SEED", 2023))
 
-# %% ../nbs/00_utils.ipynb 11
+# %% ../nbs/00_utils.ipynb 10
 class Singleton:
     def __init__(self, cls):
         self._cls, self._instance = cls, None
@@ -49,14 +49,14 @@ class Singleton:
             self._instance = self._cls(*args, **kwargs)
         return self._instance
 
-# %% ../nbs/00_utils.ipynb 13
+# %% ../nbs/00_utils.ipynb 12
 def str_to_type(
     typename: str,
 ) -> type:  # The name of a type as a string  # Returns the actual type
     "Converts a type represented as a string to the actual class"
     return getattr(sys.modules[__name__], typename)
 
-# %% ../nbs/00_utils.ipynb 16
+# %% ../nbs/00_utils.ipynb 15
 # see the following threads for more info:
 # - https://forums.fast.ai/t/solved-reproducibility-where-is-the-randomness-coming-in/31628?u=wgpubs
 # - https://docs.fast.ai/dev/test.html#getting-reproducible-results
@@ -74,7 +74,7 @@ def set_seed(seed_value: int = 2023):
         torch.backends.cudnn.deterministic = True  # needed
         torch.backends.cudnn.benchmark = False
 
-# %% ../nbs/00_utils.ipynb 20
+# %% ../nbs/00_utils.ipynb 19
 def print_versions(
     # A string of space delimited package names or a list of package names
     packages: str
@@ -87,12 +87,12 @@ def print_versions(
         item = item.strip()
         print(f"{item}: {importlib.import_module(item).__version__}")
 
-# %% ../nbs/00_utils.ipynb 23
+# %% ../nbs/00_utils.ipynb 22
 def print_dev_environment():
     """Provides details on your development environment including packages installed, cuda/cudnn availability, GPUs, etc."""
     print(show_install())
 
-# %% ../nbs/00_utils.ipynb 26
+# %% ../nbs/00_utils.ipynb 25
 def clean_ipython_hist():
     # Code in this function mainly copied from IPython source
     if not "get_ipython" in globals():
@@ -112,7 +112,7 @@ def clean_ipython_hist():
     hm.input_hist_raw[:] = [""] * pc
     hm._i = hm._ii = hm._iii = hm._i00 = ""
 
-# %% ../nbs/00_utils.ipynb 27
+# %% ../nbs/00_utils.ipynb 26
 def clean_tb():
     # h/t Piotr Czapla
     if hasattr(sys, "last_traceback"):
@@ -123,7 +123,7 @@ def clean_tb():
     if hasattr(sys, "last_value"):
         delattr(sys, "last_value")
 
-# %% ../nbs/00_utils.ipynb 28
+# %% ../nbs/00_utils.ipynb 27
 def clean_memory(
     # The fastai learner to delete
     learn: Learner = None,
@@ -136,7 +136,7 @@ def clean_memory(
     torch.cuda.empty_cache()
     gc.collect()
 
-# %% ../nbs/00_utils.ipynb 32
+# %% ../nbs/00_utils.ipynb 31
 class PreCalculatedLoss(BaseLoss):
     """
     If you want to let your Hugging Face model calculate the loss for you, make sure you include the `labels` argument in your inputs and use
@@ -166,7 +166,7 @@ class PreCalculatedMSELoss(PreCalculatedLoss):
             nn.MSELoss, *args, axis=axis, floatify=floatify, is_2d=False, **kwargs
         )
 
-# %% ../nbs/00_utils.ipynb 33
+# %% ../nbs/00_utils.ipynb 32
 class MultiTargetLoss(Module):
     """
     Provides the ability to apply different loss functions to multi-modal targets/predictions.
@@ -224,7 +224,7 @@ class MultiTargetLoss(Module):
         decodes = [self.loss_funcs[i].decodes(o) for i, o in enumerate(outs)]
         return decodes
 
-# %% ../nbs/00_utils.ipynb 35
+# %% ../nbs/00_utils.ipynb 34
 def get_hf_objects(
     pretrained_model_name_or_path: str | os.PathLike,
     model_cls: PreTrainedModel,
