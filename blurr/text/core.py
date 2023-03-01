@@ -28,7 +28,8 @@ from ..utils import clean_memory, get_hf_objects, set_seed, PreCalculatedLoss
 
 # %% auto 0
 __all__ = ['logger', 'TextCollatorWithPadding', 'blurr_params', 'blurr_splitter', 'BaseModelWrapper', 'BaseModelCallback',
-           'TextInput', 'BatchDecodeTransform', 'get_blurr_tfm', 'first_blurr_tfm', 'show_batch', 'TextDataLoader']
+           'TextInput', 'BatchDecodeTransform', 'get_blurr_tfm', 'first_blurr_tfm', 'show_batch', 'TextDataLoader',
+           'show_results']
 
 # %% ../../nbs/10_text-core.ipynb 5
 # silence all the HF warnings and load environment variables
@@ -245,6 +246,7 @@ class BatchDecodeTransform(Transform):
     def decodes(self, items):
         """Returns the proper object and data for show related fastai methods"""
         inps = self.input_return_type(items[0]["input_ids"])
+        # inps = self.input_return_type(items[0][0])
         if len(items) > 1:
             return inps, *items[1:]
         else:
@@ -425,7 +427,78 @@ class TextDataLoader(TfmdDL):
 
         return super().new(dataset, cls, **kwargs)
 
-# %% ../../nbs/10_text-core.ipynb 235
+# %% ../../nbs/10_text-core.ipynb 144
+@typedispatch
+def show_results(
+    # This typedispatched `show_results` will be called for `TextInput` typed inputs
+    x: TextInput,
+    # Your targets
+    y,
+    # Your raw inputs/targets
+    samples,
+    # The model's predictions
+    outs,
+    # Your `Learner`. This is required so as to get at the Hugging Face objects for decoding them into
+    # something understandable
+    learner,
+    # Your `show_results` context
+    ctxs=None,
+    # The maximum number of items to show
+    max_n=6,
+    # Any truncation your want applied to your decoded inputs
+    trunc_at=None,
+    # Any other keyword arguments you want applied to `show_results`
+    **kwargs,
+):
+    # grab our tokenizer
+    tfm = first_blurr_tfm(learner.dls)
+    hf_tokenizer = tfm.hf_tokenizer
+
+    # if we've included our labels list, we'll use it to look up the value of our target(s)
+    trg_labels = tfm.kwargs["labels"] if ("labels" in tfm.kwargs) else None
+
+    res = L()
+    n_inp = learner.dls.n_inp
+
+    n_samples = min(max_n, learner.dls.bs)
+    for idx in range(n_samples):
+        input_ids = x[idx]
+        label = y[idx] if y is not None else None
+        pred = outs[idx]
+        sample = samples[idx] if samples is not None else None
+        # add in the input text
+        rets = [hf_tokenizer.decode(input_ids, skip_special_tokens=True)[:trunc_at]]
+        # add in the targets
+        for item in sample[n_inp:]:
+            if not torch.is_tensor(item):
+                trg = trg_labels[int(item)] if trg_labels else item
+            elif is_listy(item.tolist()):
+                trg = [trg_labels[idx] for idx, val in enumerate(label.numpy().tolist()) if (val == 1)] if (trg_labels) else label.numpy()
+            else:
+                trg = trg_labels[label.item()] if (trg_labels) else label.item()
+
+            rets.append(trg)
+        # add in the predictions
+
+        res.append(tuplify(rets))
+        for item in pred:
+            if not torch.is_tensor(item):
+                p = trg_labels[int(item)] if trg_labels else item
+            elif is_listy(item.tolist()):
+                p = [trg_labels[idx] for idx, val in enumerate(label.numpy().tolist()) if (val == 1)] if (trg_labels) else label.numpy()
+            else:
+                p = trg_labels[label.item()] if (trg_labels) else label.item()
+
+            rets.append(p)
+
+        res.append(tuplify(rets))
+
+    cols = ["text"] + ["target" if (i == 0) else f"target_{i}" for i in range(len(res[0]) - n_inp * 2)]
+    cols += ["prediction" if (i == 0) else f"prediction_{i}" for i in range(len(res[0]) - n_inp * 2)]
+    display_df(pd.DataFrame(res, columns=cols)[:max_n])
+    return ctxs
+
+# %% ../../nbs/10_text-core.ipynb 241
 @patch
 def blurr_predict(self: Learner, items, rm_type_tfms=None, tok_is_split_into_words=False):
     # grab our blurr tfm with the bits to properly decode/show our inputs/targets
@@ -488,7 +561,7 @@ def blurr_predict(self: Learner, items, rm_type_tfms=None, tok_is_split_into_wor
         outs.append(res)
     return outs
 
-# %% ../../nbs/10_text-core.ipynb 243
+# %% ../../nbs/10_text-core.ipynb 249
 @patch
 def blurr_generate(self: Learner, items, key="generated_texts", **kwargs):
     """Uses the built-in `generate` method to generate the text
