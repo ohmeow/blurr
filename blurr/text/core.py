@@ -561,7 +561,7 @@ def blurr_predict(self: Learner, items, rm_type_tfms=None, tok_is_split_into_wor
         outs.append(res)
     return outs
 
-# %% ../../nbs/10_text-core.ipynb 251
+# %% ../../nbs/10_text-core.ipynb 252
 @patch
 def blurr_generate(self: Learner, items, key="generated_texts", **kwargs):
     """Uses the built-in `generate` method to generate the text
