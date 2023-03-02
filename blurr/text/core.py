@@ -125,7 +125,7 @@ class TextCollatorWithPadding:
         for targ in targs:
             batch.append(targ)
 
-        return batch
+        return tuplify(batch)
 
 # %% ../../nbs/10_text-core.ipynb 20
 def blurr_params(modules: Module | list[Module]):
@@ -215,13 +215,13 @@ class BaseModelCallback(Callback):
             self.learn.loss_grad = self.hf_loss
             self.learn.loss = self.learn.loss_grad.clone()
 
-# %% ../../nbs/10_text-core.ipynb 128
+# %% ../../nbs/10_text-core.ipynb 131
 class TextInput(TensorBase):
     """The base represenation of your inputs; used by the various fastai `show` methods"""
 
     pass
 
-# %% ../../nbs/10_text-core.ipynb 131
+# %% ../../nbs/10_text-core.ipynb 134
 class BatchDecodeTransform(Transform):
     """A class used to cast your inputs as `input_return_type` for fastai `show` methods"""
 
@@ -243,17 +243,19 @@ class BatchDecodeTransform(Transform):
         store_attr()
         self.kwargs = kwargs
 
-    def decodes(self, items):
+    def decodes(self, items: dict):
         """Returns the proper object and data for show related fastai methods"""
-        inps = self.input_return_type(items[0]["input_ids"])
-        # inps = self.input_return_type(items[0][0])
-        if len(items) > 1:
-            return inps, *items[1:]
-        else:
-            labels = items[0].get("labels", [None] * items[0]["input_ids"])
-            return inps, labels
+        return self.input_return_type(items["input_ids"])
 
-# %% ../../nbs/10_text-core.ipynb 134
+        # inps = self.input_return_type(items[0]["input_ids"])
+        # # inps = self.input_return_type(items[0][0])
+        # if len(items) > 1:
+        #     return inps, *items[1:]
+        # else:
+        #     labels = items[0].get("labels", [None] * items[0]["input_ids"])
+        #     return inps, labels
+
+# %% ../../nbs/10_text-core.ipynb 137
 def get_blurr_tfm(
     # A list of transforms (e.g., dls.after_batch, dls.before_batch, etc...)
     tfms_list: Pipeline,
@@ -266,7 +268,7 @@ def get_blurr_tfm(
     """
     return next(filter(lambda el: issubclass(type(el), tfm_class), tfms_list), None)
 
-# %% ../../nbs/10_text-core.ipynb 136
+# %% ../../nbs/10_text-core.ipynb 139
 def first_blurr_tfm(
     # Your fast.ai `DataLoaders
     dls: DataLoaders,
@@ -287,7 +289,7 @@ def first_blurr_tfm(
         if found_tfm:
             return found_tfm
 
-# %% ../../nbs/10_text-core.ipynb 139
+# %% ../../nbs/10_text-core.ipynb 142
 @typedispatch
 def show_batch(
     # This typedispatched `show_batch` will be called for `TextInput` typed inputs
@@ -340,7 +342,7 @@ def show_batch(
     display_df(pd.DataFrame(res, columns=cols)[:max_n])
     return ctxs
 
-# %% ../../nbs/10_text-core.ipynb 141
+# %% ../../nbs/10_text-core.ipynb 144
 @delegates()
 class TextDataLoader(TfmdDL):
     """
@@ -427,7 +429,7 @@ class TextDataLoader(TfmdDL):
 
         return super().new(dataset, cls, **kwargs)
 
-# %% ../../nbs/10_text-core.ipynb 144
+# %% ../../nbs/10_text-core.ipynb 147
 @typedispatch
 def show_results(
     # This typedispatched `show_results` will be called for `TextInput` typed inputs
@@ -479,8 +481,6 @@ def show_results(
 
             rets.append(trg)
         # add in the predictions
-
-        res.append(tuplify(rets))
         for item in pred:
             if not torch.is_tensor(item):
                 p = trg_labels[int(item)] if trg_labels else item
@@ -498,7 +498,7 @@ def show_results(
     display_df(pd.DataFrame(res, columns=cols)[:max_n])
     return ctxs
 
-# %% ../../nbs/10_text-core.ipynb 241
+# %% ../../nbs/10_text-core.ipynb 243
 @patch
 def blurr_predict(self: Learner, items, rm_type_tfms=None, tok_is_split_into_words=False):
     # grab our blurr tfm with the bits to properly decode/show our inputs/targets
@@ -561,7 +561,7 @@ def blurr_predict(self: Learner, items, rm_type_tfms=None, tok_is_split_into_wor
         outs.append(res)
     return outs
 
-# %% ../../nbs/10_text-core.ipynb 249
+# %% ../../nbs/10_text-core.ipynb 251
 @patch
 def blurr_generate(self: Learner, items, key="generated_texts", **kwargs):
     """Uses the built-in `generate` method to generate the text
