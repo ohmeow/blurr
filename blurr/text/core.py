@@ -13,7 +13,8 @@ from fastai.callback.all import *
 from fastai.imports import *
 from fastai.learner import *
 from fastai.losses import BaseLoss, BCEWithLogitsLossFlat, CrossEntropyLossFlat
-from fastai.data.transforms import DataLoaders, Datasets, ColSplitter, ItemTransform, TfmdDL
+from fastai.data.block import TransformBlock
+from fastai.data.transforms import DataLoader, DataLoaders, Datasets, ColSplitter, ItemTransform, TfmdDL
 from fastai.optimizer import Adam, OptimWrapper, params
 from fastai.metrics import accuracy, F1Score, accuracy_multi, F1ScoreMulti
 from fastai.test_utils import show_install
@@ -27,9 +28,9 @@ from transformers.data.data_collator import DataCollatorWithPadding
 from ..utils import clean_memory, get_hf_objects, set_seed, PreCalculatedLoss
 
 # %% auto 0
-__all__ = ['logger', 'TextCollatorWithPadding', 'blurr_params', 'blurr_splitter', 'BaseModelWrapper', 'BaseModelCallback',
-           'TextInput', 'BatchDecodeTransform', 'get_blurr_tfm', 'first_blurr_tfm', 'show_batch', 'TextDataLoader',
-           'show_results']
+__all__ = ['logger', 'TextCollatorWithPadding', 'blurr_params', 'blurr_splitter', 'blurr_splitter_on_head', 'BaseModelWrapper',
+           'BaseModelCallback', 'TextInput', 'BatchDecodeTransform', 'get_blurr_tfm', 'first_blurr_tfm', 'show_batch',
+           'TextDataLoader', 'sorted_dl_func', 'show_results', 'BatchTokenizeTransform', 'TextBlock']
 
 # %% ../../nbs/10_text-core.ipynb 5
 # silence all the HF warnings and load environment variables
@@ -145,6 +146,18 @@ def blurr_splitter(m: Module):
     groups += L([m for m_name, m in root_modules[1:]])
 
     return groups.map(params).filter(lambda el: len(el) > 0)
+
+# %% ../../nbs/10_text-core.ipynb 24
+def blurr_splitter_on_head(m: Module):
+    """Creates two layers groups: One for the backbone and one for the pooler/classification head"""
+    model = m.hf_model if (hasattr(m, "hf_model")) else m
+    root_modules = list(model.named_children())
+    backbone_module_name, backbone_module = root_modules[0]
+
+    groups = L(backbone_module)
+    groups.append(L([m for m_name, m in root_modules[1:]]))
+
+    return groups.map(blurr_params).filter(lambda el: len(el) > 0)
 
 # %% ../../nbs/10_text-core.ipynb 27
 class BaseModelWrapper(Module):
@@ -429,7 +442,31 @@ class TextDataLoader(TfmdDL):
 
         return super().new(dataset, cls, **kwargs)
 
-# %% ../../nbs/10_text-core.ipynb 147
+# %% ../../nbs/10_text-core.ipynb 146
+def sorted_dl_func(
+    example,
+    # A Hugging Face tokenizer
+    hf_tokenizer: PreTrainedTokenizerBase,
+    # The `is_split_into_words` argument applied to your `hf_tokenizer` during tokenization. \
+    # Set this to 'True' if your inputs are pre-tokenized (not numericalized)
+    is_split_into_words: bool = False,
+    # Any other keyword arguments you want to include during tokenization
+    tok_kwargs: dict = {},
+):
+    """This method is used by the `SortedDL` to ensure your dataset is sorted *after* tokenization"""
+    txt = None
+    if isinstance(example[0], dict):
+        if "input_ids" in example[0]:
+            # if inputs are pretokenized
+            return len(example[0]["input_ids"])
+        else:
+            txt = example[0]["text"]
+    else:
+        txt = example[0]
+
+    return len(txt) if is_split_into_words else len(hf_tokenizer.tokenize(txt, **tok_kwargs))
+
+# %% ../../nbs/10_text-core.ipynb 150
 @typedispatch
 def show_results(
     # This typedispatched `show_results` will be called for `TextInput` typed inputs
@@ -498,11 +535,190 @@ def show_results(
     display_df(pd.DataFrame(res, columns=cols)[:max_n])
     return ctxs
 
-# %% ../../nbs/10_text-core.ipynb 243
+# %% ../../nbs/10_text-core.ipynb 247
+class BatchTokenizeTransform(Transform):
+    """
+    Handles everything you need to assemble a mini-batch of inputs and targets, as well as
+    decode the dictionary produced as a byproduct of the tokenization process in the `encodes` method.
+    """
+
+    def __init__(
+        self,
+        # The abbreviation/name of your Hugging Face transformer architecture (e.b., bert, bart, etc..)
+        hf_arch: str,
+        # A specific configuration instance you want to use
+        hf_config: PretrainedConfig,
+        # A Hugging Face tokenizer
+        hf_tokenizer: PreTrainedTokenizerBase,
+        # A Hugging Face model
+        hf_model: PreTrainedModel,
+        # To control whether the "labels" are included in your inputs. If they are, the loss will be calculated in \
+        # the model's forward function and you can simply use `PreCalculatedLoss` as your `Learner`'s loss function to use it
+        include_labels: bool = True,
+        # The token ID that should be ignored when calculating the loss
+        ignore_token_id: int = CrossEntropyLossFlat().ignore_index,
+        # To control the length of the padding/truncation. It can be an integer or None, \
+        # in which case it will default to the maximum length the model can accept. \
+        # If the model has no specific maximum input length, truncation/padding to max_length is deactivated. \
+        # See [Everything you always wanted to know about padding and truncation](https://huggingface.co/transformers/preprocessing.html#everything-you-always-wanted-to-know-about-padding-and-truncation)
+        max_length: int = None,
+        # To control the `padding` applied to your `hf_tokenizer` during tokenization. \
+        # If None, will default to 'False' or 'do_not_pad'. \
+        # See [Everything you always wanted to know about padding and truncation](https://huggingface.co/transformers/preprocessing.html#everything-you-always-wanted-to-know-about-padding-and-truncation)
+        padding: bool | str = True,
+        # To control `truncation` applied to your `hf_tokenizer` during tokenization. \
+        # If None, will default to 'False' or 'do_not_truncate'. \
+        # See [Everything you always wanted to know about padding and truncation](https://huggingface.co/transformers/preprocessing.html#everything-you-always-wanted-to-know-about-padding-and-truncation)
+        truncation: bool | str = True,
+        # The `is_split_into_words` argument applied to your `hf_tokenizer` during tokenization. \
+        # Set this to 'True' if your inputs are pre-tokenized (not numericalized) \
+        is_split_into_words: bool = False,
+        # Any other keyword arguments you want included when using your `hf_tokenizer` to tokenize your inputs
+        tok_kwargs: dict = {},
+        # Keyword arguments to apply to `BatchTokenizeTransform`
+        **kwargs,
+    ):
+        store_attr()
+        self.kwargs = kwargs
+
+    def encodes(self, samples, return_batch_encoding=False):
+        """
+        This method peforms on-the-fly, batch-time tokenization of your data. In other words, your raw inputs
+        are tokenized as needed for each mini-batch of data rather than requiring pre-tokenization of your full
+        dataset ahead of time.
+        """
+        samples = L(samples)
+
+        # grab inputs
+        is_dict = isinstance(samples[0][0], dict)
+        test_inp = samples[0][0]["text"] if is_dict else samples[0][0]
+
+        if is_listy(test_inp) and not self.is_split_into_words:
+            if is_dict:
+                inps = [(item["text"][0], item["text"][1]) for item in samples.itemgot(0).items]
+            else:
+                inps = list(zip(samples.itemgot(0, 0), samples.itemgot(0, 1)))
+        else:
+            inps = [item["text"] for item in samples.itemgot(0).items] if is_dict else samples.itemgot(0).items
+
+        inputs = self.hf_tokenizer(
+            inps,
+            max_length=self.max_length,
+            padding=self.padding,
+            truncation=self.truncation,
+            is_split_into_words=self.is_split_into_words,
+            return_tensors="pt",
+            **self.tok_kwargs,
+        )
+
+        d_keys = inputs.keys()
+
+        # update the samples with tokenized inputs (e.g. input_ids, attention_mask, etc...), as well as extra information
+        # if the inputs is a dictionary.
+        # (< 2.0.0): updated_samples = [(*[{k: inputs[k][idx] for k in d_keys}], *sample[1:]) for idx, sample in enumerate(samples)]
+        updated_samples = []
+        for idx, sample in enumerate(samples):
+            inps = {k: inputs[k][idx] for k in d_keys}
+            if is_dict:
+                inps = {
+                    **inps,
+                    **{k: v for k, v in sample[0].items() if k not in ["text"]},
+                }
+
+            trgs = sample[1:]
+            if self.include_labels and len(trgs) > 0:
+                inps["labels"] = trgs[0]
+
+            updated_samples.append((*[inps], *trgs))
+
+        if return_batch_encoding:
+            return updated_samples, inputs
+
+        return updated_samples
+
+# %% ../../nbs/10_text-core.ipynb 250
+class TextBlock(TransformBlock):
+    """The core `TransformBlock` to prepare your inputs for training in Blurr with fastai's `DataBlock` API"""
+
+    def __init__(
+        self,
+        # The abbreviation/name of your Hugging Face transformer architecture (not required if passing in an \
+        # instance of `BatchTokenizeTransform` to `before_batch_tfm`)
+        hf_arch: str = None,
+        # A Hugging Face configuration object (not required if passing in an \
+        # instance of `BatchTokenizeTransform` to `before_batch_tfm`)
+        hf_config: PretrainedConfig = None,
+        # A Hugging Face tokenizer (not required if passing in an \
+        # instance of `BatchTokenizeTransform` to `before_batch_tfm`)
+        hf_tokenizer: PreTrainedTokenizerBase = None,
+        # A Hugging Face model (not required if passing in an \
+        # instance of `BatchTokenizeTransform` to `before_batch_tfm`)
+        hf_model: PreTrainedModel = None,
+        # The "before_batch" transform you want to use if tokenizing your raw data on the fly (optional)
+        tokenize_tfm: Transform = None,
+        # The batch_tfm you want to decode your inputs into a type that can be used in the fastai show methods, \
+        # (defaults to BatchDecodeTransform)
+        batch_decode_tfm: BatchDecodeTransform = None,
+        # To control whether the "labels" are included in your inputs. If they are, the loss will be calculated in \
+        # the model's forward function and you can simply use `PreCalculatedLoss` as your `Learner`'s loss function to use it
+        include_labels: bool = True,
+        # The `is_split_into_words` argument applied to your `hf_tokenizer` during tokenization. \
+        # Set this to `True` if your inputs are pre-tokenized (not numericalized)
+        is_split_into_words: bool = False,
+        # The return type your decoded inputs should be cast too (used by methods such as `show_batch`)
+        input_return_type: type = TextInput,
+        # The type of `DataLoader` you want created (defaults to `SortedDL`)
+        dl_type: DataLoader = None,
+        # Any keyword arguments you want applied to your `batch_decode_tfm` (will be set as a fastai `batch_tfms`)
+        batch_decode_kwargs: dict = {},
+        # Any keyword arguments you want your Hugging Face tokenizer to use during tokenization
+        tok_kwargs: dict = {},
+        # Any keyword arguments you want to have applied with generating text
+        text_gen_kwargs: dict = {},
+        # Any keyword arguments you want applied to `TextBlock`
+        **kwargs,
+    ):
+        if (not all([hf_arch, hf_config, hf_tokenizer, hf_model])) and tokenize_tfm is None:
+            raise ValueError("You must supply an hf_arch, hf_config, hf_tokenizer, hf_model -or- a tokenize_tfm")
+
+        # if we are using a transform to tokenize our inputs, grab the HF objects from it
+        if tokenize_tfm is not None:
+            hf_arch = getattr(tokenize_tfm, "hf_arch", hf_arch)
+            hf_config = getattr(tokenize_tfm, "hf_config", hf_config)
+            hf_tokenizer = getattr(tokenize_tfm, "hf_tokenizer", hf_tokenizer)
+            hf_model = getattr(tokenize_tfm, "hf_model", hf_model)
+            is_split_into_words = getattr(tokenize_tfm, "is_split_into_words", is_split_into_words)
+            include_labels = getattr(tokenize_tfm, "include_labels", include_labels)
+
+        # configure our batch decode transform (used by show_batch/results methods)
+        if batch_decode_tfm is None:
+            batch_decode_tfm = BatchDecodeTransform(
+                hf_arch=hf_arch,
+                hf_config=hf_config,
+                hf_tokenizer=hf_tokenizer,
+                hf_model=hf_model,
+                input_return_type=input_return_type,
+                **batch_decode_kwargs.copy(),
+            )
+
+        # default to SortedDL using our custom sort function if no `dl_type` is specified
+        if dl_type is None:
+            dl_sort_func = partial(
+                sorted_dl_func, hf_tokenizer=hf_tokenizer, is_split_into_words=is_split_into_words, tok_kwargs=tok_kwargs.copy()
+            )
+            dl_type = partial(SortedDL, sort_func=dl_sort_func)
+
+        # build our custom `TransformBlock`
+        dl_kwargs = {} if tokenize_tfm is None else {"before_batch": tokenize_tfm}
+        return super().__init__(dl_type=dl_type, dls_kwargs=dl_kwargs, batch_tfms=batch_decode_tfm)
+
+# %% ../../nbs/10_text-core.ipynb 305
 @patch
 def blurr_predict(self: Learner, items, rm_type_tfms=None, tok_is_split_into_words=False):
     # grab our blurr tfm with the bits to properly decode/show our inputs/targets
     tfm = first_blurr_tfm(self.dls)
+    batch_tok_tfm = get_blurr_tfm(self.dls.before_batch, tfm_class=BatchTokenizeTransform)
+
     hf_tokenizer = tfm.hf_tokenizer
     trg_labels = tfm.kwargs["labels"] if ("labels" in tfm.kwargs) else None
 
@@ -513,11 +729,16 @@ def blurr_predict(self: Learner, items, rm_type_tfms=None, tok_is_split_into_wor
     if not is_df and (is_split_str or not is_listy(items)):
         items = [items]
 
-    inputs_d = dict(
-        hf_tokenizer(items, is_split_into_words=is_split_into_words, padding=True, max_length=True, truncation=True, return_tensors="pt")
-    )
-    encoded_items = [{k: inputs_d[k][idx] for k in inputs_d.keys()} for idx in range(len(inputs_d["input_ids"]))]
-    dl = self.dls.test_dl(encoded_items, rm_type_tfms=rm_type_tfms, num_workers=0)
+    # we need to tokenize our items *if* we are not using the mid-level API batch-time tokenization
+    if batch_tok_tfm is None:
+        inputs_d = dict(
+            hf_tokenizer(
+                items, is_split_into_words=is_split_into_words, padding=True, max_length=True, truncation=True, return_tensors="pt"
+            )
+        )
+        items = [{k: inputs_d[k][idx] for k in inputs_d.keys()} for idx in range(len(inputs_d["input_ids"]))]
+
+    dl = self.dls.test_dl(items, rm_type_tfms=rm_type_tfms, num_workers=0)
 
     with self.no_bar():
         probs, _, decoded_preds = self.get_preds(dl=dl, with_input=False, with_decoded=True)
@@ -534,7 +755,9 @@ def blurr_predict(self: Learner, items, rm_type_tfms=None, tok_is_split_into_wor
 
         if trg_labels:
             # handle multiclass output
-            if len(item_dec_labels.size()) == 0:
+            if isinstance(item_dec_labels, str) or isinstance(item_dec_labels, int):
+                item_dec_labels = [trg_labels[int(item_dec_labels)]]
+            elif len(item_dec_labels.size()) == 0:
                 item_dec_labels = [item_dec_labels.item()]
             # handle multilabel output
             else:
@@ -561,7 +784,7 @@ def blurr_predict(self: Learner, items, rm_type_tfms=None, tok_is_split_into_wor
         outs.append(res)
     return outs
 
-# %% ../../nbs/10_text-core.ipynb 252
+# %% ../../nbs/10_text-core.ipynb 321
 @patch
 def blurr_generate(self: Learner, items, key="generated_texts", **kwargs):
     """Uses the built-in `generate` method to generate the text
