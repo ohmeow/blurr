@@ -342,7 +342,10 @@ def show_batch(
         rets = [hf_tokenizer.decode(input_ids, skip_special_tokens=True)[:trunc_at]]
         for item in sample[n_inp:]:
             if not torch.is_tensor(item):
-                trg = trg_labels[int(item)] if trg_labels else item
+                if is_listy(item) and len(item) < 1:
+                    trg = [trg_labels[idx] for idx, val in enumerate(label.numpy().tolist()) if (val == 1)]
+                else:
+                    trg = trg_labels[int(item)] if trg_labels else item
             elif is_listy(item.tolist()):
                 trg = [trg_labels[idx] for idx, val in enumerate(label.numpy().tolist()) if (val == 1)] if (trg_labels) else label.numpy()
             else:
@@ -510,7 +513,10 @@ def show_results(
         # add in the targets
         for item in sample[n_inp:]:
             if not torch.is_tensor(item):
-                trg = trg_labels[int(item)] if trg_labels else item
+                if is_listy(item) and len(item) < 1:
+                    trg = [trg_labels[idx] for idx, val in enumerate(label.numpy().tolist()) if (val == 1)]
+                else:
+                    trg = trg_labels[int(item)] if trg_labels else item
             elif is_listy(item.tolist()):
                 trg = [trg_labels[idx] for idx, val in enumerate(label.numpy().tolist()) if (val == 1)] if (trg_labels) else label.numpy()
             else:
@@ -520,11 +526,14 @@ def show_results(
         # add in the predictions
         for item in pred:
             if not torch.is_tensor(item):
-                p = trg_labels[int(item)] if trg_labels else item
+                if is_listy(item) and len(item) < 1:
+                    p = [trg_labels[idx] for idx, val in enumerate(item) if (val == 1)]
+                else:
+                    p = trg_labels[int(item)] if trg_labels else item
             elif is_listy(item.tolist()):
-                p = [trg_labels[idx] for idx, val in enumerate(label.numpy().tolist()) if (val == 1)] if (trg_labels) else label.numpy()
+                p = [trg_labels[idx] for idx, val in enumerate(item.numpy().tolist()) if (val == 1)] if (trg_labels) else item.numpy()
             else:
-                p = trg_labels[label.item()] if (trg_labels) else label.item()
+                p = trg_labels[item.item()] if (trg_labels) else item.item()
 
             rets.append(p)
 
@@ -709,10 +718,11 @@ class TextBlock(TransformBlock):
             dl_type = partial(SortedDL, sort_func=dl_sort_func)
 
         # build our custom `TransformBlock`
-        dl_kwargs = {} if tokenize_tfm is None else {"before_batch": tokenize_tfm}
+        data_collator = TextCollatorWithPadding(hf_tokenizer)
+        dl_kwargs = {"create_batch": data_collator} if tokenize_tfm is None else {"before_batch": tokenize_tfm}
         return super().__init__(dl_type=dl_type, dls_kwargs=dl_kwargs, batch_tfms=batch_decode_tfm)
 
-# %% ../../nbs/10_text-core.ipynb 305
+# %% ../../nbs/10_text-core.ipynb 359
 @patch
 def blurr_predict(self: Learner, items, rm_type_tfms=None, tok_is_split_into_words=False):
     # grab our blurr tfm with the bits to properly decode/show our inputs/targets
@@ -784,7 +794,7 @@ def blurr_predict(self: Learner, items, rm_type_tfms=None, tok_is_split_into_wor
         outs.append(res)
     return outs
 
-# %% ../../nbs/10_text-core.ipynb 321
+# %% ../../nbs/10_text-core.ipynb 375
 @patch
 def blurr_generate(self: Learner, items, key="generated_texts", **kwargs):
     """Uses the built-in `generate` method to generate the text
