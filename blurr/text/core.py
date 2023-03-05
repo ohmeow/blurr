@@ -30,7 +30,8 @@ from ..utils import clean_memory, get_hf_objects, set_seed, PreCalculatedLoss
 # %% auto 0
 __all__ = ['logger', 'TextCollatorWithPadding', 'blurr_params', 'blurr_splitter', 'blurr_splitter_on_head', 'BaseModelWrapper',
            'BaseModelCallback', 'TextInput', 'BatchDecodeTransform', 'get_blurr_tfm', 'first_blurr_tfm', 'show_batch',
-           'TextDataLoader', 'sorted_dl_func', 'show_results', 'BatchTokenizeTransform', 'TextBlock']
+           'TextDataLoader', 'sorted_dl_func', 'show_results', 'BatchTokenizeTransform', 'ItemTokenizeTransform',
+           'TextBlock']
 
 # %% ../../nbs/10_text-core.ipynb 5
 # silence all the HF warnings and load environment variables
@@ -646,6 +647,35 @@ class BatchTokenizeTransform(Transform):
         return updated_samples
 
 # %% ../../nbs/10_text-core.ipynb 250
+class ItemTokenizeTransform(ItemTransform):
+    split_idx = None
+
+    def __init__(
+        self,
+        # A Hugging Face configuration object
+        hf_config: PretrainedConfig = None,
+        # A Hugging Face tokenizer
+        hf_tokenizer: PreTrainedTokenizerBase = None,
+        # Any keyword arguments you want your Hugging Face tokenizer to use during tokenization
+        tok_kwargs: dict = {},
+        # Any keyword arguments you want applied to `ItemTokenizeTransform`
+        **kwargs,
+    ) -> None:
+        store_attr()
+
+        if tok_kwargs.get("truncation", None) is None:
+            tok_kwargs["truncation"] = True
+        if tok_kwargs.get("max_length", None) is None:
+            tok_kwargs["max_length"] = True
+
+    def encodes(self, txt, **kwargs):
+        inputs = self.hf_tokenizer(txt, **self.tok_kwargs)
+        return dict(inputs)
+
+    def __len__(self):
+        return len(self.df)
+
+# %% ../../nbs/10_text-core.ipynb 252
 class TextBlock(TransformBlock):
     """The core `TransformBlock` to prepare your inputs for training in Blurr with fastai's `DataBlock` API"""
 
@@ -663,6 +693,8 @@ class TextBlock(TransformBlock):
         # A Hugging Face model (not required if passing in an \
         # instance of `BatchTokenizeTransform` to `before_batch_tfm`)
         hf_model: PreTrainedModel = None,
+        # Any transforms to apply when getting an item from a dataset (useufl for item-time tokenization)
+        type_tfms: list[ItemTokenizeTransform] = None,
         # The "before_batch" transform you want to use if tokenizing your raw data on the fly (optional)
         tokenize_tfm: Transform = None,
         # The batch_tfm you want to decode your inputs into a type that can be used in the fastai show methods, \
@@ -720,14 +752,15 @@ class TextBlock(TransformBlock):
         # build our custom `TransformBlock`
         data_collator = TextCollatorWithPadding(hf_tokenizer)
         dl_kwargs = {"create_batch": data_collator} if tokenize_tfm is None else {"before_batch": tokenize_tfm}
-        return super().__init__(dl_type=dl_type, dls_kwargs=dl_kwargs, batch_tfms=batch_decode_tfm)
+        return super().__init__(dl_type=dl_type, dls_kwargs=dl_kwargs, type_tfms=type_tfms, batch_tfms=batch_decode_tfm)
 
-# %% ../../nbs/10_text-core.ipynb 359
+# %% ../../nbs/10_text-core.ipynb 413
 @patch
 def blurr_predict(self: Learner, items, rm_type_tfms=None, tok_is_split_into_words=False):
     # grab our blurr tfm with the bits to properly decode/show our inputs/targets
     tfm = first_blurr_tfm(self.dls)
     batch_tok_tfm = get_blurr_tfm(self.dls.before_batch, tfm_class=BatchTokenizeTransform)
+    item_tok_tfm = getattr(self.dls.dataset, "item_tokenize_transform", None)
 
     hf_tokenizer = tfm.hf_tokenizer
     trg_labels = tfm.kwargs["labels"] if ("labels" in tfm.kwargs) else None
@@ -740,7 +773,7 @@ def blurr_predict(self: Learner, items, rm_type_tfms=None, tok_is_split_into_wor
         items = [items]
 
     # we need to tokenize our items *if* we are not using the mid-level API batch-time tokenization
-    if batch_tok_tfm is None:
+    if batch_tok_tfm is None and item_tok_tfm is None:
         inputs_d = dict(
             hf_tokenizer(
                 items, is_split_into_words=is_split_into_words, padding=True, max_length=True, truncation=True, return_tensors="pt"
@@ -794,7 +827,7 @@ def blurr_predict(self: Learner, items, rm_type_tfms=None, tok_is_split_into_wor
         outs.append(res)
     return outs
 
-# %% ../../nbs/10_text-core.ipynb 375
+# %% ../../nbs/10_text-core.ipynb 429
 @patch
 def blurr_generate(self: Learner, items, key="generated_texts", **kwargs):
     """Uses the built-in `generate` method to generate the text
