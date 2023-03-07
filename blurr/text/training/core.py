@@ -23,6 +23,7 @@ from transformers import (
 )
 from transformers import logging as hf_logging
 
+from ..data.core import TextInput
 from ...utils import clean_memory, get_hf_objects, set_seed, PreCalculatedLoss
 
 # %% auto 0

@@ -243,6 +243,7 @@ class TokenClassTextCollatorWithPadding(TextCollatorWithPadding):
         hf_model: PreTrainedModel = None,
         # The number of inputs expected by your model
         n_inp: int = 1,
+        # The token ID that should be ignored when calculating the loss
         ignore_token_id: int = CrossEntropyLossFlat().ignore_index,
         # Defaults to use Hugging Face's DataCollatorWithPadding(tokenizer=hf_tokenizer)
         data_collator_cls: type = DataCollatorWithPadding,
@@ -263,6 +264,7 @@ class TokenClassTextCollatorWithPadding(TextCollatorWithPadding):
 
     # used to give the labels/targets the right shape
     def _proc_targets(self, inputs_d, targs):
+        # the code below comes pretty much straight from the `DataCollatorForTokenClassification` class
         max_seq_length = np.max([len(input_ids) for input_ids in inputs_d["input_ids"]])
         padding_side = self.hf_tokenizer.padding_side
 
@@ -475,7 +477,7 @@ class TokenClassBatchTokenizeTransform(BatchTokenizeTransform):
             targ_ids = target_cls(self.labeling_strategy.align_labels_with_tokens(word_ids, s[-1].tolist()))
 
             if self.include_labels and len(targ_ids) > 0:
-                s[0]["labels"] = targ_ids
+                s[0]["label"] = targ_ids
 
             updated_samples.append((s[0], targ_ids))
 

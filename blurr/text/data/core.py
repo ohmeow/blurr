@@ -176,6 +176,7 @@ class BatchDecodeTransform(Transform):
         hf_model: PreTrainedModel = None,
         # Used by typedispatched show methods
         input_return_type: type = TextInput,
+        ignore_token_id: int = CrossEntropyLossFlat().ignore_index,
         # Any other keyword arguments
         **kwargs,
     ):
