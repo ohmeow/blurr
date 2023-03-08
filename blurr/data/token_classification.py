@@ -8,42 +8,25 @@ import gc, importlib, sys, traceback
 from accelerate.logging import get_logger
 from dataclasses import dataclass
 from dotenv import load_dotenv
-from fastai.callback.all import *
 from fastai.imports import *
-from fastai.learner import *
 from fastai.losses import CrossEntropyLossFlat
 from fastai.data.block import TransformBlock, Category, CategoryMap
-from fastai.data.transforms import TfmdDL
-from fastai.text.data import SortedDL
 from fastai.torch_core import *
 from fastai.torch_imports import *
-from transformers import (
-    AutoConfig,
-    AutoTokenizer,
-    PretrainedConfig,
-    PreTrainedTokenizerBase,
-    PreTrainedModel,
-    AutoModelForTokenClassification,
-)
+from transformers import PretrainedConfig, PreTrainedTokenizerBase, PreTrainedModel, AutoModelForTokenClassification
 from transformers import logging as hf_logging
-from transformers.data.data_collator import DataCollatorForTokenClassification, DataCollatorWithPadding
+from transformers.data.data_collator import DataCollatorWithPadding
 
-from blurr.text.data.core import (
-    ItemTokenizeTransform,
-    TextInput,
-    TextCollatorWithPadding,
-    BatchTokenizeTransform,
-    first_blurr_tfm,
-    sorted_dl_func,
-    TextDataLoader,
-)
-from ..utils import clean_memory, get_hf_objects
+
+from .core import first_blurr_tfm, TextInput, TextCollatorWithPadding, BatchTokenizeTransform
+from ..utils import get_hf_objects
 
 # %% auto 0
-__all__ = ['logger', 'get_task_hf_objects', 'BaseLabelingStrategy', 'OnlyFirstTokenLabelingStrategy', 'SameLabelLabelingStrategy',
-           'BILabelingStrategy', 'get_token_labels_from_input_ids', 'get_word_labels_from_token_labels',
-           'TokenClassTextCollatorWithPadding', 'TokenClassTextInput', 'show_batch', 'TokenTensorCategory',
-           'TokenCategorize', 'TokenCategoryBlock', 'TokenClassBatchTokenizeTransform']
+__all__ = ['logger', 'BaseLabelingStrategy', 'OnlyFirstTokenLabelingStrategy', 'SameLabelLabelingStrategy', 'BILabelingStrategy',
+           'get_task_hf_objects', 'tokenclass_tokenize_func', 'get_token_labels_from_input_ids',
+           'get_word_labels_from_token_labels', 'TokenClassTextCollatorWithPadding', 'TokenClassTextInput',
+           'show_batch', 'TokenTensorCategory', 'TokenCategorize', 'TokenCategoryBlock',
+           'TokenClassBatchTokenizeTransform']
 
 # %% ../../nbs/12_data-token-classification.ipynb 5
 # silence all the HF warnings and load environment variables
@@ -53,33 +36,7 @@ logger = get_logger(__name__)
 
 load_dotenv()
 
-# %% ../../nbs/12_data-token-classification.ipynb 17
-def get_task_hf_objects(
-    pretrained_model_name: str,
-    label_names: list = ["O", "B-PER", "I-PER", "B-ORG", "I-ORG", "B-LOC", "I-LOC", "B-MISC", "I-MISC"],
-    verbose: bool = False,
-):
-    model_cls = AutoModelForTokenClassification
-    n_labels = len(label_names)
-
-    hf_arch, hf_config, hf_tokenizer, hf_model = get_hf_objects(
-        pretrained_model_name, model_cls=model_cls, config_kwargs={"num_labels": n_labels}
-    )
-
-    if verbose:
-        hf_arch, type(hf_config), type(hf_tokenizer), type(hf_model)
-
-        print("=== config ===")
-        print(f"# of labels:\t{hf_config.num_labels}")
-        print("")
-        print("=== tokenizer ===")
-        print(f"Vocab size:\t\t{hf_tokenizer.vocab_size}")
-        print(f"Max # of tokens:\t{hf_tokenizer.model_max_length}")
-        print(f"Attributes expected by model in forward pass:\t{hf_tokenizer.model_input_names}")
-
-    return hf_arch, hf_config, hf_tokenizer, hf_model
-
-# %% ../../nbs/12_data-token-classification.ipynb 19
+# %% ../../nbs/12_data-token-classification.ipynb 18
 class BaseLabelingStrategy:
     def __init__(
         self,
@@ -96,7 +53,7 @@ class BaseLabelingStrategy:
     def align_labels_with_tokens(self, word_ids, word_labels):
         raise NotImplementedError()
 
-# %% ../../nbs/12_data-token-classification.ipynb 21
+# %% ../../nbs/12_data-token-classification.ipynb 20
 class OnlyFirstTokenLabelingStrategy(BaseLabelingStrategy):
     """
     Only the first token of word is associated with the label (all other subtokens with the `ignore_index_id`). Works where labels
@@ -169,7 +126,59 @@ class BILabelingStrategy(BaseLabelingStrategy):
 
         return new_labels
 
-# %% ../../nbs/12_data-token-classification.ipynb 23
+# %% ../../nbs/12_data-token-classification.ipynb 22
+def get_task_hf_objects(
+    pretrained_model_name: str,
+    label_names: list = ["O", "B-PER", "I-PER", "B-ORG", "I-ORG", "B-LOC", "I-LOC", "B-MISC", "I-MISC"],
+    verbose: bool = False,
+):
+    model_cls = AutoModelForTokenClassification
+    n_labels = len(label_names)
+
+    hf_arch, hf_config, hf_tokenizer, hf_model = get_hf_objects(
+        pretrained_model_name, model_cls=model_cls, config_kwargs={"num_labels": n_labels}
+    )
+
+    if verbose:
+        hf_arch, type(hf_config), type(hf_tokenizer), type(hf_model)
+
+        print("=== config ===")
+        print(f"# of labels:\t{hf_config.num_labels}")
+        print("")
+        print("=== tokenizer ===")
+        print(f"Vocab size:\t\t{hf_tokenizer.vocab_size}")
+        print(f"Max # of tokens:\t{hf_tokenizer.model_max_length}")
+        print(f"Attributes expected by model in forward pass:\t{hf_tokenizer.model_input_names}")
+
+    return hf_arch, hf_config, hf_tokenizer, hf_model
+
+# %% ../../nbs/12_data-token-classification.ipynb 25
+# tokenize the dataset
+def tokenclass_tokenize_func(
+    examples,
+    hf_tokenizer: PreTrainedTokenizerBase,
+    labeling_strategy: BaseLabelingStrategy,
+    words_attr: str = "words",
+    word_labels_attr: str = "labels",
+    max_length: int = None,
+    padding: bool | str = True,
+    truncation: bool | str = True,
+    tok_kwargs: dict = {},
+):
+    inputs = hf_tokenizer(
+        examples[words_attr], max_length=max_length, padding=padding, truncation=truncation, is_split_into_words=True, **tok_kwargs
+    )
+
+    all_labels = examples[word_labels_attr]
+    new_labels = []
+    for i, labels in enumerate(all_labels):
+        word_ids = inputs.word_ids(i)
+        new_labels.append(labeling_strategy.align_labels_with_tokens(word_ids, labels))
+
+    inputs["label"] = new_labels
+    return inputs
+
+# %% ../../nbs/12_data-token-classification.ipynb 30
 def get_token_labels_from_input_ids(
     # A Hugging Face tokenizer
     hf_tokenizer: PreTrainedTokenizerBase,
@@ -199,7 +208,7 @@ def get_token_labels_from_input_ids(
     ]
     return tok_labels
 
-# %% ../../nbs/12_data-token-classification.ipynb 27
+# %% ../../nbs/12_data-token-classification.ipynb 34
 def get_word_labels_from_token_labels(
     hf_arch: str,
     # A Hugging Face tokenizer
@@ -228,7 +237,7 @@ def get_word_labels_from_token_labels(
 
     return word_labels
 
-# %% ../../nbs/12_data-token-classification.ipynb 32
+# %% ../../nbs/12_data-token-classification.ipynb 39
 @dataclass
 class TokenClassTextCollatorWithPadding(TextCollatorWithPadding):
     def __init__(
@@ -286,11 +295,11 @@ class TokenClassTextCollatorWithPadding(TextCollatorWithPadding):
 
         return targs
 
-# %% ../../nbs/12_data-token-classification.ipynb 58
+# %% ../../nbs/12_data-token-classification.ipynb 63
 class TokenClassTextInput(TextInput):
     pass
 
-# %% ../../nbs/12_data-token-classification.ipynb 61
+# %% ../../nbs/12_data-token-classification.ipynb 66
 @typedispatch
 def show_batch(
     # This typedispatched `show_batch` will be called for `TokenClassTextInput` typed inputs
@@ -339,11 +348,11 @@ def show_batch(
     display_df(pd.DataFrame(res, columns=["word / target label"])[:max_n])
     return ctxs
 
-# %% ../../nbs/12_data-token-classification.ipynb 86
+# %% ../../nbs/12_data-token-classification.ipynb 82
 class TokenTensorCategory(TensorBase):
     pass
 
-# %% ../../nbs/12_data-token-classification.ipynb 88
+# %% ../../nbs/12_data-token-classification.ipynb 84
 class TokenCategorize(Transform):
     """Reversible transform of a list of category string to `vocab` id"""
 
@@ -375,7 +384,7 @@ class TokenCategorize(Transform):
     def decodes(self, encoded_labels):
         return Category([(self.vocab[lbl_id]) for lbl_id in encoded_labels if lbl_id != self.ignore_token_id])
 
-# %% ../../nbs/12_data-token-classification.ipynb 91
+# %% ../../nbs/12_data-token-classification.ipynb 87
 def TokenCategoryBlock(
     # The unique list of entities (e.g., B-LOC) (default: CategoryMap(vocab))
     vocab: Optional[List[str]] = None,
@@ -387,7 +396,7 @@ def TokenCategoryBlock(
     """`TransformBlock` for per-token categorical targets"""
     return TransformBlock(type_tfms=TokenCategorize(vocab=vocab, ignore_token=ignore_token, ignore_token_id=ignore_token_id))
 
-# %% ../../nbs/12_data-token-classification.ipynb 95
+# %% ../../nbs/12_data-token-classification.ipynb 91
 class TokenClassBatchTokenizeTransform(BatchTokenizeTransform):
     def __init__(
         self,
