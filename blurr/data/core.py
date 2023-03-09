@@ -93,7 +93,7 @@ def multilabel_tokenize_func(
 
     return inputs
 
-# %% ../../nbs/10_data-core.ipynb 29
+# %% ../../nbs/10_data-core.ipynb 30
 @dataclass
 class TextCollatorWithPadding:
     def __init__(
@@ -183,13 +183,13 @@ class TextCollatorWithPadding:
 
         return tuplify(batch)
 
-# %% ../../nbs/10_data-core.ipynb 74
+# %% ../../nbs/10_data-core.ipynb 75
 class TextInput(TensorBase):
     """The base represenation of your inputs; used by the various fastai `show` methods"""
 
     pass
 
-# %% ../../nbs/10_data-core.ipynb 77
+# %% ../../nbs/10_data-core.ipynb 78
 class BatchDecodeTransform(Transform):
     """A class used to cast your inputs as `input_return_type` for fastai `show` methods"""
 
@@ -217,7 +217,7 @@ class BatchDecodeTransform(Transform):
         """Returns the proper object and data for show related fastai methods"""
         return self.input_return_type(items["input_ids"])
 
-# %% ../../nbs/10_data-core.ipynb 80
+# %% ../../nbs/10_data-core.ipynb 81
 def get_blurr_tfm(
     # A list of transforms (e.g., dls.after_batch, dls.before_batch, etc...)
     tfms_list: Pipeline,
@@ -230,7 +230,7 @@ def get_blurr_tfm(
     """
     return next(filter(lambda el: issubclass(type(el), tfm_class), tfms_list), None)
 
-# %% ../../nbs/10_data-core.ipynb 82
+# %% ../../nbs/10_data-core.ipynb 83
 def first_blurr_tfm(
     # Your fast.ai `DataLoaders
     dls: DataLoaders,
@@ -251,7 +251,7 @@ def first_blurr_tfm(
         if found_tfm:
             return found_tfm
 
-# %% ../../nbs/10_data-core.ipynb 85
+# %% ../../nbs/10_data-core.ipynb 86
 @typedispatch
 def show_batch(
     # This typedispatched `show_batch` will be called for `TextInput` typed inputs
@@ -308,7 +308,7 @@ def show_batch(
     display_df(pd.DataFrame(res, columns=cols)[:max_n])
     return ctxs
 
-# %% ../../nbs/10_data-core.ipynb 87
+# %% ../../nbs/10_data-core.ipynb 88
 def sorted_dl_func(
     example,
     # A Hugging Face tokenizer
@@ -332,7 +332,7 @@ def sorted_dl_func(
 
     return len(txt) if is_split_into_words else len(hf_tokenizer.tokenize(txt, **tok_kwargs))
 
-# %% ../../nbs/10_data-core.ipynb 114
+# %% ../../nbs/10_data-core.ipynb 115
 class BatchTokenizeTransform(Transform):
     """
     Handles everything you need to assemble a mini-batch of inputs and targets, as well as
@@ -433,7 +433,7 @@ class BatchTokenizeTransform(Transform):
 
         return updated_samples
 
-# %% ../../nbs/10_data-core.ipynb 117
+# %% ../../nbs/10_data-core.ipynb 118
 class ItemTokenizeTransform(ItemTransform):
     split_idx = None
 
@@ -459,7 +459,7 @@ class ItemTokenizeTransform(ItemTransform):
         inputs = self.hf_tokenizer(txt, **self.tok_kwargs)
         return dict(inputs)
 
-# %% ../../nbs/10_data-core.ipynb 120
+# %% ../../nbs/10_data-core.ipynb 121
 class TextBlock(TransformBlock):
     """The core `TransformBlock` to prepare your inputs for training in Blurr with fastai's `DataBlock` API"""
 
