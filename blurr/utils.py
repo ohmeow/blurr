@@ -137,7 +137,7 @@ def clean_memory(
     torch.cuda.empty_cache()
     gc.collect()
 
-# %% ../nbs/00_utils.ipynb 32
+# %% ../nbs/00_utils.ipynb 31
 class PreCalculatedLoss(BaseLoss):
     """
     If you want to let your Hugging Face model calculate the loss for you, make sure you include the `labels` argument in your inputs and use
@@ -165,7 +165,7 @@ class PreCalculatedMSELoss(PreCalculatedLoss):
     def __init__(self, *args, axis=-1, floatify=True, **kwargs):
         super().__init__(nn.MSELoss, *args, axis=axis, floatify=floatify, is_2d=False, **kwargs)
 
-# %% ../nbs/00_utils.ipynb 33
+# %% ../nbs/00_utils.ipynb 32
 class MultiTargetLoss(Module):
     """
     Provides the ability to apply different loss functions to multi-modal targets/predictions.
@@ -218,7 +218,7 @@ class MultiTargetLoss(Module):
         decodes = [self.loss_funcs[i].decodes(o) for i, o in enumerate(outs)]
         return decodes
 
-# %% ../nbs/00_utils.ipynb 35
+# %% ../nbs/00_utils.ipynb 34
 def get_hf_objects(
     pretrained_model_name_or_path: str | os.PathLike,
     model_cls: PreTrainedModel,
