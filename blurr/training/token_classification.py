@@ -14,14 +14,16 @@ from fastai.learner import *
 from fastai.torch_core import *
 from fastai.torch_imports import *
 from seqeval import metrics as seq_metrics
-from transformers import PreTrainedTokenizerBase
+from transformers import PreTrainedTokenizerBase, PreTrainedModel
 from transformers import logging as hf_logging
 
 from ..data.core import first_blurr_tfm
+from .core import Blearner
 from ..data.token_classification import TokenClassTextInput, get_token_labels_from_input_ids, get_word_labels_from_token_labels
 
 # %% auto 0
-__all__ = ['logger', 'calculate_token_class_metrics', 'TokenClassMetricsCallback', 'show_results', 'TokenAggregationStrategies']
+__all__ = ['logger', 'calculate_token_class_metrics', 'TokenClassMetricsCallback', 'show_results', 'TokenAggregationStrategies',
+           'BlearnerForTokenClassification']
 
 # %% ../../nbs/12_training-token-classification.ipynb 6
 # silence all the HF warnings and load environment variables
@@ -373,3 +375,22 @@ def blurr_predict_tokens(
                 )
             )
     return results
+
+# %% ../../nbs/12_training-token-classification.ipynb 155
+@delegates(Blearner.__init__)
+class BlearnerForTokenClassification(Blearner):
+    def __init__(self, dls: DataLoaders, hf_model: PreTrainedModel, **kwargs):
+        super().__init__(dls, hf_model, **kwargs)
+
+    def predict(self, text):
+        return self.blurr_predict_tokens(text)
+
+    def get_metrics_cb(self):
+        tfm = first_blurr_tfm(self.dls)
+
+        # if we've included our labels list, we'll use it to look up the value of our target(s)
+        trg_labels = tfm.kwargs["label_names"] if ("label_names" in tfm.kwargs) else None
+        if trg_labels is None and self.dls.vocab is not None:
+            trg_labels = self.dls.vocab
+
+        return TokenClassMetricsCallback(hf_tokenizer=tfm.hf_tokenizer, label_names=trg_labels)

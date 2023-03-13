@@ -20,7 +20,7 @@ from ..utils import PreCalculatedLoss
 
 # %% auto 0
 __all__ = ['logger', 'blurr_params', 'blurr_splitter', 'blurr_splitter_on_head', 'BaseModelWrapper', 'BaseModelCallback',
-           'show_results']
+           'show_results', 'Blearner']
 
 # %% ../../nbs/10_training-core.ipynb 6
 # silence all the HF warnings and load environment variables
@@ -319,3 +319,49 @@ def blurr_generate(self: Learner, items, key="generated_texts", **kwargs):
         results.append({key: outputs[0] if len(outputs) == 1 else outputs})
 
     return results
+
+# %% ../../nbs/10_training-core.ipynb 304
+@delegates(Learner.__init__)
+class Blearner(Learner):
+    def __init__(
+        self,
+        # Your fastai DataLoaders
+        dls: DataLoaders,
+        # Your pretrained Hugging Face transformer
+        hf_model: PreTrainedModel,
+        # Your `BaseModelCallback`
+        base_model_cb: BaseModelCallback = BaseModelCallback,
+        # Any kwargs you want to pass to your `BLearner`
+        **kwargs,
+    ) -> Learner:
+        """
+        Returns a Blurr friendly `Learner` ready for model training
+        """
+        model = kwargs.get("model", BaseModelWrapper(hf_model))
+        splitter = kwargs.pop("splitter", blurr_splitter_on_head)
+        loss_func = kwargs.pop("loss_func", dls.loss_func if hasattr(dls, "loss_func") else None)
+
+        # if we are letting the Hugging Face model calculate the loss for us (which is the default), we update
+        # our loss function here to simply used the correct `PrecalculatedLoss`
+        tfm = first_blurr_tfm(dls)
+        if hasattr(tfm, "include_labels") and tfm.include_labels:
+            if isinstance(loss_func, CrossEntropyLossFlat):
+                loss_func = PreCalculatedCrossEntropyLoss()
+            elif isinstance(loss_func, BCEWithLogitsLossFlat):
+                loss_func = PreCalculatedBCELoss()
+            elif isinstance(loss_func.func, nn.MSELoss):
+                loss_func = PreCalculatedMSELoss()
+
+        # Prepend BaseModelCallback to list of callbacks.
+        # Add cbs to kwargs if doesn't not already present.
+        if "cbs" in kwargs:
+            kwargs["cbs"].insert(0, base_model_cb)
+        else:
+            kwargs["cbs"] = [base_model_cb]
+
+        super().__init__(dls, model=model, loss_func=loss_func, splitter=splitter, **kwargs)
+
+        self.freeze()
+
+    def predict(self, text):
+        return self.blurr_predict(text)
