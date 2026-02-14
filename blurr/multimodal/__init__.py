@@ -1,5 +1,17 @@
-"""blurr.multimodal — Vision-language task modules for blurr vNext."""
+"""Public multimodal-task API for blurr v2."""
 
-from .classification import MultimodalClassificationLearner
+from .classification import (
+    ContrastiveHFModel,
+    MultimodalBatchTransform,
+    MultimodalClassificationLearner,
+    MultimodalClassificationModel,
+    MultimodalTextImageBlock,
+)
 
-__all__ = ["MultimodalClassificationLearner"]
+__all__ = [
+    "MultimodalBatchTransform",
+    "MultimodalTextImageBlock",
+    "MultimodalClassificationModel",
+    "ContrastiveHFModel",
+    "MultimodalClassificationLearner",
+]
