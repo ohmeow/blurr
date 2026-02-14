@@ -24,6 +24,10 @@ warnings.filterwarnings("ignore", category=UserWarning)
 TINY_BERT = "prajjwal1/bert-tiny"  # 4.4M params, 2 layers
 TINY_GPT2 = "sshleifer/tiny-gpt2"  # Tiny GPT-2
 TINY_T5 = "google/t5-efficient-tiny"  # Tiny T5
+TINY_VIT = "hf-internal-testing/tiny-random-ViTForImageClassification"
+TINY_CLIP = "hf-internal-testing/tiny-random-CLIPModel"
+TINY_BLIP_VQA = "hf-internal-testing/tiny-random-BlipForQuestionAnswering"
+TINY_SIGLIP = "hf-internal-testing/tiny-random-SiglipModel"
 
 
 @pytest.fixture
@@ -39,6 +43,26 @@ def tiny_gpt2_name():
 @pytest.fixture
 def tiny_t5_name():
     return TINY_T5
+
+
+@pytest.fixture
+def tiny_vit_name():
+    return TINY_VIT
+
+
+@pytest.fixture
+def tiny_clip_name():
+    return TINY_CLIP
+
+
+@pytest.fixture
+def tiny_blip_vqa_name():
+    return TINY_BLIP_VQA
+
+
+@pytest.fixture
+def tiny_siglip_name():
+    return TINY_SIGLIP
 
 
 # ---------------------------------------------------------------------------
@@ -96,6 +120,115 @@ def multilabel_df():
         "insult": [0, 0, 1, 0, 1, 0, 1, 0],
     }
     return pd.DataFrame(data)
+
+
+# ---------------------------------------------------------------------------
+# Sample vision + multimodal data
+# ---------------------------------------------------------------------------
+
+@pytest.fixture
+def vision_df(tmp_path):
+    """Small image classification dataframe using generated RGB squares."""
+    from PIL import Image
+    import numpy as np
+
+    rows = []
+    for i in range(12):
+        arr = np.zeros((32, 32, 3), dtype=np.uint8)
+        if i % 2 == 0:
+            arr[..., 0] = 255  # red-ish
+            label = "red"
+        else:
+            arr[..., 2] = 255  # blue-ish
+            label = "blue"
+
+        path = tmp_path / f"img_{i}.png"
+        Image.fromarray(arr).save(path)
+        rows.append({"image": str(path), "label": label, "is_valid": i % 4 == 0})
+
+    return pd.DataFrame(rows)
+
+
+@pytest.fixture
+def vision_multilabel_df(tmp_path):
+    """Small multi-label image dataframe."""
+    from PIL import Image
+    import numpy as np
+
+    rows = []
+    for i in range(10):
+        arr = np.zeros((32, 32, 3), dtype=np.uint8)
+        arr[..., 0] = 255 if i % 2 == 0 else 20
+        arr[..., 1] = 255 if i % 3 == 0 else 20
+        arr[..., 2] = 255 if i % 4 == 0 else 20
+        path = tmp_path / f"ml_img_{i}.png"
+        Image.fromarray(arr).save(path)
+        rows.append(
+            {
+                "image": str(path),
+                "red": 1 if i % 2 == 0 else 0,
+                "green": 1 if i % 3 == 0 else 0,
+                "blue": 1 if i % 4 == 0 else 0,
+                "is_valid": i % 5 == 0,
+            }
+        )
+
+    return pd.DataFrame(rows)
+
+
+@pytest.fixture
+def multimodal_df(tmp_path):
+    """Small multimodal dataframe: image path + text + class label."""
+    from PIL import Image
+    import numpy as np
+
+    rows = []
+    for i in range(10):
+        arr = np.zeros((32, 32, 3), dtype=np.uint8)
+        if i % 2 == 0:
+            arr[..., 0] = 255
+            text = "a red square"
+            label = "warm"
+        else:
+            arr[..., 2] = 255
+            text = "a blue square"
+            label = "cool"
+
+        path = tmp_path / f"mm_img_{i}.png"
+        Image.fromarray(arr).save(path)
+        rows.append({"image": str(path), "text": text, "label": label, "is_valid": i % 4 == 0})
+
+    return pd.DataFrame(rows)
+
+
+@pytest.fixture
+def vqa_df(tmp_path):
+    """Small VQA-style dataframe with categorical answer labels."""
+    from PIL import Image
+    import numpy as np
+
+    rows = []
+    answers = ["red", "blue"]
+    for i in range(8):
+        arr = np.zeros((32, 32, 3), dtype=np.uint8)
+        answer = answers[i % 2]
+        if answer == "red":
+            arr[..., 0] = 255
+        else:
+            arr[..., 2] = 255
+
+        path = tmp_path / f"vqa_img_{i}.png"
+        Image.fromarray(arr).save(path)
+        rows.append(
+            {
+                "image": str(path),
+                "text": "what color is the square?",
+                "label": answer,
+                "is_valid": i % 4 == 0,
+            }
+        )
+
+    return pd.DataFrame(rows)
 
 
 # ---------------------------------------------------------------------------
