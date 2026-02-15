@@ -1,0 +1,59 @@
+[build-system]
+requires = ["setuptools>=64", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ohmeow-blurr"
+version = "2.0.0a0"
+description = "A library designed for fastai developers who want to train and deploy Hugging Face transformers"
+readme = "README.md"
+requires-python = ">=3.11"
+license = {text = "Apache-2.0"}
+authors = [
+    {name = "Wayde Gilliam", email = "wgilliam@ohmeow.com"},
+]
+keywords = ["fastai", "huggingface", "transformers", "nlp", "deep-learning"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: Apache Software License",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
+dependencies = [
+    "torch>=2.4,<3",
+    "fastcore>=1.7.0",
+    "fastai>=2.7.18",
+    "fasttransform>=0.1",
+    "transformers>=4.46,<6",
+    "datasets>=2.20,<5",
+    "accelerate>=0.34,<2",
+    "sentencepiece>=0.2,<1",
+    "seqeval>=1.2.2,<2",
+    "rouge-score>=0.1.2,<1",
+]
+
+[project.optional-dependencies]
+peft = ["peft>=0.13,<1"]
+trl = ["trl>=0.10,<1"]
+dev = [
+    "nbdev>=2.3.0,<3",
+    "ipykernel>=6.29",
+    "pytest>=8,<10",
+    "jupyterlab>=4.2",
+]
+all = ["ohmeow-blurr[peft,trl,dev]"]
+
+[tool.pytest.ini_options]
+minversion = "8.0"
+testpaths = ["tests"]
+addopts = "-q"
+
+[tool.ruff]
+target-version = "py311"
+line-length = 120
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "W"]
+ignore = ["E501"]  # Line too long (we handle elsewhere)
